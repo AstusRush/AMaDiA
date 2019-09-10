@@ -131,6 +131,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_2_LaTeX_ConvertButton.setText(_translate("AMaDiA_Main_Window", "Convert"))
         self.Tab_2_LaTeX_InputField.setPlaceholderText(_translate("AMaDiA_Main_Window", "Add Mathematical Expression to be Converted to LaTeX"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab_2_LaTeX), _translate("AMaDiA_Main_Window", "LaTeX"))
+        self.Font_Size_spinBox.setToolTip(_translate("AMaDiA_Main_Window", "Font Size"))
         self.Menubar_Main_Options.setTitle(_translate("AMaDiA_Main_Window", "O&ptions"))
         self.Menubar_Main_Options_action_Reload_Modules.setText(_translate("AMaDiA_Main_Window", "Reload Modules"))
         self.Menubar_Main_Options_action_LaTeX.setText(_translate("AMaDiA_Main_Window", "LaTeX"))
