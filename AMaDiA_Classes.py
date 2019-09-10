@@ -59,7 +59,8 @@ class AMaS: # Astus' Mathematical Structure
                     parts = self.string.split("=")
                     self.LaTeX = ""
                     for i in parts:
-                        self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
+                        if len(i)>0:
+                            self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
                         self.LaTeX += " = "
                     self.LaTeX = self.LaTeX[:-3]
                 else:
