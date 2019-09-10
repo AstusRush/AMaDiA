@@ -32,6 +32,7 @@ WindowTitle+= Version
 WindowTitle+= " by "
 WindowTitle+= Author
 
+
 class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def __init__(self, parent = None):
         super(MainWindow, self).__init__(parent)
@@ -54,6 +55,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
         self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
+        self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot)
     
     def ColourMain(self):
         palette = AMaDiA_Colour.palette()
@@ -171,6 +173,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         # Show the "graph"
         self.Tab_2_LaTeX_Viewer.canvas.draw()
+        
+    def Tab_3_F_Plot(self):
+        #TODO: Make the Plot thing user controlled with the input things...
+        
+        # Important: Use a new thread to calculate everything and probably even create the plot
+        #               Then copy the output from the thread to use it here
+        #               This is important to not crash the program if the user makes rediculously big Plots
+        
+        self.Tab_3_2D_Plot_Display.canvas.ax.plot([1,2,3,4], 'r--')
+        self.Tab_3_2D_Plot_Display.canvas.draw()
         
 
 
