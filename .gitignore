@@ -1,0 +1,9 @@
+
+*.driveupload
+*.bat
+.spyproject
+__pycache__
+AMaDiA.pyproject*
+exit
+Git console commands
+.tmp.drivedownload

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AMaDiA_Main_Window</class>
+ <widget class="QMainWindow" name="AMaDiA_Main_Window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>840</width>
+    <height>634</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AMaDiA</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0" colspan="2">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="Tab_1_Calculator">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>Calculator</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="Tab_1_Calculator_InputField"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QListWidget" name="Tab_1_Calculator_History"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Tab_2_LaTeX">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>LaTeX</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="1" column="1" rowspan="2">
+         <widget class="QPushButton" name="Tab_2_LaTeX_ConvertButton">
+          <property name="text">
+           <string>Convert</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <spacer name="Tab_2_LaTeX_horizontalSpacerForButton">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QSplitter" name="Tab_2_LaTeX_LowerSplitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QSplitter" name="Tab_2_LaTeX_UpperSplitter">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="QListWidget" name="Tab_2_LaTeX_History"/>
+           <widget class="QWidget" name="layoutWidget">
+            <layout class="QVBoxLayout" name="Tab_2_LaTeX_verticalLayout">
+             <item>
+              <widget class="QScrollArea" name="Tab_2_LaTeX_scrollArea">
+               <property name="sizeAdjustPolicy">
+                <enum>QAbstractScrollArea::AdjustToContents</enum>
+               </property>
+               <property name="widgetResizable">
+                <bool>true</bool>
+               </property>
+               <widget class="QWidget" name="Tab_2_LaTeX_scrollAreaWidgetContents">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>270</width>
+                  <height>206</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_4">
+                 <item row="0" column="0">
+                  <widget class="MplWidget" name="Tab_2_LaTeX_Viewer" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="Tab_2_LaTeX_LaTeXOutput"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+          <widget class="QTextEdit" name="Tab_2_LaTeX_InputField">
+           <property name="placeholderText">
+            <string>Add Mathematical Expression to be Converted to LaTeX</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="1">
+     <widget class="QSpinBox" name="Font_Size_spinBox">
+      <property name="minimum">
+       <number>5</number>
+      </property>
+      <property name="maximum">
+       <number>25</number>
+      </property>
+      <property name="value">
+       <number>9</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="Menubar_Main">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>840</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="Menubar_Main_Options">
+    <property name="title">
+     <string>O&amp;ptions</string>
+    </property>
+    <addaction name="Menubar_Main_Options_action_Reload_Modules"/>
+    <addaction name="Menubar_Main_Options_action_LaTeX"/>
+    <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
+   </widget>
+   <addaction name="Menubar_Main_Options"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="Menubar_Main_Options_action_Reload_Modules">
+   <property name="text">
+    <string>Reload Modules</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_LaTeX">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>LaTeX</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_Eval_Functions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Eval Functions</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MplWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">AMaDiA_Widgets</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

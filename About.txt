@@ -1,0 +1,54 @@
+Projekt AMaDiA
+
+Idee: 8.7.2019 während GLHF-Vorlesung
+
+AMaDiA
+A      Ma   Di      A
+Astus' Math Display Application
+
+(Akronym wurde vorwärts und nicht rückwärts entwickelt aber Übereinstimmung
+				mit Divinity Göttin für Magie war Teilgrund für Wahl des Acronyms)
+					
+Erste Namensidee war: Astus Rush's Graphical Output (ARGO) (Beschreibt Funktion viel zu schlecht und es fehlt ein N für ARGON)
+
+Funktionen (Nach Prioritäten):
+Primär:
+	FormulaDisplay:
+		Robin's Format für Formeln in LaTeX umwandeln und anzeigen
+		Formatdefinition ändern und Formate speichern
+Sekundär:
+	Calculator:
+		Simpler Rechner
+	Plotter:
+		Funktionsplotter
+	Converter:
+		Einheitenkonverter
+	To_Be_Named:
+		Rechner für alles
+	Compare:
+		Vergleichen von Textdateien mit Merge-Funktion
+Tertiär:
+	Interpreter:
+		Python-Interpreter
+	Circuit:
+		Funktionen für Anzeigen und Berechnung von Elektrischen Schaltkreisen
+	To_Be_Named:
+		Plotten von Graphen (mit Knoten und Kanten)
+	Chat:
+		Chatfunktionalitäten:
+			Der Server ist im Programm eingebettet und kann gestartet werden
+				- Jeder kann Server sein
+			Clients verbinden sich mit Server
+		Versenden von Dateien
+		Einbetten der Primären und Sekundären Funktionen
+	PDFViewer:
+		PDF Viewer
+		Einbetten der Primären Funktionen
+		Einbetten der Sekundären Funktionen
+	PDFEditor:
+		PDF Editor
+		Einbetten der Primären Funktionen
+		Einbetten der Sekundären Funktionen
+		
+		
+Vermutliche Fertigstellung: 8.8.3019 (Also 12001 Monate)  (Welche Pythonversion ist dann wohl gebräuchlich...?)
