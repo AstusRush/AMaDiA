@@ -51,11 +51,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ColourMain()
 
     def ConnectSignals(self):
-        self.Tab_2_LaTeX_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
-        self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate)
-        self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
         self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
+        self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
+        self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate)
+        self.Tab_2_LaTeX_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
         self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot)
+        self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
     
     def ColourMain(self):
         palette = AMaDiA_Colour.palette()
@@ -184,7 +185,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_Display.canvas.ax.plot([1,2,3,4], 'r--')
         self.Tab_3_2D_Plot_Display.canvas.draw()
         
-
+    def Tab_3_F_Clear(self):
+        self.Tab_3_2D_Plot_Display.canvas.ax.clear()
+        self.Tab_3_2D_Plot_Display.canvas.draw()
 
 
 if __name__ == "__main__":
