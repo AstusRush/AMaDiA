@@ -10,7 +10,9 @@ import platform
 import errno
 import os
 import sympy
+from sympy.parsing.sympy_parser import parse_expr
 import importlib
+import inspect
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -65,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
         self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate)
         self.Tab_2_LaTeX_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
-        self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot)
+        self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
     
     def ColourMain(self):
@@ -185,14 +187,60 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Show the "graph"
         self.Tab_2_LaTeX_Viewer.canvas.draw()
         
-    def Tab_3_F_Plot(self):
-        #TODO: Make the Plot thing user controlled with the input things...
+    def Tab_3_F_Plot_Button(self):
+        Mode = "P"
+        if self.Menubar_Main_Options_action_LaTeX.isChecked():
+            Mode = "L"
+        Input = AC.AMaS(self.Tab_3_2D_Plot_Formula_Field.text(),Mode)
         
+        item = QtWidgets.QListWidgetItem()
+        item.setData(0,Input)
+        item.setText(Input.Text)
+        self.Tab_3_2D_Plot_History.addItem(item) # TODO: Add the History functionality
+        
+        self.Tab_3_F_Plot(Input)
+        
+    def Tab_3_F_Plot(self,Input):
+        #TODO: Tidy up this absolute mess...
+        
+        #TODO:
         # Important: Use a new thread to calculate everything and probably even create the plot
         #               Then copy the output from the thread to use it here
         #               This is important to not crash the program if the user makes rediculously big Plots
         
-        self.Tab_3_2D_Plot_Display.canvas.ax.plot([1,2,3,4], 'r--')
+        
+        x = sympy.symbols('x')
+        Function = parse_expr(Input.string)
+        x_min = self.Tab_3_2D_Plot_From_Spinbox.value()
+        x_max = self.Tab_3_2D_Plot_To_Spinbox.value()
+        steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
+        steps_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
+        same_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked() #TODO:Connect
+        Draw_Grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked() #TODO:Connect
+        
+        if steps_per_unit:
+            steps = 1/steps
+        else:
+            steps = (x_max - x_min)/steps
+            
+        X = np.arange(x_min, x_max+steps, steps)
+        
+        try:
+            evalfunc = sympy.lambdify(x, Function, modules='numpy')
+        
+            self.Tab_3_2D_Plot_Display.canvas.ax.plot(X,evalfunc(X), 'r--')
+        except ... :
+            pass
+        if Draw_Grid:
+            self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
+        else:
+            self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
+        if same_ratio:
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
+        else:
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
+        
+        #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
         self.Tab_3_2D_Plot_Display.canvas.draw()
         
     def Tab_3_F_Clear(self):

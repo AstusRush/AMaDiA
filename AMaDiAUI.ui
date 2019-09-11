@@ -230,6 +230,13 @@
             </property>
             <widget class="QWidget" name="layoutWidget">
              <layout class="QGridLayout" name="Tab_3_2D_Plot_gridLayout">
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="Tab_3_2D_Plot_Axis_ratio_Checkbox">
+                <property name="text">
+                 <string>1:1 axis ratio</string>
+                </property>
+               </widget>
+              </item>
               <item row="0" column="0" colspan="5">
                <widget class="QListWidget" name="Tab_3_2D_Plot_History">
                 <property name="sizePolicy">
@@ -237,6 +244,13 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QCheckBox" name="Tab_3_2D_Plot_Draw_Grid_Checkbox">
+                <property name="text">
+                 <string>Draw Grid</string>
                 </property>
                </widget>
               </item>

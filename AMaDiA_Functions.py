@@ -37,6 +37,7 @@ def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
             return val
     return val
 
+
 def FindPair(string, AB, start=0, end=0):
     # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
     if end == 0:
