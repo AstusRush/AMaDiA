@@ -38,7 +38,11 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QListWidget" name="Tab_1_Calculator_History"/>
+         <widget class="QListWidget" name="Tab_1_Calculator_History">
+          <property name="selectionMode">
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLineEdit" name="Tab_1_Calculator_InputField"/>
@@ -82,7 +86,11 @@
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <widget class="QListWidget" name="Tab_2_LaTeX_History"/>
+           <widget class="QListWidget" name="Tab_2_LaTeX_History">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::ExtendedSelection</enum>
+            </property>
+           </widget>
            <widget class="QWidget" name="layoutWidget">
             <layout class="QVBoxLayout" name="Tab_2_LaTeX_verticalLayout">
              <item>
@@ -245,6 +253,9 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::ExtendedSelection</enum>
+                </property>
                </widget>
               </item>
               <item row="2" column="0">
@@ -323,7 +334,7 @@
              <number>100000</number>
             </property>
             <property name="value">
-             <number>10</number>
+             <number>100</number>
             </property>
            </widget>
           </item>
@@ -333,7 +344,7 @@
              <string>per unit</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -437,15 +448,15 @@
   <tabstop>Tab_2_LaTeX_LaTeXOutput</tabstop>
   <tabstop>Tab_2_LaTeX_History</tabstop>
   <tabstop>Tab_2_LaTeX_scrollArea</tabstop>
+  <tabstop>Tab_3_2D_Plot_Formula_Field</tabstop>
+  <tabstop>Tab_3_2D_Plot_Button_Plot</tabstop>
+  <tabstop>Tab_3_2D_Plot_Button_Clear</tabstop>
   <tabstop>Tab_3_2D_Plot_Axis_ratio_Checkbox</tabstop>
   <tabstop>Tab_3_2D_Plot_Draw_Grid_Checkbox</tabstop>
   <tabstop>Tab_3_2D_Plot_From_Spinbox</tabstop>
   <tabstop>Tab_3_2D_Plot_To_Spinbox</tabstop>
   <tabstop>Tab_3_2D_Plot_Steps_Spinbox</tabstop>
   <tabstop>Tab_3_2D_Plot_Steps_Checkbox</tabstop>
-  <tabstop>Tab_3_2D_Plot_Formula_Field</tabstop>
-  <tabstop>Tab_3_2D_Plot_Button_Plot</tabstop>
-  <tabstop>Tab_3_2D_Plot_Button_Clear</tabstop>
   <tabstop>Tab_3_2D_Plot_History</tabstop>
   <tabstop>Tab_3_2D_Plot_ScrollArea</tabstop>
  </tabstops>

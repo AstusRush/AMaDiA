@@ -1,9 +1,10 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.2.0"
+Version = "0.2.1"
 Author = "Robin \'Astus\' Albers"
 
 import sys
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
+from PyQt5.Qt import QApplication, QClipboard
 import socket
 import datetime
 import platform
@@ -12,7 +13,6 @@ import os
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import importlib
-import inspect
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -40,6 +40,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         super(MainWindow, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
+        self.tabWidget.setCurrentIndex(0)
         
         self.TextColour = (215/255, 213/255, 201/255)
         
@@ -52,6 +53,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_Display.canvas.ax.yaxis.label.set_color(self.TextColour)
         self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='x', colors=self.TextColour)
         self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
+        
+        
+        self.Tab_1_Calculator_History.installEventFilter(self)
+        self.Tab_2_LaTeX_History.installEventFilter(self)
+        self.Tab_3_2D_Plot_History.installEventFilter(self)
+        
         
         # add to UI File
         # import AMaDiA_Widgets
@@ -68,6 +75,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate)
         self.Tab_2_LaTeX_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
         self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot_Button)
+        self.Tab_3_2D_Plot_Formula_Field.returnPressed.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
     
     def ColourMain(self):
@@ -120,6 +128,64 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         importlib.reload(AMaDiA_Colour)
         
         self.ColourMain()
+        
+    def HistoryContextMenu(self, QPos): #TODO:Remove
+        self.listMenu= QtWidgets.QMenu()
+        menu_item = self.listMenu.addAction("Remove Item")
+        self.connect(menu_item, QtCore.SIGNAL("triggered()"), self.menuItemClicked) 
+        parentPosition = self.Tab_1_Calculator_History.mapToGlobal(QtCore.QPoint(0, 0))        
+        self.listMenu.move(parentPosition + QPos)
+        self.listMenu.show() 
+        
+    
+    def eventFilter(self, source, event): # TODO: Add more
+        if (event.type() == QtCore.QEvent.ContextMenu and
+            (source is self.Tab_1_Calculator_History or source is self.Tab_2_LaTeX_History or source is self.Tab_3_2D_Plot_History )and
+            source.itemAt(event.pos())):
+            menu = QtWidgets.QMenu()
+            action = menu.addAction('Copy Text')
+            action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
+            action = menu.addAction('Copy LaTeX')
+            action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+            menu.addSeparator()
+            action = menu.addAction('Calculate')
+            action.triggered.connect(lambda: self.action_H_Calculate(source,event))
+            action = menu.addAction('Display LaTeX')
+            action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
+            menu.addSeparator()
+            action = menu.addAction('Delete')
+            action.triggered.connect(lambda: self.action_H_Delete(source,event))
+            if menu.exec_(event.globalPos()):
+                pass #TODO: This if-case seems rather pointless but without something in the in it's condition it doesn't work...
+                #item = source.itemAt(event.pos())
+                #QApplication.clipboard().setText(item.data(100).Text)
+            return True
+        return super(MainWindow, self).eventFilter(source, event)
+    
+    def action_H_Copy_Text(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).Text)
+        
+    def action_H_Copy_LaTeX(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).LaTeX)
+        
+    def action_H_Calculate(self,source,event):
+        item = source.itemAt(event.pos())
+        self.tabWidget.setCurrentIndex(0)
+        self.Tab_1_F_Calculate_Display(item.data(100),"P")
+        
+    def action_H_Display_LaTeX(self,source,event):
+        item = source.itemAt(event.pos())
+        self.tabWidget.setCurrentIndex(1)
+        self.Tab_2_F_Display(item.data(100))
+        
+    def action_H_Delete(self,source,event):
+        listItems=source.selectedItems()
+        if not listItems: return        
+        for item in listItems:
+           source.takeItem(source.row(item))
+        
     
     # Tab_1_
     def Tab_1_F_Calculate(self):
@@ -128,28 +194,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Mode = "L"
         Input = AC.AMaS(self.Tab_1_Calculator_InputField.text(),Mode)
         # Input.EvaluateLaTeX() # TODO: left( and right) brakes it...
+        self.Tab_1_F_Calculate_Display(Input,Mode)
+        
+    def Tab_1_F_Calculate_Display(self,Input,Mode):
         Input.Evaluate(self.Menubar_Main_Options_action_Eval_Functions.isChecked())
         
         item = QtWidgets.QListWidgetItem()
-        item.setData(0,Input)
+        item.setData(100,Input)
         item.setText(Input.EvaluationEquation)
-        self.Tab_1_Calculator_History.addItem(item) # TODO: Add the History functionality
+        
+        self.Tab_1_Calculator_History.addItem(item)
         
     
     # Tab_2_LaTeX
     def Tab_2_F_Convert(self):
         Input = AC.AMaS(self.Tab_2_LaTeX_InputField.toPlainText())
-        self.Tab_2_LaTeX_LaTeXOutput.setText(Input.LaTeX)
-        item = QtWidgets.QListWidgetItem()
-        item.setData(0,Input)
-        item.setText(Input.Text)
-        self.Tab_2_LaTeX_History.addItem(item) # TODO: Add the History functionality
         self.Tab_2_F_Display(Input)
         
-    def Tab_2_F_Display(self,Item):
+    def Tab_2_F_Display(self,Input):
         # Display stuff... The way it is displayed will hopefully change as this project goes on:
         
-        Text = Item.LaTeX
+        
+        self.Tab_2_LaTeX_LaTeXOutput.setText(Input.LaTeX)
+        item = QtWidgets.QListWidgetItem()
+        item.setData(100,Input)
+        item.setText(Input.Text)
+        self.Tab_2_LaTeX_History.addItem(item)
+        
+        Text = Input.LaTeX
         
         Text += "$"
         Text = "$" + Text
@@ -171,7 +243,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # A ScrollArea is used to fit any size
         # To set size use: setMinimumSize , setMinimumHeight , setMinimumWidth
 #        self.Tab_2_LaTeX_Viewer.canvas.fig.tight_layout()
-        self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(Item.LaTeX)+100) # Below does not work! Instead using this
+        self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(Input.LaTeX)+100) # Below does not work! Instead using this
         size = self.Tab_2_LaTeX_Viewer.canvas.fig.get_size_inches()*self.Tab_2_LaTeX_Viewer.canvas.fig.dpi # Gets the size in pixels
         size += np.sum(self.Tab_2_LaTeX_Viewer.canvas.fig.get_constrained_layout_pads())
 #        self.Tab_2_LaTeX_Viewer.setMinimumSize(size[0],size[1]) # Seems to do nothing
@@ -194,16 +266,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Input = AC.AMaS(self.Tab_3_2D_Plot_Formula_Field.text(),Mode)
         
         item = QtWidgets.QListWidgetItem()
-        item.setData(0,Input)
+        item.setData(100,Input)
         item.setText(Input.Text)
-        self.Tab_3_2D_Plot_History.addItem(item) # TODO: Add the History functionality
+        self.Tab_3_2D_Plot_History.addItem(item)
         
         self.Tab_3_F_Plot(Input)
         
     def Tab_3_F_Plot(self,Input):
         #TODO: Tidy up this absolute mess...
         
-        #TODO:
+        # TODO :
         # Important: Use a new thread to calculate everything and probably even create the plot
         #               Then copy the output from the thread to use it here
         #               This is important to not crash the program if the user makes rediculously big Plots
@@ -215,8 +287,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         x_max = self.Tab_3_2D_Plot_To_Spinbox.value()
         steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
         steps_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
-        same_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked() #TODO:Connect
-        Draw_Grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked() #TODO:Connect
+        same_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
+        Draw_Grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
         
         if steps_per_unit:
             steps = 1/steps
