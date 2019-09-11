@@ -257,6 +257,12 @@
              </layout>
             </widget>
             <widget class="QScrollArea" name="Tab_3_2D_Plot_ScrollArea">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>5</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="sizeAdjustPolicy">
               <enum>QAbstractScrollArea::AdjustToContents</enum>
              </property>
@@ -268,7 +274,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>69</width>
+                <width>531</width>
                 <height>446</height>
                </rect>
               </property>
@@ -421,6 +427,28 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>Font_Size_spinBox</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>Tab_1_Calculator_History</tabstop>
+  <tabstop>Tab_1_Calculator_InputField</tabstop>
+  <tabstop>Tab_2_LaTeX_InputField</tabstop>
+  <tabstop>Tab_2_LaTeX_ConvertButton</tabstop>
+  <tabstop>Tab_2_LaTeX_LaTeXOutput</tabstop>
+  <tabstop>Tab_2_LaTeX_History</tabstop>
+  <tabstop>Tab_2_LaTeX_scrollArea</tabstop>
+  <tabstop>Tab_3_2D_Plot_Axis_ratio_Checkbox</tabstop>
+  <tabstop>Tab_3_2D_Plot_Draw_Grid_Checkbox</tabstop>
+  <tabstop>Tab_3_2D_Plot_From_Spinbox</tabstop>
+  <tabstop>Tab_3_2D_Plot_To_Spinbox</tabstop>
+  <tabstop>Tab_3_2D_Plot_Steps_Spinbox</tabstop>
+  <tabstop>Tab_3_2D_Plot_Steps_Checkbox</tabstop>
+  <tabstop>Tab_3_2D_Plot_Formula_Field</tabstop>
+  <tabstop>Tab_3_2D_Plot_Button_Plot</tabstop>
+  <tabstop>Tab_3_2D_Plot_Button_Clear</tabstop>
+  <tabstop>Tab_3_2D_Plot_History</tabstop>
+  <tabstop>Tab_3_2D_Plot_ScrollArea</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
