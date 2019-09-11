@@ -38,8 +38,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         super(MainWindow, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
+        
+        self.TextColour = (215/255, 213/255, 201/255)
+        
+        # Setup the graphic displays:
         self.Tab_2_LaTeX_Viewer.canvas.ax.clear()
         self.Tab_2_LaTeX_Viewer.canvas.ax.axis('off')
+        self.Tab_3_2D_Plot_Display.canvas.ax.spines['bottom'].set_color(self.TextColour)
+        self.Tab_3_2D_Plot_Display.canvas.ax.spines['left'].set_color(self.TextColour)
+        self.Tab_3_2D_Plot_Display.canvas.ax.xaxis.label.set_color(self.TextColour)
+        self.Tab_3_2D_Plot_Display.canvas.ax.yaxis.label.set_color(self.TextColour)
+        self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='x', colors=self.TextColour)
+        self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
         
         # add to UI File
         # import AMaDiA_Widgets
@@ -150,7 +160,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                       horizontalalignment='left',
                       verticalalignment='top',
                       fontsize=self.Font_Size_spinBox.value()+10,
-                      color = (1.0,1.0,1.0))
+                      color = self.TextColour)
         
         self.Tab_2_LaTeX_Viewer.canvas.ax.axis('off')
         
