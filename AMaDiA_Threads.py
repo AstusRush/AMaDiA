@@ -88,7 +88,7 @@ class AMaS_Twierd_plot_solver(QtCore.QThread):
         
     def run(self):
         x = sympy.symbols('x')
-        if self.Text.count("integrate") != 1:
+        if self.Text.count("integrate")+self.Text.count("Integral") != 1:
             evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
             self.Y_Vals = evalfunc(self.X_Vals)
             self.Y_Vals = np.asarray(self.Y_Vals)
@@ -97,6 +97,7 @@ class AMaS_Twierd_plot_solver(QtCore.QThread):
             return
         
         self.Text = self.Text.replace("integrate","")
+        self.Text = self.Text.replace("Integral","")
         evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
         
         def F(x):
@@ -111,7 +112,7 @@ class AMaS_Twierd_plot_solver(QtCore.QThread):
         self.Return.emit(self.X_Vals , self.Y_Vals)
         self.exiting = True
         
-    def run2(self):
+    def run2(self): #TODO: Remove Junk!
         
         i = self.Text.count("integrate")
         p=0

@@ -34,7 +34,8 @@ class AMaS: # Astus' Mathematical Structure
     def __init__(self, string, Type = "Python"): # TODOMode: Not happy with the Mode thing...
         self.TimeStamp = AF.cTimeSStr()
         self.Type = Type # LaTeX = L , Python = P , Complex = C # TODOMode: Not happy with the Mode thing...
-        self.string = string
+        self.string = string.replace("integrate","Integral") # integrate takes 6 seconds to evaluate while Integral takes "no" time but both do the same
+        self.string = self.string.replace("integral","Integral") # also doing this in case of capitalization stuff
         self.init()
     
     def init(self):
