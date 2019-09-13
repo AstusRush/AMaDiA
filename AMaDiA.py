@@ -27,6 +27,7 @@ import AMaDiA_Functions as AF
 import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 import AMaDiA_Colour
+import AMaDiA_Threads as AT
 
 
 WindowTitle = "AMaDiA v"
@@ -68,11 +69,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ConnectSignals()
         #self.SetColour() # TODO:Remove
         self.ColourMain()
+        
+# ---------------------------------- Init and Maintanance ----------------------------------
 
     def ConnectSignals(self):
         self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
-        self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate)
+        self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         self.Tab_2_LaTeX_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
         self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Formula_Field.returnPressed.connect(self.Tab_3_F_Plot_Button)
@@ -119,15 +122,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.Tab_2_LaTeX_InputField.setFont(newFont)
         #self.Tab_2_LaTeX_LaTeXOutput.setFont(newFont)
         
-    #Options
+# ---------------------------------- Options ----------------------------------
     def ReloadModules(self):
         importlib.reload(AW)
         importlib.reload(AF)
         importlib.reload(AC)
         importlib.reload(ART)
+        importlib.reload(AT)
         importlib.reload(AMaDiA_Colour)
         
         self.ColourMain()
+        
+        
+        
+# ---------------------------------- History Context Menu ----------------------------------
+    
         
     def HistoryContextMenu(self, QPos): #TODO:Remove
         self.listMenu= QtWidgets.QMenu()
@@ -136,8 +145,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         parentPosition = self.Tab_1_Calculator_History.mapToGlobal(QtCore.QPoint(0, 0))        
         self.listMenu.move(parentPosition + QPos)
         self.listMenu.show() 
-        
-    
+
+
     def eventFilter(self, source, event): # TODO: Add more
         if (event.type() == QtCore.QEvent.ContextMenu and
             (source is self.Tab_1_Calculator_History or source is self.Tab_2_LaTeX_History or source is self.Tab_3_2D_Plot_History )and
@@ -173,7 +182,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(0)
-        self.Tab_1_F_Calculate_Display(item.data(100),"P")
+        self.Tab_1_F_Calculate(item.data(100),"P")
         
     def action_H_Display_LaTeX(self,source,event):
         item = source.itemAt(event.pos())
@@ -186,30 +195,46 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         for item in listItems:
            source.takeItem(source.row(item))
         
-    
-    # Tab_1_
-    def Tab_1_F_Calculate(self):
-        Mode = "P"
-        if self.Menubar_Main_Options_action_LaTeX.isChecked():
-            Mode = "L"
-        Input = AC.AMaS(self.Tab_1_Calculator_InputField.text(),Mode)
-        # Input.EvaluateLaTeX() # TODO: left( and right) brakes it...
-        self.Tab_1_F_Calculate_Display(Input,Mode)
         
-    def Tab_1_F_Calculate_Display(self,Input,Mode):
-        Input.Evaluate(self.Menubar_Main_Options_action_Eval_Functions.isChecked())
+# ---------------------------------- Thread Redirector ----------------------------------
+
+    def TR(self,AMaS_Object,Function): 
+        self.Function = Function
+        self.Function(AMaS_Object)
+
+# ---------------------------------- Tab_1_Calculator_ ----------------------------------
+    def Tab_1_F_Calculate_Field_Input(self):
+        Mode = "P" # TODO:Mode Not happy with the Mode thing...
+        if self.Menubar_Main_Options_action_LaTeX.isChecked():
+            Mode = "L" # TODO:Mode Not happy with the Mode thing...
+        
+        # Input.EvaluateLaTeX() # TODO: left( and right) brakes it...
+        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_1_Calculator_InputField.text(), self.Tab_1_F_Calculate, Mode) # TODO:Mode Not happy with the Mode thing...
+        self.New_AMaST_Creator.Return.connect(self.TR)
+        self.New_AMaST_Creator.start()
+        
+    def Tab_1_F_Calculate(self,AMaS_Object):
+        if self.Menubar_Main_Options_action_Eval_Functions.isChecked(): # TODOMode: Not happy with the EvalF thing...
+            self.New_AMaST_Evaluater = AT.AMaS_Thread(AMaS_Object , AT.AMaS_Thread.Evaluate) # TODOMode: Not happy with the EvalF thing...
+        else:
+            self.New_AMaST_Evaluater = AT.AMaS_Thread(AMaS_Object , AT.AMaS_Thread.Evaluate_NOT) # TODOMode: Not happy with the EvalF thing...
+        self.New_AMaST_Evaluater.Calculator_Return.connect(self.Tab_1_F_Calculate_Display)
+        self.New_AMaST_Evaluater.start()
+        
+    def Tab_1_F_Calculate_Display(self,AMaS_Object):
         
         item = QtWidgets.QListWidgetItem()
-        item.setData(100,Input)
-        item.setText(Input.EvaluationEquation)
+        item.setData(100,AMaS_Object)
+        item.setText(AMaS_Object.EvaluationEquation)
         
         self.Tab_1_Calculator_History.addItem(item)
         
     
-    # Tab_2_LaTeX
+# ---------------------------------- Tab_2_LaTeX_ ----------------------------------
     def Tab_2_F_Convert(self):
-        Input = AC.AMaS(self.Tab_2_LaTeX_InputField.toPlainText())
-        self.Tab_2_F_Display(Input)
+        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_2_LaTeX_InputField.toPlainText(), self.Tab_2_F_Display)
+        self.New_AMaST_Creator.Return.connect(self.TR)
+        self.New_AMaST_Creator.start()
         
     def Tab_2_F_Display(self,Input):
         # Display stuff... The way it is displayed will hopefully change as this project goes on:
@@ -259,20 +284,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Show the "graph"
         self.Tab_2_LaTeX_Viewer.canvas.draw()
         
+        
+# ---------------------------------- Tab_3_2D_Plot_ ----------------------------------
     def Tab_3_F_Plot_Button(self):
         Mode = "P"
         if self.Menubar_Main_Options_action_LaTeX.isChecked():
             Mode = "L"
-        Input = AC.AMaS(self.Tab_3_2D_Plot_Formula_Field.text(),Mode)
+            
+        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot , Mode) # TODO:Mode Not happy with the Mode thing...
+        self.New_AMaST_Creator.Return.connect(self.TR)
+        self.New_AMaST_Creator.start()
+        
+    def Tab_3_F_Plot(self,Input):
         
         item = QtWidgets.QListWidgetItem()
         item.setData(100,Input)
         item.setText(Input.Text)
         self.Tab_3_2D_Plot_History.addItem(item)
         
-        self.Tab_3_F_Plot(Input)
-        
-    def Tab_3_F_Plot(self,Input):
         #TODO: Tidy up this absolute mess...
         
         # TODO :
@@ -282,6 +311,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         
         x = sympy.symbols('x')
+        a = sympy.symbols('a')
         Function = parse_expr(Input.string)
         x_min = self.Tab_3_2D_Plot_From_Spinbox.value()
         x_max = self.Tab_3_2D_Plot_To_Spinbox.value()
@@ -297,12 +327,45 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             
         X = np.arange(x_min, x_max+steps, steps)
         
-        try:
-            evalfunc = sympy.lambdify(x, Function, modules='numpy')
         
+        
+        try:
+            evalfunc = sympy.lambdify(x, Function , modules='sympy')
             self.Tab_3_2D_Plot_Display.canvas.ax.plot(X,evalfunc(X), 'r--')
-        except ... :
-            pass
+        except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
+            # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+            # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
+            print(inst.args)
+            if callable(inst.args):
+                print(AttributeError.args())
+            self.wierd_plots = AT.AMaS_Twierd_plot_solver(Input.string , X)
+            self.wierd_plots.Return.connect(self.Tab_3_F_Plot_weird_integrals)
+            self.wierd_plots.start()
+            return
+        
+        if Draw_Grid:
+            self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
+        else:
+            self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
+        if same_ratio:
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
+        else:
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
+        
+        #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
+        self.Tab_3_2D_Plot_Display.canvas.draw()
+        
+        
+    def Tab_3_F_Plot_weird_integrals(self,X_Vals,Y_Vals):
+        #x_min = self.Tab_3_2D_Plot_From_Spinbox.value()
+        #x_max = self.Tab_3_2D_Plot_To_Spinbox.value()
+        #steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
+        #steps_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
+        same_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
+        Draw_Grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
+        
+        self.Tab_3_2D_Plot_Display.canvas.ax.plot(X_Vals,Y_Vals, 'r--')
+        
         if Draw_Grid:
             self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
         else:
@@ -318,6 +381,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def Tab_3_F_Clear(self):
         self.Tab_3_2D_Plot_Display.canvas.ax.clear()
         self.Tab_3_2D_Plot_Display.canvas.draw()
+        
+        
+# ---------------------------------- Tab_4_??? ----------------------------------
 
 
 if __name__ == "__main__":

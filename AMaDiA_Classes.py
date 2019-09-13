@@ -31,9 +31,9 @@ import AMaDiA_ReplacementTables as ART
 
 
 class AMaS: # Astus' Mathematical Structure
-    def __init__(self, string, Type = "Python"):
+    def __init__(self, string, Type = "Python"): # TODOMode: Not happy with the Mode thing...
         self.TimeStamp = AF.cTimeSStr()
-        self.Type = Type # LaTeX = L , Python = P , Complex = C
+        self.Type = Type # LaTeX = L , Python = P , Complex = C # TODOMode: Not happy with the Mode thing...
         self.string = string
         self.init()
     
@@ -47,13 +47,13 @@ class AMaS: # Astus' Mathematical Structure
         except ... :
             self.simpleConversion = "Fail"
         self.LaTeX = self.simpleConversion
-        if self.Type == "C" or self.Type == "Complex":
+        if self.Type == "C" or self.Type == "Complex": # TODOMode: Not happy with the Mode thing...
             self.LaTeX = self.simpleConversion # TODO
             
-        elif self.Type == "L" or self.Type == "Latex":
+        elif self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
             self.LaTeX = self.simpleConversion
             
-        elif self.Type == "P" or self.Type == "Python":
+        elif self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
             try:
                 if self.string.count("=") >= 1 :
                     parts = self.string.split("=")
@@ -81,12 +81,12 @@ class AMaS: # Astus' Mathematical Structure
                 elif i_curr < i_first:
                     i_first = i_curr
     
-    def Evaluate(self,EvalF):
+    def Evaluate(self,EvalF = True): # TODOMode: Not happy with the EvalF thing...
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
         if self.string.count("=") == 1 :
-            if self.Type == "P" or self.Type == "Python":
+            if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
                 try:
                     temp = self.string
                     temp = temp.replace("=" , " - (")
@@ -95,7 +95,7 @@ class AMaS: # Astus' Mathematical Structure
                     ans = sympy.solve(ans)
                     self.Evaluation = "[ "
                     for i in ans:
-                        if EvalF:
+                        if EvalF: # TODOMode: Not happy with the EvalF thing...
                             i = i.evalf()
                         self.Evaluation += str(i)
                         self.Evaluation += " , "
@@ -103,7 +103,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.Evaluation += " ]"
                 except sympy.SympifyError :
                     self.Evaluation = "Fail"
-            if self.Type == "L" or self.Type == "Latex":
+            if self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
                 #TODO
                 try:
                     ans = parse_latex(temp)
@@ -114,18 +114,18 @@ class AMaS: # Astus' Mathematical Structure
             self.EvaluationEquation = self.Evaluation + "   <==   "
             self.EvaluationEquation += self.Text
         else:
-            if self.Type == "P" or self.Type == "Python":
+            if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
                 try:
                     ans = sympy.parsing.sympy_parser.parse_expr(self.string)
-                    if EvalF:
+                    if EvalF: # TODOMode: Not happy with the EvalF thing...
                         ans = ans.evalf()
                     self.Evaluation = str(ans)
                 except sympy.SympifyError :
                     self.Evaluation = "Fail"
-            if self.Type == "L" or self.Type == "Latex":
+            if self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
                 try:
                     ans = parse_latex(self.string)
-                    if EvalF:
+                    if EvalF: # TODOMode: Not happy with the EvalF thing...
                         ans = ans.evalf()
                     self.Evaluation = str(ans)
                 except sympy.SympifyError :
