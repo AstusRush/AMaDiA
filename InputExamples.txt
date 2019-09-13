@@ -1,0 +1,6 @@
+Calculator Examples:
+	integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))),(x,0,pi/2))
+
+Plot Examples:
+	integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+	sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x)))
