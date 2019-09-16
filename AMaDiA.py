@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.3.3"
+Version = "0.3.4"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -170,6 +170,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action = menu.addAction('Display LaTeX')
             action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
             menu.addSeparator()
+            if source.itemAt(event.pos()).data(100).plot_data_exists :
+                action = menu.addAction('Load Plot')
+                action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
+            if source.itemAt(event.pos()).data(100).plotable :
+                action = menu.addAction('New Plot')
+                action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+            menu.addSeparator()
             action = menu.addAction('Delete')
             action.triggered.connect(lambda: self.action_H_Delete(source,event))
             if menu.exec_(event.globalPos()):
@@ -178,7 +185,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 #QApplication.clipboard().setText(item.data(100).Text)
             return True
         return super(MainWindow, self).eventFilter(source, event)
-    
+        
+# ----------------
+         
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).Text)
@@ -191,6 +200,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).Evaluation)
         
+# ----------------
+         
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(0)
@@ -201,6 +212,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.setCurrentIndex(1)
         self.Tab_2_F_Display(item.data(100))
         
+# ----------------
+         
+    def action_H_Load_Plot(self,source,event):
+        item = source.itemAt(event.pos())
+        self.tabWidget.setCurrentIndex(2)
+        self.Tab_3_F_Plot(item.data(100))
+        
+    def action_H_New_Plot(self,source,event):
+        item = source.itemAt(event.pos())
+        self.tabWidget.setCurrentIndex(2)
+        self.Tab_3_F_Plot_init(item.data(100))
+        
+# ----------------
+         
     def action_H_Delete(self,source,event):
         listItems=source.selectedItems()
         if not listItems: return        
@@ -315,7 +340,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         AMaS_object.plot_xmax = self.Tab_3_2D_Plot_To_Spinbox.value()
         AMaS_object.plot_steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
         AMaS_object.plot_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
-        self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot) # TODO:Mode Not happy with the Mode thing...
+        self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot)
         self.New_AMaST_Plotter.Return.connect(self.TR)
         self.New_AMaST_Plotter.start()
         
@@ -328,7 +353,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         item.setText(AMaS_object.Text)
         self.Tab_3_2D_Plot_History.addItem(item)
         
-        self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_object.plot_x_vals , AMaS_object.plot_y_vals) #  (... , 'r--') für rot
+        self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_object.plot_x_vals , AMaS_object.plot_y_vals) #  (... , 'r--') for red colour and short lines
         
         if AMaS_object.plot_grid:
             self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)

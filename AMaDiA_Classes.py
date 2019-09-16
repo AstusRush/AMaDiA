@@ -75,6 +75,11 @@ class AMaS: # Astus' Mathematical Structure
                 self.LaTeX = "Fail"
                 
     def init_plot(self):
+        if self.string.count("=")==0 and self.string.count("x")>=1:
+            self.plotable = True
+        else:
+            self.plotable = False
+        self.plot_data_exists = False
         self.plot_ratio = False
         self.plot_grid = True
         self.plot_xmin = -5
@@ -160,6 +165,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.Evaluation = "Fail"
             self.EvaluationEquation = self.Evaluation + " = "
             self.EvaluationEquation += self.Text
+        return True #TODO: make it only return true if successful
                 
     def EvaluateLaTeX(self):
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
@@ -172,43 +178,49 @@ class AMaS: # Astus' Mathematical Structure
             
             
     def Plot_Calc_Values(self):
-        x = sympy.symbols('x')
-        Function = parse_expr(self.string)
-        
-        if self.plot_per_unit:
-            steps = 1/self.plot_steps
-        else:
-            steps = (self.plot_xmax - self.plot_xmin)/self.plot_steps
+        if self.plotable:
+            x = sympy.symbols('x')
+            Function = parse_expr(self.string)
             
-        self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
-        try:
-            evalfunc = sympy.lambdify(x, Function , modules='sympy')
-            self.plot_y_vals = evalfunc(self.plot_x_vals)
-        except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
-            # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
-            # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
-            #print(inst.args)
-            #if callable(inst.args):
-                #print(AttributeError.args())
-            
-            if self.Text.count("integrate")+self.Text.count("Integral") != 1:
-                evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
-                self.plot_y_vals = evalfunc(self.plot_x_vals)
-                self.plot_y_vals = np.asarray(self.plot_y_vals)
+            if self.plot_per_unit:
+                steps = 1/self.plot_steps
             else:
-                temp_Text = self.Text
-                temp_Text = temp_Text.replace("integrate","")
-                temp_Text = temp_Text.replace("Integral","")
-                evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
+                steps = (self.plot_xmax - self.plot_xmin)/self.plot_steps
                 
-                def F(x):
-                    try:
-                        return [scipy.integrate.quad(evalfunc, 0, y) for y in x]
-                    except TypeError:
-                        return scipy.integrate.quad(evalfunc, 0, x)
-                
+            self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
+            try:
+                evalfunc = sympy.lambdify(x, Function , modules='sympy')
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
-                self.plot_y_vals = [F(x)[0] for x in self.plot_x_vals]
-                self.plot_y_vals = np.asarray(self.plot_y_vals)
+            except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
+                # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
+                #print(inst.args)
+                #if callable(inst.args):
+                    #print(AttributeError.args())
+                
+                if self.Text.count("integrate")+self.Text.count("Integral") != 1:
+                    evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
+                    self.plot_y_vals = evalfunc(self.plot_x_vals)
+                    self.plot_y_vals = np.asarray(self.plot_y_vals)
+                else:
+                    temp_Text = self.Text
+                    temp_Text = temp_Text.replace("integrate","")
+                    temp_Text = temp_Text.replace("Integral","")
+                    evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
+                    
+                    def F(x):
+                        try:
+                            return [scipy.integrate.quad(evalfunc, 0, y) for y in x]
+                        except TypeError:
+                            return scipy.integrate.quad(evalfunc, 0, x)
+                    
+                    self.plot_y_vals = evalfunc(self.plot_x_vals)
+                    self.plot_y_vals = [F(x)[0] for x in self.plot_x_vals]
+                    self.plot_y_vals = np.asarray(self.plot_y_vals)
+                    
+            self.plot_data_exists = True
+            return True
+        else:
+            return False
 
 

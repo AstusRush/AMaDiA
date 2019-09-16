@@ -89,8 +89,8 @@ class AMaS_Thread(QtCore.QThread):
         self.Return_Function = Return_Function
         
     def run(self):
-        self.AMaS_Function(self.AMaS_Object)
-        self.Return.emit(self.AMaS_Object , self.Return_Function)
+        if self.AMaS_Function(self.AMaS_Object): #TODO: Give error message if not successful
+            self.Return.emit(self.AMaS_Object , self.Return_Function)
         self.exiting = True
         self.exit()
 
