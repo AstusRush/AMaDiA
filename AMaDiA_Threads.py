@@ -42,10 +42,11 @@ class AMaS_Creator(QtCore.QThread):
         self.AMaS_Object = AC.AMaS(self.Text , self.Mode) # TODOMode: Not happy with the Mode thing...
         self.Return.emit(self.AMaS_Object , self.Function)
         self.exiting = True
+        self.exit()
         
 #------------------------------------------------------------------------------
 
-class AMaS_Thread(QtCore.QThread):
+class AMaS_Calc_Thread(QtCore.QThread):
     Calculator_Return = QtCore.pyqtSignal(AC.AMaS)
 #    LaTeX_Return = QtCore.pyqtSignal(AC.AMaS)
     def __init__(self, AMaS_Object, Function): # TODOMode: Not happy with the EvalF thing...
@@ -61,15 +62,17 @@ class AMaS_Thread(QtCore.QThread):
         self.AMaS_Object.Evaluate()
         self.Calculator_Return.emit(self.AMaS_Object)
         self.exiting = True
+        self.exit()
         
     def Evaluate_NOT(self): # TODOMode: Not happy with the EvalF thing...
         self.AMaS_Object.Evaluate(False)
         self.Calculator_Return.emit(self.AMaS_Object)
         self.exiting = True
+        self.exit()
             
             
 """
-self.New_AMaS_Thread = AMaS_Thread()
+self.New_AMaS_Thread = AMaS_Calc_Thread()
 self.New_AMaS_Thread.start()
 self.New_AMaS_Thread.Calculator_Return.connect(self.Tab_1_F_Calculate_Display)
 #self.New_AMaS_Thread.LaTeX_Return.connect(self.ConnectCheckBoxUnset)
@@ -94,6 +97,7 @@ class AMaS_Twierd_plot_solver(QtCore.QThread):
             self.Y_Vals = np.asarray(self.Y_Vals)
             self.Return.emit(self.X_Vals , self.Y_Vals)
             self.exiting = True
+            self.exit()
             return
         
         self.Text = self.Text.replace("integrate","")
@@ -111,6 +115,7 @@ class AMaS_Twierd_plot_solver(QtCore.QThread):
         self.Y_Vals = np.asarray(self.Y_Vals)
         self.Return.emit(self.X_Vals , self.Y_Vals)
         self.exiting = True
+        self.exit()
         
     def run2(self): #TODO: Remove Junk!
         
@@ -137,6 +142,7 @@ class AMaS_Twierd_plot_solver(QtCore.QThread):
             self.Y_Vals[i] = tempFunc(self.X_Vals[i])
         self.Return.emit(self.X_Vals , self.Y_Vals)
         self.exiting = True
+        self.exit()
         
         '''
         def tempFunc(n):

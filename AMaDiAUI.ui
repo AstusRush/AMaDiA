@@ -263,6 +263,9 @@
                 <property name="text">
                  <string>Draw Grid</string>
                 </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
              </layout>
@@ -334,7 +337,7 @@
              <number>100000</number>
             </property>
             <property name="value">
-             <number>100</number>
+             <number>1000</number>
             </property>
            </widget>
           </item>

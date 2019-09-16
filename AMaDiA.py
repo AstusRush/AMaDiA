@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.3.1"
+Version = "0.3.2"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -156,7 +156,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
             action = menu.addAction('Copy LaTeX')
             action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+            if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
+                action = menu.addAction('Copy Solution')
+                action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
             menu.addSeparator()
+            # TODO: Only "Calculate" if the equation has not been evaluated yet or if in Dev Mode? Maybe? Maybe not?
             action = menu.addAction('Calculate')
             action.triggered.connect(lambda: self.action_H_Calculate(source,event))
             action = menu.addAction('Display LaTeX')
@@ -179,10 +183,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).LaTeX)
         
+    def action_H_Copy_Solution(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).Evaluation)
+        
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(0)
-        self.Tab_1_F_Calculate(item.data(100),"P")
+        self.Tab_1_F_Calculate(item.data(100))
         
     def action_H_Display_LaTeX(self,source,event):
         item = source.itemAt(event.pos())
@@ -215,9 +223,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
     def Tab_1_F_Calculate(self,AMaS_Object):
         if self.Menubar_Main_Options_action_Eval_Functions.isChecked(): # TODOMode: Not happy with the EvalF thing...
-            self.New_AMaST_Evaluater = AT.AMaS_Thread(AMaS_Object , AT.AMaS_Thread.Evaluate) # TODOMode: Not happy with the EvalF thing...
+            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate) # TODOMode: Not happy with the EvalF thing...
         else:
-            self.New_AMaST_Evaluater = AT.AMaS_Thread(AMaS_Object , AT.AMaS_Thread.Evaluate_NOT) # TODOMode: Not happy with the EvalF thing...
+            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate_NOT) # TODOMode: Not happy with the EvalF thing...
         self.New_AMaST_Evaluater.Calculator_Return.connect(self.Tab_1_F_Calculate_Display)
         self.New_AMaST_Evaluater.start()
         
@@ -330,7 +338,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         
         try:
-            evalfunc = sympy.lambdify(x, Function , modules='sympy')
+            evalfunc = sympy.lambdify(x, Function , modules='sympy') #TODO:MOVE THIS INTO THE THREAD!!!!!!!!!!!!!!!!!!!!
             self.Tab_3_2D_Plot_Display.canvas.ax.plot(X,evalfunc(X), 'r--')
         except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
             # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))

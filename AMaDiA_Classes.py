@@ -34,11 +34,12 @@ class AMaS: # Astus' Mathematical Structure
     def __init__(self, string, Type = "Python"): # TODOMode: Not happy with the Mode thing...
         self.TimeStamp = AF.cTimeSStr()
         self.Type = Type # LaTeX = L , Python = P , Complex = C # TODOMode: Not happy with the Mode thing...
-        self.string = string.replace("integrate","Integral") # integrate takes 6 seconds to evaluate while Integral takes "no" time but both do the same
-        self.string = self.string.replace("integral","Integral") # also doing this in case of capitalization stuff
+        self.string = string
         self.init()
     
     def init(self):
+        self.string = self.string.replace("integrate","Integral") # integrate takes 6 seconds to evaluate while Integral takes "no" time but both do the same
+        self.string = self.string.replace("integral","Integral") # also doing this in case of capitalization stuff
         self.Text = self.string
         self.Evaluation = "Not evaluated yet."
         self.EvaluationEquation = "? = " + self.Text
@@ -90,18 +91,27 @@ class AMaS: # Astus' Mathematical Structure
             if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
                 try:
                     temp = self.string
-                    temp = temp.replace("=" , " - (")
+                    temp = "(" + temp
+                    temp = temp.replace("=" , ") - (")
                     temp = temp + ")"
                     ans = sympy.parsing.sympy_parser.parse_expr(temp)
                     ans = sympy.solve(ans)
                     self.Evaluation = "[ "
                     for i in ans:
-                        if EvalF: # TODOMode: Not happy with the EvalF thing...
+                        if EvalF: # TODOMode: Not happy with the EvalF thing... BUT happy with i.evalf()!!!!!!
                             i = i.evalf()
+                        i_temp = str(i)
+                        i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp
                         self.Evaluation += str(i)
                         self.Evaluation += " , "
                     self.Evaluation = self.Evaluation[:-3]
-                    self.Evaluation += " ]"
+                    if len(self.Evaluation) > 0:
+                        self.Evaluation += " ]"
+                    else:
+                        ans = sympy.parsing.sympy_parser.parse_expr(temp)
+                        ans = ans.evalf()
+                        self.Evaluation = "True" if ans == 0 else "False: "+str(ans)
+                        
                 except sympy.SympifyError :
                     self.Evaluation = "Fail"
             if self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
@@ -110,6 +120,7 @@ class AMaS: # Astus' Mathematical Structure
                     ans = parse_latex(temp)
                     ans = sympy.solve(ans)
                     self.Evaluation = str(ans)
+                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation
                 except sympy.SympifyError :
                     self.Evaluation = "Fail"
             self.EvaluationEquation = self.Evaluation + "   <==   "
@@ -121,6 +132,7 @@ class AMaS: # Astus' Mathematical Structure
                     if EvalF: # TODOMode: Not happy with the EvalF thing...
                         ans = ans.evalf()
                     self.Evaluation = str(ans)
+                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation
                 except sympy.SympifyError :
                     self.Evaluation = "Fail"
             if self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
@@ -129,6 +141,7 @@ class AMaS: # Astus' Mathematical Structure
                     if EvalF: # TODOMode: Not happy with the EvalF thing...
                         ans = ans.evalf()
                     self.Evaluation = str(ans)
+                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation
                 except sympy.SympifyError :
                     self.Evaluation = "Fail"
             self.EvaluationEquation = self.Evaluation + " = "
