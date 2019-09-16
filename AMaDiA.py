@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.3.2"
+Version = "0.3.3"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -75,8 +75,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def ConnectSignals(self):
         self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
+        
         self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
+        
         self.Tab_2_LaTeX_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
+        
         self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Formula_Field.returnPressed.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
@@ -161,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
             menu.addSeparator()
             # TODO: Only "Calculate" if the equation has not been evaluated yet or if in Dev Mode? Maybe? Maybe not?
+            # It currently is handy to have it always because of the EvalF thing...
             action = menu.addAction('Calculate')
             action.triggered.connect(lambda: self.action_H_Calculate(source,event))
             action = menu.addAction('Display LaTeX')
@@ -223,9 +227,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
     def Tab_1_F_Calculate(self,AMaS_Object):
         if self.Menubar_Main_Options_action_Eval_Functions.isChecked(): # TODOMode: Not happy with the EvalF thing...
-            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate) # TODOMode: Not happy with the EvalF thing...
+            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate) # TODOMode: Not happy with the EvalF thing... #TODO: Outdated. Use AMaS_Thread instead
         else:
-            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate_NOT) # TODOMode: Not happy with the EvalF thing...
+            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate_NOT) # TODOMode: Not happy with the EvalF thing... #TODO: Outdated. Use AMaS_Thread instead
         self.New_AMaST_Evaluater.Calculator_Return.connect(self.Tab_1_F_Calculate_Display)
         self.New_AMaST_Evaluater.start()
         
@@ -299,63 +303,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if self.Menubar_Main_Options_action_LaTeX.isChecked():
             Mode = "L"
             
-        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot , Mode) # TODO:Mode Not happy with the Mode thing...
+        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot_init , Mode) # TODO:Mode Not happy with the Mode thing...
         self.New_AMaST_Creator.Return.connect(self.TR)
         self.New_AMaST_Creator.start()
         
-    def Tab_3_F_Plot(self,Input):
         
+    def Tab_3_F_Plot_init(self , AMaS_object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
+        AMaS_object.plot_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
+        AMaS_object.plot_grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
+        AMaS_object.plot_xmin = self.Tab_3_2D_Plot_From_Spinbox.value()
+        AMaS_object.plot_xmax = self.Tab_3_2D_Plot_To_Spinbox.value()
+        AMaS_object.plot_steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
+        AMaS_object.plot_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
+        self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot) # TODO:Mode Not happy with the Mode thing...
+        self.New_AMaST_Plotter.Return.connect(self.TR)
+        self.New_AMaST_Plotter.start()
+        
+        
+    def Tab_3_F_Plot(self , AMaS_object):
+        
+        # TODO: Colour the text and the Graph in the same colour
         item = QtWidgets.QListWidgetItem()
-        item.setData(100,Input)
-        item.setText(Input.Text)
+        item.setData(100,AMaS_object)
+        item.setText(AMaS_object.Text)
         self.Tab_3_2D_Plot_History.addItem(item)
         
-        #TODO: Tidy up this absolute mess...
+        self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_object.plot_x_vals , AMaS_object.plot_y_vals) #  (... , 'r--') für rot
         
-        # TODO :
-        # Important: Use a new thread to calculate everything and probably even create the plot
-        #               Then copy the output from the thread to use it here
-        #               This is important to not crash the program if the user makes rediculously big Plots
-        
-        
-        x = sympy.symbols('x')
-        a = sympy.symbols('a')
-        Function = parse_expr(Input.string)
-        x_min = self.Tab_3_2D_Plot_From_Spinbox.value()
-        x_max = self.Tab_3_2D_Plot_To_Spinbox.value()
-        steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
-        steps_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
-        same_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
-        Draw_Grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
-        
-        if steps_per_unit:
-            steps = 1/steps
-        else:
-            steps = (x_max - x_min)/steps
-            
-        X = np.arange(x_min, x_max+steps, steps)
-        
-        
-        
-        try:
-            evalfunc = sympy.lambdify(x, Function , modules='sympy') #TODO:MOVE THIS INTO THE THREAD!!!!!!!!!!!!!!!!!!!!
-            self.Tab_3_2D_Plot_Display.canvas.ax.plot(X,evalfunc(X), 'r--')
-        except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
-            # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
-            # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
-            print(inst.args)
-            if callable(inst.args):
-                print(AttributeError.args())
-            self.wierd_plots = AT.AMaS_Twierd_plot_solver(Input.string , X)
-            self.wierd_plots.Return.connect(self.Tab_3_F_Plot_weird_integrals)
-            self.wierd_plots.start()
-            return
-        
-        if Draw_Grid:
+        if AMaS_object.plot_grid:
             self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
         else:
             self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
-        if same_ratio:
+        if AMaS_object.plot_ratio:
             self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
         else:
             self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
@@ -363,30 +342,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
         self.Tab_3_2D_Plot_Display.canvas.draw()
         
-        
-    def Tab_3_F_Plot_weird_integrals(self,X_Vals,Y_Vals):
-        #x_min = self.Tab_3_2D_Plot_From_Spinbox.value()
-        #x_max = self.Tab_3_2D_Plot_To_Spinbox.value()
-        #steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
-        #steps_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
-        same_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
-        Draw_Grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
-        
-        self.Tab_3_2D_Plot_Display.canvas.ax.plot(X_Vals,Y_Vals, 'r--')
-        
-        if Draw_Grid:
-            self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
-        else:
-            self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
-        if same_ratio:
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
-        else:
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
-        
-        #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
-        self.Tab_3_2D_Plot_Display.canvas.draw()
         
     def Tab_3_F_Clear(self):
+        # TODO: Uncoulor all coloured text in the history
         self.Tab_3_2D_Plot_Display.canvas.ax.clear()
         self.Tab_3_2D_Plot_Display.canvas.draw()
         

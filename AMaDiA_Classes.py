@@ -18,10 +18,12 @@ import os
 import sympy
 
 from sympy.parsing.latex import parse_latex
+from sympy.parsing.sympy_parser import parse_expr
 
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
+import scipy
 
 import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
@@ -36,10 +38,12 @@ class AMaS: # Astus' Mathematical Structure
         self.Type = Type # LaTeX = L , Python = P , Complex = C # TODOMode: Not happy with the Mode thing...
         self.string = string
         self.init()
+        self.init_plot()
     
     def init(self):
         self.string = self.string.replace("integrate","Integral") # integrate takes 6 seconds to evaluate while Integral takes "no" time but both do the same
-        self.string = self.string.replace("integral","Integral") # also doing this in case of capitalization stuff
+        self.string = self.string.replace("Integrate","Integral") # also doing this in case of capitalization stuff
+        self.string = self.string.replace("integral","Integral")  # also doing this in case of capitalization stuff
         self.Text = self.string
         self.Evaluation = "Not evaluated yet."
         self.EvaluationEquation = "? = " + self.Text
@@ -69,10 +73,20 @@ class AMaS: # Astus' Mathematical Structure
                     self.LaTeX = sympy.latex( sympy.S(self.string,evaluate=False))
             except sympy.SympifyError :
                 self.LaTeX = "Fail"
+                
+    def init_plot(self):
+        self.plot_ratio = False
+        self.plot_grid = True
+        self.plot_xmin = -5
+        self.plot_xmax = 5
+        self.plot_steps = 1000
+        self.plot_per_unit = False
+        self.plot_x_vals = np.arange(10)
+        self.plot_y_vals = np.zeros_like(self.plot_x_vals)
         
     
     def Analyse(self): #TODO: Make it work
-        #TODO: keep sympy.parsing.sympy_parser.parse_expr() in mind!!!
+        #TODO: keep parse_expr() in mind!!!
         # https://docs.sympy.org/latest/modules/parsing.html
         i_first = -1
         for i in ART.beginning_symbols:
@@ -94,7 +108,7 @@ class AMaS: # Astus' Mathematical Structure
                     temp = "(" + temp
                     temp = temp.replace("=" , ") - (")
                     temp = temp + ")"
-                    ans = sympy.parsing.sympy_parser.parse_expr(temp)
+                    ans = parse_expr(temp)
                     ans = sympy.solve(ans)
                     self.Evaluation = "[ "
                     for i in ans:
@@ -108,7 +122,7 @@ class AMaS: # Astus' Mathematical Structure
                     if len(self.Evaluation) > 0:
                         self.Evaluation += " ]"
                     else:
-                        ans = sympy.parsing.sympy_parser.parse_expr(temp)
+                        ans = parse_expr(temp)
                         ans = ans.evalf()
                         self.Evaluation = "True" if ans == 0 else "False: "+str(ans)
                         
@@ -128,7 +142,7 @@ class AMaS: # Astus' Mathematical Structure
         else:
             if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
                 try:
-                    ans = sympy.parsing.sympy_parser.parse_expr(self.string)
+                    ans = parse_expr(self.string)
                     if EvalF: # TODOMode: Not happy with the EvalF thing...
                         ans = ans.evalf()
                     self.Evaluation = str(ans)
@@ -155,3 +169,46 @@ class AMaS: # Astus' Mathematical Structure
             self.Evaluation = str(ans)
         except sympy.SympifyError :
             self.Evaluation = "Fail"
+            
+            
+    def Plot_Calc_Values(self):
+        x = sympy.symbols('x')
+        Function = parse_expr(self.string)
+        
+        if self.plot_per_unit:
+            steps = 1/self.plot_steps
+        else:
+            steps = (self.plot_xmax - self.plot_xmin)/self.plot_steps
+            
+        self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
+        try:
+            evalfunc = sympy.lambdify(x, Function , modules='sympy')
+            self.plot_y_vals = evalfunc(self.plot_x_vals)
+        except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
+            # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+            # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
+            #print(inst.args)
+            #if callable(inst.args):
+                #print(AttributeError.args())
+            
+            if self.Text.count("integrate")+self.Text.count("Integral") != 1:
+                evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
+                self.plot_y_vals = evalfunc(self.plot_x_vals)
+                self.plot_y_vals = np.asarray(self.plot_y_vals)
+            else:
+                temp_Text = self.Text
+                temp_Text = temp_Text.replace("integrate","")
+                temp_Text = temp_Text.replace("Integral","")
+                evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
+                
+                def F(x):
+                    try:
+                        return [scipy.integrate.quad(evalfunc, 0, y) for y in x]
+                    except TypeError:
+                        return scipy.integrate.quad(evalfunc, 0, x)
+                
+                self.plot_y_vals = evalfunc(self.plot_x_vals)
+                self.plot_y_vals = [F(x)[0] for x in self.plot_x_vals]
+                self.plot_y_vals = np.asarray(self.plot_y_vals)
+
+
