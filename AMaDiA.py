@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.3.4"
+Version = "0.3.5"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -231,6 +231,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if not listItems: return        
         for item in listItems:
            source.takeItem(source.row(item))
+           # The cleanup below is apparetnly unnecessary but it is cleaner to do it anyways...
+           if source is self.Tab_1_Calculator_History:
+               item.data(100).tab_1_is = False
+               item.data(100).tab_1_ref = None
+           elif source is self.Tab_2_LaTeX_History:
+               item.data(100).tab_2_is = False
+               item.data(100).tab_2_ref = None
+           elif source is self.Tab_3_2D_Plot_History:
+               item.data(100).tab_3_is = False
+               item.data(100).tab_3_ref = None
         
         
 # ---------------------------------- Thread Redirector ----------------------------------
@@ -260,11 +270,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         
-        item = QtWidgets.QListWidgetItem()
-        item.setData(100,AMaS_Object)
-        item.setText(AMaS_Object.EvaluationEquation)
-        
-        self.Tab_1_Calculator_History.addItem(item)
+        if AMaS_Object.tab_1_is != True:
+            item = QtWidgets.QListWidgetItem()
+            item.setData(100,AMaS_Object)
+            item.setText(AMaS_Object.EvaluationEquation)
+            
+            self.Tab_1_Calculator_History.addItem(item)
+            AMaS_Object.tab_1_is = True
+            AMaS_Object.tab_1_ref = item
+        else:
+            self.Tab_1_Calculator_History.takeItem(self.Tab_1_Calculator_History.row(AMaS_Object.tab_1_ref))
+            self.Tab_1_Calculator_History.addItem(AMaS_Object.tab_1_ref)
         
     
 # ---------------------------------- Tab_2_LaTeX_ ----------------------------------
@@ -273,17 +289,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.New_AMaST_Creator.Return.connect(self.TR)
         self.New_AMaST_Creator.start()
         
-    def Tab_2_F_Display(self,Input):
+    def Tab_2_F_Display(self,AMaS_Object):
         # Display stuff... The way it is displayed will hopefully change as this project goes on:
         
         
-        self.Tab_2_LaTeX_LaTeXOutput.setText(Input.LaTeX)
-        item = QtWidgets.QListWidgetItem()
-        item.setData(100,Input)
-        item.setText(Input.Text)
-        self.Tab_2_LaTeX_History.addItem(item)
+        self.Tab_2_LaTeX_LaTeXOutput.setText(AMaS_Object.LaTeX)
         
-        Text = Input.LaTeX
+        if AMaS_Object.tab_2_is != True:
+            item = QtWidgets.QListWidgetItem()
+            item.setData(100,AMaS_Object)
+            item.setText(AMaS_Object.Text)
+            
+            self.Tab_2_LaTeX_History.addItem(item)
+            AMaS_Object.tab_2_is = True
+            AMaS_Object.tab_2_ref = item
+        else:
+            self.Tab_2_LaTeX_History.takeItem(self.Tab_2_LaTeX_History.row(AMaS_Object.tab_2_ref))
+            self.Tab_2_LaTeX_History.addItem(AMaS_Object.tab_2_ref)
+        
+        Text = AMaS_Object.LaTeX
         
         Text += "$"
         Text = "$" + Text
@@ -305,7 +329,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # A ScrollArea is used to fit any size
         # To set size use: setMinimumSize , setMinimumHeight , setMinimumWidth
 #        self.Tab_2_LaTeX_Viewer.canvas.fig.tight_layout()
-        self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(Input.LaTeX)+100) # Below does not work! Instead using this
+        self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(AMaS_Object.LaTeX)+100) # Below does not work! Instead using this
         size = self.Tab_2_LaTeX_Viewer.canvas.fig.get_size_inches()*self.Tab_2_LaTeX_Viewer.canvas.fig.dpi # Gets the size in pixels
         size += np.sum(self.Tab_2_LaTeX_Viewer.canvas.fig.get_constrained_layout_pads())
 #        self.Tab_2_LaTeX_Viewer.setMinimumSize(size[0],size[1]) # Seems to do nothing
@@ -345,21 +369,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.New_AMaST_Plotter.start()
         
         
-    def Tab_3_F_Plot(self , AMaS_object):
+    def Tab_3_F_Plot(self , AMaS_Object):
         
         # TODO: Colour the text and the Graph in the same colour
-        item = QtWidgets.QListWidgetItem()
-        item.setData(100,AMaS_object)
-        item.setText(AMaS_object.Text)
-        self.Tab_3_2D_Plot_History.addItem(item)
+        if AMaS_Object.tab_3_is != True:
+            item = QtWidgets.QListWidgetItem()
+            item.setData(100,AMaS_Object)
+            item.setText(AMaS_Object.Text)
+            
+            self.Tab_3_2D_Plot_History.addItem(item)
+            AMaS_Object.tab_3_is = True
+            AMaS_Object.tab_3_ref = item
+        else:
+            self.Tab_3_2D_Plot_History.takeItem(self.Tab_3_2D_Plot_History.row(AMaS_Object.tab_3_ref))
+            self.Tab_3_2D_Plot_History.addItem(AMaS_Object.tab_3_ref)
         
-        self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_object.plot_x_vals , AMaS_object.plot_y_vals) #  (... , 'r--') for red colour and short lines
+        self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
         
-        if AMaS_object.plot_grid:
+        if AMaS_Object.plot_grid:
             self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
         else:
             self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
-        if AMaS_object.plot_ratio:
+        if AMaS_Object.plot_ratio:
             self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
         else:
             self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')

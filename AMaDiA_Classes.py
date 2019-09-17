@@ -39,6 +39,7 @@ class AMaS: # Astus' Mathematical Structure
         self.string = string
         self.init()
         self.init_plot()
+        self.init_history()
     
     def init(self):
         self.string = self.string.replace("integrate","Integral") # integrate takes 6 seconds to evaluate while Integral takes "no" time but both do the same
@@ -73,6 +74,15 @@ class AMaS: # Astus' Mathematical Structure
                     self.LaTeX = sympy.latex( sympy.S(self.string,evaluate=False))
             except sympy.SympifyError :
                 self.LaTeX = "Fail"
+                
+                
+    def init_history(self):
+        self.tab_1_is = False
+        self.tab_1_ref = None
+        self.tab_2_is = False
+        self.tab_2_ref = None
+        self.tab_3_is = False
+        self.tab_3_ref = None
                 
     def init_plot(self):
         if self.string.count("=")==0 and self.string.count("x")>=1:
