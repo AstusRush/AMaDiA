@@ -1,5 +1,8 @@
 Calculator Examples:
 	integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))),(x,0,pi/2))
+	Sum(1/(k-3),(k,4,8)) = 137/60
+	z**6 = 1
+	z**3 = -2+2*I
 
 Plot Examples:
 	integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
