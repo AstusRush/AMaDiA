@@ -33,7 +33,7 @@ def palette():
     palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
     brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush) # Used is most places as Text Colour
     brush = QtGui.QBrush(QtGui.QColor(54, 57, 63))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)

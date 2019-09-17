@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.3.5"
+Version = "0.3.6"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -384,7 +384,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_2D_Plot_History.takeItem(self.Tab_3_2D_Plot_History.row(AMaS_Object.tab_3_ref))
             self.Tab_3_2D_Plot_History.addItem(AMaS_Object.tab_3_ref)
         
-        self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
+        p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
         
         if AMaS_Object.plot_grid:
             self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
@@ -394,6 +394,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
         else:
             self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
+        colour = p[0].get_color()
+        brush = QtGui.QBrush(QtGui.QColor(colour))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        AMaS_Object.tab_3_ref.setForeground(brush)
         
         #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
         self.Tab_3_2D_Plot_Display.canvas.draw()
@@ -403,11 +407,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # TODO: Uncoulor all coloured text in the history
         self.Tab_3_2D_Plot_Display.canvas.ax.clear()
         self.Tab_3_2D_Plot_Display.canvas.draw()
+        brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        for i in range(self.Tab_3_2D_Plot_History.count()):
+            self.Tab_3_2D_Plot_History.item(i).setForeground(brush)
         
         
 # ---------------------------------- Tab_4_??? ----------------------------------
 
 
+# ---------------------------------- Main ----------------------------------
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     app.setStyle("fusion")
