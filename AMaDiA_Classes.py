@@ -42,15 +42,16 @@ class AMaS: # Astus' Mathematical Structure
         self.init_history()
     
     def init(self):
-        self.string = self.string.replace("integrate","Integral") # integrate takes 6 seconds to evaluate while Integral takes "no" time but both do the same
-        self.string = self.string.replace("Integrate","Integral") # also doing this in case of capitalization stuff
-        self.string = self.string.replace("integral","Integral")  # also doing this in case of capitalization stuff
-        self.Text = self.string
+        self.Text = AF.AstusParseInverse(self.string)
+        #print(self.Text)
         self.Evaluation = "Not evaluated yet."
         self.EvaluationEquation = "? = " + self.Text
+        self.cstr = AF.AstusParse(self.string) # the converted string that is interpreteable
+        #print(self.cstr)
+        
         #self.Analyse() #TODO
         try:
-            self.simpleConversion = AF.Convert_to_LaTeX(self.string) #TODO: Remove or change
+            self.simpleConversion = AF.Convert_to_LaTeX(self.cstr) #TODO: Remove or change
         except ... :
             self.simpleConversion = "Fail"
         self.LaTeX = self.simpleConversion
@@ -62,8 +63,8 @@ class AMaS: # Astus' Mathematical Structure
             
         elif self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
             try:
-                if self.string.count("=") >= 1 :
-                    parts = self.string.split("=")
+                if self.cstr.count("=") >= 1 :
+                    parts = self.cstr.split("=")
                     self.LaTeX = ""
                     for i in parts:
                         if len(i)>0:
@@ -71,7 +72,7 @@ class AMaS: # Astus' Mathematical Structure
                         self.LaTeX += " = "
                     self.LaTeX = self.LaTeX[:-3]
                 else:
-                    self.LaTeX = sympy.latex( sympy.S(self.string,evaluate=False))
+                    self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
             except sympy.SympifyError :
                 self.LaTeX = "Fail"
                 
@@ -85,7 +86,7 @@ class AMaS: # Astus' Mathematical Structure
         self.tab_3_ref = None
                 
     def init_plot(self):
-        if self.string.count("=")==0 and self.string.count("x")>=1:
+        if self.cstr.count("=")==0 and self.cstr.count("x")>=1:
             self.plotable = True
         else:
             self.plotable = False
@@ -105,7 +106,7 @@ class AMaS: # Astus' Mathematical Structure
         # https://docs.sympy.org/latest/modules/parsing.html
         i_first = -1
         for i in ART.beginning_symbols:
-            i_curr = self.string.find(ART.beginning_symbols[i])
+            i_curr = self.cstr.find(ART.beginning_symbols[i])
             if i_curr != -1:
                 if i_first == -1:
                     i_first = i_curr
@@ -116,10 +117,10 @@ class AMaS: # Astus' Mathematical Structure
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
-        if self.string.count("=") == 1 :
+        if self.cstr.count("=") == 1 :
             if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
                 try:
-                    temp = self.string
+                    temp = self.cstr
                     temp = "(" + temp
                     temp = temp.replace("=" , ") - (")
                     temp = temp + ")"
@@ -157,7 +158,7 @@ class AMaS: # Astus' Mathematical Structure
         else:
             if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
                 try:
-                    ans = parse_expr(self.string)
+                    ans = parse_expr(self.cstr)
                     if EvalF: # TODOMode: Not happy with the EvalF thing...
                         ans = ans.evalf()
                     self.Evaluation = str(ans)
@@ -166,7 +167,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.Evaluation = "Fail"
             if self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
                 try:
-                    ans = parse_latex(self.string)
+                    ans = parse_latex(self.cstr)
                     if EvalF: # TODOMode: Not happy with the EvalF thing...
                         ans = ans.evalf()
                     self.Evaluation = str(ans)
@@ -190,7 +191,7 @@ class AMaS: # Astus' Mathematical Structure
     def Plot_Calc_Values(self):
         if self.plotable:
             x = sympy.symbols('x')
-            Function = parse_expr(self.string)
+            Function = parse_expr(self.cstr)
             
             if self.plot_per_unit:
                 steps = 1/self.plot_steps
@@ -199,7 +200,7 @@ class AMaS: # Astus' Mathematical Structure
                 
             self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
             try:
-                evalfunc = sympy.lambdify(x, Function , modules='sympy')
+                evalfunc = sympy.lambdify(x, Function, modules='sympy')
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
             except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
                 # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
@@ -208,24 +209,49 @@ class AMaS: # Astus' Mathematical Structure
                 #if callable(inst.args):
                     #print(AttributeError.args())
                 
-                if self.Text.count("integrate")+self.Text.count("Integral") != 1:
-                    evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
+                if self.cstr.count("Integral") != 1:
+                    evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
                     self.plot_y_vals = evalfunc(self.plot_x_vals)
                     self.plot_y_vals = np.asarray(self.plot_y_vals)
                 else:
-                    temp_Text = self.Text
-                    temp_Text = temp_Text.replace("integrate","")
+                    temp_Text = self.cstr
                     temp_Text = temp_Text.replace("Integral","")
                     evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
                     
-                    def F(x):
+                    def F(X):
                         try:
-                            return [scipy.integrate.quad(evalfunc, 0, y) for y in x]
+                            return [scipy.integrate.quad(evalfunc, 0, y) for y in X]
                         except TypeError:
-                            return scipy.integrate.quad(evalfunc, 0, x)
+                            return scipy.integrate.quad(evalfunc, 0, X)
                     
                     self.plot_y_vals = evalfunc(self.plot_x_vals)
-                    self.plot_y_vals = [F(x)[0] for x in self.plot_x_vals]
+                    self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
+                    self.plot_y_vals = np.asarray(self.plot_y_vals)
+            except ValueError as inst: # To Catch ValueError Invalid limits given
+                # This occures, for example, when trying to plot integrate(x**2)
+                # This is a weird bug #TODO: Investigate this bug...
+                print(inst)
+                print(inst.args)
+                if callable(inst.args):
+                    print(AttributeError.args())
+                
+                if self.cstr.count("Integral") != 1:
+                    evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
+                    self.plot_y_vals = evalfunc(self.plot_x_vals)
+                    self.plot_y_vals = np.asarray(self.plot_y_vals)
+                else:
+                    temp_Text = self.cstr
+                    temp_Text = temp_Text.replace("Integral","")
+                    evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
+                    
+                    def F(X):
+                        try:
+                            return [scipy.integrate.quad(evalfunc, 0, y) for y in X]
+                        except TypeError:
+                            return scipy.integrate.quad(evalfunc, 0, X)
+                    
+                    self.plot_y_vals = evalfunc(self.plot_x_vals)
+                    self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
                     self.plot_y_vals = np.asarray(self.plot_y_vals)
                     
             self.plot_data_exists = True

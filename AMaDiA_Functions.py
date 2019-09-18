@@ -19,12 +19,15 @@ from matplotlib import colors
 import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 
+# -----------------------------------------------------------------------------------------------------------------
+
 def cTimeStr():
     return str(datetime.datetime.now().strftime('%H:%M'))
 
 def cTimeSStr():
     return str(datetime.datetime.now().strftime('%H:%M:%S'))
 
+# -----------------------------------------------------------------------------------------------------------------
 
 def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     # Finds nth occurence of tofind in string between start and end, else returns -1
@@ -71,6 +74,58 @@ def Counterpart(String):
     raise Exception(ErrMsg)
     
 
+# -----------------------------------------------------------------------------------------------------------------
+
+
+def AstusParse(string):
+    for i in ART.LIST_n_all:
+        for j in i:
+            string = string.replace(j[0],j[1])
+    
+    for i in ART.LIST_r_s_scripts:
+        for j in i:
+            string = string.replace(j[0],j[1])
+    
+    for i in ART.r_s_operators:
+        string = string.replace(i[0],i[1])
+    
+    
+    return string
+
+
+"""
+
+    for i in ART:
+        string.replace(i[0],i[1])
+    
+"""
+"""
+
+    for i in ART:
+        for j in i:
+            string.replace(j[0],j[1])
+    
+"""
+
+def AstusParseInverse(string):
+    for i in ART.LIST_n_invertable:
+        for j in i:
+            string = string.replace(j[1],j[0])
+    
+    for i in ART.LIST_r_s_scripts:
+        for j in i:
+            string = string.replace(j[1],j[0])
+    
+    for i in ART.r_s_operators:
+        string = string.replace(i[1],i[0])
+        
+    string = string.replace(" * "," · ")
+    
+    return string
+
+# -----------------------------------------------------------------------------------------------------------------
+
+
 def Convert_to_LaTeX(toConvert):
     # Conversion Stuff:
         #TODO: keep sympy.parsing.sympy_parser.parse_expr() in mind!!!
@@ -80,8 +135,6 @@ def Convert_to_LaTeX(toConvert):
     
     toConvert = command_to_latex(toConvert)
     return toConvert
-
-
 # 11.07.2019 from http://efavdb.com/simple-python-to-latex-parser/
 # Converts some numpy, math and python commands to LaTeX
 # ₁₂₃₄₅₆₇₈₉₀¹²³⁴⁵⁶⁷⁸⁹⁰

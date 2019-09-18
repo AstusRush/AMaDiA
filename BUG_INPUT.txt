@@ -1,0 +1,13 @@
+Calculator:
+	
+	
+	
+LaTeX:
+	integrate(x**2)		converts to \frac{x^{3}}{3}		should convert to x^{2}
+	
+	
+	
+Plot:
+	
+	
+	

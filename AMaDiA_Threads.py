@@ -28,6 +28,7 @@ import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 
 
+#------------------------------------------------------------------------------
 
 class AMaS_Creator(QtCore.QThread):
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType)
@@ -113,7 +114,7 @@ Perform(lambda: Action3(p, r))
 
 
 
-class AMaS_Twierd_plot_solver(QtCore.QThread):
+class AMaS_Twierd_plot_solver(QtCore.QThread): #TODO: Remove Junk!
     Return = QtCore.pyqtSignal(np.ndarray , np.ndarray)
     def __init__(self , Text , X_Vals):
         QtCore.QThread.__init__(self)

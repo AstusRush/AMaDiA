@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.3.6"
+Version = "0.4.0"
 Author = "Robin \'Astus\' Albers"
 
 import sys
