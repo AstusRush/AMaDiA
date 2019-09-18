@@ -16,6 +16,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
 
+
 import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 
@@ -75,7 +76,10 @@ def Counterpart(String):
     
 
 # -----------------------------------------------------------------------------------------------------------------
-
+# Useful links:
+    # https://pypi.org/project/parse/  # New library not in anacona so probably not good to use...
+    # https://pyformat.info/
+    # https://docs.python.org/3.4/library/string.html
 
 def AstusParse(string):
     for i in ART.LIST_n_all:
@@ -89,7 +93,20 @@ def AstusParse(string):
     for i in ART.r_s_operators:
         string = string.replace(i[0],i[1])
     
-    
+    #---- Temporary Integral Handling for Astus's Integral Syntax
+    if "Integral{(" in string:
+        Before,From = string.split("Integral{(",1)
+        From,To = From.split(")(",1)
+        To,Func = To.split(")}",1)
+        if "*d" in Func:
+            Func,After = Func.split("*d",1)
+        else:
+            Func,After = Func.split("d",1)
+        x = After[0]
+        After = After[1:]
+        string = Before + " Integral(" + Func + ",("+x+","+From+","+To+"))" + After
+    #----
+    #print(string)
     return string
 
 

@@ -29,17 +29,19 @@ LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotat
 n_standard = [["integral","Integral"],["Integrate","Integral"],["integrate","Integral"]]
 n_greek_letters = [["π"," pi "],["λ"," lamda "]]
 n_constants = [["π"," pi "]]
-n_operators = [["·", "*"],["÷","/"],["^","**"]]
+n_operators = [["^","**"],["·","*"]]
+n_operators_notinv = [["—","-"],["×","*"],["÷","/"]]
 n_space = [[" "," "]]
 
-LIST_n_all = [n_standard , n_greek_letters , n_constants , n_operators , n_space]
+LIST_n_all = [n_standard , n_greek_letters , n_constants , n_operators , n_operators_notinv , n_space]
 
 n_greek_letters_nospace = [["π","pi"],["λ","lamda"]]
 n_constants_nospace = [["π"," pi "]]
-LIST_n_invertable = [n_greek_letters_nospace , n_constants_nospace]
+LIST_n_invertable = [n_greek_letters_nospace , n_constants_nospace , n_operators]
 # ---------------------------------- Special Replacements s_ ----------------------------------
 
-s_constants = [["i"," I "],["e"," E "]]
+s_constants_math = [["i"," I "],["e"," E "]]
+s_constants_engineering = [["j"," I "],["e"," E "]]
 
 # ---------------------------------- Replacements Simple to Python r_s_ ----------------------------------
 
