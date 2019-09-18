@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.4.0"
+Version = "0.4.1"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -42,6 +42,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
         self.tabWidget.setCurrentIndex(0)
+        
+        self.advanced_mode = True #TODO: make an optionmenu for this
         
         self.TextColour = (215/255, 213/255, 201/255)
         
@@ -159,6 +161,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
             action = menu.addAction('Copy LaTeX')
             action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+            if self.advanced_mode:
+                action = menu.addAction('Copy Input')
+                action.triggered.connect(lambda: self.action_H_Copy_string(source,event))
+                action = menu.addAction('Copy cString')
+                action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
             if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
                 action = menu.addAction('Copy Solution')
                 action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
@@ -195,6 +202,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def action_H_Copy_LaTeX(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).LaTeX)
+        
+    def action_H_Copy_string(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).string)
+        
+    def action_H_Copy_cstr(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).cstr)
         
     def action_H_Copy_Solution(self,source,event):
         item = source.itemAt(event.pos())
