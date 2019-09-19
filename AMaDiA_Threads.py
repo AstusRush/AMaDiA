@@ -28,6 +28,11 @@ import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 
 
+def ReloadModules():
+    importlib.reload(AW)
+    importlib.reload(AF)
+    importlib.reload(AC)
+    importlib.reload(ART)
 #------------------------------------------------------------------------------
 
 class AMaS_Creator(QtCore.QThread):
@@ -111,83 +116,5 @@ Perform(lambda: Action3(p, r))
 
 '''
 
-
-
-class AMaS_Twierd_plot_solver(QtCore.QThread): #TODO: Remove Junk!
-    Return = QtCore.pyqtSignal(np.ndarray , np.ndarray)
-    def __init__(self , Text , X_Vals):
-        QtCore.QThread.__init__(self)
-        self.exiting = False
-        self.Text = Text
-        self.X_Vals = X_Vals
-        self.Y_Vals = np.zeros_like(X_Vals)
-        
-    def run(self):
-        x = sympy.symbols('x')
-        if self.Text.count("integrate")+self.Text.count("Integral") != 1:
-            evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
-            self.Y_Vals = evalfunc(self.X_Vals)
-            self.Y_Vals = np.asarray(self.Y_Vals)
-            self.Return.emit(self.X_Vals , self.Y_Vals)
-            self.exiting = True
-            self.exit()
-            return
-        
-        self.Text = self.Text.replace("integrate","")
-        self.Text = self.Text.replace("Integral","")
-        evalfunc = sympy.lambdify(x, self.Text, modules='numpy')
-        
-        def F(x):
-            try:
-                return [scipy.integrate.quad(evalfunc, 0, y) for y in x]
-            except TypeError:
-                return scipy.integrate.quad(evalfunc, 0, x)
-        
-        self.Y_Vals = evalfunc(self.X_Vals)
-        self.Y_Vals = [F(x)[0] for x in self.X_Vals]
-        self.Y_Vals = np.asarray(self.Y_Vals)
-        self.Return.emit(self.X_Vals , self.Y_Vals)
-        self.exiting = True
-        self.exit()
-        
-    def run2(self): #TODO: Remove Junk!
-        
-        i = self.Text.count("integrate")
-        p=0
-        while i>0:
-            p = self.Text.find("integrate" , p)
-            p = AF.FindPair(self.Text,ART.pairs_brackets[0],p)
-            a = self.Text[:p-1]
-            b = self.Text[p:]
-            b.replace("","",1)
-            self.Text = a+b
-        
-        def tempFunc(n):
-            n = str(n)
-            print(n)
-            n += '0'
-            F = self.Text.replace('x',n)
-            F = sympy.parsing.sympy_parser.parse_expr(F)
-            F = sympy.solve(F)
-            return F
-        
-        for i in np.arange(self.X_Vals.size):
-            self.Y_Vals[i] = tempFunc(self.X_Vals[i])
-        self.Return.emit(self.X_Vals , self.Y_Vals)
-        self.exiting = True
-        self.exit()
-        
-        '''
-        def tempFunc(n):
-            n = str(n)
-            print(n)
-            n += '0'
-            F = self.Text.replace('x',n)
-            F = sympy.parsing.sympy_parser.parse_expr(F)
-            F = sympy.solve(F)
-            return F
-        
-        self.Y_Vals = np.fromfunction(lambda n : tempFunc(n) , self.X_Vals.shape)
-        '''
-
+#------------------------------------------------------------------------------
 

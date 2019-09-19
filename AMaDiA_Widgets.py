@@ -11,6 +11,17 @@ import matplotlib.pyplot as plt
 import sympy
 
 
+import AMaDiA_Functions as AF
+import AMaDiA_Classes as AC
+import AMaDiA_ReplacementTables as ART
+
+import importlib
+def ReloadModules():
+    importlib.reload(AF)
+    importlib.reload(AC)
+    importlib.reload(ART)
+
+
 # 10.07.2019 from https://stackoverflow.com/questions/43947318/plotting-matplotlib-figure-inside-qwidget-using-qt-designer-form-and-pyqt5?noredirect=1&lq=1
 # Use MplWidget for things that have a matplot output
 # Ensure using PyQt5 backend

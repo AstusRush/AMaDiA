@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.5.0"
+Version = "0.5.1"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -127,6 +127,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
 # ---------------------------------- Options ----------------------------------
     def ReloadModules(self):
+        AC.ReloadModules()
+        AF.ReloadModules()
+        AC.ReloadModules()
+        AT.ReloadModules()
+        AW.ReloadModules()
         importlib.reload(AW)
         importlib.reload(AF)
         importlib.reload(AC)

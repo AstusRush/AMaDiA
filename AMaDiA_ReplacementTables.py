@@ -26,7 +26,7 @@ LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotat
 
 # ---------------------------------- Normal Replacements n_ ----------------------------------
 
-n_standard = [["integral","Integral"],["Integrate","Integral"],["integrate","Integral"]]
+n_standard = [["integral","Integral"],["Integrate","Integral"],["integrate","Integral"],["int ","Integral"],["Int ","Integral"]]
 n_greek_letters = [["π"," pi "],["λ"," lamda "]]
 n_constants = [["π"," pi "]]
 n_operators = [["^","**"],["·","*"]]

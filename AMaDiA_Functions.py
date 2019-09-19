@@ -20,6 +20,11 @@ from matplotlib import colors
 import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 
+import importlib
+def ReloadModules():
+    importlib.reload(AC)
+    importlib.reload(ART)
+
 # -----------------------------------------------------------------------------------------------------------------
 
 def cTimeStr():
@@ -142,6 +147,8 @@ def AstusParseInverse(string):
 
 # -----------------------------------------------------------------------------------------------------------------
 
+
+# -----------------------------------------------------------------------------------------------------------------
 
 def Convert_to_LaTeX(toConvert):
     # Conversion Stuff:

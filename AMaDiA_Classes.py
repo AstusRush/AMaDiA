@@ -28,9 +28,13 @@ import scipy
 import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
 
+import importlib
+def ReloadModules():
+    importlib.reload(AF)
+    importlib.reload(ART)
 
-##### SEE https://github.com/sympy/sympy_gamma/
 
+common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError)
 
 class AMaS: # Astus' Mathematical Structure
     def __init__(self, string):
@@ -60,7 +64,7 @@ class AMaS: # Astus' Mathematical Structure
                 self.LaTeX = self.LaTeX[:-3]
             else:
                 self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-        except(TypeError , SyntaxError , sympy.SympifyError) as inst:
+        except common_exceptions as inst:
             print(sys.exc_info())
             self.LaTeX = "Fail"
                 
@@ -108,14 +112,17 @@ class AMaS: # Astus' Mathematical Structure
         if self.cstr.count("=") == 1 :
             try:
                 temp = self.cstr
+                if EvalF:
+                    temp.replace("Integral","integrate")
                 temp = "(" + temp
                 temp = temp.replace("=" , ") - (")
                 temp = temp + ")"
                 ans = parse_expr(temp)
+                ans = ans.doit()
                 ans = sympy.solve(ans)
                 self.Evaluation = "[ "
                 for i in ans:
-                    if EvalF: # TODOMode: Not happy with the EvalF thing... BUT happy with i.evalf()!!!!!!
+                    if EvalF and not type(i) == dict: # TODOMode: Not happy with the EvalF thing... BUT happy with i.evalf()!!!!!!
                         i = i.evalf()
                     i_temp = str(i)
                     i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers
@@ -129,7 +136,7 @@ class AMaS: # Astus' Mathematical Structure
                     ans = ans.evalf()
                     self.Evaluation = "True" if ans == 0 else "False: "+str(ans)
                     
-            except (TypeError , SyntaxError , sympy.SympifyError) as inst:
+            except common_exceptions as inst:
                 print(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
@@ -140,11 +147,13 @@ class AMaS: # Astus' Mathematical Structure
         else:
             try:
                 ans = parse_expr(self.cstr)
+                ans = ans.doit()
                 if EvalF: # TODOMode: Not happy with the EvalF thing...
                     ans = ans.evalf()
+                print(ans)
                 self.Evaluation = str(ans)
                 self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers
-            except (TypeError , SyntaxError , sympy.SympifyError) as inst:
+            except common_exceptions as inst:
                 print(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
@@ -163,7 +172,7 @@ class AMaS: # Astus' Mathematical Structure
             ans = parse_latex(self.LaTeX)
             ans = ans.evalf()
             self.Evaluation = str(ans)
-        except sympy.SympifyError as inst:
+        except common_exceptions as inst:
             print(sys.exc_info())
             #print(inst.args)
             #if callable(inst.args):
@@ -178,7 +187,13 @@ class AMaS: # Astus' Mathematical Structure
             x = sympy.symbols('x')
             try:
                 Function = parse_expr(self.cstr)
-            except (AttributeError , ValueError , SyntaxError) as inst:
+            except common_exceptions as inst:
+                print(sys.exc_info())
+                self.plotable = False
+                return False
+            try:
+                Function = Function.doit()
+            except common_exceptions as inst:
                 print(sys.exc_info())
                 
             if self.plot_xmax < self.plot_xmin:
@@ -193,7 +208,7 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 evalfunc = sympy.lambdify(x, Function, modules='sympy')
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
-            except (AttributeError , ValueError , SyntaxError) as inst:
+            except common_exceptions as inst:
                 print(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
@@ -225,7 +240,7 @@ class AMaS: # Astus' Mathematical Structure
                         self.plot_y_vals = evalfunc(self.plot_x_vals)
                         self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
                         self.plot_y_vals = np.asarray(self.plot_y_vals)
-                except (AttributeError , ValueError , SyntaxError) as inst:
+                except common_exceptions as inst:
                     print(sys.exc_info())
                     return False
                     
