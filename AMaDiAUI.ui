@@ -402,7 +402,7 @@
      <string>O&amp;ptions</string>
     </property>
     <addaction name="Menubar_Main_Options_action_Reload_Modules"/>
-    <addaction name="Menubar_Main_Options_action_LaTeX"/>
+    <addaction name="Menubar_Main_Options_action_Advanced_Mode"/>
     <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
    </widget>
    <addaction name="Menubar_Main_Options"/>
@@ -413,12 +413,12 @@
     <string>Reload Modules</string>
    </property>
   </action>
-  <action name="Menubar_Main_Options_action_LaTeX">
+  <action name="Menubar_Main_Options_action_Advanced_Mode">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>LaTeX</string>
+    <string>Advanced Mode</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Eval_Functions">

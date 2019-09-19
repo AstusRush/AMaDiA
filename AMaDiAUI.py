@@ -228,15 +228,15 @@ class Ui_AMaDiA_Main_Window(object):
         AMaDiA_Main_Window.setStatusBar(self.statusbar)
         self.Menubar_Main_Options_action_Reload_Modules = QtWidgets.QAction(AMaDiA_Main_Window)
         self.Menubar_Main_Options_action_Reload_Modules.setObjectName("Menubar_Main_Options_action_Reload_Modules")
-        self.Menubar_Main_Options_action_LaTeX = QtWidgets.QAction(AMaDiA_Main_Window)
-        self.Menubar_Main_Options_action_LaTeX.setCheckable(True)
-        self.Menubar_Main_Options_action_LaTeX.setObjectName("Menubar_Main_Options_action_LaTeX")
+        self.Menubar_Main_Options_action_Advanced_Mode = QtWidgets.QAction(AMaDiA_Main_Window)
+        self.Menubar_Main_Options_action_Advanced_Mode.setCheckable(True)
+        self.Menubar_Main_Options_action_Advanced_Mode.setObjectName("Menubar_Main_Options_action_Advanced_Mode")
         self.Menubar_Main_Options_action_Eval_Functions = QtWidgets.QAction(AMaDiA_Main_Window)
         self.Menubar_Main_Options_action_Eval_Functions.setCheckable(True)
         self.Menubar_Main_Options_action_Eval_Functions.setChecked(True)
         self.Menubar_Main_Options_action_Eval_Functions.setObjectName("Menubar_Main_Options_action_Eval_Functions")
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Reload_Modules)
-        self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_LaTeX)
+        self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Advanced_Mode)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Eval_Functions)
         self.Menubar_Main.addAction(self.Menubar_Main_Options.menuAction())
 
@@ -282,7 +282,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.Font_Size_spinBox.setToolTip(_translate("AMaDiA_Main_Window", "Font Size"))
         self.Menubar_Main_Options.setTitle(_translate("AMaDiA_Main_Window", "O&ptions"))
         self.Menubar_Main_Options_action_Reload_Modules.setText(_translate("AMaDiA_Main_Window", "Reload Modules"))
-        self.Menubar_Main_Options_action_LaTeX.setText(_translate("AMaDiA_Main_Window", "LaTeX"))
+        self.Menubar_Main_Options_action_Advanced_Mode.setText(_translate("AMaDiA_Main_Window", "Advanced Mode"))
         self.Menubar_Main_Options_action_Eval_Functions.setText(_translate("AMaDiA_Main_Window", "Eval Functions"))
 
 from AMaDiA_Widgets import MplWidget

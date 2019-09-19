@@ -33,9 +33,8 @@ import AMaDiA_ReplacementTables as ART
 
 
 class AMaS: # Astus' Mathematical Structure
-    def __init__(self, string, Type = "Python"): # TODOMode: Not happy with the Mode thing...
+    def __init__(self, string):
         self.TimeStamp = AF.cTimeSStr()
-        self.Type = Type # LaTeX = L , Python = P , Complex = C # TODOMode: Not happy with the Mode thing...
         self.string = string
         self.init()
         self.init_plot()
@@ -49,32 +48,21 @@ class AMaS: # Astus' Mathematical Structure
         self.cstr = AF.AstusParse(self.string) # the converted string that is interpreteable
         #print(self.cstr)
         
-        #self.Analyse() #TODO
+        
         try:
-            self.simpleConversion = AF.Convert_to_LaTeX(self.cstr) #TODO: Remove or change
-        except ... :
-            self.simpleConversion = "Fail"
-        self.LaTeX = self.simpleConversion
-        if self.Type == "C" or self.Type == "Complex": # TODOMode: Not happy with the Mode thing...
-            self.LaTeX = self.simpleConversion # TODO
-            
-        elif self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
-            self.LaTeX = self.simpleConversion
-            
-        elif self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
-            try:
-                if self.cstr.count("=") >= 1 :
-                    parts = self.cstr.split("=")
-                    self.LaTeX = ""
-                    for i in parts:
-                        if len(i)>0:
-                            self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
-                        self.LaTeX += " = "
-                    self.LaTeX = self.LaTeX[:-3]
-                else:
-                    self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-            except sympy.SympifyError :
-                self.LaTeX = "Fail"
+            if self.cstr.count("=") >= 1 :
+                parts = self.cstr.split("=")
+                self.LaTeX = ""
+                for i in parts:
+                    if len(i)>0:
+                        self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
+                    self.LaTeX += " = "
+                self.LaTeX = self.LaTeX[:-3]
+            else:
+                self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
+        except(TypeError , SyntaxError , sympy.SympifyError) as inst:
+            print(sys.exc_info())
+            self.LaTeX = "Fail"
                 
                 
     def init_history(self):
@@ -101,7 +89,7 @@ class AMaS: # Astus' Mathematical Structure
         self.plot_y_vals = np.zeros_like(self.plot_x_vals)
         
     
-    def Analyse(self): #TODO: Make it work
+    def Analyse(self): #TODO: Make it work or delete it
         #TODO: keep parse_expr() in mind!!!
         # https://docs.sympy.org/latest/modules/parsing.html
         i_first = -1
@@ -118,65 +106,56 @@ class AMaS: # Astus' Mathematical Structure
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
         if self.cstr.count("=") == 1 :
-            if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
-                try:
-                    temp = self.cstr
-                    temp = "(" + temp
-                    temp = temp.replace("=" , ") - (")
-                    temp = temp + ")"
+            try:
+                temp = self.cstr
+                temp = "(" + temp
+                temp = temp.replace("=" , ") - (")
+                temp = temp + ")"
+                ans = parse_expr(temp)
+                ans = sympy.solve(ans)
+                self.Evaluation = "[ "
+                for i in ans:
+                    if EvalF: # TODOMode: Not happy with the EvalF thing... BUT happy with i.evalf()!!!!!!
+                        i = i.evalf()
+                    i_temp = str(i)
+                    i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers
+                    self.Evaluation += i_temp
+                    self.Evaluation += " , "
+                self.Evaluation = self.Evaluation[:-3]
+                if len(self.Evaluation) > 0:
+                    self.Evaluation += " ]"
+                else:
                     ans = parse_expr(temp)
-                    ans = sympy.solve(ans)
-                    self.Evaluation = "[ "
-                    for i in ans:
-                        if EvalF: # TODOMode: Not happy with the EvalF thing... BUT happy with i.evalf()!!!!!!
-                            i = i.evalf()
-                        i_temp = str(i)
-                        i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp
-                        self.Evaluation += str(i)
-                        self.Evaluation += " , "
-                    self.Evaluation = self.Evaluation[:-3]
-                    if len(self.Evaluation) > 0:
-                        self.Evaluation += " ]"
-                    else:
-                        ans = parse_expr(temp)
-                        ans = ans.evalf()
-                        self.Evaluation = "True" if ans == 0 else "False: "+str(ans)
-                        
-                except sympy.SympifyError :
-                    self.Evaluation = "Fail"
-            if self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
-                #TODO
-                try:
-                    ans = parse_latex(temp)
-                    ans = sympy.solve(ans)
-                    self.Evaluation = str(ans)
-                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation
-                except sympy.SympifyError :
-                    self.Evaluation = "Fail"
+                    ans = ans.evalf()
+                    self.Evaluation = "True" if ans == 0 else "False: "+str(ans)
+                    
+            except (TypeError , SyntaxError , sympy.SympifyError) as inst:
+                print(sys.exc_info())
+                #print(inst.args)
+                #if callable(inst.args):
+                #    print(inst.args())
+                self.Evaluation = "Fail"
             self.EvaluationEquation = self.Evaluation + "   <==   "
             self.EvaluationEquation += self.Text
         else:
-            if self.Type == "P" or self.Type == "Python": # TODOMode: Not happy with the Mode thing...
-                try:
-                    ans = parse_expr(self.cstr)
-                    if EvalF: # TODOMode: Not happy with the EvalF thing...
-                        ans = ans.evalf()
-                    self.Evaluation = str(ans)
-                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation
-                except sympy.SympifyError :
-                    self.Evaluation = "Fail"
-            if self.Type == "L" or self.Type == "Latex": # TODOMode: Not happy with the Mode thing...
-                try:
-                    ans = parse_latex(self.cstr)
-                    if EvalF: # TODOMode: Not happy with the EvalF thing...
-                        ans = ans.evalf()
-                    self.Evaluation = str(ans)
-                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation
-                except sympy.SympifyError :
-                    self.Evaluation = "Fail"
+            try:
+                ans = parse_expr(self.cstr)
+                if EvalF: # TODOMode: Not happy with the EvalF thing...
+                    ans = ans.evalf()
+                self.Evaluation = str(ans)
+                self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers
+            except (TypeError , SyntaxError , sympy.SympifyError) as inst:
+                print(sys.exc_info())
+                #print(inst.args)
+                #if callable(inst.args):
+                #    print(inst.args())
+                self.Evaluation = "Fail"
             self.EvaluationEquation = self.Evaluation + " = "
             self.EvaluationEquation += self.Text
-        return True #TODO: make it only return true if successful
+        if self.Evaluation == "Fail":
+            return False
+        else:
+            return True
                 
     def EvaluateLaTeX(self):
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
@@ -184,14 +163,26 @@ class AMaS: # Astus' Mathematical Structure
             ans = parse_latex(self.LaTeX)
             ans = ans.evalf()
             self.Evaluation = str(ans)
-        except sympy.SympifyError :
+        except sympy.SympifyError as inst:
+            print(sys.exc_info())
+            #print(inst.args)
+            #if callable(inst.args):
+            #    print(inst.args())
             self.Evaluation = "Fail"
+            return False
+        return True
             
             
     def Plot_Calc_Values(self):
-        if self.plotable:
+        if self.plotable: #TODO: The plottable thing is not exact. Try to plot it even if not "plotable" and handle the exceptions
             x = sympy.symbols('x')
-            Function = parse_expr(self.cstr)
+            try:
+                Function = parse_expr(self.cstr)
+            except (AttributeError , ValueError , SyntaxError) as inst:
+                print(sys.exc_info())
+                
+            if self.plot_xmax < self.plot_xmin:
+                self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax
             
             if self.plot_per_unit:
                 steps = 1/self.plot_steps
@@ -202,57 +193,41 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 evalfunc = sympy.lambdify(x, Function, modules='sympy')
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
-            except AttributeError as inst: # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
-                # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
-                # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
+            except (AttributeError , ValueError , SyntaxError) as inst:
+                print(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
-                    #print(AttributeError.args())
+                #    print(inst.args())
+                # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
+                # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
                 
-                if self.cstr.count("Integral") != 1:
-                    evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
-                    self.plot_y_vals = evalfunc(self.plot_x_vals)
-                    self.plot_y_vals = np.asarray(self.plot_y_vals)
-                else:
-                    temp_Text = self.cstr
-                    temp_Text = temp_Text.replace("Integral","")
-                    evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
-                    
-                    def F(X):
-                        try:
-                            return [scipy.integrate.quad(evalfunc, 0, y) for y in X]
-                        except TypeError:
-                            return scipy.integrate.quad(evalfunc, 0, X)
-                    
-                    self.plot_y_vals = evalfunc(self.plot_x_vals)
-                    self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
-                    self.plot_y_vals = np.asarray(self.plot_y_vals)
-            except ValueError as inst: # To Catch ValueError Invalid limits given
+                # To Catch ValueError Invalid limits given
                 # This occures, for example, when trying to plot integrate(x**2)
                 # This is a weird bug #TODO: Investigate this bug...
-                print(inst)
-                print(inst.args)
-                if callable(inst.args):
-                    print(AttributeError.args())
                 
-                if self.cstr.count("Integral") != 1:
-                    evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
-                    self.plot_y_vals = evalfunc(self.plot_x_vals)
-                    self.plot_y_vals = np.asarray(self.plot_y_vals)
-                else:
-                    temp_Text = self.cstr
-                    temp_Text = temp_Text.replace("Integral","")
-                    evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
-                    
-                    def F(X):
-                        try:
-                            return [scipy.integrate.quad(evalfunc, 0, y) for y in X]
-                        except TypeError:
-                            return scipy.integrate.quad(evalfunc, 0, X)
-                    
-                    self.plot_y_vals = evalfunc(self.plot_x_vals)
-                    self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
-                    self.plot_y_vals = np.asarray(self.plot_y_vals)
+                try:
+                    if self.cstr.count("Integral") != 1:
+                        evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
+                        self.plot_y_vals = evalfunc(self.plot_x_vals)
+                        self.plot_y_vals = np.asarray(self.plot_y_vals)
+                    else:
+                        temp_Text = self.cstr
+                        temp_Text = temp_Text.replace("Integral","")
+                        evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
+                        
+                        def F(X):
+                            try:
+                                return [scipy.integrate.quad(evalfunc, 0, y) for y in X]
+                            except TypeError:
+                                return scipy.integrate.quad(evalfunc, 0, X)
+                        
+                        self.plot_y_vals = evalfunc(self.plot_x_vals)
+                        self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
+                        self.plot_y_vals = np.asarray(self.plot_y_vals)
+                except (AttributeError , ValueError , SyntaxError) as inst:
+                    print(sys.exc_info())
+                    return False
                     
             self.plot_data_exists = True
             return True

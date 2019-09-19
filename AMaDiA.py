@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.4.2"
+Version = "0.5.0"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -42,8 +42,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
         self.tabWidget.setCurrentIndex(0)
-        
-        self.advanced_mode = True #TODO: make an optionmenu for this
         
         self.TextColour = (215/255, 213/255, 201/255)
         
@@ -161,16 +159,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
             action = menu.addAction('Copy LaTeX')
             action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
-            if self.advanced_mode:
-                action = menu.addAction('Copy Input')
+            if self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+                action = menu.addAction('+ Copy Input')
                 action.triggered.connect(lambda: self.action_H_Copy_string(source,event))
-                action = menu.addAction('Copy cString')
+                action = menu.addAction('+ Copy cString')
                 action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
             if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
                 action = menu.addAction('Copy Solution')
                 action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
             menu.addSeparator()
-            # TODO: Only "Calculate" if the equation has not been evaluated yet or if in Dev Mode? Maybe? Maybe not?
+            # TODO: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
             # It currently is handy to have it always because of the EvalF thing...
             action = menu.addAction('Calculate')
             action.triggered.connect(lambda: self.action_H_Calculate(source,event))
@@ -266,12 +264,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Tab_1_Calculator_ ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
-        Mode = "P" # TODO:Mode Not happy with the Mode thing...
-        if self.Menubar_Main_Options_action_LaTeX.isChecked():
-            Mode = "L" # TODO:Mode Not happy with the Mode thing...
         
         # Input.EvaluateLaTeX() # TODO: left( and right) brakes it...
-        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_1_Calculator_InputField.text(), self.Tab_1_F_Calculate, Mode) # TODO:Mode Not happy with the Mode thing...
+        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_1_Calculator_InputField.text(), self.Tab_1_F_Calculate)
         self.New_AMaST_Creator.Return.connect(self.TR)
         self.New_AMaST_Creator.start()
         
@@ -363,11 +358,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
 # ---------------------------------- Tab_3_2D_Plot_ ----------------------------------
     def Tab_3_F_Plot_Button(self):
-        Mode = "P"
-        if self.Menubar_Main_Options_action_LaTeX.isChecked():
-            Mode = "L"
-            
-        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot_init , Mode) # TODO:Mode Not happy with the Mode thing...
+        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot_init)
         self.New_AMaST_Creator.Return.connect(self.TR)
         self.New_AMaST_Creator.start()
         

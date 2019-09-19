@@ -32,15 +32,14 @@ import AMaDiA_ReplacementTables as ART
 
 class AMaS_Creator(QtCore.QThread):
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType)
-    def __init__(self,Text,Return_Function,Mode="P"): # TODOMode: Not happy with the Mode thing...
+    def __init__(self,Text,Return_Function):
         QtCore.QThread.__init__(self)
         self.exiting = False
         self.Text = Text
-        self.Mode = Mode # TODOMode: Not happy with the Mode thing...
         self.Return_Function = Return_Function
         
     def run(self):
-        self.AMaS_Object = AC.AMaS(self.Text , self.Mode) # TODOMode: Not happy with the Mode thing...
+        self.AMaS_Object = AC.AMaS(self.Text)
         self.Return.emit(self.AMaS_Object , self.Return_Function)
         self.exiting = True
         self.exit()
