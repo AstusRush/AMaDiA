@@ -8,6 +8,6 @@ LaTeX:
 	
 	
 Plot:
-	
+	x**2 + y		as input in Calculator and ploted via contextmenu "New Plot" crashes the program
 	
 	

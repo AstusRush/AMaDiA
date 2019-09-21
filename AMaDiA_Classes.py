@@ -120,7 +120,7 @@ class AMaS: # Astus' Mathematical Structure
                 ans = parse_expr(temp)
                 ans = ans.doit()
                 ans = sympy.solve(ans)
-                self.Evaluation = "[ "
+                self.Evaluation = "{ "
                 for i in ans:
                     if EvalF and not type(i) == dict: # TODOMode: Not happy with the EvalF thing... BUT happy with i.evalf()!!!!!!
                         i = i.evalf()
@@ -130,7 +130,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.Evaluation += " , "
                 self.Evaluation = self.Evaluation[:-3]
                 if len(self.Evaluation) > 0:
-                    self.Evaluation += " ]"
+                    self.Evaluation += " }"
                 else:
                     ans = parse_expr(temp)
                     ans = ans.evalf()

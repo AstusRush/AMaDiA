@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.5.1"
+Version = "0.5.2"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -42,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
         self.tabWidget.setCurrentIndex(0)
+        self.ans = "1"
         
         self.TextColour = (215/255, 213/255, 201/255)
         
@@ -271,7 +272,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def Tab_1_F_Calculate_Field_Input(self):
         
         # Input.EvaluateLaTeX() # TODO: left( and right) brakes it...
-        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_1_Calculator_InputField.text(), self.Tab_1_F_Calculate)
+        TheInput = self.Tab_1_Calculator_InputField.text()
+        TheInput = TheInput.replace("ans",self.ans)
+        self.New_AMaST_Creator = AT.AMaS_Creator(TheInput, self.Tab_1_F_Calculate)
         self.New_AMaST_Creator.Return.connect(self.TR)
         self.New_AMaST_Creator.start()
         
@@ -296,6 +299,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             self.Tab_1_Calculator_History.takeItem(self.Tab_1_Calculator_History.row(AMaS_Object.tab_1_ref))
             self.Tab_1_Calculator_History.addItem(AMaS_Object.tab_1_ref)
+        self.ans = AMaS_Object.Evaluation
         
     
 # ---------------------------------- Tab_2_LaTeX_ ----------------------------------
