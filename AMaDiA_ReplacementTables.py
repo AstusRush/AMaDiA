@@ -18,6 +18,7 @@ Created on Thu Sep  5 16:22:05 2019
 l_beginning_symbols = ['=','(','{','[']
 l_pairs_brackets = [['(',')'],['[',']'],['{','}']]
 l_pairs_brackets_special = [['<','>']]
+l_pairs_brackets_not_interpreteable = [['{','}'],['[',']']]
 l_pairs_quotation = [["\"","\""],["\'","\'"]]
 l_seperators = [',']
 

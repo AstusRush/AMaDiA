@@ -34,7 +34,7 @@ def ReloadModules():
     importlib.reload(ART)
 
 
-common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError)
+common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception)
 
 class AMaS: # Astus' Mathematical Structure
     def __init__(self, string):
@@ -148,9 +148,8 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 ans = parse_expr(self.cstr)
                 ans = ans.doit()
-                if EvalF: # TODOMode: Not happy with the EvalF thing...
+                if EvalF: # TODOMode: Not happy with the EvalF thing... BUT happy with ans.evalf()!!!!!!
                     ans = ans.evalf()
-                print(ans)
                 self.Evaluation = str(ans)
                 self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers
             except common_exceptions as inst:

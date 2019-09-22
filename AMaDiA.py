@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.5.2"
+Version = "0.5.3"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -299,6 +299,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             self.Tab_1_Calculator_History.takeItem(self.Tab_1_Calculator_History.row(AMaS_Object.tab_1_ref))
             self.Tab_1_Calculator_History.addItem(AMaS_Object.tab_1_ref)
+        self.Tab_1_Calculator_History.scrollToBottom()
         self.ans = AMaS_Object.Evaluation
         
     
@@ -325,6 +326,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             self.Tab_2_LaTeX_History.takeItem(self.Tab_2_LaTeX_History.row(AMaS_Object.tab_2_ref))
             self.Tab_2_LaTeX_History.addItem(AMaS_Object.tab_2_ref)
+        
+        self.Tab_2_LaTeX_History.scrollToBottom()
         
         Text = AMaS_Object.LaTeX
         
@@ -399,23 +402,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_2D_Plot_History.takeItem(self.Tab_3_2D_Plot_History.row(AMaS_Object.tab_3_ref))
             self.Tab_3_2D_Plot_History.addItem(AMaS_Object.tab_3_ref)
         
-        p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
+        self.Tab_3_2D_Plot_History.scrollToBottom()
         
-        if AMaS_Object.plot_grid:
-            self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
-        else:
-            self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
-        if AMaS_Object.plot_ratio:
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
-        else:
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
-        colour = p[0].get_color()
-        brush = QtGui.QBrush(QtGui.QColor(colour))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        AMaS_Object.tab_3_ref.setForeground(brush)
-        
-        #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
-        self.Tab_3_2D_Plot_Display.canvas.draw()
+        try:
+            p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
+            
+            if AMaS_Object.plot_grid:
+                self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
+            else:
+                self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
+            if AMaS_Object.plot_ratio:
+                self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
+            else:
+                self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
+            colour = p[0].get_color()
+            brush = QtGui.QBrush(QtGui.QColor(colour))
+            brush.setStyle(QtCore.Qt.SolidPattern)
+            AMaS_Object.tab_3_ref.setForeground(brush)
+            
+            #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
+            self.Tab_3_2D_Plot_Display.canvas.draw()
+        except AC.common_exceptions :
+            print(sys.exc_info())
         
         
     def Tab_3_F_Clear(self):

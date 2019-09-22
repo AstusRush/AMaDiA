@@ -143,6 +143,12 @@ def AstusParseInverse(string):
         
     string = string.replace(" * "," · ")
     
+    
+    # Getting rid of not interpreteable brackets
+    for i in ART.l_pairs_brackets_not_interpreteable:
+        string = string.replace(i[0],"(")
+        string = string.replace(i[1],")")
+    
     return string
 
 # -----------------------------------------------------------------------------------------------------------------
