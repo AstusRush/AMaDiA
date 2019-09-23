@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.5.4"
+Version = "0.6.0"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -41,6 +41,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         super(MainWindow, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
+        self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
         self.ans = "1"
         
@@ -84,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Formula_Field.returnPressed.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
+        self.Tab_3_2D_Plot_Button_Plot_SymPy.clicked.connect(self.Tab_3_F_Sympy_Plot_Button)
     
     def ColourMain(self):
         palette = AMaDiA_Colour.palette()
@@ -375,21 +377,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.New_AMaST_Creator.start()
         
         
-    def Tab_3_F_Plot_init(self , AMaS_object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
-        AMaS_object.plot_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
-        AMaS_object.plot_grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
-        AMaS_object.plot_xmin = self.Tab_3_2D_Plot_From_Spinbox.value()
-        AMaS_object.plot_xmax = self.Tab_3_2D_Plot_To_Spinbox.value()
-        AMaS_object.plot_steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
-        AMaS_object.plot_per_unit = self.Tab_3_2D_Plot_Steps_Checkbox.isChecked()
-        self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot)
+    def Tab_3_F_Plot_init(self , AMaS_Object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
+        AMaS_Object.plot_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
+        AMaS_Object.plot_grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
+        AMaS_Object.plot_xmin = self.Tab_3_2D_Plot_From_Spinbox.value()
+        AMaS_Object.plot_xmax = self.Tab_3_2D_Plot_To_Spinbox.value()
+        AMaS_Object.plot_steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
+        
+        if self.Tab_3_2D_Plot_Steps_comboBox.currentIndex() == 0:
+            AMaS_Object.plot_per_unit = False
+        elif self.Tab_3_2D_Plot_Steps_comboBox.currentIndex() == 1:
+            AMaS_Object.plot_per_unit = True
+        
+        AMaS_Object.plot_xlim = self.Tab_3_2D_Plot_XLim_Check.isChecked()
+        if AMaS_Object.plot_xlim:
+            xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
+            if xmax < xmin:
+                xmax , xmin = xmin , xmax
+            AMaS_Object.plot_xlim_vals = (xmin , xmax)
+        AMaS_Object.plot_ylim = self.Tab_3_2D_Plot_YLim_Check.isChecked()
+        if AMaS_Object.plot_ylim:
+            ymin , ymax = self.Tab_3_2D_Plot_YLim_min.value(), self.Tab_3_2D_Plot_YLim_max.value()
+            if ymax < ymin:
+                ymax , ymin = ymin , ymax
+            AMaS_Object.plot_ylim_vals = (ymin , ymax)
+        
+        self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_Object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot)
         self.New_AMaST_Plotter.Return.connect(self.TR)
         self.New_AMaST_Plotter.start()
         
         
     def Tab_3_F_Plot(self , AMaS_Object):
         
-        # TODO: Colour the text and the Graph in the same colour
         if AMaS_Object.tab_3_is != True:
             item = QtWidgets.QListWidgetItem()
             item.setData(100,AMaS_Object)
@@ -405,7 +424,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_History.scrollToBottom()
         
         try:
-            p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
+            if type(AMaS_Object.plot_x_vals) == int or type(AMaS_Object.plot_x_vals) == float:
+                p = self.Tab_3_2D_Plot_Display.canvas.ax.axvline(x = AMaS_Object.plot_x_vals,color='red')
+            else:
+                p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
             
             if AMaS_Object.plot_grid:
                 self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
@@ -415,27 +437,63 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
             else:
                 self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
-            colour = p[0].get_color()
-            brush = QtGui.QBrush(QtGui.QColor(colour))
-            brush.setStyle(QtCore.Qt.SolidPattern)
-            AMaS_Object.tab_3_ref.setForeground(brush)
             
-            #self.Tab_3_2D_Plot_Display.canvas.ax = sympy.plot(Input,x_min,x_max) #TODO: Maybe make this work or even better: Implement sympy.plot instead of pyplot
+            if AMaS_Object.plot_xlim:
+                self.Tab_3_2D_Plot_Display.canvas.ax.set_xlim(AMaS_Object.plot_xlim_vals)
+            if AMaS_Object.plot_ylim:
+                self.Tab_3_2D_Plot_Display.canvas.ax.set_ylim(AMaS_Object.plot_ylim_vals)
+            
+            try:
+                colour = p[0].get_color()
+                brush = QtGui.QBrush(QtGui.QColor(colour))
+                brush.setStyle(QtCore.Qt.SolidPattern)
+                AMaS_Object.tab_3_ref.setForeground(brush)
+            except AC.common_exceptions:
+                colour = "#FF0000"
+                brush = QtGui.QBrush(QtGui.QColor(colour))
+                brush.setStyle(QtCore.Qt.SolidPattern)
+                AMaS_Object.tab_3_ref.setForeground(brush)
+            
             self.Tab_3_2D_Plot_Display.canvas.draw()
         except AC.common_exceptions :
             print(sys.exc_info())
             print("y_vals = ",AMaS_Object.plot_y_vals)
+            
         
         
     def Tab_3_F_Clear(self):
-        # TODO: Uncoulor all coloured text in the history
         self.Tab_3_2D_Plot_Display.canvas.ax.clear()
         self.Tab_3_2D_Plot_Display.canvas.draw()
         brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
         brush.setStyle(QtCore.Qt.SolidPattern)
         for i in range(self.Tab_3_2D_Plot_History.count()):
             self.Tab_3_2D_Plot_History.item(i).setForeground(brush)
+            
+    def Tab_3_F_Sympy_Plot_Button(self):
+        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Sympy_Plot)
+        self.New_AMaST_Creator.Return.connect(self.TR)
+        self.New_AMaST_Creator.start()
         
+    def Tab_3_F_Sympy_Plot(self , AMaS_Object):
+        try:
+            xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
+            if xmax < xmin:
+                xmax , xmin = xmin , xmax
+            xlims = (xmin , xmax)
+            ymin , ymax = self.Tab_3_2D_Plot_YLim_min.value(), self.Tab_3_2D_Plot_YLim_max.value()
+            if ymax < ymin:
+                ymax , ymin = ymin , ymax
+            ylims = (ymin , ymax)
+            if self.Tab_3_2D_Plot_XLim_Check.isChecked() and self.Tab_3_2D_Plot_YLim_Check.isChecked():
+                sympy.plot(AMaS_Object.cstr , xlim = xlims , ylim = ylims)
+            elif self.Tab_3_2D_Plot_XLim_Check.isChecked():
+                sympy.plot(AMaS_Object.cstr , xlim = xlims)
+            elif self.Tab_3_2D_Plot_YLim_Check.isChecked():
+                sympy.plot(AMaS_Object.cstr , ylim = ylims)
+            else:
+                sympy.plot(AMaS_Object.cstr)
+        except AC.common_exceptions:
+            print(sys.exc_info())
         
 # ---------------------------------- Tab_4_??? ----------------------------------
 

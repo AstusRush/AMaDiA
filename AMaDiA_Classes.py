@@ -88,6 +88,10 @@ class AMaS: # Astus' Mathematical Structure
         self.plot_grid = True
         self.plot_xmin = -5
         self.plot_xmax = 5
+        self.plot_xlim = False
+        self.plot_xlim_vals = (-5, 5)
+        self.plot_ylim = False
+        self.plot_ylim_vals = (-5, 5)
         self.plot_steps = 1000
         self.plot_per_unit = False
         self.plot_x_vals = np.arange(10)
@@ -183,6 +187,21 @@ class AMaS: # Astus' Mathematical Structure
             
             
     def Plot_Calc_Values(self):
+        if self.cstr.count("=")>=1:
+            try:
+                temp_line_split = self.cstr.split("=",1)
+                temp_line_split[0] = temp_line_split[0].strip()
+                if temp_line_split[0] == "x":
+                    temp_line_x_val = parse_expr(temp_line_split[1])
+                    temp_line_x_val = float(temp_line_x_val.evalf())
+                    if type(temp_line_x_val) == int or type(temp_line_x_val) == float :
+                        self.plot_x_vals = temp_line_x_val
+                        self.plot_data_exists = True
+                        return True
+            except common_exceptions:
+                pass
+        
+        
         if True : #self.plottable: #TODO: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
             x = sympy.symbols('x')
             try:
