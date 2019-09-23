@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.0"
+Version = "0.6.1"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -86,6 +86,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_Formula_Field.returnPressed.connect(self.Tab_3_F_Plot_Button)
         self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
         self.Tab_3_2D_Plot_Button_Plot_SymPy.clicked.connect(self.Tab_3_F_Sympy_Plot_Button)
+        self.Tab_3_2D_Plot_RedrawPlot_Button.clicked.connect(self.Tab_3_F_RedrawPlot)
     
     def ColourMain(self):
         palette = AMaDiA_Colour.palette()
@@ -438,6 +439,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             else:
                 self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
             
+            self.Tab_3_2D_Plot_Display.canvas.ax.relim()
+            self.Tab_3_2D_Plot_Display.canvas.ax.autoscale()
             if AMaS_Object.plot_xlim:
                 self.Tab_3_2D_Plot_Display.canvas.ax.set_xlim(AMaS_Object.plot_xlim_vals)
             if AMaS_Object.plot_ylim:
@@ -459,6 +462,32 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             print(sys.exc_info())
             print("y_vals = ",AMaS_Object.plot_y_vals)
             
+    def Tab_3_F_RedrawPlot(self):
+        xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
+        if xmax < xmin:
+            xmax , xmin = xmin , xmax
+        xlims = (xmin , xmax)
+        ymin , ymax = self.Tab_3_2D_Plot_YLim_min.value(), self.Tab_3_2D_Plot_YLim_max.value()
+        if ymax < ymin:
+            ymax , ymin = ymin , ymax
+        ylims = (ymin , ymax)
+        if self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked():
+            self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
+        else:
+            self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
+        if self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked():
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
+        else:
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
+        
+        self.Tab_3_2D_Plot_Display.canvas.ax.relim()
+        self.Tab_3_2D_Plot_Display.canvas.ax.autoscale()
+        if self.Tab_3_2D_Plot_XLim_Check.isChecked():
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_xlim(xlims)
+        if self.Tab_3_2D_Plot_YLim_Check.isChecked():
+            self.Tab_3_2D_Plot_Display.canvas.ax.set_ylim(ylims)
+        
+        self.Tab_3_2D_Plot_Display.canvas.draw()
         
         
     def Tab_3_F_Clear(self):
