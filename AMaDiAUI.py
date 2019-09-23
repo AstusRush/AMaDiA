@@ -320,8 +320,8 @@ class Ui_AMaDiA_Main_Window(object):
         self.Menubar_Main.addAction(self.Menubar_Main_Options.menuAction())
 
         self.retranslateUi(AMaDiA_Main_Window)
-        self.tabWidget.setCurrentIndex(0)
-        self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
+        self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(1)
         self.Tab_3_2D_Plot_Steps_comboBox.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(AMaDiA_Main_Window)
         AMaDiA_Main_Window.setTabOrder(self.Font_Size_spinBox, self.tabWidget)
@@ -338,6 +338,20 @@ class Ui_AMaDiA_Main_Window(object):
         AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_Button_Clear, self.Tab_3_2D_Plot_ScrollArea)
         AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_ScrollArea, self.Tab_3_2D_Plot_TabWidget)
         AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_TabWidget, self.Tab_3_2D_Plot_History)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_History, self.scrollArea)
+        AMaDiA_Main_Window.setTabOrder(self.scrollArea, self.Tab_3_2D_Plot_From_Spinbox)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_From_Spinbox, self.Tab_3_2D_Plot_To_Spinbox)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_To_Spinbox, self.Tab_3_2D_Plot_Steps_comboBox)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_Steps_comboBox, self.Tab_3_2D_Plot_Steps_Spinbox)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_Steps_Spinbox, self.Tab_3_2D_Plot_Draw_Grid_Checkbox)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_Draw_Grid_Checkbox, self.Tab_3_2D_Plot_Axis_ratio_Checkbox)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_Axis_ratio_Checkbox, self.Tab_3_2D_Plot_XLim_Check)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_XLim_Check, self.Tab_3_2D_Plot_XLim_min)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_XLim_min, self.Tab_3_2D_Plot_XLim_max)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_XLim_max, self.Tab_3_2D_Plot_YLim_Check)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_YLim_Check, self.Tab_3_2D_Plot_YLim_min)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_YLim_min, self.Tab_3_2D_Plot_YLim_max)
+        AMaDiA_Main_Window.setTabOrder(self.Tab_3_2D_Plot_YLim_max, self.Tab_3_2D_Plot_Button_Plot_SymPy)
 
     def retranslateUi(self, AMaDiA_Main_Window):
         _translate = QtCore.QCoreApplication.translate
@@ -360,7 +374,26 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_3_2D_Plot_Axis_ratio_Checkbox.setText(_translate("AMaDiA_Main_Window", "1:1 axis ratio"))
         self.Tab_3_2D_Plot_XLim_Check.setToolTip(_translate("AMaDiA_Main_Window", "Limit the part of the x axis that is shown"))
         self.Tab_3_2D_Plot_XLim_Check.setText(_translate("AMaDiA_Main_Window", "Limit X"))
-        self.Tab_3_2D_Plot_Button_Plot_SymPy.setToolTip(_translate("AMaDiA_Main_Window", "Only uses the Limits"))
+        self.Tab_3_2D_Plot_Button_Plot_SymPy.setToolTip(_translate("AMaDiA_Main_Window", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">It is advised to use the normal Plot.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Note:</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Control the Plotted area with Limit X and Limit Y</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">    (Don\'t forget to enable these with the checkboxes)</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Opens new window</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Advantages of SymPy Plotting:</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Easier zomming</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Save the Plot</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Disadvantages:</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Plots are not saved in the History</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- (Currently) Only one graph per plot</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- (Currently) Limited configuration via the main window</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Can not plot as many functions as the main plotter</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  (The main plotter has several methods of plotting which are used</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">   if the normal method fails while the SymPy plotter only has the main method)</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.Tab_3_2D_Plot_Button_Plot_SymPy.setText(_translate("AMaDiA_Main_Window", "Plot with SymPy"))
         self.Tab_3_2D_Plot_TabWidget.setTabText(self.Tab_3_2D_Plot_TabWidget.indexOf(self.Tab_3_2D_Plot_Tab_2_Config), _translate("AMaDiA_Main_Window", "Config"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab_3_2D_Plot), _translate("AMaDiA_Main_Window", "2D Plot"))
