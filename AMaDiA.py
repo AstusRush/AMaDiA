@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.5.3"
+Version = "0.5.3.1"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -424,6 +424,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_2D_Plot_Display.canvas.draw()
         except AC.common_exceptions :
             print(sys.exc_info())
+            print("y_vals = ",AMaS_Object.plot_y_vals)
         
         
     def Tab_3_F_Clear(self):
@@ -441,6 +442,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Main ----------------------------------
 if __name__ == "__main__":
+    print()
+    print(AF.cTimeSStr())
+    print(WindowTitle)
+    print("AMaDiA Startup")
     app = QtWidgets.QApplication([])
     app.setStyle("fusion")
     window = MainWindow()

@@ -207,6 +207,9 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 evalfunc = sympy.lambdify(x, Function, modules='sympy')
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
+                
+                # TODO: if dimensions of the vectors do not match raise an exception and try the other method because of x*0 and exp(x)
+                
             except common_exceptions as inst:
                 print(sys.exc_info())
                 #print(inst.args)

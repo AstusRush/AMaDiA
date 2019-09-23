@@ -1,6 +1,7 @@
 
 *.driveupload
 *.bat
+amadia.log
 .spyproject
 __pycache__
 AMaDiA.pyproject*

@@ -47,7 +47,7 @@ class AMaS_Creator(QtCore.QThread):
         self.AMaS_Object = AC.AMaS(self.Text)
         self.Return.emit(self.AMaS_Object , self.Return_Function)
         self.exiting = True
-        self.exit()
+        #self.exit()
         
 #------------------------------------------------------------------------------
 
@@ -67,13 +67,13 @@ class AMaS_Calc_Thread(QtCore.QThread): #TODO: Outdated. Use AMaS_Thread instead
         self.AMaS_Object.Evaluate()
         self.Calculator_Return.emit(self.AMaS_Object)
         self.exiting = True
-        self.exit()
+        #self.exit()
         
     def Evaluate_NOT(self): # TODOMode: Not happy with the EvalF thing...
         self.AMaS_Object.Evaluate(False)
         self.Calculator_Return.emit(self.AMaS_Object)
         self.exiting = True
-        self.exit()
+        #self.exit()
             
             
 """ Usage
@@ -97,7 +97,7 @@ class AMaS_Thread(QtCore.QThread):
         if self.AMaS_Function(self.AMaS_Object): #TODO: Give error message if not successful
             self.Return.emit(self.AMaS_Object , self.Return_Function)
         self.exiting = True
-        self.exit()
+        #self.exit()
 
 ''' Usage:
 self.New_AMaS_Thread = AMaS_Calc_Thread(AMaS_Object , AC.Method , self.Return_Function)
