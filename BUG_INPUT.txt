@@ -8,7 +8,6 @@ LaTeX:
 	
 	
 Plot:
-	x**2 + y		as input in Calculator and plot via contextmenu "New Plot" crashes the program
-	exp(x)  and  E**(x)  and x*0 and x**0		The plotter does not plot... apparently the dimensions of the returned vectors do not match...
+	
 	
 	

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.5.3.1"
+Version = "0.5.4"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -184,7 +184,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             if source.itemAt(event.pos()).data(100).plot_data_exists :
                 action = menu.addAction('Load Plot')
                 action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
-            if source.itemAt(event.pos()).data(100).plotable :
+            if source.itemAt(event.pos()).data(100).plottable :
                 action = menu.addAction('New Plot')
                 action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
             menu.addSeparator()
