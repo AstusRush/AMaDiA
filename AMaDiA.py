@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.1"
+Version = "0.6.2"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -45,6 +45,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.setCurrentIndex(0)
         self.ans = "1"
         
+        
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("AMaDiA" , WindowTitle))
         self.TextColour = (215/255, 213/255, 201/255)
         
         # Setup the graphic displays:
@@ -451,16 +454,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 brush = QtGui.QBrush(QtGui.QColor(colour))
                 brush.setStyle(QtCore.Qt.SolidPattern)
                 AMaS_Object.tab_3_ref.setForeground(brush)
-            except AC.common_exceptions:
+            except AF.common_exceptions:
                 colour = "#FF0000"
                 brush = QtGui.QBrush(QtGui.QColor(colour))
                 brush.setStyle(QtCore.Qt.SolidPattern)
                 AMaS_Object.tab_3_ref.setForeground(brush)
             
             self.Tab_3_2D_Plot_Display.canvas.draw()
-        except AC.common_exceptions :
-            print(sys.exc_info())
-            print("y_vals = ",AMaS_Object.plot_y_vals)
+        except AF.common_exceptions :
+            AF.ExceptionOutput(sys.exc_info())
+            print("y_vals = ",AMaS_Object.plot_y_vals,type(AMaS_Object.plot_y_vals))
             
     def Tab_3_F_RedrawPlot(self):
         xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
@@ -521,8 +524,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 sympy.plot(AMaS_Object.cstr , ylim = ylims)
             else:
                 sympy.plot(AMaS_Object.cstr)
-        except AC.common_exceptions:
-            print(sys.exc_info())
+        except AF.common_exceptions:
+            AF.ExceptionOutput(sys.exc_info())
         
 # ---------------------------------- Tab_4_??? ----------------------------------
 

@@ -27,13 +27,23 @@ def ReloadModules():
 
 # -----------------------------------------------------------------------------------------------------------------
 
+common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception)
+def ExceptionOutput(exc_info):
+    try:
+        print(cTimeSStr(),":")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, " in", fname, " line", exc_tb.tb_lineno ,": ", exc_obj)
+    except common_exceptions:
+        print("An exception occured while trying to print an exception!")
+
+# -----------------------------------------------------------------------------------------------------------------
+
 def cTimeStr():
     return str(datetime.datetime.now().strftime('%H:%M'))
 
 def cTimeSStr():
     return str(datetime.datetime.now().strftime('%H:%M:%S'))
-
-# -----------------------------------------------------------------------------------------------------------------
 
 def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     # Finds nth occurence of tofind in string between start and end, else returns -1

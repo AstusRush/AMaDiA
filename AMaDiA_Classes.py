@@ -34,7 +34,7 @@ def ReloadModules():
     importlib.reload(ART)
 
 
-common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception)
+
 
 class AMaS: # Astus' Mathematical Structure
     def __init__(self, string):
@@ -64,8 +64,8 @@ class AMaS: # Astus' Mathematical Structure
                 self.LaTeX = self.LaTeX[:-3]
             else:
                 self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-        except common_exceptions: #as inst:
-            print(sys.exc_info())
+        except AF.common_exceptions: #as inst:
+            AF.ExceptionOutput(sys.exc_info())
             self.LaTeX = "Fail"
                 
                 
@@ -141,8 +141,8 @@ class AMaS: # Astus' Mathematical Structure
                     ans = ans.evalf()
                     self.Evaluation = "True" if ans == 0 else "False: "+str(ans)
                     
-            except common_exceptions: #as inst:
-                print(sys.exc_info())
+            except AF.common_exceptions: #as inst:
+                AF.ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -157,8 +157,8 @@ class AMaS: # Astus' Mathematical Structure
                     ans = ans.evalf()
                 self.Evaluation = str(ans)
                 self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers
-            except common_exceptions: #as inst:
-                print(sys.exc_info())
+            except AF.common_exceptions: #as inst:
+                AF.ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -176,8 +176,8 @@ class AMaS: # Astus' Mathematical Structure
             ans = parse_latex(self.LaTeX)
             ans = ans.evalf()
             self.Evaluation = str(ans)
-        except common_exceptions: #as inst:
-            print(sys.exc_info())
+        except AF.common_exceptions: #as inst:
+            AF.ExceptionOutput(sys.exc_info())
             #print(inst.args)
             #if callable(inst.args):
             #    print(inst.args())
@@ -198,7 +198,7 @@ class AMaS: # Astus' Mathematical Structure
                         self.plot_x_vals = temp_line_x_val
                         self.plot_data_exists = True
                         return True
-            except common_exceptions:
+            except AF.common_exceptions:
                 pass
         
         
@@ -206,14 +206,14 @@ class AMaS: # Astus' Mathematical Structure
             x = sympy.symbols('x')
             try:
                 Function = parse_expr(self.cstr)
-            except common_exceptions: #as inst:
-                print(sys.exc_info())
+            except AF.common_exceptions: #as inst:
+                AF.ExceptionOutput(sys.exc_info())
                 self.plottable = False
                 return False
             try:
                 Function = Function.doit()
-            except common_exceptions: #as inst:
-                print(sys.exc_info())
+            except AF.common_exceptions: #as inst:
+                AF.ExceptionOutput(sys.exc_info())
                 
             if self.plot_xmax < self.plot_xmin:
                 self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax
@@ -225,17 +225,18 @@ class AMaS: # Astus' Mathematical Structure
                 
             self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
             try:
+                #e = sympy.numbers.E
                 evalfunc = sympy.lambdify(x, Function, modules='sympy')
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
                 
                 
-                if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float:
+                if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == ():
                     self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
                 if self.plot_y_vals.shape != self.plot_x_vals.shape:
                     raise Exception("Dimensions do not match")
                 
-            except common_exceptions: #as inst:
-                print(sys.exc_info())
+            except AF.common_exceptions: #as inst:
+                AF.ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -252,6 +253,12 @@ class AMaS: # Astus' Mathematical Structure
                         evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
                         self.plot_y_vals = evalfunc(self.plot_x_vals)
                         self.plot_y_vals = np.asarray(self.plot_y_vals)
+                        
+                        if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == ():
+                            self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
+                        if self.plot_y_vals.shape != self.plot_x_vals.shape:
+                            print(self.plot_y_vals.shape)
+                            raise Exception("Dimensions do not match")
                     else:
                         temp_Text = self.cstr
                         temp_Text = temp_Text.replace("Integral","")
@@ -267,12 +274,12 @@ class AMaS: # Astus' Mathematical Structure
                         self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
                         self.plot_y_vals = np.asarray(self.plot_y_vals)
                         
-                        if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float:
+                        if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == 1:
                             self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             raise Exception("Dimensions do not match")
-                except common_exceptions: #as inst:
-                    print(sys.exc_info())
+                except AF.common_exceptions: #as inst:
+                    AF.ExceptionOutput(sys.exc_info())
                     return False
                     
             self.plot_data_exists = True

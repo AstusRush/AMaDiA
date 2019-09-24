@@ -391,9 +391,10 @@ class Ui_AMaDiA_Main_Window(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- (Currently) Limited configuration via the main window</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Can not plot as many functions as the main plotter</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  (The main plotter has several methods of plotting which are used</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">   if the normal method fails while the SymPy plotter only has the main method)</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">   if the normal method fails while the SymPy plotter only has the normal method)</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.Tab_3_2D_Plot_Button_Plot_SymPy.setText(_translate("AMaDiA_Main_Window", "Plot with SymPy"))
+        self.Tab_3_2D_Plot_RedrawPlot_Button.setToolTip(_translate("AMaDiA_Main_Window", "Apply settings"))
         self.Tab_3_2D_Plot_RedrawPlot_Button.setText(_translate("AMaDiA_Main_Window", "Redraw Plot"))
         self.Tab_3_2D_Plot_TabWidget.setTabText(self.Tab_3_2D_Plot_TabWidget.indexOf(self.Tab_3_2D_Plot_Tab_2_Config), _translate("AMaDiA_Main_Window", "Config"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab_3_2D_Plot), _translate("AMaDiA_Main_Window", "2D Plot"))

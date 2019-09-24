@@ -3,7 +3,7 @@ Calculator:
 	
 	
 LaTeX:
-	
+	exp(x+ln(x))	Displays: x e^{x}	Should display: exp(x+ln(x))
 	
 	
 	
