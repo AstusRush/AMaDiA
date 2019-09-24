@@ -29,7 +29,7 @@ import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
 
 from distutils.spawn import find_executable
-if find_executable('latex'): LaTeX_Installed = True
+if find_executable('latex') and find_executable('dvipng'): LaTeX_Installed = True
 else : LaTeX_Installed = False
 
 import importlib

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.3"
+Version = "0.6.3.1"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -535,9 +535,11 @@ if __name__ == "__main__":
     print()
     print(AF.cTimeSStr())
     print(WindowTitle)
-    print("AMaDiA Startup")
     if find_executable('latex'): print("latex installed")
     else : print("latex not installed")
+    if find_executable('dvipng'): print("dvipng installed")
+    else : print("dvipng not installed")
+    print("AMaDiA Startup")
     app = QtWidgets.QApplication([])
     app.setStyle("fusion")
     window = MainWindow()

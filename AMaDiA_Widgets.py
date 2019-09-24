@@ -13,7 +13,7 @@ import sympy
 import matplotlib
 from distutils.spawn import find_executable
 
-if find_executable('latex'):matplotlib.rcParams['text.usetex'] = True
+if find_executable('latex') and find_executable('dvipng'):matplotlib.rcParams['text.usetex'] = True
 
 import AMaDiA_Functions as AF
 import AMaDiA_Classes as AC
