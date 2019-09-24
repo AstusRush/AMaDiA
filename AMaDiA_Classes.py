@@ -28,6 +28,10 @@ import scipy
 import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
 
+from distutils.spawn import find_executable
+if find_executable('latex'): LaTeX_Installed = True
+else : LaTeX_Installed = False
+
 import importlib
 def ReloadModules():
     importlib.reload(AF)
@@ -51,22 +55,8 @@ class AMaS: # Astus' Mathematical Structure
         self.EvaluationEquation = "? = " + self.Text
         self.cstr = AF.AstusParse(self.string) # the converted string that is interpreteable
         #print(self.cstr)
-        
-        
-        try:
-            if self.cstr.count("=") >= 1 :
-                parts = self.cstr.split("=")
-                self.LaTeX = ""
-                for i in parts:
-                    if len(i)>0:
-                        self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
-                    self.LaTeX += " = "
-                self.LaTeX = self.LaTeX[:-3]
-            else:
-                self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-        except AF.common_exceptions: #as inst:
-            AF.ExceptionOutput(sys.exc_info())
-            self.LaTeX = "Fail"
+        self.LaTeX = "Not converted yet"
+        self.ConvertToLaTeX()
                 
                 
     def init_history(self):
@@ -96,6 +86,30 @@ class AMaS: # Astus' Mathematical Structure
         self.plot_per_unit = False
         self.plot_x_vals = np.arange(10)
         self.plot_y_vals = np.zeros_like(self.plot_x_vals)
+        
+    def ConvertToLaTeX(self):
+        try:
+            if self.cstr.count("=") >= 1 :
+                parts = self.cstr.split("=")
+                self.LaTeX = ""
+                for i in parts:
+                    if len(i)>0:
+                        self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
+                    self.LaTeX += " = "
+                self.LaTeX = self.LaTeX[:-3]
+            else:
+                self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
+        except AF.common_exceptions: #as inst:
+            AF.ExceptionOutput(sys.exc_info())
+            self.LaTeX = "Fail"
+        
+        if LaTeX_Installed:
+            self.LaTeX = "$\displaystyle" + self.LaTeX
+            self.LaTeX += "$"
+        else:
+            self.LaTeX = self.LaTeX.replace("\limits","")
+            self.LaTeX = "$" + self.LaTeX
+            self.LaTeX += "$"
         
     
     def Analyse(self): #TODO: Make it work or delete it

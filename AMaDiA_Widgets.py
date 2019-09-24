@@ -10,6 +10,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import sympy
 
+import matplotlib
+from distutils.spawn import find_executable
+
+if find_executable('latex'):matplotlib.rcParams['text.usetex'] = True
 
 import AMaDiA_Functions as AF
 import AMaDiA_Classes as AC

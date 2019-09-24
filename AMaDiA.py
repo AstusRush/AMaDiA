@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.2"
+Version = "0.6.3"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -28,6 +28,8 @@ import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 import AMaDiA_Colour
 import AMaDiA_Threads as AT
+
+from distutils.spawn import find_executable
 
 
 WindowTitle = "AMaDiA v"
@@ -337,8 +339,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         Text = AMaS_Object.LaTeX
         
-        Text += "$"
-        Text = "$" + Text
         
         self.Tab_2_LaTeX_Viewer.canvas.ax.clear() # makes Space for the new text
         
@@ -536,6 +536,8 @@ if __name__ == "__main__":
     print(AF.cTimeSStr())
     print(WindowTitle)
     print("AMaDiA Startup")
+    if find_executable('latex'): print("latex installed")
+    else : print("latex not installed")
     app = QtWidgets.QApplication([])
     app.setStyle("fusion")
     window = MainWindow()

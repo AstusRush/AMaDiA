@@ -12,6 +12,8 @@ import errno
 import os
 import sympy
 
+
+
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
@@ -24,6 +26,7 @@ import importlib
 def ReloadModules():
     importlib.reload(AC)
     importlib.reload(ART)
+
 
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -57,7 +60,7 @@ def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     return val
 
 
-def FindPair(string, AB, start=0, end=0):
+def FindPair(string, AB, start=0, end=0): # TODO: make a version that recognizes all pairs so that it returns -1 for "({)}" when searching for ["(",")"]
     # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
     if end == 0:
         end = len(string)+1
@@ -80,12 +83,12 @@ def FindPair(string, AB, start=0, end=0):
             return(Apos, Bpos)
             
 def Counterpart(String):
-    for i in ART.pair_LIST_LIST:
-        for j in ART.pair_LIST_LIST[i]:
-            if String == ART.pair_LIST_LIST[i][j][0]:
-                return ART.pair_LIST_LIST[i][j][1]
-            elif String == ART.pair_LIST_LIST[i][j][1]:
-                return ART.pair_LIST_LIST[i][j][0]
+    for i in ART.LIST_l_all_pairs:
+        for j in ART.LIST_l_all_pairs[i]:
+            if String == ART.LIST_l_all_pairs[i][j][0]:
+                return ART.LIST_l_all_pairs[i][j][1]
+            elif String == ART.LIST_l_all_pairs[i][j][1]:
+                return ART.LIST_l_all_pairs[i][j][0]
     ErrMsg = String+" has no couterpart"
     raise Exception(ErrMsg)
     
@@ -97,33 +100,40 @@ def Counterpart(String):
     # https://docs.python.org/3.4/library/string.html
 
 def AstusParse(string):
-    for i in ART.LIST_n_all:
-        for j in i:
-            string = string.replace(j[0],j[1])
-    
-    for i in ART.LIST_r_s_scripts:
-        for j in i:
-            string = string.replace(j[0],j[1])
-    
-    for i in ART.r_s_operators:
-        string = string.replace(i[0],i[1])
-    
+    string = Replace(string,ART.LIST_n_all)
+    string = Replace(string,ART.LIST_r_s_scripts)
     #---- Temporary Integral Handling for Astus's Integral Syntax
+    string = IntegralParser_Astus(string)
+    #----
+    string = IntegralParser(string)
+    
+    
+    # Getting rid of not interpreteable brackets
+    for i in ART.l_pairs_brackets_not_interpreteable:
+        string = string.replace(i[0],"(")
+        string = string.replace(i[1],")")
+    
+    
+    print("Input: ",string)
+    return string
+
+def IntegralParser_Astus(string):
     if "Integral{(" in string:
         Before,From = string.split("Integral{(",1)
         From,To = From.split(")(",1)
         To,Func = To.split(")}",1)
-        if "*d" in Func:
-            Func,After = Func.split("*d",1)
-        else:
-            Func,After = Func.split("d",1)
+        Func = IntegralParser_Astus(Func) # Find other integrals if there are any and handle them
+        Func,After = Func.split("d",1)
+        if Func[-1]=="*":
+            Func = Func[:-1]
         x = After[0]
         After = After[1:]
         string = Before + " Integral(" + Func + ",("+x+","+From+","+To+"))" + After
-    #----
-    #print(string)
     return string
 
+def IntegralParser(string):
+    #TODO: Make this work for user-defined Syntax
+    return string
 
 """
 
@@ -140,27 +150,29 @@ def AstusParse(string):
 """
 
 def AstusParseInverse(string):
-    for i in ART.LIST_n_invertable:
-        for j in i:
-            string = string.replace(j[1],j[0])
-    
-    for i in ART.LIST_r_s_scripts:
-        for j in i:
-            string = string.replace(j[1],j[0])
-    
-    for i in ART.r_s_operators:
-        string = string.replace(i[1],i[0])
+    string = Replace(string,ART.n_operators)
+    string = Replace(string,ART.n_standard_integrals)
+    string = Replace(string,ART.LIST_r_s_scripts,1,0)
+    string = Replace(string,ART.LIST_n_invertable,1,0)
         
-    string = string.replace(" * "," · ")
+    #string = string.replace(" * "," · ")
     
     
-    # Getting rid of not interpreteable brackets
-    for i in ART.l_pairs_brackets_not_interpreteable:
-        string = string.replace(i[0],"(")
-        string = string.replace(i[1],")")
     
     return string
 
+
+def Replace(string,List,a=0,b=1):
+    # Replaces everything in string that is in List[][a] with List[][b]
+    # The List must only contain lists with that all contain at least two strings or Lists that contain such lists
+    if len(List) > 0 and len(List[0]) > 0:
+        if type(List[0][0]) == list:
+            for i in List:
+                string = Replace(string,i,a,b)
+        elif type(List[0][0]) == str:
+            for i in List:
+                string = string.replace(i[a],i[b])
+    return string
 # -----------------------------------------------------------------------------------------------------------------
 
 

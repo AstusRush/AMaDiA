@@ -20,25 +20,28 @@ l_pairs_brackets = [['(',')'],['[',']'],['{','}']]
 l_pairs_brackets_special = [['<','>']]
 l_pairs_brackets_not_interpreteable = [['{','}'],['[',']']]
 l_pairs_quotation = [["\"","\""],["\'","\'"]]
+l_pairs_special = [["Integral","d"]]
 l_seperators = [',']
 
-LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotation]
+LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotation , l_pairs_special]
 
 
 # ---------------------------------- Normal Replacements n_ ----------------------------------
 
-n_standard = [["integral","Integral"],["Integrate","Integral"],["integrate","Integral"],["int ","Integral"],["Int ","Integral"]]
+n_standard = [["",""]]
+n_standard_integrals = [["integral","Integral"],["Integrate","Integral"],["integrate","Integral"],["int ","Integral"],["Int ","Integral"],["∫","Integral"]]
 n_greek_letters = [["π"," pi "],["λ"," lamda "]]
 n_constants = [["π"," pi "]]
 n_operators = [["^","**"],["·","*"]]
+n_operators_special = [["√","sqrt"],["∫","Integral"]]
 n_operators_notinv = [["—","-"],["×","*"],["÷","/"]]
 n_space = [[" "," "]]
 
-LIST_n_all = [n_standard , n_greek_letters , n_constants , n_operators , n_operators_notinv , n_space]
+LIST_n_all = [n_standard_integrals , n_greek_letters , n_constants , n_operators , n_operators_special , n_operators_notinv , n_space]
 
 n_greek_letters_nospace = [["π","pi"],["λ","lamda"]]
 n_constants_nospace = [["π"," pi "]]
-LIST_n_invertable = [n_greek_letters_nospace , n_constants_nospace , n_operators]
+LIST_n_invertable = [n_greek_letters_nospace , n_constants_nospace , n_operators , n_operators_special]
 # ---------------------------------- Special Replacements s_ ----------------------------------
 
 s_constants_math = [["i"," I "],["e"," E "]]
@@ -53,7 +56,7 @@ r_s_subscript_letters = [["ₙ","_n"]]
 
 LIST_r_s_scripts = [r_s_superscript_numbers , r_s_subscript_numbers , r_s_superscript_letters , r_s_subscript_letters]
 
-r_s_operators = [["√","sqrt"],["∫","Integral"]]
+
 
 # ---------------------------------- Replacements Complex to Python r_c_ ----------------------------------
 
@@ -79,3 +82,7 @@ PYTHON_TO_LATEX_complex_replacements =[
                         ['_', '{{{i1}}}_{{{i2}}}'],
                         ['/', '\\frac{{{i1}}}{{{i2}}}'],
                         ['sqrt','\\sqrt{{{i2}}}'], ['√','\\sqrt{{{i2}}}']]
+
+# ---------------------------------- MASTERLISTS M_ ----------------------------------
+
+M_pair_LIST_LIST_LIST = [LIST_l_all_pairs]
