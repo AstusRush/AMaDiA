@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.3.4"
+Version = "0.6.3.5"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -80,6 +80,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ConnectSignals()
         #self.SetColour() # TODO:Remove
         self.ColourMain()
+        
+        #TODO: Check if this fixes the bug on the Laptop
+        self.Tab_3_F_Clear()
+        #One Little Bug Fix:
+            #If using LaTeX Display in LaTeX Mode before using the Plotter for the first time it can happen that the plotter is not responsive until cleared.
+            #Thus the plotter is now leared on program start to **hopefully** fix this...
+            #If it does not fix the problem a more elaborate method is required...
+            # A new variable that checks if the plot has already been used and if the LaTeX view has been used.
+            # If the first is False and the seccond True than clear when the plot button is pressed and cjange the variables to ensure that this only happens once
+            #       to not accidentially erase the plots of the user as this would be really bad...
         
 # ---------------------------------- Init and Maintanance ----------------------------------
 
