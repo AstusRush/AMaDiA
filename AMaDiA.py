@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.3.3"
+Version = "0.6.3.4"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -68,7 +68,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_2_LaTeX_History.installEventFilter(self)
         self.Tab_3_2D_Plot_History.installEventFilter(self)
         
-        if AF.LaTeX_Installed:
+        if AF.LaTeX_dvipng_Installed:
             self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setEnabled(True)
             self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setChecked(True)
         
@@ -387,7 +387,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 #        self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(LaTeX)+100)
         
         # Show the "graph"
-        self.Tab_2_LaTeX_Viewer.canvas.draw()
+        try:
+            self.Tab_2_LaTeX_Viewer.canvas.draw()
+        except RuntimeError:
+            AF.ExceptionOutput(sys.exc_info(),False)
+            print("Trying to output without LaTeX")
+            Text = AMaS_Object.LaTeX
+            Text = Text.replace("\limits","")
+            Text = "$" + Text
+            Text += "$"
+            self.Tab_2_LaTeX_Viewer.UseTeX(False)
+            self.Tab_2_LaTeX_Viewer.canvas.ax.set_title(Text,
+                      x=0.0, y=0.5, 
+                      horizontalalignment='left',
+                      verticalalignment='top',
+                      fontsize=self.Font_Size_spinBox.value()+10,
+                      color = self.TextColour)
+            self.Tab_2_LaTeX_Viewer.canvas.draw()
         
         
 # ---------------------------------- Tab_3_2D_Plot_ ----------------------------------
@@ -428,11 +444,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         
     def Tab_3_F_Plot(self , AMaS_Object):
-        if self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked():
-            self.Tab_3_2D_Plot_Display.UseTeX(True)
-        else:
-            self.Tab_3_2D_Plot_Display.UseTeX(False)
+        #TODO: MAYBE Add an exctra option for this in the config tab... and change everything else accordingly
+        #if self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked():
+        #    self.Tab_3_2D_Plot_Display.UseTeX(True)
+        #else:
+        #    self.Tab_3_2D_Plot_Display.UseTeX(False)
         
+        self.Tab_3_2D_Plot_Display.UseTeX(False)
         if AMaS_Object.tab_3_is != True:
             item = QtWidgets.QListWidgetItem()
             item.setData(100,AMaS_Object)
@@ -480,9 +498,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 brush.setStyle(QtCore.Qt.SolidPattern)
                 AMaS_Object.tab_3_ref.setForeground(brush)
             
-            self.Tab_3_2D_Plot_Display.canvas.draw()
+            try:
+                self.Tab_3_2D_Plot_Display.canvas.draw()
+            except RuntimeError:
+                AF.ExceptionOutput(sys.exc_info(),False)
+                print("Trying to output without LaTeX")
+                self.Tab_3_2D_Plot_Display.UseTeX(False)
+                self.Tab_3_2D_Plot_Display.canvas.draw()
         except AF.common_exceptions :
-            AF.ExceptionOutput(sys.exc_info())
+            AF.ExceptionOutput(sys.exc_info(),False)
             print("y_vals = ",AMaS_Object.plot_y_vals,type(AMaS_Object.plot_y_vals))
             
     def Tab_3_F_RedrawPlot(self):
@@ -510,16 +534,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if self.Tab_3_2D_Plot_YLim_Check.isChecked():
             self.Tab_3_2D_Plot_Display.canvas.ax.set_ylim(ylims)
         
-        self.Tab_3_2D_Plot_Display.canvas.draw()
+        try:
+            self.Tab_3_2D_Plot_Display.canvas.draw()
+        except RuntimeError:
+            AF.ExceptionOutput(sys.exc_info(),False)
+            print("Trying to output without LaTeX")
+            self.Tab_3_2D_Plot_Display.UseTeX(False)
+            self.Tab_3_2D_Plot_Display.canvas.draw()
         
         
     def Tab_3_F_Clear(self):
         self.Tab_3_2D_Plot_Display.canvas.ax.clear()
-        self.Tab_3_2D_Plot_Display.canvas.draw()
+        self.Tab_3_2D_Plot_Display.UseTeX(False)
+        try:
+            self.Tab_3_2D_Plot_Display.canvas.draw()
+        except RuntimeError:
+            AF.ExceptionOutput(sys.exc_info(),False)
+            print("Trying to output without LaTeX")
+            self.Tab_3_2D_Plot_Display.UseTeX(False)
+            self.Tab_3_2D_Plot_Display.canvas.draw()
         brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
         brush.setStyle(QtCore.Qt.SolidPattern)
         for i in range(self.Tab_3_2D_Plot_History.count()):
             self.Tab_3_2D_Plot_History.item(i).setForeground(brush)
+        self.Tab_3_2D_Plot_Display.canvas.ax.clear()
+        self.Tab_3_2D_Plot_Display.UseTeX(False)
+        try:
+            self.Tab_3_2D_Plot_Display.canvas.draw()
+        except RuntimeError:
+            AF.ExceptionOutput(sys.exc_info(),False)
+            print("Trying to output without LaTeX")
+            self.Tab_3_2D_Plot_Display.UseTeX(False)
+            self.Tab_3_2D_Plot_Display.canvas.draw()
             
     def Tab_3_F_Sympy_Plot_Button(self):
         self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Sympy_Plot)

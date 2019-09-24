@@ -49,8 +49,18 @@ class MplWidget(QtWidgets.QWidget):
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
+    
     def UseTeX(self,TheBool):
-        matplotlib.rcParams['text.usetex'] = TheBool
+        # This Method changes the settings for not only one but all widgets...
+        # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
+        # It could help to seperate the two widgets into two files...
+        # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
+        # Maybe test this in a little testprogram to not waste that much time...
+        
+        
+        #Both seem to do the same:
+        #matplotlib.rcParams['text.usetex'] = TheBool
+        plt.rc('text', usetex=TheBool)
 
 # -----------------------------------------------------------------------------------------------------------------
 

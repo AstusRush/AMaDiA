@@ -25,8 +25,8 @@ import AMaDiA_ReplacementTables as ART
 import importlib
 
 from distutils.spawn import find_executable
-if find_executable('latex') and find_executable('dvipng'): LaTeX_Installed = True
-else : LaTeX_Installed = False
+if find_executable('latex') and find_executable('dvipng'): LaTeX_dvipng_Installed = True
+else : LaTeX_dvipng_Installed = False
 
 def ReloadModules():
     importlib.reload(AC)
@@ -36,12 +36,15 @@ def ReloadModules():
 # -----------------------------------------------------------------------------------------------------------------
 
 common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception)
-def ExceptionOutput(exc_info):
+def ExceptionOutput(exc_info,extraInfo = True):
     try:
         print(cTimeSStr(),":")
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, " in", fname, " line", exc_tb.tb_lineno ,": ", exc_obj)
+        if extraInfo:
+            print(exc_type, " in", fname, " line", exc_tb.tb_lineno ,": ", exc_obj)
+        else:
+            print(exc_type, " in", fname, " line", exc_tb.tb_lineno)
     except common_exceptions:
         print("An exception occured while trying to print an exception!")
 
