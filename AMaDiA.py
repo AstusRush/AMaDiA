@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.3.1"
+Version = "0.6.3.2"
 Author = "Robin \'Astus\' Albers"
 
 import sys
@@ -535,10 +535,11 @@ if __name__ == "__main__":
     print()
     print(AF.cTimeSStr())
     print(WindowTitle)
-    if find_executable('latex'): print("latex installed")
-    else : print("latex not installed")
-    if find_executable('dvipng'): print("dvipng installed")
-    else : print("dvipng not installed")
+    latex_installed, dvipng_installed = find_executable('latex'), find_executable('dvipng')
+    if latex_installed and dvipng_installed: print("latex and dvipng are installed --> Using pretty LaTeX Display")
+    elif latex_installed and not dvipng_installed: print("latex is installed but dvipng was not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
+    elif not latex_installed and dvipng_installed: print("dvipng is installed but latex was not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
+    else: print("latex and dvipng were not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
     print("AMaDiA Startup")
     app = QtWidgets.QApplication([])
     app.setStyle("fusion")
