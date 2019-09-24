@@ -151,7 +151,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 254, 426))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 238, 293))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_11.setObjectName("gridLayout_11")
@@ -312,9 +312,14 @@ class Ui_AMaDiA_Main_Window(object):
         self.Menubar_Main_Options_action_Eval_Functions.setCheckable(True)
         self.Menubar_Main_Options_action_Eval_Functions.setChecked(True)
         self.Menubar_Main_Options_action_Eval_Functions.setObjectName("Menubar_Main_Options_action_Eval_Functions")
+        self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display = QtWidgets.QAction(AMaDiA_Main_Window)
+        self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setCheckable(True)
+        self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setEnabled(False)
+        self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setObjectName("Menubar_Main_Options_action_Use_Pretty_LaTeX_Display")
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Reload_Modules)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Advanced_Mode)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Eval_Functions)
+        self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display)
         self.Menubar_Main.addAction(self.Menubar_Main_Options.menuAction())
 
         self.retranslateUi(AMaDiA_Main_Window)
@@ -403,5 +408,6 @@ class Ui_AMaDiA_Main_Window(object):
         self.Menubar_Main_Options_action_Reload_Modules.setText(_translate("AMaDiA_Main_Window", "Reload Modules"))
         self.Menubar_Main_Options_action_Advanced_Mode.setText(_translate("AMaDiA_Main_Window", "Advanced Mode"))
         self.Menubar_Main_Options_action_Eval_Functions.setText(_translate("AMaDiA_Main_Window", "Eval Functions"))
+        self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setText(_translate("AMaDiA_Main_Window", "Use Pretty LaTeX Display"))
 
 from AMaDiA_Widgets import MplWidget

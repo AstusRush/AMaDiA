@@ -11,9 +11,6 @@ import matplotlib.pyplot as plt
 import sympy
 
 import matplotlib
-from distutils.spawn import find_executable
-
-if find_executable('latex') and find_executable('dvipng'):matplotlib.rcParams['text.usetex'] = True
 
 import AMaDiA_Functions as AF
 import AMaDiA_Classes as AC
@@ -52,6 +49,8 @@ class MplWidget(QtWidgets.QWidget):
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
+    def UseTeX(self,TheBool):
+        matplotlib.rcParams['text.usetex'] = TheBool
 
 # -----------------------------------------------------------------------------------------------------------------
 

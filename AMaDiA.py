@@ -1,7 +1,8 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.3.2"
+Version = "0.6.3.3"
 Author = "Robin \'Astus\' Albers"
 
+from distutils.spawn import find_executable
 import sys
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
 from PyQt5.Qt import QApplication, QClipboard
@@ -29,7 +30,6 @@ import AMaDiA_ReplacementTables as ART
 import AMaDiA_Colour
 import AMaDiA_Threads as AT
 
-from distutils.spawn import find_executable
 
 
 WindowTitle = "AMaDiA v"
@@ -46,6 +46,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
         self.ans = "1"
+        
         
         
         _translate = QtCore.QCoreApplication.translate
@@ -67,6 +68,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_2_LaTeX_History.installEventFilter(self)
         self.Tab_3_2D_Plot_History.installEventFilter(self)
         
+        if AF.LaTeX_Installed:
+            self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setEnabled(True)
+            self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setChecked(True)
         
         # add to UI File
         # import AMaDiA_Widgets
@@ -182,24 +186,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 action = menu.addAction('Copy Solution')
                 action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
             menu.addSeparator()
-            # TODO: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
+            # TODO: Maybe? Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
             # It currently is handy to have it always because of the EvalF thing...
             action = menu.addAction('Calculate')
             action.triggered.connect(lambda: self.action_H_Calculate(source,event))
             action = menu.addAction('Display LaTeX')
             action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
             menu.addSeparator()
-            if source.itemAt(event.pos()).data(100).plot_data_exists :
+            if source.itemAt(event.pos()).data(100).plot_data_exists : # TODO if source is history in Tab 3 allow to load multiple plots at the same time
                 action = menu.addAction('Load Plot')
                 action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
-            if source.itemAt(event.pos()).data(100).plottable :
+            if source.itemAt(event.pos()).data(100).plottable : # TODO if source is history in Tab 3 allow to replot multiple plots at the same time
                 action = menu.addAction('New Plot')
                 action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
             menu.addSeparator()
             action = menu.addAction('Delete')
             action.triggered.connect(lambda: self.action_H_Delete(source,event))
             if menu.exec_(event.globalPos()):
-                pass #TODO: This if-case seems rather pointless but without something in the in it's condition it doesn't work...
+                pass #TODO: This if-case seems rather pointless but without something in the in it's condition it doesn't work... sort this out...
                 #item = source.itemAt(event.pos())
                 #QApplication.clipboard().setText(item.data(100).Text)
             return True
@@ -339,6 +343,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         Text = AMaS_Object.LaTeX
         
+        #-----------IMPORTANT-----------
+        if self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked():
+            Text = "$\displaystyle" + Text
+            Text += "$"
+            self.Tab_2_LaTeX_Viewer.UseTeX(True)
+        else:
+            Text = Text.replace("\limits","")
+            Text = "$" + Text
+            Text += "$"
+            self.Tab_2_LaTeX_Viewer.UseTeX(False)
+        #-----------IMPORTANT-----------
+        
         
         self.Tab_2_LaTeX_Viewer.canvas.ax.clear() # makes Space for the new text
         
@@ -412,6 +428,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         
     def Tab_3_F_Plot(self , AMaS_Object):
+        if self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked():
+            self.Tab_3_2D_Plot_Display.UseTeX(True)
+        else:
+            self.Tab_3_2D_Plot_Display.UseTeX(False)
         
         if AMaS_Object.tab_3_is != True:
             item = QtWidgets.QListWidgetItem()

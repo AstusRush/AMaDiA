@@ -23,6 +23,11 @@ import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 
 import importlib
+
+from distutils.spawn import find_executable
+if find_executable('latex') and find_executable('dvipng'): LaTeX_Installed = True
+else : LaTeX_Installed = False
+
 def ReloadModules():
     importlib.reload(AC)
     importlib.reload(ART)
@@ -114,7 +119,7 @@ def AstusParse(string):
         string = string.replace(i[1],")")
     
     
-    print("Input: ",string)
+    print("Input parsed: ",string)
     return string
 
 def IntegralParser_Astus(string):

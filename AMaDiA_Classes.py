@@ -28,9 +28,7 @@ import scipy
 import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
 
-from distutils.spawn import find_executable
-if find_executable('latex') and find_executable('dvipng'): LaTeX_Installed = True
-else : LaTeX_Installed = False
+
 
 import importlib
 def ReloadModules():
@@ -103,13 +101,7 @@ class AMaS: # Astus' Mathematical Structure
             AF.ExceptionOutput(sys.exc_info())
             self.LaTeX = "Fail"
         
-        if LaTeX_Installed:
-            self.LaTeX = "$\displaystyle" + self.LaTeX
-            self.LaTeX += "$"
-        else:
-            self.LaTeX = self.LaTeX.replace("\limits","")
-            self.LaTeX = "$" + self.LaTeX
-            self.LaTeX += "$"
+
         
     
     def Analyse(self): #TODO: Make it work or delete it

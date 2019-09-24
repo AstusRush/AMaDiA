@@ -235,8 +235,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>254</width>
-                       <height>426</height>
+                       <width>238</width>
+                       <height>293</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_11">
@@ -600,6 +600,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Reload_Modules"/>
     <addaction name="Menubar_Main_Options_action_Advanced_Mode"/>
     <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
+    <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
    </widget>
    <addaction name="Menubar_Main_Options"/>
   </widget>
@@ -626,6 +627,17 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>Eval Functions</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Use Pretty LaTeX Display</string>
    </property>
   </action>
  </widget>
