@@ -59,8 +59,9 @@ class MplWidget(QtWidgets.QWidget):
         
         
         #Both seem to do the same:
-        #matplotlib.rcParams['text.usetex'] = TheBool
+        matplotlib.rcParams['text.usetex'] = TheBool
         plt.rc('text', usetex=TheBool)
+        return matplotlib.rcParams['text.usetex']
 
 # -----------------------------------------------------------------------------------------------------------------
 

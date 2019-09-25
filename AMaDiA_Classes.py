@@ -158,7 +158,11 @@ class AMaS: # Astus' Mathematical Structure
         else:
             try:
                 ans = parse_expr(self.cstr)
-                ans = ans.doit()
+                try: # TODO: A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                    ans = ans.doit()
+                except ValueError:
+                    print("Could not simplify "+str(ans))
+                    AF.ExceptionOutput(sys.exc_info())
                 if EvalF: # TODOMode: Not happy with the EvalF thing... BUT happy with ans.evalf()!!!!!!
                     ans = ans.evalf()
                 self.Evaluation = str(ans)

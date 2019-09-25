@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.6.3.5"
+Version = "0.7.0"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -46,7 +46,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
         self.ans = "1"
-        
+        self.ThreadList = []
         
         
         _translate = QtCore.QCoreApplication.translate
@@ -284,29 +284,51 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                item.data(100).tab_3_ref = None
         
         
-# ---------------------------------- Thread Redirector ----------------------------------
+# ---------------------------------- Thread Handler ----------------------------------
 
-    def TR(self,AMaS_Object,Function): 
+    def TR(self,AMaS_Object,Function,ID=-1):
         self.Function = Function
         self.Function(AMaS_Object)
-
+        
+    def TC(self,Thread):
+        ID = -1
+        for i,e in enumerate(self.ThreadList):
+            # This is not 100% clean but only Threats that have reported back should
+            #   leave the list and thus only those can be cleaned by pythons garbage collector while not completely done
+            #   These would cause a crash but are intercepted by notify to ensure stability
+            try:
+                running = e.isRunning()
+            except (RuntimeError,AttributeError):
+                running = False
+            if not running:
+                self.ThreadList.pop(i)
+                ID = i
+                self.ThreadList.insert(i,Thread(i))
+                break
+        if ID == -1:
+            ID = len(self.ThreadList)
+            self.ThreadList.append(Thread(ID))
+        self.ThreadList[ID].Return.connect(self.TR)
+        self.ThreadList[ID].start()
+        
+    def notify(self, obj, event):
+        try:
+            return super().notify(obj, event)
+        except:
+            AF.ExceptionOutput(sys.exc_info())
+            return False
 # ---------------------------------- Tab_1_Calculator_ ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
         
         # Input.EvaluateLaTeX() # TODO: left( and right) brakes it...
         TheInput = self.Tab_1_Calculator_InputField.text()
         TheInput = TheInput.replace("ans",self.ans)
-        self.New_AMaST_Creator = AT.AMaS_Creator(TheInput, self.Tab_1_F_Calculate)
-        self.New_AMaST_Creator.Return.connect(self.TR)
-        self.New_AMaST_Creator.start()
+        if TheInput == "len()":
+            TheInput = str(len(self.ThreadList))
+        self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID))
         
     def Tab_1_F_Calculate(self,AMaS_Object):
-        if self.Menubar_Main_Options_action_Eval_Functions.isChecked(): # TODOMode: Not happy with the EvalF thing...
-            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate) # TODOMode: Not happy with the EvalF thing... #TODO: Outdated. Use AMaS_Thread instead
-        else:
-            self.New_AMaST_Evaluater = AT.AMaS_Calc_Thread(AMaS_Object , AT.AMaS_Calc_Thread.Evaluate_NOT) # TODOMode: Not happy with the EvalF thing... #TODO: Outdated. Use AMaS_Thread instead
-        self.New_AMaST_Evaluater.Calculator_Return.connect(self.Tab_1_F_Calculate_Display)
-        self.New_AMaST_Evaluater.start()
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.Evaluate(AMaS_Object,self.Menubar_Main_Options_action_Eval_Functions.isChecked()),self.Tab_1_F_Calculate_Display,ID))
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         
@@ -327,9 +349,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     
 # ---------------------------------- Tab_2_LaTeX_ ----------------------------------
     def Tab_2_F_Convert(self):
-        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_2_LaTeX_InputField.toPlainText(), self.Tab_2_F_Display)
-        self.New_AMaST_Creator.Return.connect(self.TR)
-        self.New_AMaST_Creator.start()
+        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_2_LaTeX_InputField.toPlainText(), self.Tab_2_F_Display,ID))
         
     def Tab_2_F_Display(self,AMaS_Object):
         # Display stuff... The way it is displayed will hopefully change as this project goes on:
@@ -407,20 +427,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Text = "$" + Text
             Text += "$"
             self.Tab_2_LaTeX_Viewer.UseTeX(False)
+            self.Tab_2_LaTeX_Viewer.canvas.ax.clear()
             self.Tab_2_LaTeX_Viewer.canvas.ax.set_title(Text,
                       x=0.0, y=0.5, 
                       horizontalalignment='left',
                       verticalalignment='top',
                       fontsize=self.Font_Size_spinBox.value()+10,
                       color = self.TextColour)
+            self.Tab_2_LaTeX_Viewer.canvas.ax.axis('off')
+            #--------------------------
+            self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(AMaS_Object.LaTeX)+100)
+            #--------------------------
             self.Tab_2_LaTeX_Viewer.canvas.draw()
+        finally:
+            self.Tab_2_LaTeX_Viewer.UseTeX(False)
         
         
 # ---------------------------------- Tab_3_2D_Plot_ ----------------------------------
     def Tab_3_F_Plot_Button(self):
-        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot_init)
-        self.New_AMaST_Creator.Return.connect(self.TR)
-        self.New_AMaST_Creator.start()
+        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot_init,ID))
         
         
     def Tab_3_F_Plot_init(self , AMaS_Object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
@@ -448,9 +473,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 ymax , ymin = ymin , ymax
             AMaS_Object.plot_ylim_vals = (ymin , ymax)
         
-        self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_Object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot)
-        self.New_AMaST_Plotter.Return.connect(self.TR)
-        self.New_AMaST_Plotter.start()
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.Plot_Calc_Values(AMaS_Object),self.Tab_3_F_Plot ,ID))
+        #self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_Object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot)
+        #self.New_AMaST_Plotter.Return.connect(self.TR)
+        #self.New_AMaST_Plotter.start()
         
         
     def Tab_3_F_Plot(self , AMaS_Object):
@@ -554,33 +580,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         
     def Tab_3_F_Clear(self):
-        self.Tab_3_2D_Plot_Display.canvas.ax.clear()
         self.Tab_3_2D_Plot_Display.UseTeX(False)
+        self.Tab_3_2D_Plot_Display.canvas.ax.clear()
         try:
             self.Tab_3_2D_Plot_Display.canvas.draw()
         except RuntimeError:
             AF.ExceptionOutput(sys.exc_info(),False)
             print("Trying to output without LaTeX")
             self.Tab_3_2D_Plot_Display.UseTeX(False)
+            self.Tab_3_2D_Plot_Display.canvas.ax.clear()
             self.Tab_3_2D_Plot_Display.canvas.draw()
         brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
         brush.setStyle(QtCore.Qt.SolidPattern)
         for i in range(self.Tab_3_2D_Plot_History.count()):
             self.Tab_3_2D_Plot_History.item(i).setForeground(brush)
-        self.Tab_3_2D_Plot_Display.canvas.ax.clear()
-        self.Tab_3_2D_Plot_Display.UseTeX(False)
-        try:
-            self.Tab_3_2D_Plot_Display.canvas.draw()
-        except RuntimeError:
-            AF.ExceptionOutput(sys.exc_info(),False)
-            print("Trying to output without LaTeX")
-            self.Tab_3_2D_Plot_Display.UseTeX(False)
-            self.Tab_3_2D_Plot_Display.canvas.draw()
             
     def Tab_3_F_Sympy_Plot_Button(self):
-        self.New_AMaST_Creator = AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Sympy_Plot)
-        self.New_AMaST_Creator.Return.connect(self.TR)
-        self.New_AMaST_Creator.start()
+        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))
         
     def Tab_3_F_Sympy_Plot(self , AMaS_Object):
         try:

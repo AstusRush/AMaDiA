@@ -36,68 +36,49 @@ def ReloadModules():
 #------------------------------------------------------------------------------
 
 class AMaS_Creator(QtCore.QThread):
-    Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType)
-    def __init__(self,Text,Return_Function):
+    Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
+    def __init__(self,Text,Return_Function,ID=-1):
         QtCore.QThread.__init__(self)
         self.exiting = False
         self.Text = Text
         self.Return_Function = Return_Function
+        self.ID = ID
         
     def run(self):
         self.AMaS_Object = AC.AMaS(self.Text)
-        self.Return.emit(self.AMaS_Object , self.Return_Function)
+        self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID)
         self.exiting = True
-        #self.exit()
+        self.exit()
+        self.quit()
+        self.deleteLater()
         
-#------------------------------------------------------------------------------
-
-class AMaS_Calc_Thread(QtCore.QThread): #TODO: Outdated. Use AMaS_Thread instead
-    Calculator_Return = QtCore.pyqtSignal(AC.AMaS)
-#    LaTeX_Return = QtCore.pyqtSignal(AC.AMaS)
-    def __init__(self, AMaS_Object, Function): # TODOMode: Not happy with the EvalF thing...
-        QtCore.QThread.__init__(self)
-        self.exiting = False
-        self.AMaS_Object = AMaS_Object
-        self.Function = Function
-        
-    def run(self):
-        self.Function(self)
-        
-    def Evaluate(self):
-        self.AMaS_Object.Evaluate()
-        self.Calculator_Return.emit(self.AMaS_Object)
-        self.exiting = True
-        #self.exit()
-        
-    def Evaluate_NOT(self): # TODOMode: Not happy with the EvalF thing...
-        self.AMaS_Object.Evaluate(False)
-        self.Calculator_Return.emit(self.AMaS_Object)
-        self.exiting = True
-        #self.exit()
-            
-            
-""" Usage
-self.New_AMaS_Thread = AMaS_Calc_Thread()
-self.New_AMaS_Thread.Calculator_Return.connect(self.Tab_1_F_Calculate_Display)
-self.New_AMaS_Thread.start()
+"""Usage: only replace __***__
+self.TC(lambda ID: AT.AMaS_Creator( __Text__ , self.__Return_to_Method__ ,ID))
 """
-
 #------------------------------------------------------------------------------
 
 class AMaS_Thread(QtCore.QThread):
-    Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType)
-    def __init__(self , AMaS_Object , AMaS_Function , Return_Function):
+    Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
+    def __init__(self , AMaS_Object , AMaS_Function , Return_Function,ID=-1):
         QtCore.QThread.__init__(self)
+        self.ID = ID
         self.exiting = False
         self.AMaS_Object = AMaS_Object
         self.AMaS_Function = AMaS_Function
         self.Return_Function = Return_Function
         
     def run(self):
-        if self.AMaS_Function(self.AMaS_Object): #TODO: Give error message if not successful
-            self.Return.emit(self.AMaS_Object , self.Return_Function)
+        if self.AMaS_Function(): #TODO: Give error message if not successful
+            self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID)
         self.exiting = True
-        #self.exit()
+        self.exit()
+        self.quit()
+        self.deleteLater()
+        
+        
+"""Usage: only replace __***__
+self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.__METHOD__(AMaS_Object, __ARGUMENTS__ ),self.__Return_to_Method__ ,ID))
+"""
 
 ''' Usage:
 self.New_AMaS_Thread = AMaS_Calc_Thread(AMaS_Object , AC.Method , self.Return_Function)
