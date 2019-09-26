@@ -41,7 +41,12 @@ def ReloadModules():
 class AMaS: # Astus' Mathematical Structure
     def __init__(self, string):
         self.TimeStamp = AF.cTimeSStr()
-        self.string = string
+        if type(string) == list :
+            self.stringList = string
+            self.string = string[0]
+        else:
+            self.stringList = [string]
+            self.string = string
         self.init()
         self.init_plot()
         self.init_history()
@@ -52,8 +57,12 @@ class AMaS: # Astus' Mathematical Structure
         self.Evaluation = "Not evaluated yet."
         self.EvaluationEquation = "? = " + self.Text
         self.cstr = AF.AstusParse(self.string) # the converted string that is interpreteable
-        #print(self.cstr)
+        self.cstrList = []
+        for i in self.stringList:
+            self.cstrList.append(AF.AstusParse(i,False))
         self.LaTeX = "Not converted yet"
+        self.LaTeX_L = "Not converted yet" #For display if in LaTeX-Mode
+        self.LaTeX_N = "Not converted yet" #For display if in Not-LaTeX-Mode
         self.ConvertToLaTeX()
                 
                 
@@ -100,8 +109,34 @@ class AMaS: # Astus' Mathematical Structure
         except AF.common_exceptions: #as inst:
             AF.ExceptionOutput(sys.exc_info())
             self.LaTeX = "Fail"
-        
-
+            
+        self.LaTeX_L = ""
+        self.LaTeX_N = ""
+        n = len(self.cstrList)
+        for i,e in enumerate(self.cstrList):
+            n -= 1
+            self.LaTeX_L += "$\displaystyle"
+            self.LaTeX_N += "$"
+            LineText = ""
+            try:
+                if e.count("=") >= 1 :
+                    parts = self.cstrList[i].split("=")
+                    conv = ""
+                    for j in parts:
+                        if len(j)>0:
+                            conv += sympy.latex( sympy.S(j,evaluate=False))
+                        conv += " = "
+                    LineText += conv[:-3]
+                else:
+                    LineText += sympy.latex( sympy.S(e,evaluate=False))
+            except AF.common_exceptions: #as inst:
+                AF.ExceptionOutput(sys.exc_info())
+                LineText += "Could not convert this line"
+            LineText += "$"
+            if n > 0:
+                LineText += "\n"
+            self.LaTeX_L += LineText
+            self.LaTeX_N += LineText
         
     
     def Analyse(self): #TODO: Make it work or delete it

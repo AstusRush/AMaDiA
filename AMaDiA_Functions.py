@@ -35,7 +35,7 @@ def ReloadModules():
 
 # -----------------------------------------------------------------------------------------------------------------
 
-common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception)
+common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError)
 def ExceptionOutput(exc_info,extraInfo = True):
     try:
         print(cTimeSStr(),":")
@@ -107,7 +107,7 @@ def Counterpart(String):
     # https://pyformat.info/
     # https://docs.python.org/3.4/library/string.html
 
-def AstusParse(string):
+def AstusParse(string,ConsoleOutput = True):
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
     #---- Temporary Integral Handling for Astus's Integral Syntax
@@ -121,8 +121,8 @@ def AstusParse(string):
         string = string.replace(i[0],"(")
         string = string.replace(i[1],")")
     
-    
-    print("Input parsed: ",string)
+    if ConsoleOutput:
+        print("Input parsed: ",string)
     return string
 
 def IntegralParser_Astus(string):

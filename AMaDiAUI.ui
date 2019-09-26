@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>840</width>
+    <width>906</width>
     <height>634</height>
    </rect>
   </property>
@@ -57,6 +57,60 @@
         <string>LaTeX</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0" colspan="2">
+         <widget class="QSplitter" name="Tab_2_LaTeX_LowerSplitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QSplitter" name="Tab_2_LaTeX_UpperSplitter">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>20</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="QListWidget" name="Tab_2_LaTeX_History">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::ExtendedSelection</enum>
+            </property>
+           </widget>
+           <widget class="QWidget" name="layoutWidget">
+            <layout class="QVBoxLayout" name="Tab_2_LaTeX_verticalLayout">
+             <item>
+              <widget class="MplWidget_LaTeX" name="Tab_2_LaTeX_Viewer" native="true"/>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="Tab_2_LaTeX_LaTeXOutput">
+               <property name="toolTip">
+                <string>Only First line of Input!</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+          <widget class="QTextEdit" name="Tab_2_LaTeX_InputField">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="placeholderText">
+            <string>Add Mathematical Expression to be Converted to LaTeX</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
         <item row="1" column="1" rowspan="2">
          <widget class="QPushButton" name="Tab_2_LaTeX_ConvertButton">
           <property name="text">
@@ -76,73 +130,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QSplitter" name="Tab_2_LaTeX_LowerSplitter">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <widget class="QSplitter" name="Tab_2_LaTeX_UpperSplitter">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <widget class="QListWidget" name="Tab_2_LaTeX_History">
-            <property name="selectionMode">
-             <enum>QAbstractItemView::ExtendedSelection</enum>
-            </property>
-           </widget>
-           <widget class="QWidget" name="layoutWidget">
-            <layout class="QVBoxLayout" name="Tab_2_LaTeX_verticalLayout">
-             <item>
-              <widget class="QScrollArea" name="Tab_2_LaTeX_scrollArea">
-               <property name="sizeAdjustPolicy">
-                <enum>QAbstractScrollArea::AdjustToContents</enum>
-               </property>
-               <property name="widgetResizable">
-                <bool>true</bool>
-               </property>
-               <widget class="QWidget" name="Tab_2_LaTeX_scrollAreaWidgetContents">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>270</width>
-                  <height>206</height>
-                 </rect>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_4">
-                 <item row="0" column="0">
-                  <widget class="MplWidget" name="Tab_2_LaTeX_Viewer" native="true">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="Tab_2_LaTeX_LaTeXOutput"/>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-          <widget class="QTextEdit" name="Tab_2_LaTeX_InputField">
-           <property name="placeholderText">
-            <string>Add Mathematical Expression to be Converted to LaTeX</string>
-           </property>
-          </widget>
-         </widget>
         </item>
        </layout>
       </widget>
@@ -235,8 +222,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>238</width>
-                       <height>293</height>
+                       <width>254</width>
+                       <height>426</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_11">
@@ -520,7 +507,7 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>507</width>
+                <width>573</width>
                 <height>472</height>
                </rect>
               </property>
@@ -532,7 +519,7 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_6">
                <item row="0" column="0">
-                <widget class="MplWidget" name="Tab_3_2D_Plot_Display" native="true">
+                <widget class="MplWidget_2D_Plot" name="Tab_3_2D_Plot_Display" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
                    <horstretch>0</horstretch>
@@ -589,7 +576,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>840</width>
+     <width>906</width>
      <height>21</height>
     </rect>
    </property>
@@ -643,7 +630,13 @@ p, li { white-space: pre-wrap; }
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MplWidget</class>
+   <class>MplWidget_LaTeX</class>
+   <extends>QWidget</extends>
+   <header location="global">AMaDiA_Widgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MplWidget_2D_Plot</class>
    <extends>QWidget</extends>
    <header location="global">AMaDiA_Widgets</header>
    <container>1</container>
@@ -658,7 +651,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>Tab_2_LaTeX_ConvertButton</tabstop>
   <tabstop>Tab_2_LaTeX_LaTeXOutput</tabstop>
   <tabstop>Tab_2_LaTeX_History</tabstop>
-  <tabstop>Tab_2_LaTeX_scrollArea</tabstop>
   <tabstop>Tab_3_2D_Plot_Formula_Field</tabstop>
   <tabstop>Tab_3_2D_Plot_Button_Plot</tabstop>
   <tabstop>Tab_3_2D_Plot_Button_Clear</tabstop>

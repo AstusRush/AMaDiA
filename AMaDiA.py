@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.7.0"
+Version = "0.8.0"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -29,6 +29,11 @@ import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 import AMaDiA_Colour
 import AMaDiA_Threads as AT
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+import matplotlib
+
 
 
 
@@ -43,8 +48,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         super(MainWindow, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
+        
+        #Set UI variables
         self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
+        self.Tab_2_LaTeX_UpperSplitter.setSizes([1,300])
+        self.Tab_2_LaTeX_LowerSplitter.setSizes([10,1])
+        
+        # Initialize important variables and lists
         self.ans = "1"
         self.ThreadList = []
         
@@ -54,8 +65,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TextColour = (215/255, 213/255, 201/255)
         
         # Setup the graphic displays:
-        self.Tab_2_LaTeX_Viewer.canvas.ax.clear()
-        self.Tab_2_LaTeX_Viewer.canvas.ax.axis('off')
         self.Tab_3_2D_Plot_Display.canvas.ax.spines['bottom'].set_color(self.TextColour)
         self.Tab_3_2D_Plot_Display.canvas.ax.spines['left'].set_color(self.TextColour)
         self.Tab_3_2D_Plot_Display.canvas.ax.xaxis.label.set_color(self.TextColour)
@@ -63,25 +72,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='x', colors=self.TextColour)
         self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
         
-        
+        # Set up context menus for the histories
         self.Tab_1_Calculator_History.installEventFilter(self)
         self.Tab_2_LaTeX_History.installEventFilter(self)
         self.Tab_3_2D_Plot_History.installEventFilter(self)
         
+        # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
             self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setEnabled(True)
             self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setChecked(True)
         
-        # add to UI File
-        # import AMaDiA_Widgets
-        # Overwrite Widgets in the UI File
-        # self.Tab_2_LaTeX_Viewer = AMaDiA_Widgets.MplWidget(self.centralWidget)
-        
+        # Run other init methods
         self.ConnectSignals()
-        #self.SetColour() # TODO:Remove
         self.ColourMain()
         
-        #TODO: Check if this fixes the bug on the Laptop
+        
+        # Other things:
+        
+        #Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
         self.Tab_3_F_Clear()
         #One Little Bug Fix:
             #If using LaTeX Display in LaTeX Mode before using the Plotter for the first time it can happen that the plotter is not responsive until cleared.
@@ -116,13 +124,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.setPalette(palette)
         
         
-    def SetColour(self): #TODO: Remove
-        InputFieldColour = "background-color: rgb(67, 71, 78);color: rgb(215, 213, 201);"
-        self.Font_Size_spinBox.setStyleSheet(InputFieldColour)
-        self.centralwidget.setStyleSheet(InputFieldColour)
-        self.Tab_1_Calculator_InputField.setStyleSheet(InputFieldColour)
-        self.Tab_1_Calculator.setStyleSheet(InputFieldColour)
-        
     def ChangeFontSize(self):
         Size = self.Font_Size_spinBox.value()
         newFont = QtGui.QFont()
@@ -133,22 +134,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Menubar_Main.setFont(newFont)
         self.Menubar_Main_Options.setFont(newFont)
         
-        # TODO:Remove junk-code
-        
-        #InputFieldColour = "background-color: rgb(67, 71, 78);color: rgb(215, 213, 201);"
-        #InputFieldColour = "background-color: rgb(67, 71, 78);color: rgb(215, 213, 201); font: %ipx;"%Size
-        #self.setStyleSheet(InputFieldColour)
-        
-        #self.setFont(newFont)
-        #self.centralwidget.setFont(newFont)
-        
-        #self.Tab_1_Calculator_History.setFont(newFont)
-        #self.Tab_1_Calculator_InputField.setFont(newFont)
-        #self.Tab_2_LaTeX_History.setFont(newFont)
-        #self.Tab_2_LaTeX_InputField.setFont(newFont)
-        #self.Tab_2_LaTeX_LaTeXOutput.setFont(newFont)
-        
-# ---------------------------------- Options ----------------------------------
+# ---------------------------------- Option Toolbar Funtions ----------------------------------
     def ReloadModules(self):
         AC.ReloadModules()
         AF.ReloadModules()
@@ -311,12 +297,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ThreadList[ID].Return.connect(self.TR)
         self.ThreadList[ID].start()
         
-    def notify(self, obj, event):
+    def notify(self, obj, event): # Reimplementation of notify to catch deleted Threads. Refer to Patchnotes v0.7.0
         try:
             return super().notify(obj, event)
         except:
             AF.ExceptionOutput(sys.exc_info())
             return False
+
 # ---------------------------------- Tab_1_Calculator_ ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
         
@@ -328,7 +315,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID))
         
     def Tab_1_F_Calculate(self,AMaS_Object):
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.Evaluate(AMaS_Object,self.Menubar_Main_Options_action_Eval_Functions.isChecked()),self.Tab_1_F_Calculate_Display,ID))
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,
+                                          lambda:AC.AMaS.Evaluate(AMaS_Object , self.Menubar_Main_Options_action_Eval_Functions.isChecked()),
+                                          self.Tab_1_F_Calculate_Display , ID))
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         
@@ -349,9 +338,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     
 # ---------------------------------- Tab_2_LaTeX_ ----------------------------------
     def Tab_2_F_Convert(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_2_LaTeX_InputField.toPlainText(), self.Tab_2_F_Display,ID))
+        Text = self.Tab_2_LaTeX_InputField.toPlainText().split("\n")
+        self.TC(lambda ID: AT.AMaS_Creator(Text, self.Tab_2_F_Display,ID))
         
-    def Tab_2_F_Display(self,AMaS_Object):
+        
+    def Tab_2_F_Display(self , AMaS_Object):
         # Display stuff... The way it is displayed will hopefully change as this project goes on:
         
         
@@ -371,76 +362,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         self.Tab_2_LaTeX_History.scrollToBottom()
         
-        Text = AMaS_Object.LaTeX
-        
-        #-----------IMPORTANT-----------
-        if self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked():
-            Text = "$\displaystyle" + Text
-            Text += "$"
-            self.Tab_2_LaTeX_Viewer.UseTeX(True)
-        else:
-            Text = Text.replace("\limits","")
-            Text = "$" + Text
-            Text += "$"
-            self.Tab_2_LaTeX_Viewer.UseTeX(False)
-        #-----------IMPORTANT-----------
-        
-        
-        self.Tab_2_LaTeX_Viewer.canvas.ax.clear() # makes Space for the new text
-        
-        
-        self.Tab_2_LaTeX_Viewer.canvas.ax.set_title(Text,
-                      x=0.0, y=0.5, 
-                      horizontalalignment='left',
-                      verticalalignment='top',
-                      fontsize=self.Font_Size_spinBox.value()+10,
-                      color = self.TextColour)
-        
-        self.Tab_2_LaTeX_Viewer.canvas.ax.axis('off')
-        
-        # TODO: Does not work since the text is not considered part of the graph
-        # Make the Viewer big enought for the figure to not cut off the Text
-        # A ScrollArea is used to fit any size
-        # To set size use: setMinimumSize , setMinimumHeight , setMinimumWidth
-#        self.Tab_2_LaTeX_Viewer.canvas.fig.tight_layout()
-        self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(AMaS_Object.LaTeX)+100) # Below does not work! Instead using this
-        size = self.Tab_2_LaTeX_Viewer.canvas.fig.get_size_inches()*self.Tab_2_LaTeX_Viewer.canvas.fig.dpi # Gets the size in pixels
-        size += np.sum(self.Tab_2_LaTeX_Viewer.canvas.fig.get_constrained_layout_pads())
-#        self.Tab_2_LaTeX_Viewer.setMinimumSize(size[0],size[1]) # Seems to do nothing
-#        self.Tab_2_LaTeX_Viewer.setMaximumSize(size[0]+10,size[1]+10) # Seems to do nothing
-        
-        # I think the problem is, that the figure uses all space it can get and thus resizeing does not work correctly
-        # makeing the min bigger makes the figure bigger and makeing the max smaller makes the figure smaller (or if too small crashes everything)
-        # making the min smaller does not change the figures size (or it dcreses it a bit with each drawing untill it hits the min...)
-        
-        # Does not work! Instead using
-#        self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(LaTeX)+100)
-        
-        # Show the "graph"
-        try:
-            self.Tab_2_LaTeX_Viewer.canvas.draw()
-        except RuntimeError:
-            AF.ExceptionOutput(sys.exc_info(),False)
-            print("Trying to output without LaTeX")
-            Text = AMaS_Object.LaTeX
-            Text = Text.replace("\limits","")
-            Text = "$" + Text
-            Text += "$"
-            self.Tab_2_LaTeX_Viewer.UseTeX(False)
-            self.Tab_2_LaTeX_Viewer.canvas.ax.clear()
-            self.Tab_2_LaTeX_Viewer.canvas.ax.set_title(Text,
-                      x=0.0, y=0.5, 
-                      horizontalalignment='left',
-                      verticalalignment='top',
-                      fontsize=self.Font_Size_spinBox.value()+10,
-                      color = self.TextColour)
-            self.Tab_2_LaTeX_Viewer.canvas.ax.axis('off')
-            #--------------------------
-            self.Tab_2_LaTeX_Viewer.setMinimumWidth(12*len(AMaS_Object.LaTeX)+100)
-            #--------------------------
-            self.Tab_2_LaTeX_Viewer.canvas.draw()
-        finally:
-            self.Tab_2_LaTeX_Viewer.UseTeX(False)
+        self.Tab_2_LaTeX_Viewer.Display(AMaS_Object.LaTeX_L,AMaS_Object.LaTeX_N
+                                        ,self.Font_Size_spinBox.value(),self.TextColour
+                                        ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                        )
         
         
 # ---------------------------------- Tab_3_2D_Plot_ ----------------------------------
@@ -477,6 +402,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_Object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot)
         #self.New_AMaST_Plotter.Return.connect(self.TR)
         #self.New_AMaST_Plotter.start()
+        
+        
         
         
     def Tab_3_F_Plot(self , AMaS_Object):
