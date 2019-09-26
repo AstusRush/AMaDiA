@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.8.0.1"
+Version = "0.8.0.2"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -175,7 +175,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
             if self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
                 action = menu.addAction('+ Copy Input')
-                action.triggered.connect(lambda: self.action_H_Copy_string(source,event))
+                action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
                 action = menu.addAction('+ Copy cString')
                 action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
             if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
@@ -215,9 +215,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).LaTeX)
         
-    def action_H_Copy_string(self,source,event):
+    def action_H_Copy_Input(self,source,event):
         item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).string)
+        QApplication.clipboard().setText(item.data(100).Input)
         
     def action_H_Copy_cstr(self,source,event):
         item = source.itemAt(event.pos())
@@ -338,8 +338,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     
 # ---------------------------------- Tab_2_LaTeX_ ----------------------------------
     def Tab_2_F_Convert(self):
-        Text = self.Tab_2_LaTeX_InputField.toPlainText().split("\n")
-        self.TC(lambda ID: AT.AMaS_Creator(Text, self.Tab_2_F_Display,ID))
+        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_2_LaTeX_InputField.toPlainText(), self.Tab_2_F_Display,ID))
         
         
     def Tab_2_F_Display(self , AMaS_Object):

@@ -40,7 +40,9 @@ def ReloadModules():
 
 class AMaS: # Astus' Mathematical Structure
     def __init__(self, string):
+        self.Input = string
         self.TimeStamp = AF.cTimeSStr()
+        string = string.split("\n")
         if type(string) == list :
             self.stringList = string
             self.string = string[0]
