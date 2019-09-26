@@ -115,8 +115,6 @@ class AMaS: # Astus' Mathematical Structure
         n = len(self.cstrList)
         for i,e in enumerate(self.cstrList):
             n -= 1
-            self.LaTeX_L += "$\displaystyle"
-            self.LaTeX_N += "$"
             LineText = ""
             try:
                 if e.count("=") >= 1 :
@@ -131,12 +129,20 @@ class AMaS: # Astus' Mathematical Structure
                     LineText += sympy.latex( sympy.S(e,evaluate=False))
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
-                LineText += "Could not convert this line"
-            LineText += "$"
-            if n > 0:
-                LineText += "\n"
-            self.LaTeX_L += LineText
-            self.LaTeX_N += LineText
+                # LineText += AF.AstusParseInverse(e) #TODO: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
+                LineText += e
+                if n > 0:
+                    LineText += "\n"
+                self.LaTeX_L += LineText
+                self.LaTeX_N += LineText
+            else:
+                LineText += "$"
+                if n > 0:
+                    LineText += "\n"
+                self.LaTeX_L += "$\displaystyle"
+                self.LaTeX_N += "$"
+                self.LaTeX_L += LineText
+                self.LaTeX_N += LineText
         
     
     def Analyse(self): #TODO: Make it work or delete it
