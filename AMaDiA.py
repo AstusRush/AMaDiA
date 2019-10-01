@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.8.1.1"
+Version = "0.8.1.2"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -540,7 +540,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 p = self.Tab_3_2D_Plot_Display.canvas.ax.axvline(x = AMaS_Object.plot_x_vals,color='red')
             else:
                 p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
-            AMaS_Object.current_ax = p[0]
+            try:
+                AMaS_Object.current_ax = p[0]
+            except AF.common_exceptions:
+                AMaS_Object.current_ax = p
+            
             if AMaS_Object.plot_grid:
                 self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
             else:
