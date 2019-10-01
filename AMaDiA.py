@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.8.1"
+Version = "0.8.1.1"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -348,6 +348,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
            elif source is self.Tab_3_2D_Plot_History:
                item.data(100).tab_3_is = False
                item.data(100).tab_3_ref = None
+               if item.data(100).current_ax != None:
+                   item.data(100).current_ax.remove()
+                   item.data(100).current_ax = None
+                   self.Tab_3_F_RedrawPlot()
         
 # ---------------------------------- 2D Plot Context Menu ----------------------------------
     def action_2D_SavePlt(self):
@@ -536,7 +540,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 p = self.Tab_3_2D_Plot_Display.canvas.ax.axvline(x = AMaS_Object.plot_x_vals,color='red')
             else:
                 p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
-            
+            AMaS_Object.current_ax = p[0]
             if AMaS_Object.plot_grid:
                 self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
             else:
@@ -624,6 +628,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         brush.setStyle(QtCore.Qt.SolidPattern)
         for i in range(self.Tab_3_2D_Plot_History.count()):
             self.Tab_3_2D_Plot_History.item(i).setForeground(brush)
+            self.Tab_3_2D_Plot_History.item(i).data(100).current_ax = None
             
     def Tab_3_F_Sympy_Plot_Button(self):
         self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))

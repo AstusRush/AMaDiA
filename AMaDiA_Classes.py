@@ -89,6 +89,7 @@ class AMaS: # Astus' Mathematical Structure
             self.plottable = True
         else:
             self.plottable = False
+        self.current_ax = None
         self.plot_data_exists = False
         self.plot_ratio = False
         self.plot_grid = True
