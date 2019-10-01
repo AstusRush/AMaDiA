@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.8.0.2"
+Version = "0.8.1"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -11,6 +11,7 @@ import datetime
 import platform
 import errno
 import os
+import pathlib
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import importlib
@@ -49,11 +50,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         sympy.init_printing() # doctest: +SKIP
         self.setupUi(self)
         
-        #Set UI variables
+        # Create Folders if not already existing
+        self.CreateFolders()
+        
+        # Set UI variables
+        #Set starting tabs
         self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
-        self.Tab_2_LaTeX_UpperSplitter.setSizes([1,300])
-        self.Tab_2_LaTeX_LowerSplitter.setSizes([10,1])
+        #Set Spliiter Start Values
+        self.Tab_2_LaTeX_UpperSplitter.setSizes([163,699])
+        self.Tab_2_LaTeX_LowerSplitter.setSizes([391,70])
+        self.Tab_3_2D_Plot_splitter.setSizes([297,565])
+        #To cofigure use:
+        #print(self.Tab_2_LaTeX_UpperSplitter.sizes())
+        #print(self.Tab_2_LaTeX_LowerSplitter.sizes())
+        #print(self.Tab_3_2D_Plot_splitter.sizes())
         
         # Initialize important variables and lists
         self.ans = "1"
@@ -77,6 +88,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_2_LaTeX_History.installEventFilter(self)
         self.Tab_3_2D_Plot_History.installEventFilter(self)
         
+        # Set up other Event Handlers
+        self.Tab_2_LaTeX_InputField.installEventFilter(self)
+        
         # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
             self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setEnabled(True)
@@ -85,8 +99,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Run other init methods
         self.ConnectSignals()
         self.ColourMain()
-        
-        
+        self.OtherContextMenuSetup()
+
         # Other things:
         
         #Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
@@ -98,6 +112,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # A new variable that checks if the plot has already been used and if the LaTeX view has been used.
             # If the first is False and the seccond True than clear when the plot button is pressed and cjange the variables to ensure that this only happens once
             #       to not accidentially erase the plots of the user as this would be really bad...
+        self.Tab_1_Calculator_InputField.setFocus()
         
 # ---------------------------------- Init and Maintanance ----------------------------------
 
@@ -114,6 +129,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
         self.Tab_3_2D_Plot_Button_Plot_SymPy.clicked.connect(self.Tab_3_F_Sympy_Plot_Button)
         self.Tab_3_2D_Plot_RedrawPlot_Button.clicked.connect(self.Tab_3_F_RedrawPlot)
+        self.Tab_3_2D_Plot_Button_SavePlot.clicked.connect(self.action_2D_SavePlt)
     
     def ColourMain(self):
         palette = AMaDiA_Colour.palette()
@@ -134,6 +150,45 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Menubar_Main.setFont(newFont)
         self.Menubar_Main_Options.setFont(newFont)
         
+    def CreateFolders(self):
+        self.pathOK = False
+        # Find out Path
+        self.selfPath = os.path.abspath(__file__)
+        self.FolderPath = os.path.dirname(__file__)
+        # Check if the path that was returned is correct
+        fpath = self.FolderPath
+        if platform.system() == 'Windows':
+            fpath += "\\AMaDiA.py"
+        elif platform.system() == 'Linux':
+            fpath += "/AMaDiA.py"
+        fpath = pathlib.Path(fpath)
+        if fpath.is_file():
+            self.pathOK = True
+            # Create Plots folder to save plots
+            self.PlotPath = self.FolderPath
+            if platform.system() == 'Windows':
+                self.PlotPath += "\\Plots\\"
+            elif platform.system() == 'Linux':
+                self.PlotPath += "/Plots/"
+            try:
+                os.makedirs(self.PlotPath[:-1])
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    AF.ExceptionOutput(sys.exc_info())
+                    self.pathOK = False
+            # Create Config folder to save configs
+            self.ConfigFolderPath = self.FolderPath
+            if platform.system() == 'Windows':
+                self.ConfigFolderPath += "\\Config\\"
+            elif platform.system() == 'Linux':
+                self.ConfigFolderPath += "/Config/"
+            try:
+                os.makedirs(self.ConfigFolderPath[:-1])
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    AF.ExceptionOutput(sys.exc_info())
+                    self.pathOK = False
+        
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
     def ReloadModules(self):
         AC.ReloadModules()
@@ -149,11 +204,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         importlib.reload(AMaDiA_Colour)
         
         self.ColourMain()
+
+
+
+# ---------------------------------- Events and Context Menu ----------------------------------
+    def OtherContextMenuSetup(self):
+        self.Tab_3_2D_Plot_Display.canvas.mpl_connect('button_press_event', self.Plot_2D_Context_Menu)
+        #pass
         
         
-        
-# ---------------------------------- History Context Menu ----------------------------------
-    
+# ---------------------------------- 2D Plot Context Menu ---------------------------------- 
+    def Plot_2D_Context_Menu(self,event):
+        #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+        #      ('double' if event.dblclick else 'single', event.button,
+        #       event.x, event.y, event.xdata, event.ydata))
+        if event.button == 3:
+            menu = QtWidgets.QMenu()
+            action = menu.addAction('Save Plot')
+            action.triggered.connect(self.action_2D_SavePlt)
+            cursor = QtGui.QCursor()
+            menu.exec_(cursor.pos())
+            
         
     def HistoryContextMenu(self, QPos): #TODO:Remove
         self.listMenu= QtWidgets.QMenu()
@@ -162,9 +233,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         parentPosition = self.Tab_1_Calculator_History.mapToGlobal(QtCore.QPoint(0, 0))        
         self.listMenu.move(parentPosition + QPos)
         self.listMenu.show() 
-
-
+    
+    
     def eventFilter(self, source, event): # TODO: Add more
+        #print(event.type())
+# ---------------------------------- History Context Menu ----------------------------------
         if (event.type() == QtCore.QEvent.ContextMenu and
             (source is self.Tab_1_Calculator_History or source is self.Tab_2_LaTeX_History or source is self.Tab_3_2D_Plot_History )and
             source.itemAt(event.pos())):
@@ -198,14 +271,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             menu.addSeparator()
             action = menu.addAction('Delete')
             action.triggered.connect(lambda: self.action_H_Delete(source,event))
-            if menu.exec_(event.globalPos()):
-                pass #TODO: This if-case seems rather pointless but without something in the in it's condition it doesn't work... sort this out...
+            menu.exec_(event.globalPos())
+            #    pass #TODO: This if-case seems rather pointless but without something in the in it's condition it doesn't work... sort this out...
                 #item = source.itemAt(event.pos())
                 #QApplication.clipboard().setText(item.data(100).Text)
             return True
+# ---------------------------------- Other Events ----------------------------------
+        elif (event.type() == QtCore.QEvent.KeyPress  # Tab_2_LaTeX_InputField: use crtl+return to convert
+              and source is self.Tab_2_LaTeX_InputField # TODO: Maybe use return to convert and shift+return for new lines...
+              and event.key() == QtCore.Qt.Key_Return
+              and event.modifiers() == QtCore.Qt.ControlModifier):
+            self.Tab_2_F_Convert()
+            return True
         return super(MainWindow, self).eventFilter(source, event)
         
-# ----------------
+# ---------------------------------- History Context Menu Actions ----------------------------------
          
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
@@ -269,12 +349,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                item.data(100).tab_3_is = False
                item.data(100).tab_3_ref = None
         
+# ---------------------------------- 2D Plot Context Menu ----------------------------------
+    def action_2D_SavePlt(self):
+        if self.pathOK:
+            Filename = self.PlotPath
+            Filename += AF.cTimeFullStr()
+            Filename += ".png"
+            try:
+                print(Filename)
+                self.Tab_3_2D_Plot_Display.canvas.fig.savefig(Filename , facecolor=AF.background_Colour , edgecolor=AF.background_Colour )
+            except:
+                AF.ExceptionOutput(sys.exc_info())
+        else:
+            print("Could not save Plot: Could not validate save location")
         
 # ---------------------------------- Thread Handler ----------------------------------
 
-    def TR(self,AMaS_Object,Function,ID=-1):
+    def TR(self, AMaS_Object , Function , ID=-1 , Eval = None):
         self.Function = Function
-        self.Function(AMaS_Object)
+        if Function == self.Tab_1_F_Calculate:
+            if Eval == None:
+                Eval=self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+            self.Function(AMaS_Object,Eval)
+        else:
+            self.Function(AMaS_Object)
         
     def TC(self,Thread):
         ID = -1
@@ -306,18 +404,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Tab_1_Calculator_ ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
-        
-        # Input.EvaluateLaTeX() # TODO: left( and right) brakes it...
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ControlModifier:
+            Eval = False
+        else:
+            Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+        # Input.EvaluateLaTeX() # Could be used to evaluate LaTeX but: left( and right) brakes it...
         TheInput = self.Tab_1_Calculator_InputField.text()
         TheInput = TheInput.replace("ans",self.ans)
         if TheInput == "len()":
             TheInput = str(len(self.ThreadList))
-        self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID))
+        self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID,Eval))
         
-    def Tab_1_F_Calculate(self,AMaS_Object):
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,
-                                          lambda:AC.AMaS.Evaluate(AMaS_Object , self.Menubar_Main_Options_action_Eval_Functions.isChecked()),
-                                          self.Tab_1_F_Calculate_Display , ID))
+        
+        
+    def Tab_1_F_Calculate(self,AMaS_Object,Eval = None):
+        if Eval == None:
+            Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object , Eval), self.Tab_1_F_Calculate_Display , ID))
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         

@@ -40,18 +40,24 @@ def ReloadModules():
 
 class AMaS: # Astus' Mathematical Structure
     def __init__(self, string):
-        self.Input = string
-        self.TimeStamp = AF.cTimeSStr()
-        string = string.split("\n")
-        if type(string) == list :
-            self.stringList = string
-            self.string = string[0]
+        try:
+            self.Input = string
+            self.TimeStamp = AF.cTimeSStr()
+            #string = string.split("\n")
+            string = string.splitlines()
+            if type(string) == list :
+                self.stringList = string
+                self.string = string[0]
+            else:
+                self.stringList = [string]
+                self.string = string
+            self.init()
+            self.init_plot()
+            self.init_history()
+        except AF.common_exceptions :
+            self.Exists = False
         else:
-            self.stringList = [string]
-            self.string = string
-        self.init()
-        self.init_plot()
-        self.init_history()
+            self.Exists = True
     
     def init(self):
         self.Text = AF.AstusParseInverse(self.string)
@@ -78,7 +84,8 @@ class AMaS: # Astus' Mathematical Structure
                 
     def init_plot(self):
         # TODO: Improve this
-        if self.cstr.count("=")==0 and self.cstr.count("x")>=1:
+        #if self.cstr.count("=")==0 and self.cstr.count("x")>=1: #TODO: use: if substr in string:
+        if self.cstr.count("=")==0 and "x" in self.cstr:
             self.plottable = True
         else:
             self.plottable = False
@@ -98,7 +105,8 @@ class AMaS: # Astus' Mathematical Structure
         
     def ConvertToLaTeX(self):
         try:
-            if self.cstr.count("=") >= 1 :
+            #if self.cstr.count("=") >= 1 : #TODO: use: if substr in string:
+            if "=" in self.cstr:
                 parts = self.cstr.split("=")
                 self.LaTeX = ""
                 for i in parts:
@@ -110,7 +118,7 @@ class AMaS: # Astus' Mathematical Structure
                 self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
         except AF.common_exceptions: #as inst:
             AF.ExceptionOutput(sys.exc_info())
-            self.LaTeX = "Fail"
+            self.LaTeX = "Could not convert"
             
         self.LaTeX_L = ""
         self.LaTeX_N = ""
@@ -119,7 +127,8 @@ class AMaS: # Astus' Mathematical Structure
             n -= 1
             LineText = ""
             try:
-                if e.count("=") >= 1 :
+                #if e.count("=") >= 1 : #TODO: use: if substr in string:
+                if "=" in e :
                     parts = self.cstrList[i].split("=")
                     conv = ""
                     for j in parts:
@@ -166,8 +175,8 @@ class AMaS: # Astus' Mathematical Structure
         if self.cstr.count("=") == 1 :
             try:
                 temp = self.cstr
-                if EvalF:
-                    temp.replace("Integral","integrate")
+                #if EvalF:
+                #    temp.replace("Integral","integrate")
                 temp = "(" + temp
                 temp = temp.replace("=" , ") - (")
                 temp = temp + ")"
@@ -188,7 +197,7 @@ class AMaS: # Astus' Mathematical Structure
                 else:
                     ans = parse_expr(temp)
                     ans = ans.evalf()
-                    self.Evaluation = "True" if ans == 0 else "False: "+str(ans)
+                    self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
                     
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
@@ -201,7 +210,8 @@ class AMaS: # Astus' Mathematical Structure
         else:
             try:
                 ans = parse_expr(self.cstr)
-                try: # TODO: A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                    # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
                     ans = ans.doit()
                 except ValueError:
                     print("Could not simplify "+str(ans))
@@ -257,6 +267,7 @@ class AMaS: # Astus' Mathematical Structure
         
         if True : #self.plottable: #TODO: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
             x = sympy.symbols('x')
+            n = sympy.symbols('n')
             try:
                 Function = parse_expr(self.cstr)
             except AF.common_exceptions: #as inst:
@@ -279,11 +290,11 @@ class AMaS: # Astus' Mathematical Structure
             self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
             try:
                 #e = sympy.numbers.E
-                evalfunc = sympy.lambdify(x, Function, modules='sympy')
+                evalfunc = sympy.lambdify(x, Function, modules='sympy') # Can not handle exp(x) and cos(),etc ... Maybe try the loop to go through every value...
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
                 
                 
-                if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == ():
+                if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == (): #This also catches the case exp(x)
                     self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
                 if self.plot_y_vals.shape != self.plot_x_vals.shape:
                     raise Exception("Dimensions do not match")

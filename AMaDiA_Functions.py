@@ -48,6 +48,7 @@ def ExceptionOutput(exc_info,extraInfo = True):
     except common_exceptions:
         print("An exception occured while trying to print an exception!")
 
+background_Colour = (54/255, 57/255, 63/255)
 # -----------------------------------------------------------------------------------------------------------------
 
 def cTimeStr():
@@ -55,6 +56,9 @@ def cTimeStr():
 
 def cTimeSStr():
     return str(datetime.datetime.now().strftime('%H:%M:%S'))
+
+def cTimeFullStr():
+    return str(datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
 
 def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     # Finds nth occurence of tofind in string between start and end, else returns -1
@@ -120,6 +124,11 @@ def AstusParse(string,ConsoleOutput = True):
     for i in ART.l_pairs_brackets_not_interpreteable:
         string = string.replace(i[0],"(")
         string = string.replace(i[1],")")
+        
+    # Add multiplication signs where a human might leave them out
+    string = string.replace(")(",")*(") # Add them between brackets
+    # TODO: Add them between letters, constants and between numbers and letters and constants
+    # https://docs.python.org/3/library/stdtypes.html#str.isalnum
     
     if ConsoleOutput:
         print("Input parsed: ",string)

@@ -1,10 +1,10 @@
 Calculator:
-	
+	Sum(1/(n·ln(n)),(n,2,oo))	Outputs: 6.5	Should Output: ...the series diverges... it should not output anything? It should output NaN
 	
 	
 LaTeX:
 	exp(x+ln(x))	Displays: x e^{x}	Should display: exp(x+ln(x))
-	
+	cos(2·2·π·t)	Displays: cos(2·π·t)	Should display: cos(2·2·π·t) or cos(4·π·t)
 	
 	
 Plot:

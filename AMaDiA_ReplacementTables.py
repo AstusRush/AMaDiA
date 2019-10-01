@@ -10,7 +10,7 @@ Created on Thu Sep  5 16:22:05 2019
 
 # ₁₂₃₄₅₆₇₈₉₀¹²³⁴⁵⁶⁷⁸⁹⁰ # DONE singular
 # ∫ᵀ√≠≈≙
-# ±ħ∈ℝΘτ̅ΨΩΠ̈∂ΣΔΦΓ↓←∞Λ@ ερθζ̲ψωπασδφγ↑→κλ⇐Ξⁿₙ‘ηº×÷—⇔ 
+# ±ħ∈ℝΘτ̅ΨΩΠ̈∂ΣΔΦΓ↓←∞Λ@ ερθζ̲ψωπασδφγ↑→κλ⇐Ξⁿₙ‘ηº×÷—⇔ # Greek letters are done
 
 
 # ---------------------------------- Lists l_ ----------------------------------
@@ -30,11 +30,35 @@ LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotat
 
 n_standard = [["",""]]
 n_standard_integrals = [["integral","Integral"],["Integrate","Integral"],["integrate","Integral"],["int ","Integral"],["Int ","Integral"],["∫","Integral"]]
-n_greek_letters = [["π"," pi "],["λ"," lamda "]]
-n_constants = [["π"," pi "]]
+n_greek_letters = [["\u0391"," Alpha "],["\u03b1"," alpha "],
+                   ["\u0392"," Beta "],["\u03b2"," beta "],
+                   ["\u0393"," Gamma "],["\u03b3"," gamma "],
+                   ["\u0394"," Delta "],["\u03b4"," delta "],
+                   ["\u0395"," Epsilon "],["\u03b5"," epsilon "],
+                   ["\u0396"," Zeta "],["\u03b6"," zeta "],
+                   ["\u0397"," Eta "],["\u03b7"," eta "],
+                   ["\u0398"," Theta "],["\u03b8"," theta "],
+                   ["\u0399"," Iota "],["\u03b9"," iota "],
+                   ["\u039a"," Kappa "],["\u03ba"," kappa "],
+                   ["\u039b"," Lamda "],["\u03bb"," lamda "], # Lambda is a function in sympy so they spell the letter lamda
+                   ["\u039c"," Mu "],["\u03bc"," mu "],
+                   ["\u039d"," Nu "],["\u03bd"," nu "],
+                   ["\u039e"," Xi "],["\u03be"," xi "],
+                   ["\u039f"," Omicron "],["\u03bf"," omicron "],
+                   ["\u03a0"," Pi "],["\u03c0"," pi "],
+                   ["\u03a1"," Rho "],["\u03c1"," rho "],
+                   ["\u03a3"," Sigma "],["\u03c3"," sigma "],
+                   ["\u03a4"," Tau "],["\u03c4"," tau "],
+                   ["\u03a5"," Upsilon "],["\u03c5"," upsilon "],
+                   ["\u03a6"," Phi "],["\u03c6"," phi "],
+                   ["\u03a7"," chi "],["\u03c7"," chi "], #Capital Chi is a function in sympy!!! Converting into lower case chi instead
+                   ["\u03a8"," Psi "],["\u03c8"," psi "],
+                   ["\u03a9"," Omega "],["\u03c9"," omega "]
+                   ]
+n_constants = [["\u03c0"," pi "],["∞"," oo "]]
 n_operators = [["^","**"],["·","*"]]
 n_operators_special = [["√","sqrt"],["∫","Integral"]]
-n_operators_notinv = [["—","-"],["×","*"],["÷","/"]]
+n_operators_notinv = [["–","-"],["—","-"],["×","*"],["÷","/"]]
 n_space = [[" "," "]]
 
 LIST_n_all = [n_standard_integrals , n_greek_letters , n_constants , n_operators , n_operators_special , n_operators_notinv , n_space]

@@ -36,17 +36,19 @@ def ReloadModules():
 #------------------------------------------------------------------------------
 
 class AMaS_Creator(QtCore.QThread):
-    Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
-    def __init__(self,Text,Return_Function,ID=-1):
+    Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int , bool)
+    def __init__(self,Text,Return_Function,ID=-1,Eval=True):
         QtCore.QThread.__init__(self)
         self.exiting = False
         self.Text = Text
+        self.Eval = Eval
         self.Return_Function = Return_Function
         self.ID = ID
         
     def run(self):
         self.AMaS_Object = AC.AMaS(self.Text)
-        self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID)
+        if self.AMaS_Object.Exists:
+            self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
         self.exiting = True
         self.exit()
         self.quit()
