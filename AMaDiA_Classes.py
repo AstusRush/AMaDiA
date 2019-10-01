@@ -169,7 +169,7 @@ class AMaS: # Astus' Mathematical Structure
                 elif i_curr < i_first:
                     i_first = i_curr
     
-    def Evaluate(self,EvalF = True): # TODOMode: Not happy with the EvalF thing...
+    def Evaluate(self,EvalF = True):
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
@@ -186,7 +186,7 @@ class AMaS: # Astus' Mathematical Structure
                 ans = sympy.solve(ans)
                 self.Evaluation = "{ "
                 for i in ans:
-                    if EvalF and not type(i) == dict: # TODOMode: Not happy with the EvalF thing... BUT happy with i.evalf()!!!!!!
+                    if EvalF and not type(i) == dict:
                         i = i.evalf()
                     i_temp = str(i)
                     i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers
@@ -197,7 +197,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.Evaluation += " }"
                 else:
                     ans = parse_expr(temp)
-                    ans = ans.evalf()
+                    ans = ans.doit()
                     self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
                     
             except AF.common_exceptions: #as inst:
@@ -233,6 +233,24 @@ class AMaS: # Astus' Mathematical Structure
             return False
         else:
             return True
+        
+    def EvaluateEquation_1(self,EvalF = True): # This is currently being used
+        temp = self.cstr
+        #if EvalF:
+        #    temp.replace("Integral","integrate")
+        temp = "(" + temp
+        temp = temp.replace("=" , ") - (")
+        temp = temp + ")"
+        return True
+        
+    def EvaluateEquation_2(self,EvalF = True): #TODO: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
+        temp = self.cstr
+        temp1 , temp2 = self.cstr.split("=",1)
+        temp = "Eq("+temp1
+        temp += ","
+        temp += temp2
+        temp += ")"
+        return True
                 
     def EvaluateLaTeX(self):
         # https://docs.sympy.org/latest/modules/solvers/solvers.html

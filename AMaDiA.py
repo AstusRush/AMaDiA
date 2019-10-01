@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.8.1.2"
+Version = "0.8.1.3"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -639,6 +639,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
     def Tab_3_F_Sympy_Plot(self , AMaS_Object):
         try:
+            x,y,z = sympy.symbols('x y z')
+            
+            temp = AMaS_Object.cstr
+            if AMaS_Object.cstr.count("=") == 1 :
+                temp1 , temp2 = AMaS_Object.cstr.split("=",1)
+                temp = "Eq("+temp1
+                temp += ","
+                temp += temp2
+                temp += ")"
+            temp = parse_expr(temp)
             xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
             if xmax < xmin:
                 xmax , xmin = xmin , xmax
@@ -648,15 +658,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 ymax , ymin = ymin , ymax
             ylims = (ymin , ymax)
             if self.Tab_3_2D_Plot_XLim_Check.isChecked() and self.Tab_3_2D_Plot_YLim_Check.isChecked():
-                sympy.plot(AMaS_Object.cstr , xlim = xlims , ylim = ylims)
+                sympy.plot(temp , xlim = xlims , ylim = ylims)
             elif self.Tab_3_2D_Plot_XLim_Check.isChecked():
-                sympy.plot(AMaS_Object.cstr , xlim = xlims)
+                sympy.plot(temp , xlim = xlims)
             elif self.Tab_3_2D_Plot_YLim_Check.isChecked():
-                sympy.plot(AMaS_Object.cstr , ylim = ylims)
+                sympy.plot(temp , ylim = ylims)
             else:
-                sympy.plot(AMaS_Object.cstr)
-        except AF.common_exceptions:
-            AF.ExceptionOutput(sys.exc_info())
+                sympy.plot(temp)
+        except AF.common_exceptions: # TODO: plot_implicit uses other syntax for limits
+            try:
+                sympy.plot_implicit(temp)
+            except AF.common_exceptions:
+                try:
+                    sympy.plot_implicit(parse_expr(AMaS_Object.string))
+                except AF.common_exceptions:
+                    AF.ExceptionOutput(sys.exc_info())
         
 # ---------------------------------- Tab_4_??? ----------------------------------
 
