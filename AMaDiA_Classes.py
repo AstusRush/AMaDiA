@@ -44,7 +44,7 @@ IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_Multi_Dim]
 
 class AMaS: # Astus' Mathematical Structure
 
-# ---------------------------------- INIT ----------------------------------
+ # ---------------------------------- INIT ----------------------------------
     def __init__(self, string, Iam):
         self.Input = string
         self.TimeStamp = AF.cTimeSStr()
@@ -155,7 +155,7 @@ class AMaS: # Astus' Mathematical Structure
         
 
     
-# ---------------------------------- Update, Rename, etc ----------------------------------
+ # ---------------------------------- Update, Rename, etc ----------------------------------
     def Update(self,string=None):
         if string != None:
             self.string = string
@@ -166,7 +166,7 @@ class AMaS: # Astus' Mathematical Structure
         self.Name = Name
         return True
         
-# ---------------------------------- LaTeX Converter ----------------------------------
+ # ---------------------------------- LaTeX Converter ----------------------------------
 
     def ConvertToLaTeX(self):
         # Create the string that the user can copy
@@ -250,7 +250,7 @@ class AMaS: # Astus' Mathematical Structure
                     i_first = i_curr
 
 
-# ---------------------------------- Calculator Methods ----------------------------------
+ # ---------------------------------- Calculator Methods ----------------------------------
 
 
     def Evaluate(self,Eval = True):
@@ -362,7 +362,7 @@ class AMaS: # Astus' Mathematical Structure
         return True
             
             
-# ---------------------------------- 2D Plotter Methods ----------------------------------
+ # ---------------------------------- 2D Plotter Methods ----------------------------------
             
     def Plot_2D_Calc_Values(self):
         if self.cstr.count("=")>=1:
@@ -467,7 +467,7 @@ class AMaS: # Astus' Mathematical Structure
             return False
 
 
-# ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------
+ # ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------
 
     def AddVariable(self, Name, Value):
         self.Variables[Name] = Value
