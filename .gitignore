@@ -12,3 +12,5 @@ Demo Screenshots
 TestCode
 Plots
 Config
+*.code-workspace
+.vscode

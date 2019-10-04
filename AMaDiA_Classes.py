@@ -36,42 +36,95 @@ def ReloadModules():
     importlib.reload(ART)
 
 
-
+Iam_Lost = "Lost"
+Iam_Normal = "Normal"
+Iam_2D_plot = "2D-plot"
+Iam_Multi_Dim = "Multi-Dim"
+IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_Multi_Dim]
 
 class AMaS: # Astus' Mathematical Structure
-    def __init__(self, string):
+
+# ---------------------------------- INIT ----------------------------------
+    def __init__(self, string, Iam):
+        self.Input = string
+        self.TimeStamp = AF.cTimeSStr()
+        self.TimeStampFull = AF.cTimeFullStr()
+        self.Name = "No Name Given"
+        self.init_bools()
+        self.Iam = Iam
+        self.Variables = {}
         try:
-            self.Input = string
-            self.TimeStamp = AF.cTimeSStr()
-            #string = string.split("\n")
-            string = string.splitlines()
-            if type(string) == list :
-                self.stringList = string
-                self.string = string[0]
-            else:
-                self.stringList = [string]
-                self.string = string
-            self.init()
-            self.init_plot()
-            self.init_history()
+            self.INIT_WhatAmI(string)
         except AF.common_exceptions :
+            AF.ExceptionOutput(sys.exc_info())
             self.Exists = False
         else:
             self.Exists = True
     
-    def init(self):
+    def init_bools(self):
+        self.multiline = False
+        self.Plot_is_initialized = False
+        self.plot_data_exists = False
+        self.init_history()
+
+    def INIT_WhatAmI(self,string):
+        if self.Iam == Iam_Normal:
+            self.INIT_Normal(string)
+        elif self.Iam == Iam_2D_plot:
+            self.INIT_2D_plot(string)
+        elif self.Iam == Iam_Multi_Dim:
+            self.INIT_Multi_Dim(string)
+        else:
+            print("AMaS Object: I am Lost! I don't know who I am! "+self.Iam+" is not known to me! I'm gonna pretend I am normal!")
+            self.Iam = Iam_Lost
+            self.INIT_Normal(string)
+
+
+    def INIT_Normal(self,string):
+        string = string.splitlines()
+        if type(string) == list :
+            if len(string) > 1 :
+                self.stringList = string
+                self.string = string[0]
+                self.multiline = True
+            else:
+                self.string = string[0]
+        else:
+            self.string = string
+        self.init_Critical()
+
+    def INIT_2D_plot(self,string):
+        self.string = string
+        self.init_Critical()
+        self.init_2D_plot()
+
+    def INIT_Multi_Dim(self,string):
+        self.Name = string
+        self.string = "0"
+        self.init_Critical()
+
+    def init_Critical(self):
         self.Text = AF.AstusParseInverse(self.string)
-        #print(self.Text)
         self.Evaluation = "Not evaluated yet."
         self.EvaluationEquation = "? = " + self.Text
         self.cstr = AF.AstusParse(self.string) # the converted string that is interpreteable
-        self.cstrList = []
-        for i in self.stringList:
-            self.cstrList.append(AF.AstusParse(i,False))
+        if self.multiline:
+            self.cstrList = []
+            for i in self.stringList:
+                self.cstrList.append(AF.AstusParse(i,False))
         self.LaTeX = "Not converted yet"
         self.LaTeX_L = "Not converted yet" #For display if in LaTeX-Mode
         self.LaTeX_N = "Not converted yet" #For display if in Not-LaTeX-Mode
+        self.Am_I_Plottable()
         self.ConvertToLaTeX()
+        
+
+    def Am_I_Plottable(self):
+        # TODO: Improve the criteria for "plottable"
+        if "x" in self.cstr and not "=" in self.cstr:
+            self.plottable = True
+        else:
+            self.plottable = False
                 
                 
     def init_history(self):
@@ -81,16 +134,12 @@ class AMaS: # Astus' Mathematical Structure
         self.tab_2_ref = None
         self.tab_3_is = False
         self.tab_3_ref = None
+        self.tab_4_is = False
+        self.tab_4_ref = None
                 
-    def init_plot(self):
-        # TODO: Improve this
-        #if self.cstr.count("=")==0 and self.cstr.count("x")>=1: #TODO: use: if substr in string:
-        if self.cstr.count("=")==0 and "x" in self.cstr:
-            self.plottable = True
-        else:
-            self.plottable = False
+    def init_2D_plot(self):
+        self.Plot_is_initialized = True
         self.current_ax = None
-        self.plot_data_exists = False
         self.plot_ratio = False
         self.plot_grid = True
         self.plot_xmin = -5
@@ -104,9 +153,24 @@ class AMaS: # Astus' Mathematical Structure
         self.plot_x_vals = np.arange(10)
         self.plot_y_vals = np.zeros_like(self.plot_x_vals)
         
+
+    
+# ---------------------------------- Update, Rename, etc ----------------------------------
+    def Update(self,string=None):
+        if string != None:
+            self.string = string
+        self.init_Critical()
+        return True
+
+    def Rename(self,Name):
+        self.Name = Name
+        return True
+        
+# ---------------------------------- LaTeX Converter ----------------------------------
+
     def ConvertToLaTeX(self):
+        # Create the string that the user can copy
         try:
-            #if self.cstr.count("=") >= 1 : #TODO: use: if substr in string:
             if "=" in self.cstr:
                 parts = self.cstr.split("=")
                 self.LaTeX = ""
@@ -117,10 +181,27 @@ class AMaS: # Astus' Mathematical Structure
                 self.LaTeX = self.LaTeX[:-3]
             else:
                 self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-        except AF.common_exceptions: #as inst:
+        except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
             self.LaTeX = "Could not convert"
+        
+        # Set up the strings that are used in the LaTeX Displays
+        if self.multiline:
+            self.ConvertToLaTeX_Multiline()
+        elif self.LaTeX == "Could not convert":
+            self.LaTeX_L = self.cstr
+            self.LaTeX_N = self.cstr
+        else:
+            self.LaTeX_L = "$\displaystyle"
+            self.LaTeX_N = "$"
+            self.LaTeX_L += self.LaTeX
+            self.LaTeX_N += self.LaTeX
+            self.LaTeX_L += "$"
+            self.LaTeX_N += "$"
+
             
+        
+    def ConvertToLaTeX_Multiline(self):
         self.LaTeX_L = ""
         self.LaTeX_N = ""
         n = len(self.cstrList)
@@ -128,7 +209,6 @@ class AMaS: # Astus' Mathematical Structure
             n -= 1
             LineText = ""
             try:
-                #if e.count("=") >= 1 : #TODO: use: if substr in string:
                 if "=" in e :
                     parts = self.cstrList[i].split("=")
                     conv = ""
@@ -168,25 +248,32 @@ class AMaS: # Astus' Mathematical Structure
                     i_first = i_curr
                 elif i_curr < i_first:
                     i_first = i_curr
-    
-    def Evaluate(self,EvalF = True):
+
+
+# ---------------------------------- Calculator Methods ----------------------------------
+
+
+    def Evaluate(self,Eval = True):
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
         if self.cstr.count("=") == 1 :
             try:
                 temp = self.cstr
-                #if EvalF:
+                #if Eval:
                 #    temp.replace("Integral","integrate")
                 temp = "(" + temp
                 temp = temp.replace("=" , ") - (")
                 temp = temp + ")"
-                ans = parse_expr(temp)
-                ans = ans.doit()
-                ans = sympy.solve(ans)
+                ans = parse_expr(temp,local_dict=self.Variables)
+                try:
+                    ans = ans.doit()
+                except AF.common_exceptions:
+                    pass
+                ans = sympy.solve(ans,dict=True)
                 self.Evaluation = "{ "
                 for i in ans:
-                    if EvalF and not type(i) == dict:
+                    if Eval and not type(i) == dict:
                         i = i.evalf()
                     i_temp = str(i)
                     i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers
@@ -196,8 +283,12 @@ class AMaS: # Astus' Mathematical Structure
                 if len(self.Evaluation) > 0:
                     self.Evaluation += " }"
                 else:
-                    ans = parse_expr(temp)
+                    ans = parse_expr(temp,local_dict=self.Variables)
                     ans = ans.doit()
+                    try:
+                        if Eval: ans = ans.evalf()
+                    except AF.common_exceptions:
+                        AF.ExceptionOutput(sys.exc_info())
                     self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
                     
             except AF.common_exceptions: #as inst:
@@ -210,15 +301,18 @@ class AMaS: # Astus' Mathematical Structure
             self.EvaluationEquation += self.Text
         else:
             try:
-                ans = parse_expr(self.cstr)
+                ans = parse_expr(self.cstr,local_dict=self.Variables)
                 try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
                     # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
                     ans = ans.doit()
-                except ValueError:
+                except AF.common_exceptions:
                     print("Could not simplify "+str(ans))
                     AF.ExceptionOutput(sys.exc_info())
-                if EvalF: # TODOMode: Not happy with the EvalF thing... BUT happy with ans.evalf()!!!!!!
-                    ans = ans.evalf()
+                if Eval: # TODOMode: Not happy with the Eval thing... BUT happy with ans.evalf()!!!!!!
+                    try:
+                        ans = ans.evalf()
+                    except AF.common_exceptions:
+                        ans = sympy.solve(ans,dict=True)
                 self.Evaluation = str(ans)
                 self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers
             except AF.common_exceptions: #as inst:
@@ -234,16 +328,16 @@ class AMaS: # Astus' Mathematical Structure
         else:
             return True
         
-    def EvaluateEquation_1(self,EvalF = True): # This is currently being used
+    def EvaluateEquation_1(self,Eval = True): # This is currently being used
         temp = self.cstr
-        #if EvalF:
+        #if Eval:
         #    temp.replace("Integral","integrate")
         temp = "(" + temp
         temp = temp.replace("=" , ") - (")
         temp = temp + ")"
         return True
         
-    def EvaluateEquation_2(self,EvalF = True): #TODO: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
+    def EvaluateEquation_2(self,Eval = True): #TODO: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
         temp = self.cstr
         temp1 , temp2 = self.cstr.split("=",1)
         temp = "Eq("+temp1
@@ -268,13 +362,15 @@ class AMaS: # Astus' Mathematical Structure
         return True
             
             
-    def Plot_Calc_Values(self):
+# ---------------------------------- 2D Plotter Methods ----------------------------------
+            
+    def Plot_2D_Calc_Values(self):
         if self.cstr.count("=")>=1:
             try:
                 temp_line_split = self.cstr.split("=",1)
                 temp_line_split[0] = temp_line_split[0].strip()
                 if temp_line_split[0] == "x":
-                    temp_line_x_val = parse_expr(temp_line_split[1])
+                    temp_line_x_val = parse_expr(temp_line_split[1],local_dict=self.Variables)
                     temp_line_x_val = float(temp_line_x_val.evalf())
                     if type(temp_line_x_val) == int or type(temp_line_x_val) == float :
                         self.plot_x_vals = temp_line_x_val
@@ -288,7 +384,7 @@ class AMaS: # Astus' Mathematical Structure
             x = sympy.symbols('x')
             n = sympy.symbols('n')
             try:
-                Function = parse_expr(self.cstr)
+                Function = parse_expr(self.cstr,local_dict=self.Variables)
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
                 self.plottable = False
@@ -371,3 +467,23 @@ class AMaS: # Astus' Mathematical Structure
             return False
 
 
+# ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------
+
+    def AddVariable(self, Name, Value):
+        self.Variables[Name] = Value
+        return True
+
+    def UpdateEquation(self,Eval, Text = None):
+        if Text == None:
+            Text = self.Input
+        self.Input = Text
+        #Text = AF.Replace(Text,self.Constants) # TODO: THIS IS BAD! IMPROVES THIS
+        self.string = Text
+        self.init_Critical()
+        self.Evaluate(Eval)
+        self.cstr = self.Evaluation
+        self.ConvertToLaTeX()
+        return True
+
+
+# ---------------------------------- ... ----------------------------------

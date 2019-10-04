@@ -124,6 +124,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
         # Maybe test this in a little testprogram to not waste that much time...
         
         
+        matplotlib.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
         #Both seem to do the same:
         matplotlib.rcParams['text.usetex'] = TheBool
         plt.rc('text', usetex=TheBool)
@@ -139,7 +140,8 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
             self.UseTeX(True)
         else:
             self.UseTeX(False)
-            self.Text = Text_N = Text_N.replace("\limits","")
+            Text_N = Text_N.replace("\limits","")
+            self.Text = Text_N
         #-----------IMPORTANT-----------
         self.w=9
         self.h=9
@@ -218,7 +220,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
             try:
                 self.canvas.draw()
             except AF.common_exceptions:
-                AF.ExceptionOutput(sys.exc_info(),False)
+                AF.ExceptionOutput(sys.exc_info())
                 print("Trying to output without LaTeX")
                 self.Text = Text_N.replace("\limits","")
                 self.UseTeX(False)
@@ -236,7 +238,36 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                           )
                 self.canvas.ax.axis('off')
                 #--------------------------
-                self.canvas.draw()
+                try:
+                    self.canvas.draw()
+                except AF.common_exceptions:
+                    AF.ExceptionOutput(sys.exc_info())
+                    self.UseTeX(False)
+                    self.canvas.ax.clear()
+                    if Use_LaTeX:
+                        ErrorText = "The text can't be displayed. Please send your input and a description of your input to the developer"
+                    else:
+                        ErrorText = "The text can't be displayed. Please note that many things can't be displayed without LaTeX Mode."
+                        if not AF.LaTeX_dvipng_Installed:
+                            ErrorText += "\n Please install LaTeX (and dvipng if it is not already included in your LaTeX distribution) and restart AMaDiA"
+                    self.canvas.ax.set_title(ErrorText,
+                            loc = "left",
+                            #x=-0.12,
+                            y=(1.15-(self.Font_Size/5000)),
+                            horizontalalignment='left',
+                            verticalalignment='top',
+                            fontsize=self.Font_Size,
+                            color = self.TextColour
+                            ,bbox=dict(boxstyle="round", facecolor=AF.background_Colour,
+                            ec="0.1", pad=0.1, alpha=0)
+                            )
+                    self.canvas.ax.axis('off')
+                    try:
+                        self.canvas.draw()
+                    except AF.common_exceptions:
+                        AF.ExceptionOutput(sys.exc_info())
+                        print("Can not display anything")
+                
         finally:
             self.UseTeX(False)
 

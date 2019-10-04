@@ -1,11 +1,12 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.8.1.3"
+Version = "0.9.0"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
 import sys
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
 from PyQt5.Qt import QApplication, QClipboard
+import PyQt5.Qt as Qt
 import socket
 import datetime
 import platform
@@ -15,6 +16,7 @@ import pathlib
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import importlib
+
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -55,16 +57,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         # Set UI variables
         #Set starting tabs
-        self.Tab_3_2D_Plot_TabWidget.setCurrentIndex(0)
+        self.Tab_3_TabWidget.setCurrentIndex(0)
+        self.Tab_4_tabWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
-        #Set Spliiter Start Values
-        self.Tab_2_LaTeX_UpperSplitter.setSizes([163,699])
-        self.Tab_2_LaTeX_LowerSplitter.setSizes([391,70])
-        self.Tab_3_2D_Plot_splitter.setSizes([297,565])
+        
+        #Set Splitter Start Values
+        self.Tab_2_UpperSplitter.setSizes([163,699])
+        self.Tab_2_LowerSplitter.setSizes([391,70])
+        self.Tab_3_splitter.setSizes([297,565])
         #To cofigure use:
-        #print(self.Tab_2_LaTeX_UpperSplitter.sizes())
-        #print(self.Tab_2_LaTeX_LowerSplitter.sizes())
-        #print(self.Tab_3_2D_Plot_splitter.sizes())
+        #print(self.Tab_2_UpperSplitter.sizes())
+        #print(self.Tab_2_LowerSplitter.sizes())
+        #print(self.Tab_3_splitter.sizes())
+        
+        #Set Tab 4 Matrix Input Column Width
+        for i in range(self.Tab_4_1_Matrix_Input.columnCount()):
+            self.Tab_4_1_Matrix_Input.setColumnWidth(i,75)
         
         # Initialize important variables and lists
         self.ans = "1"
@@ -76,20 +84,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TextColour = (215/255, 213/255, 201/255)
         
         # Setup the graphic displays:
-        self.Tab_3_2D_Plot_Display.canvas.ax.spines['bottom'].set_color(self.TextColour)
-        self.Tab_3_2D_Plot_Display.canvas.ax.spines['left'].set_color(self.TextColour)
-        self.Tab_3_2D_Plot_Display.canvas.ax.xaxis.label.set_color(self.TextColour)
-        self.Tab_3_2D_Plot_Display.canvas.ax.yaxis.label.set_color(self.TextColour)
-        self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='x', colors=self.TextColour)
-        self.Tab_3_2D_Plot_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
+        self.Tab_3_Display.canvas.ax.spines['bottom'].set_color(self.TextColour)
+        self.Tab_3_Display.canvas.ax.spines['left'].set_color(self.TextColour)
+        self.Tab_3_Display.canvas.ax.xaxis.label.set_color(self.TextColour)
+        self.Tab_3_Display.canvas.ax.yaxis.label.set_color(self.TextColour)
+        self.Tab_3_Display.canvas.ax.tick_params(axis='x', colors=self.TextColour)
+        self.Tab_3_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
         
         # Set up context menus for the histories
-        self.Tab_1_Calculator_History.installEventFilter(self)
-        self.Tab_2_LaTeX_History.installEventFilter(self)
-        self.Tab_3_2D_Plot_History.installEventFilter(self)
+        self.Tab_1_History.installEventFilter(self)
+        self.Tab_2_History.installEventFilter(self)
+        self.Tab_3_History.installEventFilter(self)
+        self.Tab_4_History.installEventFilter(self)
+        self.Tab_4_Matrix_List.installEventFilter(self)
         
         # Set up other Event Handlers
-        self.Tab_2_LaTeX_InputField.installEventFilter(self)
+        self.Tab_2_InputField.installEventFilter(self)
         
         # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
@@ -100,6 +110,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ConnectSignals()
         self.ColourMain()
         self.OtherContextMenuSetup()
+
+        # Initialize the first equation in Tab 4
+        self.Tab_4_2_New_Equation_Name_Input.setText("Equation 1")
+        self.Tab_4_F_New_Equation()
+        self.Tab_4_2_New_Equation_Name_Input.clear()
+        self.Tab_4_1_Dimension_Input.setText(" 3x3 ")
 
         # Other things:
         
@@ -112,7 +128,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # A new variable that checks if the plot has already been used and if the LaTeX view has been used.
             # If the first is False and the seccond True than clear when the plot button is pressed and cjange the variables to ensure that this only happens once
             #       to not accidentially erase the plots of the user as this would be really bad...
-        self.Tab_1_Calculator_InputField.setFocus()
+        self.Tab_1_InputField.setFocus()
         
 # ---------------------------------- Init and Maintanance ----------------------------------
 
@@ -120,16 +136,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
         
-        self.Tab_1_Calculator_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
+        self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
-        self.Tab_2_LaTeX_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
+        self.Tab_2_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
         
-        self.Tab_3_2D_Plot_Button_Plot.clicked.connect(self.Tab_3_F_Plot_Button)
-        self.Tab_3_2D_Plot_Formula_Field.returnPressed.connect(self.Tab_3_F_Plot_Button)
-        self.Tab_3_2D_Plot_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
-        self.Tab_3_2D_Plot_Button_Plot_SymPy.clicked.connect(self.Tab_3_F_Sympy_Plot_Button)
-        self.Tab_3_2D_Plot_RedrawPlot_Button.clicked.connect(self.Tab_3_F_RedrawPlot)
-        self.Tab_3_2D_Plot_Button_SavePlot.clicked.connect(self.action_2D_SavePlt)
+        self.Tab_3_Button_Plot.clicked.connect(self.Tab_3_F_Plot_Button)
+        self.Tab_3_Formula_Field.returnPressed.connect(self.Tab_3_F_Plot_Button)
+        self.Tab_3_Button_Clear.clicked.connect(self.Tab_3_F_Clear)
+        self.Tab_3_Button_Plot_SymPy.clicked.connect(self.Tab_3_F_Sympy_Plot_Button)
+        self.Tab_3_RedrawPlot_Button.clicked.connect(self.Tab_3_F_RedrawPlot)
+        self.Tab_3_Button_SavePlot.clicked.connect(self.action_2D_SavePlt)
+        
+        self.Tab_4_FormulaInput.returnPressed.connect(self.Tab_4_F_Update_Equation)
+        self.Tab_4_1_Dimension_Input.returnPressed.connect(self.Tab_4_F_Config_Matrix_Dim)
+        self.Tab_4_1_Configure_Button.clicked.connect(self.Tab_4_F_Config_Matrix_Dim)
+        self.Tab_4_1_Name_Input.returnPressed.connect(self.Tab_4_F_Save_Matrix)
+        self.Tab_4_1_Save_Matrix_Button.clicked.connect(self.Tab_4_F_Save_Matrix)
+        self.Tab_4_2_New_Equation_Button.clicked.connect(self.Tab_4_F_New_Equation)
+        self.Tab_4_2_New_Equation_Name_Input.returnPressed.connect(self.Tab_4_F_New_Equation)
+        self.Tab_4_2_Load_Selected_Button.clicked.connect(self.Tab_4_F_Load_Selected_Equation)
     
     def ColourMain(self):
         palette = AMaDiA_Colour.palette()
@@ -209,11 +234,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Events and Context Menu ----------------------------------
     def OtherContextMenuSetup(self):
-        self.Tab_3_2D_Plot_Display.canvas.mpl_connect('button_press_event', self.Plot_2D_Context_Menu)
+        self.Tab_3_Display.canvas.mpl_connect('button_press_event', self.Plot_2D_Context_Menu)
         #pass
         
         
-# ---------------------------------- 2D Plot Context Menu ---------------------------------- 
+ # ---------------------------------- 2D Plot Context Menu ---------------------------------- 
     def Plot_2D_Context_Menu(self,event):
         #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
         #      ('double' if event.dblclick else 'single', event.button,
@@ -224,23 +249,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action.triggered.connect(self.action_2D_SavePlt)
             cursor = QtGui.QCursor()
             menu.exec_(cursor.pos())
-            
-        
-    def HistoryContextMenu(self, QPos): #TODO:Remove
-        self.listMenu= QtWidgets.QMenu()
-        menu_item = self.listMenu.addAction("Remove Item")
-        self.connect(menu_item, QtCore.SIGNAL("triggered()"), self.menuItemClicked) 
-        parentPosition = self.Tab_1_Calculator_History.mapToGlobal(QtCore.QPoint(0, 0))        
-        self.listMenu.move(parentPosition + QPos)
-        self.listMenu.show() 
     
     
+# ---------------------------------- Event Filter ----------------------------------
     def eventFilter(self, source, event): # TODO: Add more
         #print(event.type())
-# ---------------------------------- History Context Menu ----------------------------------
+     # ---------------------------------- History Context Menu ----------------------------------
         if (event.type() == QtCore.QEvent.ContextMenu and
-            (source is self.Tab_1_Calculator_History or source is self.Tab_2_LaTeX_History or source is self.Tab_3_2D_Plot_History )and
-            source.itemAt(event.pos())):
+            (source is self.Tab_1_History 
+                or source is self.Tab_2_History 
+                or source is self.Tab_3_History 
+                or source is self.Tab_4_History #TODO: This is temporary. Implement this context menu properly
+                )and source.itemAt(event.pos())):
             menu = QtWidgets.QMenu()
             action = menu.addAction('Copy Text')
             action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
@@ -276,16 +296,54 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 #item = source.itemAt(event.pos())
                 #QApplication.clipboard().setText(item.data(100).Text)
             return True
-# ---------------------------------- Other Events ----------------------------------
-        elif (event.type() == QtCore.QEvent.KeyPress  # Tab_2_LaTeX_InputField: use crtl+return to convert
-              and source is self.Tab_2_LaTeX_InputField # TODO: Maybe use return to convert and shift+return for new lines...
+     # ---------------------------------- Tab 4 Matrix List Context Menu ----------------------------------
+        elif (event.type() == QtCore.QEvent.ContextMenu and
+            (source is self.Tab_4_Matrix_List)and source.itemAt(event.pos())):
+            menu = QtWidgets.QMenu()
+            action = menu.addAction('Load to Editor')
+            action.triggered.connect(lambda: self.action_4M_Load_into_Editor(source,event))
+            action = menu.addAction('Display')
+            action.triggered.connect(lambda: self.action_4M_Display(source,event))
+            action = menu.addAction('Copy as String')
+            action.triggered.connect(lambda: self.action_4M_Copy_string(source,event))
+            action = menu.addAction('Delete')
+            action.triggered.connect(lambda: self.action_4M_Delete(source,event))
+            menu.exec_(event.globalPos())
+            return True
+     # ---------------------------------- Other Events ----------------------------------
+        elif (event.type() == QtCore.QEvent.KeyPress  # Tab_2_InputField: use crtl+return to convert
+              and source is self.Tab_2_InputField # TODO: Maybe use return to convert and shift+return for new lines...
               and event.key() == QtCore.Qt.Key_Return
               and event.modifiers() == QtCore.Qt.ControlModifier):
             self.Tab_2_F_Convert()
             return True
         return super(MainWindow, self).eventFilter(source, event)
         
-# ---------------------------------- History Context Menu Actions ----------------------------------
+
+# ---------------------------------- History Context Menu Actions/Functions ----------------------------------
+    def action_4M_Load_into_Editor(self,source,event):
+        item = source.itemAt(event.pos())
+        Name = item.data(100)
+        Matrix = item.data(101)
+        self.Tab_4_F_Load_Matrix(Name,Matrix)
+    
+    def action_4M_Display(self,source,event):
+        item = source.itemAt(event.pos())
+        Name = item.data(100)
+        Matrix = item.data(101)
+        self.Tab_4_F_Display_Matrix(Name,Matrix)
+    
+    def action_4M_Copy_string(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(str(item.data(101)))
+    
+    def action_4M_Delete(self,source,event):
+        listItems=source.selectedItems()
+        if not listItems: return        
+        for item in listItems:
+            source.takeItem(source.row(item))
+
+# ---------------------------------- History Context Menu Actions/Functions ----------------------------------
          
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
@@ -307,7 +365,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).Evaluation)
         
-# ----------------
+ # ----------------
          
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
@@ -319,7 +377,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.setCurrentIndex(1)
         self.Tab_2_F_Display(item.data(100))
         
-# ----------------
+ # ----------------
          
     def action_H_Load_Plot(self,source,event):
         item = source.itemAt(event.pos())
@@ -331,46 +389,127 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.setCurrentIndex(2)
         self.Tab_3_F_Plot_init(item.data(100))
         
-# ----------------
+ # ----------------
          
     def action_H_Delete(self,source,event):
         listItems=source.selectedItems()
         if not listItems: return        
         for item in listItems:
-           source.takeItem(source.row(item))
-           # The cleanup below is apparetnly unnecessary but it is cleaner to do it anyways...
-           if source is self.Tab_1_Calculator_History:
-               item.data(100).tab_1_is = False
-               item.data(100).tab_1_ref = None
-           elif source is self.Tab_2_LaTeX_History:
-               item.data(100).tab_2_is = False
-               item.data(100).tab_2_ref = None
-           elif source is self.Tab_3_2D_Plot_History:
-               item.data(100).tab_3_is = False
-               item.data(100).tab_3_ref = None
-               if item.data(100).current_ax != None:
-                   item.data(100).current_ax.remove()
-                   item.data(100).current_ax = None
-                   self.Tab_3_F_RedrawPlot()
+            source.takeItem(source.row(item))
+            # The cleanup below is apparetnly unnecessary but it is cleaner to do it anyways...
+            if source is self.Tab_1_History:
+                item.data(100).tab_1_is = False
+                item.data(100).tab_1_ref = None
+            elif source is self.Tab_2_History:
+                item.data(100).tab_2_is = False
+                item.data(100).tab_2_ref = None
+            elif source is self.Tab_3_History:
+                item.data(100).tab_3_is = False
+                item.data(100).tab_3_ref = None
+                if item.data(100).current_ax != None:
+                    item.data(100).current_ax.remove()
+                    item.data(100).current_ax = None
+                    self.Tab_3_F_RedrawPlot()
+            elif source is self.Tab_4_History:
+                if item.data(100) == self.Tab_4_Active_Equation:
+                    self.Tab_4_History.addItem(item)
+                else:
+                    item.data(100).tab_4_is = False
+                    item.data(100).tab_4_ref = None
         
-# ---------------------------------- 2D Plot Context Menu ----------------------------------
+ # ---------------------------------- 2D Plot Context Menu ----------------------------------
     def action_2D_SavePlt(self):
         if self.pathOK:
             Filename = self.PlotPath
-            Filename += AF.cTimeFullStr()
+            Filename += AF.cTimeFullStr("-")
             Filename += ".png"
             try:
                 print(Filename)
-                self.Tab_3_2D_Plot_Display.canvas.fig.savefig(Filename , facecolor=AF.background_Colour , edgecolor=AF.background_Colour )
+                self.Tab_3_Display.canvas.fig.savefig(Filename , facecolor=AF.background_Colour , edgecolor=AF.background_Colour )
             except:
                 AF.ExceptionOutput(sys.exc_info())
         else:
             print("Could not save Plot: Could not validate save location")
         
+# ---------------------------------- HistoryHandler ----------------------------------
+
+    def HistoryHandler(self, AMaS_Object, Tab):
+        
+
+        if Tab == 1:
+            if AMaS_Object.tab_1_is != True:
+                item = QtWidgets.QListWidgetItem()
+                item.setData(100,AMaS_Object)
+                item.setText(AMaS_Object.EvaluationEquation)
+                
+                self.Tab_1_History.addItem(item)
+                AMaS_Object.tab_1_is = True
+                AMaS_Object.tab_1_ref = item
+            else:
+                self.Tab_1_History.takeItem(self.Tab_1_History.row(AMaS_Object.tab_1_ref))
+                self.Tab_1_History.addItem(AMaS_Object.tab_1_ref)
+
+            self.Tab_1_History.scrollToBottom()
+        
+        elif Tab == 2:
+            if AMaS_Object.tab_2_is != True:
+                item = QtWidgets.QListWidgetItem()
+                item.setData(100,AMaS_Object)
+                item.setText(AMaS_Object.Text)
+                
+                self.Tab_2_History.addItem(item)
+                AMaS_Object.tab_2_is = True
+                AMaS_Object.tab_2_ref = item
+            else:
+                self.Tab_2_History.takeItem(self.Tab_2_History.row(AMaS_Object.tab_2_ref))
+                self.Tab_2_History.addItem(AMaS_Object.tab_2_ref)
+            
+            self.Tab_2_History.scrollToBottom()
+        
+        elif Tab == 3:
+            if AMaS_Object.tab_3_is != True:
+                item = QtWidgets.QListWidgetItem()
+                item.setData(100,AMaS_Object)
+                item.setText(AMaS_Object.Text)
+                
+                self.Tab_3_History.addItem(item)
+                AMaS_Object.tab_3_is = True
+                AMaS_Object.tab_3_ref = item
+            else:
+                self.Tab_3_History.takeItem(self.Tab_3_History.row(AMaS_Object.tab_3_ref))
+                self.Tab_3_History.addItem(AMaS_Object.tab_3_ref)
+            
+            self.Tab_3_History.scrollToBottom()
+        
+        elif Tab == 4:
+            if AMaS_Object.tab_4_is != True:
+                item = QtWidgets.QListWidgetItem()
+                item.setData(100,AMaS_Object)
+                item.setText(AMaS_Object.Name)
+                
+                self.Tab_4_History.addItem(item)
+                AMaS_Object.tab_4_is = True
+                AMaS_Object.tab_4_ref = item
+            else:
+                self.Tab_4_History.takeItem(self.Tab_4_History.row(AMaS_Object.tab_4_ref))
+                self.Tab_4_History.addItem(AMaS_Object.tab_4_ref)
+
+            self.Tab_4_Active_Equation = AMaS_Object
+            self.Tab_4_F_Load_Matrix_List()
+            self.Tab_4_History.scrollToBottom()
+
+        else:
+            print("History of Tab {} is unknown".format(Tab))
+
 # ---------------------------------- Thread Handler ----------------------------------
 
-    def TR(self, AMaS_Object , Function , ID=-1 , Eval = None):
+    def TR(self, AMaS_Object , Function , ID=-1 , Eval = -1): # Thread Return: Threads report back here when they are done
         self.Function = Function
+
+        if Eval == 0 : Eval = True
+        elif Eval == 1 : Eval = False
+        else: Eval = None
+
         if Function == self.Tab_1_F_Calculate:
             if Eval == None:
                 Eval=self.Menubar_Main_Options_action_Eval_Functions.isChecked()
@@ -378,7 +517,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             self.Function(AMaS_Object)
         
-    def TC(self,Thread):
+    def TC(self,Thread): # Thread Creator: All new threads are created here
         ID = -1
         for i,e in enumerate(self.ThreadList):
             # This is not 100% clean but only Threats that have reported back should
@@ -406,7 +545,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             AF.ExceptionOutput(sys.exc_info())
             return False
 
-# ---------------------------------- Tab_1_Calculator_ ----------------------------------
+# ---------------------------------- Tab_1_ Calculator ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ControlModifier:
@@ -414,152 +553,110 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
         # Input.EvaluateLaTeX() # Could be used to evaluate LaTeX but: left( and right) brakes it...
-        TheInput = self.Tab_1_Calculator_InputField.text()
+        TheInput = self.Tab_1_InputField.text()
         TheInput = TheInput.replace("ans",self.ans)
         if TheInput == "len()":
             TheInput = str(len(self.ThreadList))
-        self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID,Eval))
+        self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
         
         
         
     def Tab_1_F_Calculate(self,AMaS_Object,Eval = None):
         if Eval == None:
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object , Eval), self.Tab_1_F_Calculate_Display , ID))
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object , Eval=Eval), self.Tab_1_F_Calculate_Display , ID))
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
-        
-        if AMaS_Object.tab_1_is != True:
-            item = QtWidgets.QListWidgetItem()
-            item.setData(100,AMaS_Object)
-            item.setText(AMaS_Object.EvaluationEquation)
-            
-            self.Tab_1_Calculator_History.addItem(item)
-            AMaS_Object.tab_1_is = True
-            AMaS_Object.tab_1_ref = item
-        else:
-            self.Tab_1_Calculator_History.takeItem(self.Tab_1_Calculator_History.row(AMaS_Object.tab_1_ref))
-            self.Tab_1_Calculator_History.addItem(AMaS_Object.tab_1_ref)
-        self.Tab_1_Calculator_History.scrollToBottom()
+        self.HistoryHandler(AMaS_Object,1)
         self.ans = AMaS_Object.Evaluation
         
-    
-# ---------------------------------- Tab_2_LaTeX_ ----------------------------------
+# ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_2_LaTeX_InputField.toPlainText(), self.Tab_2_F_Display,ID))
+        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_2_InputField.toPlainText(), self.Tab_2_F_Display,ID))
         
         
     def Tab_2_F_Display(self , AMaS_Object):
-        # Display stuff... The way it is displayed will hopefully change as this project goes on:
         
+        self.HistoryHandler(AMaS_Object,2)
         
-        self.Tab_2_LaTeX_LaTeXOutput.setText(AMaS_Object.LaTeX)
-        
-        if AMaS_Object.tab_2_is != True:
-            item = QtWidgets.QListWidgetItem()
-            item.setData(100,AMaS_Object)
-            item.setText(AMaS_Object.Text)
-            
-            self.Tab_2_LaTeX_History.addItem(item)
-            AMaS_Object.tab_2_is = True
-            AMaS_Object.tab_2_ref = item
-        else:
-            self.Tab_2_LaTeX_History.takeItem(self.Tab_2_LaTeX_History.row(AMaS_Object.tab_2_ref))
-            self.Tab_2_LaTeX_History.addItem(AMaS_Object.tab_2_ref)
-        
-        self.Tab_2_LaTeX_History.scrollToBottom()
-        
-        self.Tab_2_LaTeX_Viewer.Display(AMaS_Object.LaTeX_L,AMaS_Object.LaTeX_N
+        self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
+        self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
                                         ,self.Font_Size_spinBox.value(),self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         
-        
-# ---------------------------------- Tab_3_2D_Plot_ ----------------------------------
+# ---------------------------------- Tab_3_ 2D-Plot ----------------------------------
     def Tab_3_F_Plot_Button(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Plot_init,ID))
+        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_Formula_Field.text() , self.Tab_3_F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
         
         
     def Tab_3_F_Plot_init(self , AMaS_Object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
-        AMaS_Object.plot_ratio = self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked()
-        AMaS_Object.plot_grid = self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked()
-        AMaS_Object.plot_xmin = self.Tab_3_2D_Plot_From_Spinbox.value()
-        AMaS_Object.plot_xmax = self.Tab_3_2D_Plot_To_Spinbox.value()
-        AMaS_Object.plot_steps = self.Tab_3_2D_Plot_Steps_Spinbox.value()
+        if not AMaS_Object.Plot_is_initialized: AMaS_Object.init_2D_plot()
+        AMaS_Object.plot_ratio = self.Tab_3_Axis_ratio_Checkbox.isChecked()
+        AMaS_Object.plot_grid = self.Tab_3_Draw_Grid_Checkbox.isChecked()
+        AMaS_Object.plot_xmin = self.Tab_3_From_Spinbox.value()
+        AMaS_Object.plot_xmax = self.Tab_3_To_Spinbox.value()
+        AMaS_Object.plot_steps = self.Tab_3_Steps_Spinbox.value()
         
-        if self.Tab_3_2D_Plot_Steps_comboBox.currentIndex() == 0:
+        if self.Tab_3_Steps_comboBox.currentIndex() == 0:
             AMaS_Object.plot_per_unit = False
-        elif self.Tab_3_2D_Plot_Steps_comboBox.currentIndex() == 1:
+        elif self.Tab_3_Steps_comboBox.currentIndex() == 1:
             AMaS_Object.plot_per_unit = True
         
-        AMaS_Object.plot_xlim = self.Tab_3_2D_Plot_XLim_Check.isChecked()
+        AMaS_Object.plot_xlim = self.Tab_3_XLim_Check.isChecked()
         if AMaS_Object.plot_xlim:
-            xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
+            xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
             if xmax < xmin:
                 xmax , xmin = xmin , xmax
             AMaS_Object.plot_xlim_vals = (xmin , xmax)
-        AMaS_Object.plot_ylim = self.Tab_3_2D_Plot_YLim_Check.isChecked()
+        AMaS_Object.plot_ylim = self.Tab_3_YLim_Check.isChecked()
         if AMaS_Object.plot_ylim:
-            ymin , ymax = self.Tab_3_2D_Plot_YLim_min.value(), self.Tab_3_2D_Plot_YLim_max.value()
+            ymin , ymax = self.Tab_3_YLim_min.value(), self.Tab_3_YLim_max.value()
             if ymax < ymin:
                 ymax , ymin = ymin , ymax
             AMaS_Object.plot_ylim_vals = (ymin , ymax)
         
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.Plot_Calc_Values(AMaS_Object),self.Tab_3_F_Plot ,ID))
-        #self.New_AMaST_Plotter = AT.AMaS_Thread(AMaS_Object , AC.AMaS.Plot_Calc_Values , self.Tab_3_F_Plot)
-        #self.New_AMaST_Plotter.Return.connect(self.TR)
-        #self.New_AMaST_Plotter.start()
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_F_Plot ,ID))
         
         
         
         
     def Tab_3_F_Plot(self , AMaS_Object):
-        #TODO: MAYBE Add an exctra option for this in the config tab... and change everything else accordingly
+        #TODO: MAYBE Add an extra option for this in the config tab... and change everything else accordingly
         #if self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked():
-        #    self.Tab_3_2D_Plot_Display.UseTeX(True)
+        #    self.Tab_3_Display.UseTeX(True)
         #else:
-        #    self.Tab_3_2D_Plot_Display.UseTeX(False)
+        #    self.Tab_3_Display.UseTeX(False)
         
-        self.Tab_3_2D_Plot_Display.UseTeX(False)
-        if AMaS_Object.tab_3_is != True:
-            item = QtWidgets.QListWidgetItem()
-            item.setData(100,AMaS_Object)
-            item.setText(AMaS_Object.Text)
-            
-            self.Tab_3_2D_Plot_History.addItem(item)
-            AMaS_Object.tab_3_is = True
-            AMaS_Object.tab_3_ref = item
-        else:
-            self.Tab_3_2D_Plot_History.takeItem(self.Tab_3_2D_Plot_History.row(AMaS_Object.tab_3_ref))
-            self.Tab_3_2D_Plot_History.addItem(AMaS_Object.tab_3_ref)
-        
-        self.Tab_3_2D_Plot_History.scrollToBottom()
+        self.Tab_3_Display.UseTeX(False)
+
+        self.HistoryHandler(AMaS_Object,3)
         
         try:
             if type(AMaS_Object.plot_x_vals) == int or type(AMaS_Object.plot_x_vals) == float:
-                p = self.Tab_3_2D_Plot_Display.canvas.ax.axvline(x = AMaS_Object.plot_x_vals,color='red')
+                p = self.Tab_3_Display.canvas.ax.axvline(x = AMaS_Object.plot_x_vals,color='red')
             else:
-                p = self.Tab_3_2D_Plot_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
+                p = self.Tab_3_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
             try:
                 AMaS_Object.current_ax = p[0]
             except AF.common_exceptions:
                 AMaS_Object.current_ax = p
             
             if AMaS_Object.plot_grid:
-                self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
+                self.Tab_3_Display.canvas.ax.grid(True)
             else:
-                self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
+                self.Tab_3_Display.canvas.ax.grid(False)
             if AMaS_Object.plot_ratio:
-                self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
+                self.Tab_3_Display.canvas.ax.set_aspect('equal')
             else:
-                self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
+                self.Tab_3_Display.canvas.ax.set_aspect('auto')
             
-            self.Tab_3_2D_Plot_Display.canvas.ax.relim()
-            self.Tab_3_2D_Plot_Display.canvas.ax.autoscale()
+            self.Tab_3_Display.canvas.ax.relim()
+            self.Tab_3_Display.canvas.ax.autoscale()
             if AMaS_Object.plot_xlim:
-                self.Tab_3_2D_Plot_Display.canvas.ax.set_xlim(AMaS_Object.plot_xlim_vals)
+                self.Tab_3_Display.canvas.ax.set_xlim(AMaS_Object.plot_xlim_vals)
             if AMaS_Object.plot_ylim:
-                self.Tab_3_2D_Plot_Display.canvas.ax.set_ylim(AMaS_Object.plot_ylim_vals)
+                self.Tab_3_Display.canvas.ax.set_ylim(AMaS_Object.plot_ylim_vals)
             
             try:
                 colour = p[0].get_color()
@@ -573,69 +670,70 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.tab_3_ref.setForeground(brush)
             
             try:
-                self.Tab_3_2D_Plot_Display.canvas.draw()
+                self.Tab_3_Display.canvas.draw()
             except RuntimeError:
                 AF.ExceptionOutput(sys.exc_info(),False)
                 print("Trying to output without LaTeX")
-                self.Tab_3_2D_Plot_Display.UseTeX(False)
-                self.Tab_3_2D_Plot_Display.canvas.draw()
+                self.Tab_3_Display.UseTeX(False)
+                self.Tab_3_Display.canvas.draw()
         except AF.common_exceptions :
             AF.ExceptionOutput(sys.exc_info(),False)
             print("y_vals = ",AMaS_Object.plot_y_vals,type(AMaS_Object.plot_y_vals))
+            AMaS_Object.plottable = False
             
     def Tab_3_F_RedrawPlot(self):
-        xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
+        xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
         if xmax < xmin:
             xmax , xmin = xmin , xmax
         xlims = (xmin , xmax)
-        ymin , ymax = self.Tab_3_2D_Plot_YLim_min.value(), self.Tab_3_2D_Plot_YLim_max.value()
+        ymin , ymax = self.Tab_3_YLim_min.value(), self.Tab_3_YLim_max.value()
         if ymax < ymin:
             ymax , ymin = ymin , ymax
         ylims = (ymin , ymax)
-        if self.Tab_3_2D_Plot_Draw_Grid_Checkbox.isChecked():
-            self.Tab_3_2D_Plot_Display.canvas.ax.grid(True)
+        if self.Tab_3_Draw_Grid_Checkbox.isChecked():
+            self.Tab_3_Display.canvas.ax.grid(True)
         else:
-            self.Tab_3_2D_Plot_Display.canvas.ax.grid(False)
-        if self.Tab_3_2D_Plot_Axis_ratio_Checkbox.isChecked():
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('equal')
+            self.Tab_3_Display.canvas.ax.grid(False)
+        if self.Tab_3_Axis_ratio_Checkbox.isChecked():
+            self.Tab_3_Display.canvas.ax.set_aspect('equal')
         else:
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_aspect('auto')
+            self.Tab_3_Display.canvas.ax.set_aspect('auto')
         
-        self.Tab_3_2D_Plot_Display.canvas.ax.relim()
-        self.Tab_3_2D_Plot_Display.canvas.ax.autoscale()
-        if self.Tab_3_2D_Plot_XLim_Check.isChecked():
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_xlim(xlims)
-        if self.Tab_3_2D_Plot_YLim_Check.isChecked():
-            self.Tab_3_2D_Plot_Display.canvas.ax.set_ylim(ylims)
+        self.Tab_3_Display.canvas.ax.relim()
+        self.Tab_3_Display.canvas.ax.autoscale()
+        if self.Tab_3_XLim_Check.isChecked():
+            self.Tab_3_Display.canvas.ax.set_xlim(xlims)
+        if self.Tab_3_YLim_Check.isChecked():
+            self.Tab_3_Display.canvas.ax.set_ylim(ylims)
         
         try:
-            self.Tab_3_2D_Plot_Display.canvas.draw()
+            self.Tab_3_Display.canvas.draw()
         except RuntimeError:
             AF.ExceptionOutput(sys.exc_info(),False)
             print("Trying to output without LaTeX")
-            self.Tab_3_2D_Plot_Display.UseTeX(False)
-            self.Tab_3_2D_Plot_Display.canvas.draw()
+            self.Tab_3_Display.UseTeX(False)
+            self.Tab_3_Display.canvas.draw()
         
         
     def Tab_3_F_Clear(self):
-        self.Tab_3_2D_Plot_Display.UseTeX(False)
-        self.Tab_3_2D_Plot_Display.canvas.ax.clear()
+        self.Tab_3_Display.UseTeX(False)
+        self.Tab_3_Display.canvas.ax.clear()
         try:
-            self.Tab_3_2D_Plot_Display.canvas.draw()
+            self.Tab_3_Display.canvas.draw()
         except RuntimeError:
             AF.ExceptionOutput(sys.exc_info(),False)
             print("Trying to output without LaTeX")
-            self.Tab_3_2D_Plot_Display.UseTeX(False)
-            self.Tab_3_2D_Plot_Display.canvas.ax.clear()
-            self.Tab_3_2D_Plot_Display.canvas.draw()
+            self.Tab_3_Display.UseTeX(False)
+            self.Tab_3_Display.canvas.ax.clear()
+            self.Tab_3_Display.canvas.draw()
         brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
         brush.setStyle(QtCore.Qt.SolidPattern)
-        for i in range(self.Tab_3_2D_Plot_History.count()):
-            self.Tab_3_2D_Plot_History.item(i).setForeground(brush)
-            self.Tab_3_2D_Plot_History.item(i).data(100).current_ax = None
+        for i in range(self.Tab_3_History.count()):
+            self.Tab_3_History.item(i).setForeground(brush)
+            self.Tab_3_History.item(i).data(100).current_ax = None
             
     def Tab_3_F_Sympy_Plot_Button(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_2D_Plot_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))
+        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))
         
     def Tab_3_F_Sympy_Plot(self , AMaS_Object):
         try:
@@ -649,19 +747,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 temp += temp2
                 temp += ")"
             temp = parse_expr(temp)
-            xmin , xmax = self.Tab_3_2D_Plot_XLim_min.value(), self.Tab_3_2D_Plot_XLim_max.value()
+            xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
             if xmax < xmin:
                 xmax , xmin = xmin , xmax
             xlims = (xmin , xmax)
-            ymin , ymax = self.Tab_3_2D_Plot_YLim_min.value(), self.Tab_3_2D_Plot_YLim_max.value()
+            ymin , ymax = self.Tab_3_YLim_min.value(), self.Tab_3_YLim_max.value()
             if ymax < ymin:
                 ymax , ymin = ymin , ymax
             ylims = (ymin , ymax)
-            if self.Tab_3_2D_Plot_XLim_Check.isChecked() and self.Tab_3_2D_Plot_YLim_Check.isChecked():
+            if self.Tab_3_XLim_Check.isChecked() and self.Tab_3_YLim_Check.isChecked():
                 sympy.plot(temp , xlim = xlims , ylim = ylims)
-            elif self.Tab_3_2D_Plot_XLim_Check.isChecked():
+            elif self.Tab_3_XLim_Check.isChecked():
                 sympy.plot(temp , xlim = xlims)
-            elif self.Tab_3_2D_Plot_YLim_Check.isChecked():
+            elif self.Tab_3_YLim_Check.isChecked():
                 sympy.plot(temp , ylim = ylims)
             else:
                 sympy.plot(temp)
@@ -674,7 +772,139 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 except AF.common_exceptions:
                     AF.ExceptionOutput(sys.exc_info())
         
-# ---------------------------------- Tab_4_??? ----------------------------------
+# ---------------------------------- Tab_4_ Multi-Dim ----------------------------------
+    def Tab_4_F_New_Equation(self):
+        Name = ""+self.Tab_4_2_New_Equation_Name_Input.text().strip()
+        if Name == "":
+            Name="Unnamed Equation"
+        self.TC(lambda ID: AT.AMaS_Creator(Name,self.Tab_4_F_New_Equation_Done,ID=ID,Iam=AC.Iam_Multi_Dim))
+    def Tab_4_F_New_Equation_Done(self,AMaS_Object):
+        self.HistoryHandler(AMaS_Object,4)
+
+    def Tab_4_F_Load_Selected_Equation(self):
+        item = self.Tab_4_History.selectedItems()
+        print(type(item))
+        print(len(item))
+        if len(item) == 1:
+            item = item[0]
+            self.HistoryHandler(item.data(100),4)
+
+    def Tab_4_F_Load_Matrix_List(self):
+        self.Tab_4_Matrix_List.clear()
+        try:
+            for Name, Variable in self.Tab_4_Active_Equation.Variables.items():
+                item = QtWidgets.QListWidgetItem()
+                item.setText(Name)
+                item.setData(100,Name)
+                item.setData(101,Variable)
+                self.Tab_4_Matrix_List.addItem(item)
+        except ValueError:
+            AF.ExceptionOutput(sys.exc_info())
+            try:
+                Name, Variable = self.Tab_4_Active_Equation.Variables.items()
+                item = QtWidgets.QListWidgetItem()
+                item.setText(Name)
+                item.setData(100,Name)
+                item.setData(101,Variable)
+                self.Tab_4_Matrix_List.addItem(item)
+            except AF.common_exceptions:
+                AF.ExceptionOutput(sys.exc_info())
+
+    def Tab_4_F_Load_Matrix(self,Name,Matrix):
+        h,w = Matrix.shape
+        self.Tab_4_1_Matrix_Input.setRowCount(h)
+        self.Tab_4_1_Matrix_Input.setColumnCount(w)
+        self.Tab_4_1_Dimension_Input.setText(" "+str(h)+"x"+str(w))
+        self.Tab_4_1_Name_Input.setText(Name)
+        ValueList = Matrix.tolist()
+        for i,a in enumerate(ValueList):
+            for j,b in enumerate(ValueList[i]):
+                item = Qt.QTableWidgetItem()
+                item.setText(str(b))
+                self.Tab_4_1_Matrix_Input.setItem(i,j,item)
+
+    def Tab_4_F_Config_Matrix_Dim(self):
+        h,w = self.Tab_4_1_Dimension_Input.text().split("x")
+        try:
+            h = int(h) if int(h) > 0 else 1
+            self.Tab_4_1_Matrix_Input.setRowCount(h)
+        except AF.common_exceptions:
+            pass
+        try:
+            w = int(w)
+            self.Tab_4_1_Matrix_Input.setColumnCount(w)
+        except AF.common_exceptions:
+            pass
+        for i in range(self.Tab_4_1_Matrix_Input.columnCount()):
+            self.Tab_4_1_Matrix_Input.setColumnWidth(i,75)
+        
+    def Tab_4_F_Save_Matrix(self):
+        NameInvalid=False
+        Name = self.Tab_4_1_Name_Input.text().strip()
+        if Name == "" or " " in Name: #TODO: Better checks!!!
+            NameInvalid=True
+
+        if NameInvalid: #TODO: Improve this!
+            self.Tab_4_1_Name_Input.setText("Invalid!")
+            return False
+        
+        Matrix = []
+        for i in range(self.Tab_4_1_Matrix_Input.rowCount()):
+            Matrix.append([])
+            for j in range(self.Tab_4_1_Matrix_Input.columnCount()):
+                try:
+                    if self.Tab_4_1_Matrix_Input.item(i,j).text().strip() != "":
+                        Matrix[i].append(AF.AstusParse(self.Tab_4_1_Matrix_Input.item(i,j).text(),False))
+                    else:
+                        Matrix[i].append("0")
+                except AF.common_exceptions:
+                    Matrix[i].append("0")
+        Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
+        self.Tab_4_Active_Equation.AddVariable(Name,Matrix)
+        
+        FoundItems = self.Tab_4_Matrix_List.findItems(Name,QtCore.Qt.MatchExactly)
+        if len(FoundItems) > 0:
+            for i in FoundItems:
+                index = self.Tab_4_Matrix_List.indexFromItem(i)
+                self.Tab_4_Matrix_List.takeItem(index.row())
+        item = QtWidgets.QListWidgetItem()
+        h,w = Matrix.shape
+        Text = Name + " : {}x{}".format(h,w)
+        item.setText(Name)
+        item.setData(100,Name)
+        item.setData(101,Matrix)
+        self.Tab_4_Matrix_List.addItem(item)
+        self.Tab_4_F_Display_Matrix(Name,Matrix)
+        
+    def Tab_4_F_Update_Equation(self, Eval = None):
+        if Eval == None:
+            Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+        Text = self.Tab_4_FormulaInput.text()
+        AMaS_Object = self.Tab_4_Active_Equation
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text, Eval=Eval), self.Tab_4_F_Display , ID))
+
+    def Tab_4_F_Display(self, AMaS_Object):
+        self.Tab_4_Display.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
+                                        ,self.Font_Size_spinBox.value(),self.TextColour
+                                        ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                        )
+        
+    def Tab_4_F_Display_Matrix(self,Name,Matrix):
+        Matrix = sympy.latex(Matrix)
+        Text = Matrix
+        Text += "$"
+        Text1 = "$\displaystyle"+Text
+        Text2 = "$"+Text
+        Text2 = Text2.replace("\left","")
+        Text2 = Text2.replace("\right","")
+        Text = Name + " = "
+        Text1,Text2 = Text+Text1 , Text+Text2
+        self.Tab_4_Display.Display(Text1,Text2
+                                        ,self.Font_Size_spinBox.value(),self.TextColour
+                                        ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                        )
+
+# ---------------------------------- Tab_5_ ??? ----------------------------------
 
 
 # ---------------------------------- Main ----------------------------------

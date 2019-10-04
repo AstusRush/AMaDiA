@@ -57,8 +57,12 @@ def cTimeStr():
 def cTimeSStr():
     return str(datetime.datetime.now().strftime('%H:%M:%S'))
 
-def cTimeFullStr():
-    return str(datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+def cTimeFullStr(seperator = None):
+    if seperator == None:
+        return str(datetime.datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
+    else:
+        TheFormat = seperator.join(['%Y','%m','%d','%H','%M','%S'])
+        return str(datetime.datetime.now().strftime(TheFormat))
 
 def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     # Finds nth occurence of tofind in string between start and end, else returns -1
@@ -129,6 +133,7 @@ def AstusParse(string,ConsoleOutput = True):
     string = string.replace(")(",")*(") # Add them between brackets
     # TODO: Add them between letters, constants and between numbers and letters and constants
     # https://docs.python.org/3/library/stdtypes.html#str.isalnum
+    # 
     
     if ConsoleOutput:
         print("Input parsed: ",string)
@@ -182,7 +187,11 @@ def AstusParseInverse(string):
 def Replace(string,List,a=0,b=1):
     # Replaces everything in string that is in List[][a] with List[][b]
     # The List must only contain lists with that all contain at least two strings or Lists that contain such lists
-    if len(List) > 0 and len(List[0]) > 0:
+    # Alternatively takes a dictionary and replaces all keys in the string with their Value
+    if type(List) == dict:
+        for Key, Value in List.items():
+            string = string.replace(Key,str(Value))
+    elif len(List) > 0 and len(List[0]) > 0:
         if type(List[0][0]) == list:
             for i in List:
                 string = Replace(string,i,a,b)

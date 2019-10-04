@@ -29,7 +29,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="Tab_1_Calculator">
+      <widget class="QWidget" name="Tab_1">
        <property name="autoFillBackground">
         <bool>true</bool>
        </property>
@@ -38,14 +38,14 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QListWidget" name="Tab_1_Calculator_History">
+         <widget class="QListWidget" name="Tab_1_History">
           <property name="selectionMode">
            <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLineEdit" name="Tab_1_Calculator_InputField">
+         <widget class="QLineEdit" name="Tab_1_InputField">
           <property name="placeholderText">
            <string>Enter something and hit return to calculate. Use crtl+return to not solve divisions, roots, etc.</string>
           </property>
@@ -53,7 +53,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Tab_2_LaTeX">
+      <widget class="QWidget" name="Tab_2">
        <property name="autoFillBackground">
         <bool>true</bool>
        </property>
@@ -62,11 +62,11 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0" colspan="2">
-         <widget class="QSplitter" name="Tab_2_LaTeX_LowerSplitter">
+         <widget class="QSplitter" name="Tab_2_LowerSplitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QSplitter" name="Tab_2_LaTeX_UpperSplitter">
+          <widget class="QSplitter" name="Tab_2_UpperSplitter">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -76,7 +76,7 @@
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <widget class="QListWidget" name="Tab_2_LaTeX_History">
+           <widget class="QListWidget" name="Tab_2_History">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -88,12 +88,12 @@
             </property>
            </widget>
            <widget class="QWidget" name="layoutWidget">
-            <layout class="QVBoxLayout" name="Tab_2_LaTeX_verticalLayout">
+            <layout class="QVBoxLayout" name="Tab_2_verticalLayout">
              <item>
-              <widget class="MplWidget_LaTeX" name="Tab_2_LaTeX_Viewer" native="true"/>
+              <widget class="MplWidget_LaTeX" name="Tab_2_Viewer" native="true"/>
              </item>
              <item>
-              <widget class="QLineEdit" name="Tab_2_LaTeX_LaTeXOutput">
+              <widget class="QLineEdit" name="Tab_2_LaTeXOutput">
                <property name="toolTip">
                 <string>Only First line of Input!</string>
                </property>
@@ -102,7 +102,7 @@
             </layout>
            </widget>
           </widget>
-          <widget class="QTextEdit" name="Tab_2_LaTeX_InputField">
+          <widget class="QTextEdit" name="Tab_2_InputField">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -116,7 +116,7 @@
          </widget>
         </item>
         <item row="1" column="1" rowspan="2">
-         <widget class="QPushButton" name="Tab_2_LaTeX_ConvertButton">
+         <widget class="QPushButton" name="Tab_2_ConvertButton">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shortcut: crtl+return while having the Input field selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -126,7 +126,7 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <spacer name="Tab_2_LaTeX_horizontalSpacerForButton">
+         <spacer name="Tab_2_horizontalSpacerForButton">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -140,13 +140,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Tab_3_2D_Plot">
+      <widget class="QWidget" name="Tab_3">
        <attribute name="title">
         <string>2D Plot</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_10">
         <item row="1" column="3">
-         <widget class="QPushButton" name="Tab_3_2D_Plot_Button_Clear">
+         <widget class="QPushButton" name="Tab_3_Button_Clear">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -159,14 +159,14 @@
          </widget>
         </item>
         <item row="1" column="0" colspan="3">
-         <widget class="QLineEdit" name="Tab_3_2D_Plot_Formula_Field">
+         <widget class="QLineEdit" name="Tab_3_Formula_Field">
           <property name="placeholderText">
            <string>Enter a function f(x) (eg. &quot;x^2&quot; or a constant (eg. &quot;23+4&quot; for a horizontal line or &quot;x=23+4&quot; for a vertical line at 27) and hit return.</string>
           </property>
          </widget>
         </item>
         <item row="1" column="4">
-         <widget class="QPushButton" name="Tab_3_2D_Plot_Button_Plot">
+         <widget class="QPushButton" name="Tab_3_Button_Plot">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -179,9 +179,9 @@
          </widget>
         </item>
         <item row="0" column="0" colspan="5">
-         <layout class="QGridLayout" name="Tab_3_2D_Plot_gridLayout">
+         <layout class="QGridLayout" name="Tab_3_gridLayout">
           <item row="0" column="0">
-           <widget class="QSplitter" name="Tab_3_2D_Plot_splitter">
+           <widget class="QSplitter" name="Tab_3_splitter">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -192,19 +192,19 @@
              <enum>Qt::Horizontal</enum>
             </property>
             <widget class="QWidget" name="layoutWidget">
-             <layout class="QGridLayout" name="Tab_3_2D_Plot_gridLayout_upper">
+             <layout class="QGridLayout" name="Tab_3_gridLayout_upper">
               <item row="0" column="2">
-               <widget class="QTabWidget" name="Tab_3_2D_Plot_TabWidget">
+               <widget class="QTabWidget" name="Tab_3_TabWidget">
                 <property name="currentIndex">
                  <number>0</number>
                 </property>
-                <widget class="QWidget" name="Tab_3_2D_Plot_Tab_1_History">
+                <widget class="QWidget" name="Tab_3_Tab_1_History">
                  <attribute name="title">
                   <string>History</string>
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout_5">
                   <item row="0" column="0">
-                   <widget class="QListWidget" name="Tab_3_2D_Plot_History">
+                   <widget class="QListWidget" name="Tab_3_History">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                       <horstretch>0</horstretch>
@@ -218,28 +218,28 @@
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="Tab_3_2D_Plot_Tab_2_Config">
+                <widget class="QWidget" name="Tab_3_Tab_2_Config">
                  <attribute name="title">
                   <string>Config</string>
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout_8">
                   <item row="12" column="0">
-                   <widget class="QScrollArea" name="Tab_3_2D_Plot_Tab_2_Config_scrollArea">
+                   <widget class="QScrollArea" name="Tab_3_Tab_2_Config_scrollArea">
                     <property name="widgetResizable">
                      <bool>true</bool>
                     </property>
-                    <widget class="QWidget" name="Tab_3_2D_Plot_Tab_2_Config_scrollAreaWidgetContents">
+                    <widget class="QWidget" name="Tab_3_Tab_2_Config_scrollAreaWidgetContents">
                      <property name="geometry">
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>254</width>
-                       <height>426</height>
+                       <width>238</width>
+                       <height>293</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_11">
                       <item row="8" column="0">
-                       <widget class="QCheckBox" name="Tab_3_2D_Plot_YLim_Check">
+                       <widget class="QCheckBox" name="Tab_3_YLim_Check">
                         <property name="toolTip">
                          <string>Limit the part of the y axis that is shown</string>
                         </property>
@@ -249,7 +249,7 @@
                        </widget>
                       </item>
                       <item row="7" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_2D_Plot_XLim_max">
+                       <widget class="QDoubleSpinBox" name="Tab_3_XLim_max">
                         <property name="decimals">
                          <number>5</number>
                         </property>
@@ -265,7 +265,7 @@
                        </widget>
                       </item>
                       <item row="7" column="0">
-                       <widget class="QDoubleSpinBox" name="Tab_3_2D_Plot_XLim_min">
+                       <widget class="QDoubleSpinBox" name="Tab_3_XLim_min">
                         <property name="decimals">
                          <number>5</number>
                         </property>
@@ -288,14 +288,14 @@
                        </widget>
                       </item>
                       <item row="5" column="1">
-                       <widget class="QCheckBox" name="Tab_3_2D_Plot_Axis_ratio_Checkbox">
+                       <widget class="QCheckBox" name="Tab_3_Axis_ratio_Checkbox">
                         <property name="text">
                          <string>1:1 axis ratio</string>
                         </property>
                        </widget>
                       </item>
                       <item row="1" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_2D_Plot_To_Spinbox">
+                       <widget class="QDoubleSpinBox" name="Tab_3_To_Spinbox">
                         <property name="decimals">
                          <number>5</number>
                         </property>
@@ -324,7 +324,7 @@
                        </spacer>
                       </item>
                       <item row="2" column="0">
-                       <widget class="QComboBox" name="Tab_3_2D_Plot_Steps_comboBox">
+                       <widget class="QComboBox" name="Tab_3_Steps_comboBox">
                         <property name="currentText">
                          <string>Steps total</string>
                         </property>
@@ -344,7 +344,7 @@
                        </widget>
                       </item>
                       <item row="9" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_2D_Plot_YLim_max">
+                       <widget class="QDoubleSpinBox" name="Tab_3_YLim_max">
                         <property name="decimals">
                          <number>5</number>
                         </property>
@@ -360,7 +360,7 @@
                        </widget>
                       </item>
                       <item row="0" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_2D_Plot_From_Spinbox">
+                       <widget class="QDoubleSpinBox" name="Tab_3_From_Spinbox">
                         <property name="decimals">
                          <number>5</number>
                         </property>
@@ -376,7 +376,7 @@
                        </widget>
                       </item>
                       <item row="0" column="0">
-                       <widget class="QLabel" name="Tab_3_2D_Plot_Label_from">
+                       <widget class="QLabel" name="Tab_3_Label_from">
                         <property name="text">
                          <string>From</string>
                         </property>
@@ -386,7 +386,7 @@
                        </widget>
                       </item>
                       <item row="6" column="0">
-                       <widget class="QCheckBox" name="Tab_3_2D_Plot_XLim_Check">
+                       <widget class="QCheckBox" name="Tab_3_XLim_Check">
                         <property name="toolTip">
                          <string>Limit the part of the x axis that is shown</string>
                         </property>
@@ -403,7 +403,7 @@
                        </widget>
                       </item>
                       <item row="9" column="0">
-                       <widget class="QDoubleSpinBox" name="Tab_3_2D_Plot_YLim_min">
+                       <widget class="QDoubleSpinBox" name="Tab_3_YLim_min">
                         <property name="decimals">
                          <number>5</number>
                         </property>
@@ -419,7 +419,7 @@
                        </widget>
                       </item>
                       <item row="5" column="0">
-                       <widget class="QCheckBox" name="Tab_3_2D_Plot_Draw_Grid_Checkbox">
+                       <widget class="QCheckBox" name="Tab_3_Draw_Grid_Checkbox">
                         <property name="text">
                          <string>Draw Grid</string>
                         </property>
@@ -429,7 +429,7 @@
                        </widget>
                       </item>
                       <item row="2" column="1">
-                       <widget class="QSpinBox" name="Tab_3_2D_Plot_Steps_Spinbox">
+                       <widget class="QSpinBox" name="Tab_3_Steps_Spinbox">
                         <property name="minimum">
                          <number>1</number>
                         </property>
@@ -442,7 +442,7 @@
                        </widget>
                       </item>
                       <item row="1" column="0">
-                       <widget class="QLabel" name="Tab_3_2D_Plot_Label_to">
+                       <widget class="QLabel" name="Tab_3_Label_to">
                         <property name="text">
                          <string>To</string>
                         </property>
@@ -452,7 +452,7 @@
                        </widget>
                       </item>
                       <item row="13" column="1">
-                       <widget class="QPushButton" name="Tab_3_2D_Plot_Button_Plot_SymPy">
+                       <widget class="QPushButton" name="Tab_3_Button_Plot_SymPy">
                         <property name="toolTip">
                          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -481,7 +481,7 @@ p, li { white-space: pre-wrap; }
                        </widget>
                       </item>
                       <item row="10" column="0" colspan="2">
-                       <widget class="QPushButton" name="Tab_3_2D_Plot_RedrawPlot_Button">
+                       <widget class="QPushButton" name="Tab_3_RedrawPlot_Button">
                         <property name="toolTip">
                          <string>Apply settings</string>
                         </property>
@@ -491,7 +491,7 @@ p, li { white-space: pre-wrap; }
                        </widget>
                       </item>
                       <item row="13" column="0">
-                       <widget class="QPushButton" name="Tab_3_2D_Plot_Button_SavePlot">
+                       <widget class="QPushButton" name="Tab_3_Button_SavePlot">
                         <property name="toolTip">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the current Plot (exactly as displayed including size and resoltuion)&lt;/p&gt;&lt;p&gt;as a .png in the Plots folder where the AMaDiA.py is located.&lt;/p&gt;&lt;p&gt;Tip: This option is also accessible in the right klick menu of the Plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
@@ -510,7 +510,7 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </widget>
-            <widget class="QScrollArea" name="Tab_3_2D_Plot_ScrollArea">
+            <widget class="QScrollArea" name="Tab_3_ScrollArea">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>5</horstretch>
@@ -523,7 +523,7 @@ p, li { white-space: pre-wrap; }
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
-             <widget class="QWidget" name="Tab_3_2D_Plot_ScrollArea_Layout">
+             <widget class="QWidget" name="Tab_3_ScrollArea_Layout">
               <property name="geometry">
                <rect>
                 <x>0</x>
@@ -540,7 +540,7 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_6">
                <item row="0" column="0">
-                <widget class="MplWidget_2D_Plot" name="Tab_3_2D_Plot_Display" native="true">
+                <widget class="MplWidget_2D_Plot" name="Tab_3_Display" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
                    <horstretch>0</horstretch>
@@ -555,6 +555,143 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Tab_4">
+       <attribute name="title">
+        <string>Multi-Dim</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QSplitter" name="Tab_4_Splitter_Main">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QSplitter" name="Tab_4_Splitter_Left">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <widget class="QTabWidget" name="Tab_4_tabWidget">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="Tab_4_Tab_1">
+             <attribute name="title">
+              <string>Matrix Input</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="1" column="0">
+               <widget class="QLineEdit" name="Tab_4_1_Dimension_Input">
+                <property name="inputMask">
+                 <string>00\xD0</string>
+                </property>
+                <property name="text">
+                 <string>3x3</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="4">
+               <widget class="QTableWidget" name="Tab_4_1_Matrix_Input">
+                <property name="rowCount">
+                 <number>3</number>
+                </property>
+                <property name="columnCount">
+                 <number>3</number>
+                </property>
+                <row/>
+                <row/>
+                <row/>
+                <column/>
+                <column/>
+                <column/>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QPushButton" name="Tab_4_1_Save_Matrix_Button">
+                <property name="text">
+                 <string>Save</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="Tab_4_1_Configure_Button">
+                <property name="text">
+                 <string>Configure</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLineEdit" name="Tab_4_1_Name_Input">
+                <property name="placeholderText">
+                 <string>Name</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="Tab_4_Tab_2">
+             <attribute name="title">
+              <string>History</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="1" column="3">
+               <widget class="QPushButton" name="Tab_4_2_New_Equation_Button">
+                <property name="text">
+                 <string>New Equation</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="4">
+               <widget class="QListWidget" name="Tab_4_History">
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::ExtendedSelection</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="Tab_4_2_Load_Selected_Button">
+                <property name="text">
+                 <string>Load Selected</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="Tab_4_2_New_Equation_Name_Input">
+                <property name="toolTip">
+                 <string>Enter the equation name</string>
+                </property>
+                <property name="placeholderText">
+                 <string>Enter the equation name</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+           <widget class="QListWidget" name="Tab_4_Matrix_List">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::ExtendedSelection</enum>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QSplitter" name="Tab_4_Splitter_Right">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <widget class="QWidget" name="layoutWidget">
+            <layout class="QGridLayout" name="Tab_4_Display_gridLayout">
+             <item row="0" column="0">
+              <widget class="MplWidget_LaTeX" name="Tab_4_Display" native="true"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLineEdit" name="Tab_4_FormulaInput"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QTextEdit" name="Tab_4_DirectInput"/>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -665,33 +802,33 @@ p, li { white-space: pre-wrap; }
  <tabstops>
   <tabstop>Font_Size_spinBox</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>Tab_1_Calculator_History</tabstop>
-  <tabstop>Tab_1_Calculator_InputField</tabstop>
-  <tabstop>Tab_2_LaTeX_InputField</tabstop>
-  <tabstop>Tab_2_LaTeX_ConvertButton</tabstop>
-  <tabstop>Tab_2_LaTeX_LaTeXOutput</tabstop>
-  <tabstop>Tab_2_LaTeX_History</tabstop>
-  <tabstop>Tab_3_2D_Plot_Formula_Field</tabstop>
-  <tabstop>Tab_3_2D_Plot_Button_Plot</tabstop>
-  <tabstop>Tab_3_2D_Plot_Button_Clear</tabstop>
-  <tabstop>Tab_3_2D_Plot_ScrollArea</tabstop>
-  <tabstop>Tab_3_2D_Plot_TabWidget</tabstop>
-  <tabstop>Tab_3_2D_Plot_History</tabstop>
-  <tabstop>Tab_3_2D_Plot_Tab_2_Config_scrollArea</tabstop>
-  <tabstop>Tab_3_2D_Plot_From_Spinbox</tabstop>
-  <tabstop>Tab_3_2D_Plot_To_Spinbox</tabstop>
-  <tabstop>Tab_3_2D_Plot_Steps_comboBox</tabstop>
-  <tabstop>Tab_3_2D_Plot_Steps_Spinbox</tabstop>
-  <tabstop>Tab_3_2D_Plot_Draw_Grid_Checkbox</tabstop>
-  <tabstop>Tab_3_2D_Plot_Axis_ratio_Checkbox</tabstop>
-  <tabstop>Tab_3_2D_Plot_XLim_Check</tabstop>
-  <tabstop>Tab_3_2D_Plot_XLim_min</tabstop>
-  <tabstop>Tab_3_2D_Plot_XLim_max</tabstop>
-  <tabstop>Tab_3_2D_Plot_YLim_Check</tabstop>
-  <tabstop>Tab_3_2D_Plot_YLim_min</tabstop>
-  <tabstop>Tab_3_2D_Plot_YLim_max</tabstop>
-  <tabstop>Tab_3_2D_Plot_RedrawPlot_Button</tabstop>
-  <tabstop>Tab_3_2D_Plot_Button_Plot_SymPy</tabstop>
+  <tabstop>Tab_1_History</tabstop>
+  <tabstop>Tab_1_InputField</tabstop>
+  <tabstop>Tab_2_InputField</tabstop>
+  <tabstop>Tab_2_ConvertButton</tabstop>
+  <tabstop>Tab_2_LaTeXOutput</tabstop>
+  <tabstop>Tab_2_History</tabstop>
+  <tabstop>Tab_3_Formula_Field</tabstop>
+  <tabstop>Tab_3_Button_Plot</tabstop>
+  <tabstop>Tab_3_Button_Clear</tabstop>
+  <tabstop>Tab_3_ScrollArea</tabstop>
+  <tabstop>Tab_3_TabWidget</tabstop>
+  <tabstop>Tab_3_History</tabstop>
+  <tabstop>Tab_3_Tab_2_Config_scrollArea</tabstop>
+  <tabstop>Tab_3_From_Spinbox</tabstop>
+  <tabstop>Tab_3_To_Spinbox</tabstop>
+  <tabstop>Tab_3_Steps_comboBox</tabstop>
+  <tabstop>Tab_3_Steps_Spinbox</tabstop>
+  <tabstop>Tab_3_Draw_Grid_Checkbox</tabstop>
+  <tabstop>Tab_3_Axis_ratio_Checkbox</tabstop>
+  <tabstop>Tab_3_XLim_Check</tabstop>
+  <tabstop>Tab_3_XLim_min</tabstop>
+  <tabstop>Tab_3_XLim_max</tabstop>
+  <tabstop>Tab_3_YLim_Check</tabstop>
+  <tabstop>Tab_3_YLim_min</tabstop>
+  <tabstop>Tab_3_YLim_max</tabstop>
+  <tabstop>Tab_3_RedrawPlot_Button</tabstop>
+  <tabstop>Tab_3_Button_Plot_SymPy</tabstop>
  </tabstops>
  <resources/>
  <connections/>
