@@ -1,0 +1,20 @@
+Hint: These functions are especially useful in the LaTeX Tab as they allow you to use it as a calculator with LaTeX output
+"exp" is the expression on witch you want to use the function
+
+(exp).doit()	# Resolve things (For Example integrals)
+(exp).evalf()	# Evaluate exp and get a decimal number
+solve(exp)		# solve exp
+
+# Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
+simplify(exp)     # Simplifies
+expand(exp)       # Solve all * and **
+factor(exp)       # takes a polynomial and factors it into irreducible factors (Inverse of expand)
+collect(exp)      # collects common powers of a term in an expression
+cancel(exp)       # will take any rational function and put it into the standard canonical form p/q
+apart(exp)        # performs a partial fraction decomposition on a rational function
+expand_trig(exp)  # To expand trigonometric functions, that is, apply the sum or double angle identities
+expand_log(exp)   # To expand logarithms
+expand_power_exp(exp)
+expand_power_base(exp)
+
+(exp).rewrite( function )      # A common way to deal with special functions is to rewrite them in terms of one another. For example: tan(x).rewrite(sin)

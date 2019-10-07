@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.9.1"
+Version = "0.9.2"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -376,11 +376,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def action_H_Load_Plot(self,source,event):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(2)
+        if not item.data(100).Plot_is_initialized:
+            item.data(100).init_2D_plot()
+        if item.data(100).current_ax != None:
+            item.data(100).current_ax.remove()
+            item.data(100).current_ax = None
+            self.Tab_3_F_RedrawPlot()
         self.Tab_3_F_Plot(item.data(100))
         
     def action_H_New_Plot(self,source,event):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(2)
+        if not item.data(100).Plot_is_initialized:
+            item.data(100).init_2D_plot()
+        if item.data(100).current_ax != None:
+            item.data(100).current_ax.remove()
+            item.data(100).current_ax = None
+            self.Tab_3_F_RedrawPlot()
         self.Tab_3_F_Plot_init(item.data(100))
         
  # ----------------
@@ -472,6 +484,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.tab_1_ref = item
             else:
                 self.Tab_1_History.takeItem(self.Tab_1_History.row(AMaS_Object.tab_1_ref))
+                AMaS_Object.tab_1_ref.setText(AMaS_Object.EvaluationEquation)
                 self.Tab_1_History.addItem(AMaS_Object.tab_1_ref)
 
             self.Tab_1_History.scrollToBottom()
@@ -487,6 +500,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.tab_2_ref = item
             else:
                 self.Tab_2_History.takeItem(self.Tab_2_History.row(AMaS_Object.tab_2_ref))
+                AMaS_Object.tab_2_ref.setText(AMaS_Object.Text)
                 self.Tab_2_History.addItem(AMaS_Object.tab_2_ref)
             
             self.Tab_2_History.scrollToBottom()
@@ -502,6 +516,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.tab_3_ref = item
             else:
                 self.Tab_3_History.takeItem(self.Tab_3_History.row(AMaS_Object.tab_3_ref))
+                AMaS_Object.tab_3_ref.setText(AMaS_Object.Text)
                 self.Tab_3_History.addItem(AMaS_Object.tab_3_ref)
             
             self.Tab_3_History.scrollToBottom()
@@ -517,6 +532,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.tab_4_ref = item
             else:
                 self.Tab_4_History.takeItem(self.Tab_4_History.row(AMaS_Object.tab_4_ref))
+                AMaS_Object.tab_4_ref.setText(AMaS_Object.Name)
                 self.Tab_4_History.addItem(AMaS_Object.tab_4_ref)
 
             self.Tab_4_Active_Equation = AMaS_Object
@@ -531,11 +547,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def TR(self, AMaS_Object , Function , ID=-1 , Eval = -1): # Thread Return: Threads report back here when they are done
         self.Function = Function
 
-        if Eval == 0 : Eval = True
-        elif Eval == 1 : Eval = False
-        else: Eval = None
-
         if Function == self.Tab_1_F_Calculate:
+            if Eval == 0 : Eval = True
+            elif Eval == 1 : Eval = False
+            else: Eval = None
             if Eval == None:
                 Eval=self.Menubar_Main_Options_action_Eval_Functions.isChecked()
             self.Function(AMaS_Object,Eval)
@@ -562,6 +577,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.ThreadList.append(Thread(ID))
         self.ThreadList[ID].Return.connect(self.TR)
         self.ThreadList[ID].start()
+
+    def Set_AMaS_Flags(self,AMaS_Object, f_eval = None):
+        if f_eval == None:
+            f_eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+
+        AMaS_Object.f_eval = f_eval
         
     def notify(self, obj, event): # Reimplementation of notify to catch deleted Threads. Refer to Patchnotes v0.7.0
         try:
@@ -589,7 +610,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def Tab_1_F_Calculate(self,AMaS_Object,Eval = None):
         if Eval == None:
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object , Eval=Eval), self.Tab_1_F_Calculate_Display , ID))
+        self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,1)
@@ -928,9 +950,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
         Text = self.Tab_4_FormulaInput.text()
         AMaS_Object = self.Tab_4_Active_Equation
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text, Eval=Eval), self.Tab_4_F_Display , ID))
+        self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
+        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text), self.Tab_4_F_Display , ID))
 
-    def Tab_4_F_Display(self, AMaS_Object):
+    def Tab_4_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
         self.Tab_4_Currently_Displayed = AMaS_Object.EvaluationEquation
         self.Tab_4_Currently_Displayed_Solution = AMaS_Object.Evaluation
         self.Tab_4_Display.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
@@ -941,10 +964,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def Tab_4_F_Display_Matrix(self,Name,Matrix):
         Text = sympy.latex(Matrix)
         Text += "$"
-        Text1 = "$\displaystyle"+Text
+        Text1 = "$\\displaystyle"+Text
         Text2 = "$"+Text
-        Text2 = Text2.replace("\left","")
-        Text2 = Text2.replace("\right","")
+        #Text2 = Text2.replace("\\left","")
+        #Text2 = Text2.replace("\\right","")
+        #Text2 = Text2.replace("\\begin","")
+        #Text2 = Text2.replace("\\end","")
         Text = Name + " = "
         Text1,Text2 = Text+Text1 , Text+Text2
         self.Tab_4_Currently_Displayed = Text + str(Matrix)

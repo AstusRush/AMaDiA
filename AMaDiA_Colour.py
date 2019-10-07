@@ -6,52 +6,57 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 def palette():
+    tbrush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+    tbrush.setStyle(QtCore.Qt.SolidPattern)
+
     palette = QtGui.QPalette()
     brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush) # Used for tab-text and for the arrows in spinboxes and scrollbars
     brush = QtGui.QBrush(QtGui.QColor(54, 57, 63))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush) # Used for Tabs (and their background) and Buttons
     brush = QtGui.QBrush(QtGui.QColor(81, 85, 94))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush) #?
     brush = QtGui.QBrush(QtGui.QColor(67, 71, 78))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush) #?
     brush = QtGui.QBrush(QtGui.QColor(27, 28, 31))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush) #?
     brush = QtGui.QBrush(QtGui.QColor(36, 38, 42))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush) #?
     brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush) # Used for most Text
     brush = QtGui.QBrush(QtGui.QColor(255, 252, 218))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, tbrush) #?
     brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush) # Used is most places as Text Colour
     brush = QtGui.QBrush(QtGui.QColor(54, 57, 63))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush) # Used for Text Field Background
     brush = QtGui.QBrush(QtGui.QColor(54, 57, 63))
+    # brush = QtGui.QBrush(QtGui.QColor(56, 60, 66))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush) # Used for main background
     brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush) #?
     brush = QtGui.QBrush(QtGui.QColor(54, 57, 63))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush) #?
     brush = QtGui.QBrush(QtGui.QColor(255, 255, 220))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush) # Not used (overwritten for every tooltip made in designer?)
     brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush) # Not used (overwritten for every tooltip made in designer?)
+    #-----------------------------------------------------------------------------------
     brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
@@ -97,6 +102,7 @@ def palette():
     brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
+    #-----------------------------------------------------------------------------------
     brush = QtGui.QBrush(QtGui.QColor(27, 28, 31))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)

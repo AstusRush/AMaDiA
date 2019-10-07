@@ -51,6 +51,7 @@ class AMaS: # Astus' Mathematical Structure
         self.TimeStampFull = AF.cTimeFullStr()
         self.Name = "No Name Given"
         self.init_bools()
+        self.init_Flags()
         self.Iam = Iam
         self.Variables = {}
         try:
@@ -165,7 +166,27 @@ class AMaS: # Astus' Mathematical Structure
     def Rename(self,Name):
         self.Name = Name
         return True
-        
+
+# ---------------------------------- Flags ----------------------------------
+    def init_Flags(self):
+        self.f_eval = True         # Solves everything it can (fractions, constants (like pi)) into a decimal number
+
+        # TODO : FOLLOWING NEED IMPLEMENTATION:
+
+        # Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
+        self.f_simplify = False    # Simplifies
+        self.f_expand = False      # Solve all * and **
+        self.f_factor = False      # takes a polynomial and factors it into irreducible factors (Inverse of expand)
+        self.f_collect = False     # collects common powers of a term in an expression
+        self.f_cancel = False      # will take any rational function and put it into the standard canonical form p/q
+        self.f_apart = False       # performs a partial fraction decomposition on a rational function
+        self.f_expand_trig = False # To expand trigonometric functions, that is, apply the sum or double angle identities
+
+        self.f_rewrite = False     # A common way to deal with special functions is to rewrite them in terms of one another
+        self.f_rewritefunc = None  # For example: tan(x).rewrite(sin)
+
+        #self.f_ = False
+
  # ---------------------------------- LaTeX Converter ----------------------------------
 
     def ConvertToLaTeX(self):
@@ -176,11 +197,15 @@ class AMaS: # Astus' Mathematical Structure
                 self.LaTeX = ""
                 for i in parts:
                     if len(i)>0:
-                        self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
+                        #self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
+                        expr = parse_expr(i,evaluate=False)
+                        self.LaTeX += sympy.latex(expr)
                     self.LaTeX += " = "
                 self.LaTeX = self.LaTeX[:-3]
             else:
-                self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
+                #self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
+                expr = parse_expr(self.cstr,evaluate=False)
+                self.LaTeX = sympy.latex(expr)
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
             self.LaTeX = "Could not convert"
@@ -214,11 +239,15 @@ class AMaS: # Astus' Mathematical Structure
                     conv = ""
                     for j in parts:
                         if len(j)>0:
-                            conv += sympy.latex( sympy.S(j,evaluate=False))
+                            #conv += sympy.latex( sympy.S(j,evaluate=False))
+                            expr = parse_expr(j,evaluate=False)
+                            conv += sympy.latex(expr)
                         conv += " = "
                     LineText += conv[:-3]
                 else:
-                    LineText += sympy.latex( sympy.S(e,evaluate=False))
+                    #LineText += sympy.latex( sympy.S(e,evaluate=False))
+                    expr = parse_expr(e,evaluate=False)
+                    LineText = sympy.latex(expr)
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
                 # LineText += AF.AstusParseInverse(e) #TODO: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
@@ -241,8 +270,8 @@ class AMaS: # Astus' Mathematical Structure
         #TODO: keep parse_expr() in mind!!!
         # https://docs.sympy.org/latest/modules/parsing.html
         i_first = -1
-        for i in ART.beginning_symbols:
-            i_curr = self.cstr.find(ART.beginning_symbols[i])
+        for i in ART.l_beginning_symbols:
+            i_curr = self.cstr.find(ART.l_beginning_symbols[i])
             if i_curr != -1:
                 if i_first == -1:
                     i_first = i_curr
@@ -253,7 +282,7 @@ class AMaS: # Astus' Mathematical Structure
  # ---------------------------------- Calculator Methods ----------------------------------
 
 
-    def Evaluate(self,Eval = True):
+    def Evaluate(self):
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
@@ -273,7 +302,7 @@ class AMaS: # Astus' Mathematical Structure
                 ans = sympy.solve(ans,dict=True)
                 self.Evaluation = "{ "
                 for i in ans:
-                    if Eval and not type(i) == dict:
+                    if self.f_eval and not type(i) == dict:
                         i = i.evalf()
                     i_temp = str(i)
                     i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers
@@ -286,7 +315,7 @@ class AMaS: # Astus' Mathematical Structure
                     ans = parse_expr(temp,local_dict=self.Variables)
                     ans = ans.doit()
                     try:
-                        if Eval: ans = ans.evalf()
+                        if self.f_eval: ans = ans.evalf()
                     except AF.common_exceptions:
                         AF.ExceptionOutput(sys.exc_info())
                     self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
@@ -308,7 +337,7 @@ class AMaS: # Astus' Mathematical Structure
                 except AF.common_exceptions:
                     print("Could not simplify "+str(ans))
                     AF.ExceptionOutput(sys.exc_info())
-                if Eval: # TODOMode: Not happy with the Eval thing... BUT happy with ans.evalf()!!!!!!
+                if self.f_eval:
                     try:
                         ans = ans.evalf()
                     except AF.common_exceptions:
@@ -323,12 +352,14 @@ class AMaS: # Astus' Mathematical Structure
                 self.Evaluation = "Fail"
             self.EvaluationEquation = self.Evaluation + " = "
             self.EvaluationEquation += self.Text
+        
+        self.init_Flags() # Reset All Flags
         if self.Evaluation == "Fail":
             return False
         else:
             return True
         
-    def EvaluateEquation_1(self,Eval = True): # This is currently being used
+    def EvaluateEquation_1(self): # This is currently being used
         temp = self.cstr
         #if Eval:
         #    temp.replace("Integral","integrate")
@@ -337,7 +368,7 @@ class AMaS: # Astus' Mathematical Structure
         temp = temp + ")"
         return True
         
-    def EvaluateEquation_2(self,Eval = True): #TODO: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
+    def EvaluateEquation_2(self): #TODO: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
         temp = self.cstr
         temp1 , temp2 = self.cstr.split("=",1)
         temp = "Eq("+temp1
@@ -473,14 +504,14 @@ class AMaS: # Astus' Mathematical Structure
         self.Variables[Name] = Value
         return True
 
-    def UpdateEquation(self,Eval, Text = None):
+    def UpdateEquation(self, Text = None):
         if Text == None:
             Text = self.Input
         self.Input = Text
         #Text = AF.Replace(Text,self.Constants) # TODO: THIS IS BAD! IMPROVES THIS
         self.string = Text
         self.init_Critical()
-        self.Evaluate(Eval)
+        self.Evaluate()
         self.cstr = self.Evaluation
         self.ConvertToLaTeX()
         return True

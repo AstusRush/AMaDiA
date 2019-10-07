@@ -66,7 +66,6 @@ class MplWidget_2D_Plot(QtWidgets.QWidget):
         # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
         # Maybe test this in a little testprogram to not waste that much time...
         
-        
         #Both seem to do the same:
         matplotlib.rcParams['text.usetex'] = TheBool
         plt.rc('text', usetex=TheBool)
@@ -122,7 +121,6 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
         # It could help to seperate the two widgets into two files...
         # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
         # Maybe test this in a little testprogram to not waste that much time...
-        
         
         matplotlib.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
         #Both seem to do the same:
@@ -245,7 +243,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                     self.UseTeX(False)
                     self.canvas.ax.clear()
                     if Use_LaTeX:
-                        ErrorText = "The text can't be displayed. Please send your input and a description of your input to the developer"
+                        ErrorText = "The text can't be displayed. Please send your input and a description of your problem to the developer"
                     else:
                         ErrorText = "The text can't be displayed. Please note that many things can't be displayed without LaTeX Mode."
                         if not AF.LaTeX_dvipng_Installed:

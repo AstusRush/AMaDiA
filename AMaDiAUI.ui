@@ -115,6 +115,19 @@
           </widget>
          </widget>
         </item>
+        <item row="1" column="0">
+         <spacer name="Tab_2_horizontalSpacerForButton">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>780</width>
+            <height>17</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="1" column="1" rowspan="2">
          <widget class="QPushButton" name="Tab_2_ConvertButton">
           <property name="toolTip">
@@ -124,19 +137,6 @@
            <string>Convert</string>
           </property>
          </widget>
-        </item>
-        <item row="1" column="0">
-         <spacer name="Tab_2_horizontalSpacerForButton">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -161,7 +161,7 @@
         <item row="1" column="0" colspan="3">
          <widget class="QLineEdit" name="Tab_3_Formula_Field">
           <property name="placeholderText">
-           <string>Enter a function f(x) (eg. &quot;x^2&quot; or a constant (eg. &quot;23+4&quot; for a horizontal line or &quot;x=23+4&quot; for a vertical line at 27) and hit return.</string>
+           <string>Enter a function f(x) (eg. &quot;x^2&quot;) or a constant (eg. &quot;23+4&quot; for a horizontal line or &quot;x=23+4&quot; for a vertical line at 27) and hit return.</string>
           </property>
          </widget>
         </item>
