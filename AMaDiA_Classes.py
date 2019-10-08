@@ -16,6 +16,7 @@ import platform
 import errno
 import os
 import sympy
+import re
 
 from sympy.parsing.latex import parse_latex
 from sympy.parsing.sympy_parser import parse_expr
@@ -169,7 +170,7 @@ class AMaS: # Astus' Mathematical Structure
 
 # ---------------------------------- Flags ----------------------------------
     def init_Flags(self):
-        self.f_eval = True         # Solves everything it can (fractions, constants (like pi)) into a decimal number
+        self.f_eval = True         # converted to floating-point approximations (decimal numbers)
 
         # TODO : FOLLOWING NEED IMPLEMENTATION:
 

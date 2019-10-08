@@ -11,6 +11,7 @@ import platform
 import errno
 import os
 import sympy
+import re
 
 
 
@@ -135,6 +136,10 @@ def AstusParse(string,ConsoleOutput = True):
     # https://docs.python.org/3/library/stdtypes.html#str.isalnum
     # 
     
+    # Add multiplication signs
+    # EXPERIMAENTAL!
+    string = re.sub(r"((?:\d+)|(?:[a-zA-Z]\w*\(\w+\)))((?:[a-zA-Z]\w*)|\()", r"\1*\2", string)
+
     if ConsoleOutput:
         print("Input parsed: ",string)
     return string

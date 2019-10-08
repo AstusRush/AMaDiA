@@ -2,8 +2,8 @@ Hint: These functions are especially useful in the LaTeX Tab as they allow you t
 "exp" is the expression on witch you want to use the function
 
 (exp).doit()	# Resolve things (For Example integrals)
-(exp).evalf()	# Evaluate exp and get a decimal number
-solve(exp)		# solve exp
+(exp).evalf()	# converted to floating-point approximations (decimal numbers)
+solve(exp)		# solve exp for unknown variables
 
 # Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
 simplify(exp)     # Simplifies

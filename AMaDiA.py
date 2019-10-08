@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.9.2"
+Version = "0.9.2.1"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -16,6 +16,7 @@ import pathlib
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import importlib
+import re
 
 
 import numpy as np
