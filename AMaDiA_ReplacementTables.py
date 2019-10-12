@@ -20,13 +20,16 @@ l_pairs_brackets = [['(',')'],['[',']'],['{','}']]
 l_pairs_brackets_special = [['<','>']]
 l_pairs_brackets_not_interpreteable = [['{','}'],['[',']']]
 l_pairs_quotation = [["\"","\""],["\'","\'"]]
-l_pairs_special = [["Integral","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
-l_pairs_special_Unicode = [["∫","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
+l_pairs_special_I_D = [["Integral","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
+l_pairs_special_I_D_all_Integrals = [["Integral","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("],["integral","d","Integral("],
+                                ["Integrate","d","Integral("],["integrate","d","Integral("],["int ","d","Integral("],["Int ","d","Integral("],["∫","d","Integral("]]
+l_pairs_special_I_D_Unicode = [["∫","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
+l_pairs_special = [["sqrt(",")"],["√(",")"]]
 l_seperators = [',']
 
-LIST_l_normal_pairs = [l_pairs_brackets , l_pairs_special]
-LIST_l_normal_pairs_Unicode = [l_pairs_brackets , l_pairs_special_Unicode]
-LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotation , l_pairs_special]
+LIST_l_normal_pairs = [l_pairs_brackets , l_pairs_special_I_D_all_Integrals , l_pairs_special]
+LIST_l_normal_pairs_Unicode = [l_pairs_brackets , l_pairs_special_I_D_Unicode , l_pairs_special]
+LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotation , l_pairs_special_I_D , l_pairs_special]
 
 
 # ---------------------------------- Normal Replacements n_ ----------------------------------

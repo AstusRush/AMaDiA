@@ -194,7 +194,7 @@ def IntegralParser(string):
     return string
 
 def Derivative_and_IndefiniteIntegral_Parser(string):
-    for i in ART.l_pairs_special:
+    for i in ART.l_pairs_special_I_D:
         if i[0] in string:
             Pair = FindPair(string, i)
             if not Pair[0] == -1 and not Pair[1] == -1:

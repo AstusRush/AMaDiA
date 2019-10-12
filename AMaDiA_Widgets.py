@@ -366,6 +366,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
             for j in i:
                 TheList.append(j[0])
                 TheList.append(j[1])
+        TheList += ["integral","Integrate","integrate","int ","Int "]
         TheList.sort(key=len,reverse=True)
         for i in TheList:
             #pattern += "'"
@@ -380,7 +381,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                 self.setFormat(i[0], i[1]-i[0], self.RedFormat)
                 Element = text[i[0]:i[1]]
                 try:
-                    Pair = AF.Counterpart(Element,ListOfLists=ART.LIST_l_normal_pairs_Unicode,Both=True)
+                    Pair = AF.Counterpart(Element,ListOfLists=ART.LIST_l_normal_pairs,Both=True)
                 except Exception:
                     break
                 if Pair[0] == Element:
