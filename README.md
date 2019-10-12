@@ -2,7 +2,7 @@
 Astus' Mathematical Display Application<br/><br/>
 Current features:<br/>
  * Tab 1 : Scientific Calculator<br/>
-   * Calculate with +,-,×,÷,√,^, Integrals, diff(), complex numbers, sin(), cos(), tan(), exp(), log() , π , e <br/>
+   * Calculate with +,-,×,÷,√,^, Integrals, diff(), complex numbers, sin(), cos(), tan(), exp(), log() , π , E <br/>
    * Solve an equation with unknown variables<br/>
    * Test for equality of two terms<br/>
    * Use mathematic Unicode symbols to type faster<br/>
@@ -19,6 +19,7 @@ Screenshot from Version 0.2.1<br/>
 <br/><br/>
 Planned features for near future (in approximately this order):<br/>
 - Better parser to allow a more flexible input<br/>
+- Differential equations<br/>
+- Plot complex functions<br/>
 - Save/load the history<br/>
 - Unit converter<br/>
-- Differential equations<br/>

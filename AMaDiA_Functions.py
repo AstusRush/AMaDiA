@@ -77,7 +77,44 @@ def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     return val
 
 
-def FindPair(string, AB, start=0, end=0): # TODO: make a version that recognizes all pairs so that it returns -1 for "({)}" when searching for ["(",")"]
+def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs): # Version that recognizes all pairs so that it returns -1 for "({)}" when searching for ["(",")"]
+    # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
+    if end == 0:
+        end = len(string)+1
+    Apos = string.find(AB[0], start, end)
+    if Apos==-1:
+        return(-1,-1)
+    tApos = -1
+    for k in listlist:
+        for o in k:
+            index = string.find(o[0], start, end)
+            if not index == -1 and ( tApos == -1 or index < tApos ):
+                tApos = index
+    if tApos == -1:
+        return FindPair_simple(string,AB,start,end)
+    
+    BlockEnd = FindEndOfBlock(string, AB[1], listlist, Apos+len(AB[0]), end)
+    Bpos = string.find(AB[1], BlockEnd, end)
+    return(Apos, Bpos)
+
+def FindEndOfBlock(string, Target, listlist, start=0, end=0):
+    if end == 0:
+        end = len(string)+1
+    tApos = string.find(Target, start, end)
+    isEnd = True
+    for k in listlist:
+        for o in k:
+            index = string.find(o[0], start, end)
+            if not index == -1 and index <= tApos:
+                tApos = index
+                isEnd = False
+                CurrentPair = o
+    if isEnd:
+        return start
+    start = FindPair(string, CurrentPair, start, end, listlist)[1] + len(CurrentPair[1])
+    return FindEndOfBlock(string, Target, listlist, start, end)
+
+def FindPair_simple(string, AB, start=0, end=0):
     # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
     if end == 0:
         end = len(string)+1
@@ -86,26 +123,26 @@ def FindPair(string, AB, start=0, end=0): # TODO: make a version that recognizes
         return(-1,-1)
         
     Bpos = string.find(AB[1], Apos, end)
-    As = string.count(AB[0], Apos, Bpos+1)
+    As = string.count(AB[0], Apos, Bpos+len(AB[1]))
     if As==0:
         return(Apos, Bpos)
     
     while True:
         Bpos = FindNthOccurrence(string, AB[1], As, Apos, end)
-        As = string.count(AB[0], Apos, Bpos+1)
-        Bs = string.count(AB[1], Apos, Bpos+1)
+        As = string.count(AB[0], Apos, Bpos+len(AB[1]))
+        Bs = string.count(AB[1], Apos, Bpos+len(AB[1]))
         if As==Bs:
             return(Apos, Bpos)
         if Bpos == -1:
             return(Apos, Bpos)
             
-def Counterpart(String):
-    for i in ART.LIST_l_all_pairs:
-        for j in ART.LIST_l_all_pairs[i]:
-            if String == ART.LIST_l_all_pairs[i][j][0]:
-                return ART.LIST_l_all_pairs[i][j][1]
-            elif String == ART.LIST_l_all_pairs[i][j][1]:
-                return ART.LIST_l_all_pairs[i][j][0]
+def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
+    for i in ListOfLists:
+        for j in i:
+            if String == j[0]:
+                return j[1] if not Both else j
+            elif String == j[1]:
+                return j[0] if not Both else j
     ErrMsg = String+" has no couterpart"
     raise Exception(ErrMsg)
     
@@ -123,21 +160,15 @@ def AstusParse(string,ConsoleOutput = True):
     string = IntegralParser_Astus(string)
     #----
     string = IntegralParser(string)
+    string = Derivative_and_IndefiniteIntegral_Parser(string) # Do this after all other integral parsers
     
     
     # Getting rid of not interpreteable brackets
-    for i in ART.l_pairs_brackets_not_interpreteable:
-        string = string.replace(i[0],"(")
-        string = string.replace(i[1],")")
-        
+    # string = NonIterpreteableBracketReplace(string)
+    
+    
     # Add multiplication signs where a human might leave them out
     string = string.replace(")(",")*(") # Add them between brackets
-    # TODO: Add them between letters, constants and between numbers and letters and constants
-    # https://docs.python.org/3/library/stdtypes.html#str.isalnum
-    # 
-    
-    # Add multiplication signs
-    # EXPERIMAENTAL!
     string = re.sub(r"((?:\d+)|(?:[a-zA-Z]\w*\(\w+\)))((?:[a-zA-Z]\w*)|\()", r"\1*\2", string)
 
     if ConsoleOutput:
@@ -157,9 +188,30 @@ def IntegralParser_Astus(string):
         After = After[1:]
         string = Before + " Integral(" + Func + ",("+x+","+From+","+To+"))" + After
     return string
-
+    
 def IntegralParser(string):
     #TODO: Make this work for user-defined Syntax
+    return string
+
+def Derivative_and_IndefiniteIntegral_Parser(string):
+    for i in ART.l_pairs_special:
+        if i[0] in string:
+            Pair = FindPair(string, i)
+            if not Pair[0] == -1 and not Pair[1] == -1:
+                A,B,C = string[:Pair[0]] , string[Pair[0]:Pair[1]] , string[Pair[1]:]
+                B = B.replace(i[0],i[2],1)
+                x,C = C[len(i[1]):len(i[1])+1],C[len(i[1])+1:]
+                B += "," 
+                B += x
+                B += ")"
+                string = A+B
+                string += C
+    return string
+
+def NonIterpreteableBracketReplace(string):
+    for i in ART.l_pairs_brackets_not_interpreteable:
+        string = string.replace(i[0],"(")
+        string = string.replace(i[1],")")
     return string
 
 """

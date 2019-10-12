@@ -20,9 +20,12 @@ l_pairs_brackets = [['(',')'],['[',']'],['{','}']]
 l_pairs_brackets_special = [['<','>']]
 l_pairs_brackets_not_interpreteable = [['{','}'],['[',']']]
 l_pairs_quotation = [["\"","\""],["\'","\'"]]
-l_pairs_special = [["Integral","d"]]
+l_pairs_special = [["Integral","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
+l_pairs_special_Unicode = [["∫","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
 l_seperators = [',']
 
+LIST_l_normal_pairs = [l_pairs_brackets , l_pairs_special]
+LIST_l_normal_pairs_Unicode = [l_pairs_brackets , l_pairs_special_Unicode]
 LIST_l_all_pairs = [l_pairs_brackets , l_pairs_brackets_special , l_pairs_quotation , l_pairs_special]
 
 

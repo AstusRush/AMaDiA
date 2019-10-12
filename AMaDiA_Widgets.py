@@ -3,7 +3,7 @@
 # if__name__ == "__main__":
 #     pass
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets,QtCore,QtGui
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -15,6 +15,7 @@ from mpl_toolkits.axes_grid1 import Divider, Size
 from mpl_toolkits.axes_grid1.mpl_axes import Axes
 import sympy
 import sys
+import re
 
 
 import AMaDiA_Functions as AF
@@ -269,6 +270,138 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
         finally:
             self.UseTeX(False)
 
+class LineEdit(QtWidgets.QTextEdit):
+    returnPressed = QtCore.pyqtSignal()
+    def __init__(self, parent=None):
+        QtWidgets.QTextEdit.__init__(self, parent)
 
+        QTextEdFontMetrics =  QtGui.QFontMetrics(self.font())
+        self.QTextEdRowHeight = QTextEdFontMetrics.lineSpacing()
+        self.setFixedHeight(2 * self.QTextEdRowHeight)
+        self.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
+        self.Highlighter = LineEditHighlighter(self.document(), self)
+        self.installEventFilter(self)
+        # CONNECT WIDGET SIGNAL
+        self.textChanged.connect(self.validateCharacters)
+        self.cursorPositionChanged.connect(self.CursorPositionChanged)
 
+    def CursorPositionChanged(self):
+        cursor = self.textCursor()
+        curPos = cursor.position()
+        self.document().contentsChange.emit(curPos,0,0)
+
+    def validateCharacters(self):
+        vorbiddenChars = ['\n']
+        cursor = self.textCursor()
+        curPos = cursor.position()
+        Text = self.toPlainText()
+        found = 0
+        for e in vorbiddenChars:
+            found += Text.count(e)
+            Text = Text.replace(e, '')
+        self.blockSignals(True)
+        self.setText(Text)
+        self.blockSignals(False)
+        cursor.setPosition(curPos-found)
+        self.setTextCursor(cursor)
+
+    def text(self):
+        return self.toPlainText()
+
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.FontChange):
+            QTextEdFontMetrics =  QtGui.QFontMetrics(self.font())
+            self.QTextEdRowHeight = QTextEdFontMetrics.lineSpacing()+9
+            self.setFixedHeight(self.QTextEdRowHeight)
+        if (event.type() == QtCore.QEvent.KeyPress
+        and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
+            self.returnPressed.emit()
+            return True
+        if (event.type() == QtCore.QEvent.KeyPress
+        and event.key() == QtCore.Qt.Key_Up):
+            cursor = self.textCursor()
+            cursor.movePosition(cursor.Start)#.setPosition(0)
+            self.setTextCursor(cursor)
+            return True
+        if (event.type() == QtCore.QEvent.KeyPress
+        and event.key() == QtCore.Qt.Key_Down):
+            cursor = self.textCursor()
+            cursor.movePosition(cursor.End)#setPosition(self.document().characterCount()-1)
+            self.setTextCursor(cursor)
+            return True
+        return super(LineEdit, self).eventFilter(source, event)
+
+class LineEditHighlighter(QtGui.QSyntaxHighlighter):
+    def __init__(self, document, Widget):
+        QtGui.QSyntaxHighlighter.__init__(self, document)
+        self.Widget = Widget
+        self.init_Styles()
+
+        # init the rules 
+        rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
+        self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+
+    def init_Styles(self):
+        # init Lists
+        self.braces = ['\{', '\}', '\(', '\)', '\[', '\]']
+
+        # Init Formats
+        self.RedFormat = QtGui.QTextCharFormat()
+        self.RedFormat.setForeground(QtGui.QColor('red'))
+        self.GreenFormat = QtGui.QTextCharFormat()
+        self.GreenFormat.setForeground(QtGui.QColor('green'))
+
+        # Collect all Formats in a dictionary
+        self.STYLES = {'brace': self.RedFormat,}
+
+    def highlightBlock(self, text):
+        cursor = self.Widget.textCursor()
+        curPos = cursor.position()
+        pattern = ""
+        TheList = []
+        for i in ART.LIST_l_normal_pairs_Unicode:
+            for j in i:
+                TheList.append(j[0])
+                TheList.append(j[1])
+        TheList.sort(key=len,reverse=True)
+        for i in TheList:
+            #pattern += "'"
+            pattern += re.escape(i)
+            pattern += "|"
+            pattern += re.escape(i)
+            pattern += "|"
+        pattern = pattern[:-1]
+        braces_list = [[m.start(),m.end()] for m in re.finditer(pattern, text)]
+        for i in braces_list:
+            if curPos <= i[1] and curPos >= i[0]:
+                self.setFormat(i[0], i[1]-i[0], self.RedFormat)
+                Element = text[i[0]:i[1]]
+                try:
+                    Pair = AF.Counterpart(Element,ListOfLists=ART.LIST_l_normal_pairs_Unicode,Both=True)
+                except Exception:
+                    break
+                if Pair[0] == Element:
+                    a,b = AF.FindPair(text,Pair,i[0])
+                    self.setFormat(b, len(Pair[1]), self.RedFormat)
+                else:
+                    # TODO: Do FindPair but backweards
+                    pass
+                break
+        
+
+        
+        self.setCurrentBlockState(0)
+
+    def highlightBlock2(self, text):
+        for expression, nth, MyFormat in self.rules:
+            index = expression.indexIn(text, 0)
+            while index >= 0:
+                # We actually want the index of the nth match
+                index = expression.pos(nth)
+                length = len(expression.cap(nth))
+                self.setFormat(index, length, MyFormat)
+                index = expression.indexIn(text, index + length)
+            self.setCurrentBlockState(0)
