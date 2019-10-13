@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.10.0.1"
+Version = "0.10.0.2"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable

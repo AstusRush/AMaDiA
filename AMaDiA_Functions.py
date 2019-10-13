@@ -154,8 +154,10 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
     # https://docs.python.org/3.4/library/string.html
 
 def AstusParse(string,ConsoleOutput = True):
+    string = re.sub(r"√(\w)",r"sqrt(\1)",string)
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
+    #----
     #---- Temporary Integral Handling for Astus's Integral Syntax
     string = IntegralParser_Astus(string)
     #----
