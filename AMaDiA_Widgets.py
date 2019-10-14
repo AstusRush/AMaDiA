@@ -284,7 +284,7 @@ class LineEdit(QtWidgets.QTextEdit):
 
         self.Highlighter = LineEditHighlighter(self.document(), self)
         self.installEventFilter(self)
-        # CONNECT WIDGET SIGNAL
+        # Connect Signals
         self.textChanged.connect(self.validateCharacters)
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
 
@@ -305,8 +305,11 @@ class LineEdit(QtWidgets.QTextEdit):
         self.blockSignals(True)
         self.setText(Text)
         self.blockSignals(False)
-        cursor.setPosition(curPos-found)
-        self.setTextCursor(cursor)
+        try:
+            cursor.setPosition(curPos-found)
+            self.setTextCursor(cursor)
+        except AF.common_exceptions:
+            AF.ExceptionOutput(sys.exc_info())
 
     def text(self):
         return self.toPlainText()
@@ -378,33 +381,35 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
             pattern += "|"
         pattern = pattern[:-1]
         braces_list = [[m.start(),m.end()] for m in re.finditer(pattern, text)]
+        braces_list.sort(key=AF.takeFirst,reverse=False)
         for i in braces_list:
             if curPos <= i[1] and curPos >= i[0]:
                 self.setFormat(i[0], i[1]-i[0], self.RedFormat)
                 Element = text[i[0]:i[1]]
                 try:
-                    Pair = AF.Counterpart(Element,ListOfLists=ART.LIST_l_normal_pairs,Both=True)
+                    Pair = AF.Counterpart(Element, ListOfLists=ART.LIST_l_normal_pairs, Both=True)
                 except Exception:
-                    break
+                    AF.ExceptionOutput(sys.exc_info())#break
                 if Pair[0] == Element:
+                    Pair = Pair.FirstResult
                     a,b = AF.FindPair(text,Pair,i[0])
                     self.setFormat(b, len(Pair[1]), self.RedFormat)
                 else:
-                    # TODO: Do FindPair but backweards
-                    pass
+                    # TODO: Do improve this
+                    # TODO: Does not work!!!!!!!!!!!!!! NEEDS FIX OF AF.FindPair ???
+                    for j in braces_list:
+                        Pair = AF.Counterpart(Element,ListOfLists=ART.LIST_l_normal_pairs,Both=True)
+                        k=0
+                        found = False
+                        while k < len(Pair):
+                            a,b = AF.FindPair(text,Pair.List[k],end=i[1])
+                            if b == i[0] and Pair.List[k][1] == Element:
+                                c,d = a, len(Pair.List[k][0])
+                                found = True
+                            k+=1
+                    if found:
+                        self.setFormat(c, d, self.RedFormat)
                 break
-        
-
         
         self.setCurrentBlockState(0)
 
-    def highlightBlock2(self, text):
-        for expression, nth, MyFormat in self.rules:
-            index = expression.indexIn(text, 0)
-            while index >= 0:
-                # We actually want the index of the nth match
-                index = expression.pos(nth)
-                length = len(expression.cap(nth))
-                self.setFormat(index, length, MyFormat)
-                index = expression.indexIn(text, index + length)
-            self.setCurrentBlockState(0)

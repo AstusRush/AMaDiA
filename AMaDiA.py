@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.10.0.3"
+Version = "0.10.1"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -9,6 +9,7 @@ from PyQt5.Qt import QApplication, QClipboard
 import PyQt5.Qt as Qt
 import socket
 import datetime
+import time
 import platform
 import errno
 import os
@@ -40,17 +41,27 @@ import matplotlib
 
 
 
-
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
 WindowTitle+= " by "
 WindowTitle+= Author
 
 
+class MainApp(QtWidgets.QApplication):
+    def notify(self, obj, event): # Reimplementation of notify that does nothing other than redirecting to normal implementation for now...
+        try:
+            return super().notify(obj, event)
+        except:
+            AF.ExceptionOutput(sys.exc_info())
+            print("Caught: ",obj,event)
+            return False
+
+
 class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
-    def __init__(self, parent = None):
+    def __init__(self,MainApp, parent = None):
         super(MainWindow, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
+        self.MainApp = MainApp
         self.setupUi(self)
         
         # Create Folders if not already existing
@@ -133,6 +144,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # If the first is False and the seccond True than clear when the plot button is pressed and cjange the variables to ensure that this only happens once
             #       to not accidentially erase the plots of the user as this would be really bad...
         self.Tab_1_InputField.setFocus()
+
         
 # ---------------------------------- Init and Maintanance ----------------------------------
 
@@ -480,7 +492,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             print("Could not save Plot: Could not validate save location")
         
-# ---------------------------------- Tab_3_Display_Context_Menu ----------------------------------
+# ---------------------------------- Tab_5_Display_Context_Menu ----------------------------------
     def action_Tab_5_Display_Copy_Displayed(self):
         QApplication.clipboard().setText(self.Tab_5_Currently_Displayed)
         
@@ -602,13 +614,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             f_eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
 
         AMaS_Object.f_eval = f_eval
-        
-    def notify(self, obj, event): # Reimplementation of notify to catch deleted Threads. Refer to Patchnotes v0.7.0
-        try:
-            return super().notify(obj, event)
-        except:
-            AF.ExceptionOutput(sys.exc_info())
-            return False
 
 # ---------------------------------- Tab_1_ Calculator ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
@@ -622,7 +627,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         TheInput = TheInput.replace("ans",self.ans)
         if TheInput == "len()":
             TheInput = str(len(self.ThreadList))
-        self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
+        self.TC(lambda ID: AT.AMaS_Creator(self, TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
         
         
         
@@ -630,7 +635,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if Eval == None:
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
+        self.TC(lambda ID: AT.AMaS_Thread(self, AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,1)
@@ -638,7 +643,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
 # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_2_InputField.toPlainText(), self.Tab_2_F_Display,ID))
+        self.TC(lambda ID: AT.AMaS_Creator(self, self.Tab_2_InputField.toPlainText(), self.Tab_2_F_Display,ID))
         
         
     def Tab_2_F_Display(self , AMaS_Object):
@@ -653,7 +658,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
 # ---------------------------------- Tab_3_ 2D-Plot ----------------------------------
     def Tab_3_F_Plot_Button(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_Formula_Field.text() , self.Tab_3_F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
+        self.TC(lambda ID: AT.AMaS_Creator(self,self.Tab_3_Formula_Field.text() , self.Tab_3_F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
         
         
     def Tab_3_F_Plot_init(self , AMaS_Object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
@@ -682,7 +687,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 ymax , ymin = ymin , ymax
             AMaS_Object.plot_ylim_vals = (ymin , ymax)
         
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_F_Plot ,ID))
+        self.TC(lambda ID: AT.AMaS_Thread(self,AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_F_Plot ,ID))
         
         
         
@@ -799,7 +804,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_History.item(i).data(100).current_ax = None
             
     def Tab_3_F_Sympy_Plot_Button(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))
+        self.TC(lambda ID: AT.AMaS_Creator(self,self.Tab_3_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))
         
     def Tab_3_F_Sympy_Plot(self , AMaS_Object):
         try:
@@ -845,7 +850,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Name = ""+self.Tab_5_2_New_Equation_Name_Input.text().strip()
         if Name == "":
             Name="Unnamed Equation"
-        self.TC(lambda ID: AT.AMaS_Creator(Name,self.Tab_5_F_New_Equation_Done,ID=ID,Iam=AC.Iam_Multi_Dim))
+        self.TC(lambda ID: AT.AMaS_Creator(self,Name,self.Tab_5_F_New_Equation_Done,ID=ID,Iam=AC.Iam_Multi_Dim))
     def Tab_5_F_New_Equation_Done(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,4)
 
@@ -977,7 +982,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Text = self.Tab_5_FormulaInput.text()
         AMaS_Object = self.Tab_5_Active_Equation
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
-        self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text), self.Tab_5_F_Display , ID))
+        self.TC(lambda ID: AT.AMaS_Thread(self,AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text), self.Tab_5_F_Display , ID))
 
     def Tab_5_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
         self.Tab_5_Currently_Displayed = AMaS_Object.EvaluationEquation
@@ -1019,8 +1024,9 @@ if __name__ == "__main__":
     elif not latex_installed and dvipng_installed: print("dvipng is installed but latex was not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
     else: print("latex and dvipng were not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
     print("AMaDiA Startup")
-    app = QtWidgets.QApplication([])
+    app = MainApp([])
+    #app = QtWidgets.QApplication([])
     app.setStyle("fusion")
-    window = MainWindow()
+    window = MainWindow(app)
     window.show()
     sys.exit(app.exec_())

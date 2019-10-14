@@ -7,6 +7,7 @@ import sys
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
 import socket
 import datetime
+import time
 import platform
 import errno
 import os
@@ -65,6 +66,11 @@ def cTimeFullStr(seperator = None):
         TheFormat = seperator.join(['%Y','%m','%d','%H','%M','%S'])
         return str(datetime.datetime.now().strftime(TheFormat))
 
+def takeFirst(elem):
+    return elem[0]
+def takeSecond(elem):
+    return elem[1]
+
 def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     # Finds nth occurence of tofind in string between start and end, else returns -1
     if end == 0:
@@ -79,27 +85,38 @@ def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
 
 def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs): # Version that recognizes all pairs so that it returns -1 for "({)}" when searching for ["(",")"]
     # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
+    # TODO: DOES NOT WORK IF AT LEAST 2 OPENING TOO MANY
     if end == 0:
         end = len(string)+1
+    if start >= end-1 or start<0 or end > len(string)+1 or start<0 or start >= end:
+        return(-1,-1)
     Apos = string.find(AB[0], start, end)
     if Apos==-1:
         return(-1,-1)
+    if end < 0 or string.find(AB[1], Apos, end) == -1:
+        return(Apos,-1)
     tApos = -1
     for k in listlist:
         for o in k:
-            index = string.find(o[0], start, end)
+            index = string.find(o[0], Apos+len(AB[0]), end)
             if not index == -1 and ( tApos == -1 or index < tApos ):
                 tApos = index
     if tApos == -1:
-        return FindPair_simple(string,AB,start,end)
+        #return FindPair_simple(string,AB,start,end)
+        Bpos = string.find(AB[1], Apos+len(AB[0]), end)
+        return(Apos, Bpos)
     
     BlockEnd = FindEndOfBlock(string, AB[1], listlist, Apos+len(AB[0]), end)
+    if BlockEnd <= start or BlockEnd <= 0 or BlockEnd >= end or BlockEnd==-1:
+        return(Apos, -1)
     Bpos = string.find(AB[1], BlockEnd, end)
     return(Apos, Bpos)
 
 def FindEndOfBlock(string, Target, listlist, start=0, end=0):
     if end == 0:
         end = len(string)+1
+    if start >= end:
+        return start
     tApos = string.find(Target, start, end)
     isEnd = True
     for k in listlist:
@@ -111,8 +128,12 @@ def FindEndOfBlock(string, Target, listlist, start=0, end=0):
                 CurrentPair = o
     if isEnd:
         return start
-    start = FindPair(string, CurrentPair, start, end, listlist)[1] + len(CurrentPair[1])
-    return FindEndOfBlock(string, Target, listlist, start, end)
+    nstart = FindPair(string, CurrentPair, start, end, listlist)[1] + len(CurrentPair[1])
+    if nstart == -1 or nstart <= start:
+        return start
+    else:
+        return FindEndOfBlock(string, Target, listlist, nstart, end)
+
 
 def FindPair_simple(string, AB, start=0, end=0):
     # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
@@ -135,14 +156,63 @@ def FindPair_simple(string, AB, start=0, end=0):
             return(Apos, Bpos)
         if Bpos == -1:
             return(Apos, Bpos)
+
+class Counterpart_Result_List:
+    def __init__(self,Both):
+        self.List = []
+        self.Both = Both
+        self.FirstResult = None
+
+    def append(self , x):
+        self.List.append(x)
+        return self
+        
+    def __getitem__(self, key):
+        if self.Both and type(self.FirstResult) == list:
+            return self.FirstResult[key]
+        else:
+            return self.List[key]
+    
+    def __len__(self):
+        return len(self.List)
+
+    def __iadd__(self,value):
+        if len(self.List) == 0:
+            self.FirstResult = value
+        self.List.append(value)
+        return self
+
+    def __call__(self):
+        return self.FirstResult
+
+    def __repr__(self):
+        return self.FirstResult
+
+    def __str__(self):
+        return str(self.FirstResult)
+
+    def __contains__(self,keyword): # TODO: Does not work as it opens all internal lists as well...
+        return keyword in self.List
+
+    def HalfList(self,Column):
+        if self.Both:
+            t = []
+            for i in self.List:
+                t.append(i[Column])
+            return t
+        else:
+            return self.FirstResult
             
 def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
+    result = Counterpart_Result_List(Both)
     for i in ListOfLists:
         for j in i:
             if String == j[0]:
-                return j[1] if not Both else j
+                result += j[1] if not Both else j
             elif String == j[1]:
-                return j[0] if not Both else j
+                result += j[0] if not Both else j
+    if len(result)>=1:
+        return result
     ErrMsg = String+" has no couterpart"
     raise Exception(ErrMsg)
     

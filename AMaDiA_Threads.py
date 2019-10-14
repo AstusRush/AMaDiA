@@ -17,6 +17,7 @@ import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import importlib
 import types
+import time
 
 import numpy as np
 import scipy.integrate
@@ -37,8 +38,8 @@ def ReloadModules():
 
 class AMaS_Creator(QtCore.QThread):
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int , int)
-    def __init__(self, Text, Return_Function, ID, Eval=None, Iam = AC.Iam_Normal):
-        QtCore.QThread.__init__(self)
+    def __init__(self, Parent, Text, Return_Function, ID, Eval=None, Iam = AC.Iam_Normal):
+        QtCore.QThread.__init__(self, Parent)
         self.exiting = False
         self.Text = Text
         self.Iam = Iam
@@ -58,14 +59,14 @@ class AMaS_Creator(QtCore.QThread):
         self.deleteLater()
         
 """Usage: only replace __***__
-self.TC(lambda ID: AT.AMaS_Creator( __Text__ , self.__Return_to_Method__ ,ID))
+self.TC(lambda ID: AT.AMaS_Creator(self, __Text__ , self.__Return_to_Method__ ,ID))
 """
 #------------------------------------------------------------------------------
 
 class AMaS_Thread(QtCore.QThread):
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
-    def __init__(self, AMaS_Object, AMaS_Function, Return_Function, ID):
-        QtCore.QThread.__init__(self)
+    def __init__(self, Parent, AMaS_Object, AMaS_Function, Return_Function, ID):
+        QtCore.QThread.__init__(self, Parent)
         self.ID = ID
         self.exiting = False
         self.AMaS_Object = AMaS_Object
@@ -82,11 +83,11 @@ class AMaS_Thread(QtCore.QThread):
         
         
 """Usage: only replace __***__
-self.TC(lambda ID: AT.AMaS_Thread(AMaS_Object,lambda:AC.AMaS.__METHOD__(AMaS_Object, __ARGUMENTS__ ),self.__Return_to_Method__ ,ID))
+self.TC(lambda ID: AT.AMaS_Thread(self, AMaS_Object,lambda:AC.AMaS.__METHOD__(AMaS_Object, __ARGUMENTS__ ),self.__Return_to_Method__ ,ID))
 """
 
 ''' Usage:
-self.New_AMaS_Thread = AMaS_Calc_Thread(AMaS_Object , AC.Method , self.Return_Function)
+self.New_AMaS_Thread = AMaS_Calc_Thread(self, AMaS_Object , AC.Method , self.Return_Function)
 self.New_AMaS_Thread.Calculator_Return.connect(self.RT)
 self.New_AMaS_Thread.start()
 
