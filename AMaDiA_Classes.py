@@ -199,13 +199,13 @@ class AMaS: # Astus' Mathematical Structure
                 for i in parts:
                     if len(i)>0:
                         #self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
-                        expr = parse_expr(i,evaluate=False)
+                        expr = parse_expr(i,evaluate=False,local_dict=self.Variables)
                         self.LaTeX += sympy.latex(expr)
                     self.LaTeX += " = "
                 self.LaTeX = self.LaTeX[:-3]
             else:
                 #self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-                expr = parse_expr(self.cstr,evaluate=False)
+                expr = parse_expr(self.cstr,evaluate=False,local_dict=self.Variables)
                 self.LaTeX = sympy.latex(expr)
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
@@ -241,13 +241,13 @@ class AMaS: # Astus' Mathematical Structure
                     for j in parts:
                         if len(j)>0:
                             #conv += sympy.latex( sympy.S(j,evaluate=False))
-                            expr = parse_expr(j,evaluate=False)
+                            expr = parse_expr(j,evaluate=False,local_dict=self.Variables)
                             conv += sympy.latex(expr)
                         conv += " = "
                     LineText += conv[:-3]
                 else:
                     #LineText += sympy.latex( sympy.S(e,evaluate=False))
-                    expr = parse_expr(e,evaluate=False)
+                    expr = parse_expr(e,evaluate=False,local_dict=self.Variables)
                     LineText = sympy.latex(expr)
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
@@ -509,11 +509,10 @@ class AMaS: # Astus' Mathematical Structure
         if Text == None:
             Text = self.Input
         self.Input = Text
-        #Text = AF.Replace(Text,self.Constants) # TODO: THIS IS BAD! IMPROVES THIS
         self.string = Text
         self.init_Critical()
         self.Evaluate()
-        self.cstr = self.Evaluation
+        #self.cstr = self.Evaluation
         self.ConvertToLaTeX()
         return True
 

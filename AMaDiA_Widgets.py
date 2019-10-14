@@ -362,11 +362,13 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
         curPos = cursor.position()
         pattern = ""
         TheList = []
-        for i in ART.LIST_l_normal_pairs_Unicode:
+        for i in ART.LIST_l_normal_pairs:
             for j in i:
-                TheList.append(j[0])
-                TheList.append(j[1])
-        TheList += ["integral","Integrate","integrate","int ","Int "]
+                if not j[0] in TheList:
+                    TheList.append(j[0])
+                if not j[1] in TheList:
+                    TheList.append(j[1])
+        #TheList += ["integral","Integrate","integrate","int ","Int "]
         TheList.sort(key=len,reverse=True)
         for i in TheList:
             #pattern += "'"

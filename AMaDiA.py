@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.10.0.2"
+Version = "0.10.0.3"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -318,18 +318,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 #item = source.itemAt(event.pos())
                 #QApplication.clipboard().setText(item.data(100).Text)
             return True
-     # ---------------------------------- Tab 4 Matrix List Context Menu ----------------------------------
+     # ---------------------------------- Tab 5 Matrix List Context Menu ----------------------------------
         elif (event.type() == QtCore.QEvent.ContextMenu and
             (source is self.Tab_5_Matrix_List)and source.itemAt(event.pos())):
             menu = QtWidgets.QMenu()
             action = menu.addAction('Load to Editor')
-            action.triggered.connect(lambda: self.action_4M_Load_into_Editor(source,event))
+            action.triggered.connect(lambda: self.action_5M_Load_into_Editor(source,event))
             action = menu.addAction('Display')
-            action.triggered.connect(lambda: self.action_4M_Display(source,event))
+            action.triggered.connect(lambda: self.action_5M_Display(source,event))
             action = menu.addAction('Copy as String')
-            action.triggered.connect(lambda: self.action_4M_Copy_string(source,event))
+            action.triggered.connect(lambda: self.action_5M_Copy_string(source,event))
             action = menu.addAction('Delete')
-            action.triggered.connect(lambda: self.action_4M_Delete(source,event))
+            action.triggered.connect(lambda: self.action_5M_Delete(source,event))
             menu.exec_(event.globalPos())
             return True
      # ---------------------------------- Other Events ----------------------------------
@@ -837,6 +837,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     sympy.plot_implicit(parse_expr(AMaS_Object.string))
                 except AF.common_exceptions:
                     AF.ExceptionOutput(sys.exc_info())
+
+# ---------------------------------- Tab_4_ ??? ----------------------------------
         
 # ---------------------------------- Tab_5_ Multi-Dim ----------------------------------
     def Tab_5_F_New_Equation(self):
@@ -853,13 +855,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             item = item[0]
             self.HistoryHandler(item.data(100),4)
         self.Tab_5_FormulaInput.setText(item.data(100).Input)
+        self.Tab_5_F_Display(self.Tab_5_Active_Equation)
 
     def Tab_5_F_Load_Matrix_List(self):
         self.Tab_5_Matrix_List.clear()
         try:
             for Name, Variable in self.Tab_5_Active_Equation.Variables.items():
+                h, w = AF.shape2(Variable)
+                Text = Name + " = {}".format(str(Variable)) if h==1 and w==1 else Name + " : {}x{}".format(h,w)
                 item = QtWidgets.QListWidgetItem()
-                item.setText(Name)
+                item.setText(Text)
                 item.setData(100,Name)
                 item.setData(101,Variable)
                 self.Tab_5_Matrix_List.addItem(item)
@@ -867,8 +872,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             AF.ExceptionOutput(sys.exc_info())
             try:
                 Name, Variable = self.Tab_5_Active_Equation.Variables.items()
+                h, w = AF.shape2(Variable)
+                Text = Name + " = {}".format(str(Variable)) if h==1 and w==1 else Name + " : {}x{}".format(h,w)
                 item = QtWidgets.QListWidgetItem()
-                item.setText(Name)
+                item.setText(Text)
                 item.setData(100,Name)
                 item.setData(101,Variable)
                 self.Tab_5_Matrix_List.addItem(item)
@@ -998,7 +1005,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
 
-# ---------------------------------- Tab_5_ ??? ----------------------------------
+# ---------------------------------- Tab_6_ ??? ----------------------------------
 
 
 # ---------------------------------- Main ----------------------------------
