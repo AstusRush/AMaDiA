@@ -267,17 +267,25 @@ def IntegralParser(string):
 
 def Derivative_and_IndefiniteIntegral_Parser(string):
     for i in ART.l_pairs_special_I_D:
-        if i[0] in string:
-            Pair = FindPair(string, i)
-            if not Pair[0] == -1 and not Pair[1] == -1:
-                A,B,C = string[:Pair[0]] , string[Pair[0]:Pair[1]] , string[Pair[1]:]
-                B = B.replace(i[0],i[2],1)
-                x,C = C[len(i[1]):len(i[1])+1],C[len(i[1])+1:]
-                B += "," 
-                B += x
-                B += ")"
-                string = A+B
-                string += C
+        amount = string.count(i[0])
+        counter = 0
+        if amount > 0:
+            start = 0
+            while counter < amount:
+                Pair = FindPair(string, i,start=start)
+                if not Pair[0] == -1 and not Pair[1] == -1:
+                    A,B,C = string[:Pair[0]] , string[Pair[0]:Pair[1]] , string[Pair[1]:]
+                    B = B.replace(i[0],i[2],1)
+                    x,C = C[len(i[1]):len(i[1])+1],C[len(i[1])+1:]
+                    B += "," 
+                    B += x
+                    B += ")"
+                    string = A+B
+                    string += C
+                    counter+=1
+                    start = Pair[0]+len(i[0])
+                else:
+                    break
     return string
 
 def NonIterpreteableBracketReplace(string):
