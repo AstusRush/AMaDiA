@@ -396,19 +396,41 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                     self.setFormat(b, len(Pair[1]), self.RedFormat)
                 else:
                     # TODO: Do improve this
+
+                    #---------method1----------
                     # TODO: Does not work!!!!!!!!!!!!!! NEEDS FIX OF AF.FindPair ???
+                        #k=0
+                        #found = False
+                        #while k < len(Pair):
+                        #    a,b = AF.FindPair(text,Pair.List[k],end=i[1])
+                        #    if b == i[0] and Pair.List[k][1] == Element:
+                        #        c,d = a, len(Pair.List[k][0])
+                        #        found = True
+                        #    k+=1
+                    #if found:
+                    #    self.setFormat(c, d, self.RedFormat)
+
+
+                    #---------method2----------
+                    found = False
                     for j in braces_list:
-                        Pair = AF.Counterpart(Element,ListOfLists=ART.LIST_l_normal_pairs,Both=True)
+                        Element2 = text[j[0]:j[1]]
+                        try:
+                            Pair2 = AF.Counterpart(Element2, ListOfLists=ART.LIST_l_normal_pairs, Both=True)
+                        except Exception:
+                            AF.ExceptionOutput(sys.exc_info())#break
                         k=0
-                        found = False
-                        while k < len(Pair):
-                            a,b = AF.FindPair(text,Pair.List[k],end=i[1])
-                            if b == i[0] and Pair.List[k][1] == Element:
-                                c,d = a, len(Pair.List[k][0])
+                        while k < len(Pair2):
+                            a,b = AF.FindPair(text,Pair2.List[k],j[0])
+                            if b == i[0] and Pair2.List[k][1] == Element:
+                                c,d = a, len(Pair2.List[k][0])
                                 found = True
+                                break
                             k+=1
                     if found:
                         self.setFormat(c, d, self.RedFormat)
+
+
                 break
         
         self.setCurrentBlockState(0)
