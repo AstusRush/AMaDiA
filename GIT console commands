@@ -1,0 +1,17 @@
+To download the newest version:
+git pull
+
+Upload all changes (probably no new files - only changes to existing files):
+git commit -a -m "Changes made on Astus LT" ; git push
+
+To Upload all changes:
+git add .
+git commit
+( Type in text about changes, then press crtl+x , then press J , then hit ENTER )
+git push
+
+
+git add; git commit -a -m "v0._: _" ; git push
+git add; git commit -a -m "v0.__VERSIONNUMBER__: __UPDATENAME__" ; git push
+
+git add; git commit -a -m "v0.10.1.3: Syntxhighlighter can now be turned of" ; git push
