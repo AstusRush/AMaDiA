@@ -1,0 +1,6 @@
+TODO: Include Patchnotes before 0.10.2
+
+v0.10.2: Simple Differential Equation Support
++ The Calculator now supports differential equations (Differential Eautions will get their own tab for more complex tasks)
++ The startupmessage is now displayed before the modules load to give a feedback to the user that the program is loading.
++ You can now copy the x and y values for a plot with the contextmenu in the history if the advanced mode is enabled

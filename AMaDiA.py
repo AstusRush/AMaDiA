@@ -1,6 +1,17 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.10.1.3"
+Version = "0.10.2"
 Author = "Robin \'Astus\' Albers"
+WindowTitle = "AMaDiA v"
+WindowTitle+= Version
+WindowTitle+= " by "
+WindowTitle+= Author
+
+import datetime
+if __name__ == "__main__":
+    print()
+    print(datetime.datetime.now().strftime('%H:%M:%S'))
+    print(WindowTitle)
+    print("Loading Modules")#,end="")
 
 from distutils.spawn import find_executable
 import sys
@@ -8,7 +19,6 @@ from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpret
 from PyQt5.Qt import QApplication, QClipboard
 import PyQt5.Qt as Qt
 import socket
-import datetime
 import time
 import platform
 import errno
@@ -40,11 +50,6 @@ from matplotlib.figure import Figure
 import matplotlib
 
 
-
-WindowTitle = "AMaDiA v"
-WindowTitle+= Version
-WindowTitle+= " by "
-WindowTitle+= Author
 
 
 class MainApp(QtWidgets.QApplication):
@@ -322,12 +327,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action = menu.addAction('Display LaTeX')
             action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
             menu.addSeparator()
-            if source.itemAt(event.pos()).data(100).plot_data_exists : # TODO if source is history in Tab 3 allow to load multiple plots at the same time
+            if source.itemAt(event.pos()).data(100).plot_data_exists :
                 action = menu.addAction('Load Plot')
                 action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
-            if source.itemAt(event.pos()).data(100).plottable : # TODO if source is history in Tab 3 allow to replot multiple plots at the same time
+            if source.itemAt(event.pos()).data(100).plottable :
                 action = menu.addAction('New Plot')
                 action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+            if source.itemAt(event.pos()).data(100).plot_data_exists and self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+                menu.addSeparator()
+                action = menu.addAction('+ Copy x Values')
+                action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
+                action = menu.addAction('+ Copy y Values')
+                action.triggered.connect(lambda: self.action_H_Copy_y_Values(source,event))
             menu.addSeparator()
             action = menu.addAction('Delete')
             action.triggered.connect(lambda: self.action_H_Delete(source,event))
@@ -432,6 +443,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.Tab_3_F_RedrawPlot()
             self.Tab_3_F_Plot_init(item.data(100))
         
+ # ----------------
+        
+    def action_H_Copy_x_Values(self,source,event):
+        item = source.itemAt(event.pos())
+        Text = "[ "
+        for i in item.data(100).plot_x_vals:
+            Text += str(i)
+            Text += " , "
+        Text = Text[:-3]
+        Text += " ]"
+        QApplication.clipboard().setText(Text)
+        
+    def action_H_Copy_y_Values(self,source,event):
+        item = source.itemAt(event.pos())
+        Text = "[ "
+        for i in item.data(100).plot_y_vals:
+            Text += str(i)
+            Text += " , "
+        Text = Text[:-3]
+        Text += " ]"
+        QApplication.clipboard().setText(Text)
+
  # ----------------
          
     def action_H_Delete(self,source,event):
@@ -605,6 +638,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             except (RuntimeError,AttributeError):
                 running = False
             if not running:
+                try:
+                    e.setTerminationEnabled(True)
+                    e.terminate()
+                    e.wait()
+                except (RuntimeError,AttributeError):
+                    pass
                 self.ThreadList.pop(i)
                 ID = i
                 self.ThreadList.insert(i,Thread(i))
@@ -1021,9 +1060,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Main ----------------------------------
 if __name__ == "__main__":
-    print()
-    print(AF.cTimeSStr())
-    print(WindowTitle)
     latex_installed, dvipng_installed = find_executable('latex'), find_executable('dvipng')
     if latex_installed and dvipng_installed: print("latex and dvipng are installed --> Using pretty LaTeX Display")
     elif latex_installed and not dvipng_installed: print("latex is installed but dvipng was not detected --> Using standard LaTeX Display (Install both to use the pretty version)")

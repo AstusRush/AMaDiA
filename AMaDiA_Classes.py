@@ -40,8 +40,9 @@ def ReloadModules():
 Iam_Lost = "Lost"
 Iam_Normal = "Normal"
 Iam_2D_plot = "2D-plot"
+Iam_DGL = "DGL"
 Iam_Multi_Dim = "Multi-Dim"
-IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_Multi_Dim]
+IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_DGL, Iam_Multi_Dim]
 
 class AMaS: # Astus' Mathematical Structure
 
@@ -74,6 +75,8 @@ class AMaS: # Astus' Mathematical Structure
             self.INIT_Normal(string)
         elif self.Iam == Iam_2D_plot:
             self.INIT_2D_plot(string)
+        elif self.Iam == Iam_DGL:
+            self.INIT_DGL(string)
         elif self.Iam == Iam_Multi_Dim:
             self.INIT_Multi_Dim(string)
         else:
@@ -99,6 +102,11 @@ class AMaS: # Astus' Mathematical Structure
         self.string = string
         self.init_Critical()
         self.init_2D_plot()
+
+    def INIT_DGL(self,string):
+        #TODO
+        print("Iam_DGL IS NOT IMPLEMENTED YET!")
+        self.INIT_Normal(string)
 
     def INIT_Multi_Dim(self,string):
         self.Name = string
@@ -300,26 +308,31 @@ class AMaS: # Astus' Mathematical Structure
                     ans = ans.doit()
                 except AF.common_exceptions:
                     pass
-                ans = sympy.solve(ans,dict=True)
-                self.Evaluation = "{ "
-                for i in ans:
-                    if self.f_eval and not type(i) == dict:
-                        i = i.evalf()
-                    i_temp = str(i)
-                    i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers
-                    self.Evaluation += i_temp
-                    self.Evaluation += " , "
-                self.Evaluation = self.Evaluation[:-3]
-                if len(self.Evaluation) > 0:
-                    self.Evaluation += " }"
+                try:
+                    ans = sympy.dsolve(ans)
+                except AF.common_exceptions:
+                    ans = sympy.solve(ans,dict=True)
+                    self.Evaluation = "{ "
+                    for i in ans:
+                        if self.f_eval and not type(i) == dict:
+                            i = i.evalf()
+                        i_temp = str(i)
+                        i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers
+                        self.Evaluation += i_temp
+                        self.Evaluation += " , "
+                    self.Evaluation = self.Evaluation[:-3]
+                    if len(self.Evaluation) > 0:
+                        self.Evaluation += " }"
+                    else:
+                        ans = parse_expr(temp,local_dict=self.Variables)
+                        ans = ans.doit()
+                        try:
+                            if self.f_eval: ans = ans.evalf()
+                        except AF.common_exceptions:
+                            AF.ExceptionOutput(sys.exc_info())
+                        self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
                 else:
-                    ans = parse_expr(temp,local_dict=self.Variables)
-                    ans = ans.doit()
-                    try:
-                        if self.f_eval: ans = ans.evalf()
-                    except AF.common_exceptions:
-                        AF.ExceptionOutput(sys.exc_info())
-                    self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
+                    self.Evaluation = str(ans)
                     
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
@@ -338,6 +351,10 @@ class AMaS: # Astus' Mathematical Structure
                 except AF.common_exceptions:
                     print("Could not simplify "+str(ans))
                     AF.ExceptionOutput(sys.exc_info())
+                try:
+                    ans = sympy.dsolve(ans)
+                except AF.common_exceptions:
+                    pass
                 if self.f_eval:
                     try:
                         ans = ans.evalf()

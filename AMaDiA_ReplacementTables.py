@@ -20,10 +20,12 @@ l_pairs_brackets = [['(',')'],['[',']'],['{','}']]
 l_pairs_brackets_special = [['<','>']]
 l_pairs_brackets_not_interpreteable = [['{','}'],['[',']']]
 l_pairs_quotation = [["\"","\""],["\'","\'"]]
+#TODO: Clean this up...:
 l_pairs_special_I_D = [["Integral","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
 l_pairs_special_I_D_all_Integrals = [["Integral","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("],["integral","d","Integral("],
                                 ["Integrate","d","Integral("],["integrate","d","Integral("],["int ","d","Integral("],["Int ","d","Integral("],["∫","d","Integral("]]
 l_pairs_special_I_D_Unicode = [["∫","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
+
 l_pairs_special = [["sqrt(",")"],["√(",")"]]
 l_seperators = [',']
 

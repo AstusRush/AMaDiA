@@ -1,6 +1,7 @@
  
 Calculator:
 	dsolve(Eq((d(y('t'))/dt), –λ·y('t')))
+	(d(y('t'))/dt)+λ·y('t')
 
 LaTeX:
 	d(y(t))/dt=–y(t)·λ

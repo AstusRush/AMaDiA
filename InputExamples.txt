@@ -8,7 +8,7 @@ Calculator Examples:
 					(integrate (integrate x^2 dx , x=0..y) + y dy, y=0..3 )+ integrate x^2 dx , x=0..3
 		((3)(∫ d(x²)/dx+x dx)(2))/6
 	Differential Equations:
-		dsolve(Eq((d(y('t'))/dt), –λ·y('t')))
+		d(y(t))/dt=-λ·y(t)
 	Sums:
 		Sum(1/(k-3),(k,4,8)) = 137/60
 	Complex Numbers:

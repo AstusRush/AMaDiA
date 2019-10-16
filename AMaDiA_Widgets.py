@@ -335,7 +335,11 @@ class LineEdit(QtWidgets.QTextEdit):
             cursor.movePosition(cursor.End)#setPosition(self.document().characterCount()-1)
             self.setTextCursor(cursor)
             return True
-        return super(LineEdit, self).eventFilter(source, event)
+        try:
+            return super(LineEdit, self).eventFilter(source, event)
+        except AF.common_exceptions:
+            # Reloading the Modules causes a Problem...
+            return False
 
 class LineEditHighlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, document, Widget):
