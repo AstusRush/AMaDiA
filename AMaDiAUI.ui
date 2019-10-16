@@ -45,7 +45,7 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="LineEdit" name="Tab_1_InputField" native="true">
+         <widget class="LineEdit" name="Tab_1_InputField">
           <property name="placeholderText">
            <string>Enter something and hit return to calculate. Use crtl+return to not solve divisions, roots, etc.</string>
           </property>
@@ -159,7 +159,7 @@
          </widget>
         </item>
         <item row="1" column="0" colspan="3">
-         <widget class="LineEdit" name="Tab_3_Formula_Field" native="true">
+         <widget class="LineEdit" name="Tab_3_Formula_Field">
           <property name="placeholderText">
            <string>Enter a function f(x) (eg. &quot;x^2&quot;) or a constant (eg. &quot;23+4&quot; for a horizontal line or &quot;x=23+4&quot; for a vertical line at 27) and hit return.</string>
           </property>
@@ -233,8 +233,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>234</width>
-                       <height>310</height>
+                       <width>224</width>
+                       <height>348</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_11">
@@ -528,8 +528,8 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>578</width>
-                <height>474</height>
+                <width>96</width>
+                <height>26</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -685,7 +685,7 @@ p, li { white-space: pre-wrap; }
               <widget class="MplWidget_LaTeX" name="Tab_5_Display" native="true"/>
              </item>
              <item row="1" column="0">
-              <widget class="LineEdit" name="Tab_5_FormulaInput" native="true"/>
+              <widget class="LineEdit" name="Tab_5_FormulaInput"/>
              </item>
             </layout>
            </widget>
@@ -734,7 +734,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>906</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="Menubar_Main_Options">
@@ -745,13 +745,14 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Advanced_Mode"/>
     <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
+    <addaction name="Menubar_Main_Options_action_Syntax_Highlighter"/>
    </widget>
    <addaction name="Menubar_Main_Options"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="Menubar_Main_Options_action_Reload_Modules">
    <property name="text">
-    <string>Reload Modules</string>
+    <string>&amp;Reload Modules</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Advanced_Mode">
@@ -759,7 +760,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Advanced Mode</string>
+    <string>&amp;Advanced Mode</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Eval_Functions">
@@ -770,7 +771,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Eval Functions</string>
+    <string>&amp;Eval Functions</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display">
@@ -781,7 +782,18 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Use Pretty LaTeX Display</string>
+    <string>&amp;Use Pretty LaTeX Display</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_Syntax_Highlighter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Syntax Highlighter</string>
    </property>
   </action>
  </widget>

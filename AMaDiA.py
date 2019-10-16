@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.10.1.2"
+Version = "0.10.1.3"
 Author = "Robin \'Astus\' Albers"
 
 from distutils.spawn import find_executable
@@ -151,6 +151,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def ConnectSignals(self):
         self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
+        self.Menubar_Main_Options_action_Syntax_Highlighter.triggered.connect(self.ToggleSyntaxHighlighter)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
@@ -250,6 +251,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         self.ColourMain()
 
+    def ToggleSyntaxHighlighter(self):
+        self.Tab_1_InputField.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
+        self.Tab_3_Formula_Field.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
+        self.Tab_5_FormulaInput.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
+
 
 
 # ---------------------------------- Events and Context Menu ----------------------------------
@@ -335,13 +341,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             (source is self.Tab_5_Matrix_List)and source.itemAt(event.pos())):
             menu = QtWidgets.QMenu()
             action = menu.addAction('Load to Editor')
-            action.triggered.connect(lambda: self.action_5M_Load_into_Editor(source,event))
+            action.triggered.connect(lambda: self.action_Tab_5_M_Load_into_Editor(source,event))
             action = menu.addAction('Display')
-            action.triggered.connect(lambda: self.action_5M_Display(source,event))
+            action.triggered.connect(lambda: self.action_Tab_5_M_Display(source,event))
             action = menu.addAction('Copy as String')
-            action.triggered.connect(lambda: self.action_5M_Copy_string(source,event))
+            action.triggered.connect(lambda: self.action_Tab_5_M_Copy_string(source,event))
             action = menu.addAction('Delete')
-            action.triggered.connect(lambda: self.action_5M_Delete(source,event))
+            action.triggered.connect(lambda: self.action_Tab_5_M_Delete(source,event))
             menu.exec_(event.globalPos())
             return True
      # ---------------------------------- Other Events ----------------------------------
@@ -455,23 +461,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     item.data(100).Tab_5_ref = None
                     
 # ---------------------------------- Tab_5_Matrix_List Context Menu Actions/Functions ----------------------------------
-    def action_5M_Load_into_Editor(self,source,event):
+    def action_Tab_5_M_Load_into_Editor(self,source,event):
         item = source.itemAt(event.pos())
         Name = item.data(100)
         Matrix = item.data(101)
         self.Tab_5_F_Load_Matrix(Name,Matrix)
     
-    def action_5M_Display(self,source,event):
+    def action_Tab_5_M_Display(self,source,event):
         item = source.itemAt(event.pos())
         Name = item.data(100)
         Matrix = item.data(101)
         self.Tab_5_F_Display_Matrix(Name,Matrix)
     
-    def action_5M_Copy_string(self,source,event):
+    def action_Tab_5_M_Copy_string(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(str(item.data(101)))
     
-    def action_5M_Delete(self,source,event):
+    def action_Tab_5_M_Delete(self,source,event):
         listItems=source.selectedItems()
         if not listItems: return        
         for item in listItems:

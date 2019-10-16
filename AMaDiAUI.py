@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'AMaDiAUI.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -145,7 +145,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_3_Tab_2_Config_scrollArea.setWidgetResizable(True)
         self.Tab_3_Tab_2_Config_scrollArea.setObjectName("Tab_3_Tab_2_Config_scrollArea")
         self.Tab_3_Tab_2_Config_scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.Tab_3_Tab_2_Config_scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 234, 310))
+        self.Tab_3_Tab_2_Config_scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 224, 348))
         self.Tab_3_Tab_2_Config_scrollAreaWidgetContents.setObjectName("Tab_3_Tab_2_Config_scrollAreaWidgetContents")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.Tab_3_Tab_2_Config_scrollAreaWidgetContents)
         self.gridLayout_11.setObjectName("gridLayout_11")
@@ -258,7 +258,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_3_ScrollArea.setWidgetResizable(True)
         self.Tab_3_ScrollArea.setObjectName("Tab_3_ScrollArea")
         self.Tab_3_ScrollArea_Layout = QtWidgets.QWidget()
-        self.Tab_3_ScrollArea_Layout.setGeometry(QtCore.QRect(0, 0, 578, 474))
+        self.Tab_3_ScrollArea_Layout.setGeometry(QtCore.QRect(0, 0, 96, 26))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -363,7 +363,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.gridLayout.addWidget(self.Font_Size_spinBox, 0, 1, 1, 1)
         AMaDiA_Main_Window.setCentralWidget(self.centralwidget)
         self.Menubar_Main = QtWidgets.QMenuBar(AMaDiA_Main_Window)
-        self.Menubar_Main.setGeometry(QtCore.QRect(0, 0, 906, 20))
+        self.Menubar_Main.setGeometry(QtCore.QRect(0, 0, 906, 30))
         self.Menubar_Main.setObjectName("Menubar_Main")
         self.Menubar_Main_Options = QtWidgets.QMenu(self.Menubar_Main)
         self.Menubar_Main_Options.setObjectName("Menubar_Main_Options")
@@ -384,10 +384,15 @@ class Ui_AMaDiA_Main_Window(object):
         self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setCheckable(True)
         self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setEnabled(False)
         self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setObjectName("Menubar_Main_Options_action_Use_Pretty_LaTeX_Display")
+        self.Menubar_Main_Options_action_Syntax_Highlighter = QtWidgets.QAction(AMaDiA_Main_Window)
+        self.Menubar_Main_Options_action_Syntax_Highlighter.setCheckable(True)
+        self.Menubar_Main_Options_action_Syntax_Highlighter.setChecked(True)
+        self.Menubar_Main_Options_action_Syntax_Highlighter.setObjectName("Menubar_Main_Options_action_Syntax_Highlighter")
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Reload_Modules)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Advanced_Mode)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Eval_Functions)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display)
+        self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Syntax_Highlighter)
         self.Menubar_Main.addAction(self.Menubar_Main_Options.menuAction())
 
         self.retranslateUi(AMaDiA_Main_Window)
@@ -491,9 +496,10 @@ class Ui_AMaDiA_Main_Window(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab_5), _translate("AMaDiA_Main_Window", "Multi-Dim"))
         self.Font_Size_spinBox.setToolTip(_translate("AMaDiA_Main_Window", "Font Size"))
         self.Menubar_Main_Options.setTitle(_translate("AMaDiA_Main_Window", "O&ptions"))
-        self.Menubar_Main_Options_action_Reload_Modules.setText(_translate("AMaDiA_Main_Window", "Reload Modules"))
-        self.Menubar_Main_Options_action_Advanced_Mode.setText(_translate("AMaDiA_Main_Window", "Advanced Mode"))
-        self.Menubar_Main_Options_action_Eval_Functions.setText(_translate("AMaDiA_Main_Window", "Eval Functions"))
-        self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setText(_translate("AMaDiA_Main_Window", "Use Pretty LaTeX Display"))
+        self.Menubar_Main_Options_action_Reload_Modules.setText(_translate("AMaDiA_Main_Window", "&Reload Modules"))
+        self.Menubar_Main_Options_action_Advanced_Mode.setText(_translate("AMaDiA_Main_Window", "&Advanced Mode"))
+        self.Menubar_Main_Options_action_Eval_Functions.setText(_translate("AMaDiA_Main_Window", "&Eval Functions"))
+        self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setText(_translate("AMaDiA_Main_Window", "&Use Pretty LaTeX Display"))
+        self.Menubar_Main_Options_action_Syntax_Highlighter.setText(_translate("AMaDiA_Main_Window", "Syntax Highlighter"))
 
 from AMaDiA_Widgets import LineEdit, MplWidget_2D_Plot, MplWidget_LaTeX

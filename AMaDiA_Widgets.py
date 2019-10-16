@@ -342,6 +342,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
         QtGui.QSyntaxHighlighter.__init__(self, document)
         self.Widget = Widget
         self.init_Styles()
+        self.enabled = True
 
         # init the rules 
         rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
@@ -361,6 +362,9 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
         self.STYLES = {'brace': self.RedFormat,}
 
     def highlightBlock(self, text):
+        if not self.enabled:
+            self.setCurrentBlockState(0)
+            return
         cursor = self.Widget.textCursor()
         curPos = cursor.position()
         pattern = ""
