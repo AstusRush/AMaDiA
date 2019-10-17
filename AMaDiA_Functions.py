@@ -225,6 +225,10 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
 
 def AstusParse(string,ConsoleOutput = True):
     string = re.sub(r"√(\w)",r"sqrt(\1)",string)
+    string = re.sub(r"(\w*)\'\((\w)\)",r"diff(\1(\2),\2)",string)
+    string = re.sub(r"(\w*)\"\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w*)\'\'\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w*)\'\'\'\((\w)\)",r"diff(diff(diff(\1(\2),\2),\2),\2)",string)
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
     #----

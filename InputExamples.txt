@@ -9,6 +9,10 @@ Calculator Examples:
 		((3)(∫ d(x²)/dx+x dx)(2))/6
 	Differential Equations:
 		d(y(t))/dt=-λ·y(t)
+		∫x² dx - ∫sin(t+0.2)dt
+			This solves the (Differential) Equation x²dx=sin(t+0.2)dt if you rearrange the solution to x=...
+			(Automatic rearranging equations is on the TODO List)
+		dy+7xdx=0
 	Sums:
 		Sum(1/(k-3),(k,4,8)) = 137/60
 	Complex Numbers:

@@ -5,6 +5,8 @@ Hint: These functions are especially useful in the LaTeX Tab as they allow you t
 (exp).evalf()	# converted to floating-point approximations (decimal numbers)
 solve(exp)		# solve exp for unknown variables
 
+linsolve(exp)	# If exp is a  n x n+1  Matrix than this solves the linear system of equations
+
 # Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
 simplify(exp)     # Simplifies
 expand(exp)       # Solve all * and **

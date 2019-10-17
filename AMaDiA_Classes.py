@@ -183,7 +183,7 @@ class AMaS: # Astus' Mathematical Structure
         # TODO : FOLLOWING NEED IMPLEMENTATION:
 
         # Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
-        self.f_simplify = False    # Simplifies
+        self.f_simplify = True    # Simplifies
         self.f_expand = False      # Solve all * and **
         self.f_factor = False      # takes a polynomial and factors it into irreducible factors (Inverse of expand)
         self.f_collect = False     # collects common powers of a term in an expression
@@ -309,9 +309,9 @@ class AMaS: # Astus' Mathematical Structure
                 except AF.common_exceptions:
                     pass
                 try:
-                    ans = sympy.dsolve(ans)
+                    ans = sympy.dsolve(ans,simplify=self.f_simplify)
                 except AF.common_exceptions:
-                    ans = sympy.solve(ans,dict=True)
+                    ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                     self.Evaluation = "{ "
                     for i in ans:
                         if self.f_eval and not type(i) == dict:
@@ -352,14 +352,14 @@ class AMaS: # Astus' Mathematical Structure
                     print("Could not simplify "+str(ans))
                     AF.ExceptionOutput(sys.exc_info())
                 try:
-                    ans = sympy.dsolve(ans)
+                    ans = sympy.dsolve(ans,simplify=self.f_simplify)
                 except AF.common_exceptions:
                     pass
                 if self.f_eval:
                     try:
                         ans = ans.evalf()
                     except AF.common_exceptions:
-                        ans = sympy.solve(ans,dict=True)
+                        ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                 self.Evaluation = str(ans)
                 self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers
             except AF.common_exceptions: #as inst:
