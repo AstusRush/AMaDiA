@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.10.2.2"
+Version = "0.11.0"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -326,6 +326,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action.triggered.connect(lambda: self.action_H_Calculate(source,event))
             action = menu.addAction('Display LaTeX')
             action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
+            if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
+                action = menu.addAction('Display LaTeX Solution')
+                action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
             menu.addSeparator()
             if source.itemAt(event.pos()).data(100).plot_data_exists :
                 action = menu.addAction('Load Plot')
@@ -406,6 +409,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(1)
         self.Tab_2_F_Display(item.data(100))
+
+    def action_H_Display_LaTeX_Solution(self,source,event):
+        item = source.itemAt(event.pos())
+        self.tabWidget.setCurrentIndex(1)
+        self.Tab_2_F_Display(item.data(100),part="Evaluation")
         
  # ----------------
          
@@ -687,19 +695,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ans = AMaS_Object.Evaluation
         
 # ---------------------------------- Tab_2_ LaTeX ----------------------------------
-    def Tab_2_F_Convert(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self, self.Tab_2_InputField.toPlainText(), self.Tab_2_F_Display,ID))
+    def Tab_2_F_Convert(self, Text=None):
+        if Text == None:
+            Text = self.Tab_2_InputField.toPlainText()
+        self.TC(lambda ID: AT.AMaS_Creator(self, Text, self.Tab_2_F_Display,ID))
         
         
-    def Tab_2_F_Display(self , AMaS_Object):
+    def Tab_2_F_Display(self , AMaS_Object , part = "Normal"):
         
         self.HistoryHandler(AMaS_Object,2)
         
-        self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
-        self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
-                                        ,self.Font_Size_spinBox.value(),self.TextColour
-                                        ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
-                                        )
+        if part == "Normal":
+            self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
+            self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
+                                            ,self.Font_Size_spinBox.value(),self.TextColour
+                                            ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                            )
+        elif part == "Evaluation":
+            if AMaS_Object.LaTeX_E == "Not converted yet":
+                AMaS_Object.Convert_Evaluation_to_LaTeX()
+            self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
+            self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
+                                            ,self.Font_Size_spinBox.value(),self.TextColour
+                                            ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                            )
         
 # ---------------------------------- Tab_3_ 2D-Plot ----------------------------------
     def Tab_3_F_Plot_Button(self):

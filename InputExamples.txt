@@ -13,6 +13,8 @@ Calculator Examples:
 			This solves the (Differential) Equation x²dx=sin(t+0.2)dt if you rearrange the solution to x=...
 			(Automatic rearranging equations is on the TODO List)
 		∫1dy+∫7xdx=0
+		y''(x) = 0 , y(4)=1 , y'(1)=2
+		d(x(t))/dt = 5x(t)-3 , x(2)=1
 	Sums:
 		Sum(1/(k-3),(k,4,8)) = 137/60
 	Complex Numbers:
@@ -23,6 +25,10 @@ Calculator Examples:
 		1 if 4 in [1,2,3,4,5,6] and 4 not in [4,8] else 0
 	Conditional:
 		2*2 if 2>3 else 2*3
+		
+LaTeX Examples:
+	d(y(t))/dt=-y(t)·λ
+	y(t)= C1*exp(-λ*t)
 
 Plot Examples:
 	integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
