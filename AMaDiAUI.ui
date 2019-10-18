@@ -233,8 +233,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>224</width>
-                       <height>348</height>
+                       <width>234</width>
+                       <height>310</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_11">
@@ -528,8 +528,8 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>96</width>
-                <height>26</height>
+                <width>578</width>
+                <height>329</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -734,7 +734,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>906</width>
-     <height>30</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="Menubar_Main_Options">
@@ -746,6 +746,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
     <addaction name="Menubar_Main_Options_action_Syntax_Highlighter"/>
+    <addaction name="Menubar_Main_Options_action_WindowStaysOnTop"/>
    </widget>
    <addaction name="Menubar_Main_Options"/>
   </widget>
@@ -794,6 +795,17 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>Syntax Highlighter</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_WindowStaysOnTop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Try: Always on top</string>
+   </property>
+   <property name="toolTip">
+    <string>Try to keep this window always in foreground</string>
    </property>
   </action>
  </widget>

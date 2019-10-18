@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.11.0"
+Version = "0.11.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -48,7 +48,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib
-
 
 
 
@@ -157,6 +156,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
         self.Menubar_Main_Options_action_Syntax_Highlighter.triggered.connect(self.ToggleSyntaxHighlighter)
+        self.Menubar_Main_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
@@ -260,6 +260,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_1_InputField.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
         self.Tab_3_Formula_Field.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
         self.Tab_5_FormulaInput.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
+
+    def ToggleWindowStaysOnTop(self):
+        if self.Menubar_Main_Options_action_WindowStaysOnTop.isChecked():
+            print("OnTop")
+            self.setWindowFlags(QtCore.Qt.X11BypassWindowManagerHint | QtCore.Qt.BypassWindowManagerHint | QtCore.Qt.WindowStaysOnTopHint)
+            self.show()
+        else:
+            print("Normal")
+            self.setWindowFlags(QtCore.Qt.WindowFlags())
+            self.show()
 
 
 
@@ -1091,3 +1101,4 @@ if __name__ == "__main__":
     window = MainWindow(app)
     window.show()
     sys.exit(app.exec_())
+

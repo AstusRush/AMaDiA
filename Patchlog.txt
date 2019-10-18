@@ -12,3 +12,12 @@ v0.10.2.1: Better Differential Parser
 v0.10.2.2: Bug Fix
 + Fixed a bug where ''' and '' were not correctly parsed
 + improved handling of ODE's that do not include a "="
+
+v0.11.0: Particular Solution
++ First Support for solving the particular solution of linear differential equations (WIP: Needs Testing) (see InputExamples.txt for examples
++ You can now display the LaTeX version of the Solution of a history item via the context menu
+
+v0.11.1: Always on Top
++ Added a checkbox to the options to try to force the Window to always stay in the foreground
+++ Does not work always since this is only a request to the window manager which does not always grant this
++ When calculating an ODE the classifications are displayed in the console

@@ -358,7 +358,7 @@ class AMaS: # Astus' Mathematical Structure
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
 
         ODE = False
-        if self.cstr.count("=") >= 1 and self.cstr.count(",") >= 1:
+        if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
             try:
                 ODE = self.Solve_ODE_Version_1()
             except AF.common_exceptions:
@@ -377,12 +377,17 @@ class AMaS: # Astus' Mathematical Structure
                 temp = temp.replace("=" , ") - (")
                 temp = temp + ")"
                 ans = parse_expr(temp,local_dict=self.Variables)
+                ParsedInput = ans
                 try:
                     ans = ans.doit()
                 except AF.common_exceptions:
                     pass
                 try:
                     ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                    try:
+                        print("ODE Class:",sympy.classify_ode(ParsedInput))
+                    except AF.common_exceptions:
+                        Error = AF.ExceptionOutput(sys.exc_info())
                     try:
                         self.Evaluation = str(ans.lhs) + " = "
                         self.Evaluation += str(ans.rhs)
@@ -424,6 +429,7 @@ class AMaS: # Astus' Mathematical Structure
         else:
             try:
                 ans = parse_expr(self.cstr,local_dict=self.Variables)
+                ParsedInput = ans
                 try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
                     # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
                     ans = ans.doit()
@@ -432,6 +438,10 @@ class AMaS: # Astus' Mathematical Structure
                     AF.ExceptionOutput(sys.exc_info())
                 try:
                     ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                    try:
+                        print("ODE Class:",sympy.classify_ode(ParsedInput))
+                    except AF.common_exceptions:
+                        Error = AF.ExceptionOutput(sys.exc_info())
                     try:
                         self.Evaluation = str(ans.lhs) + " = "
                         self.Evaluation += str(ans.rhs)
@@ -507,16 +517,17 @@ class AMaS: # Astus' Mathematical Structure
             Input = self.Input
             Input = Input.split(",")
             func = Input[1].strip()[0]
-            print("Function:",func)
             equation = AF.AstusParse(Input.pop(0))
             if equation.count("=") == 1 :
                 equation = "(" + equation
                 equation = equation.replace("=" , ") - (")
                 equation = equation + ")"
             var = equation.split(func,1)[1].split("(",1)[1].split(")",1)[0].strip()
+            print("Function:",func)
             print("Variable:",var)
             var_Parsed = parse_expr(var)
             equation = parse_expr(equation,local_dict=self.Variables)
+            print("ODE Class:",sympy.classify_ode(equation))
             ics = {}
             for i in Input:
                 f,y=i.split("=")
@@ -537,8 +548,8 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 self.Evaluation = str(equation.lhs) + " = "
                 if self.f_powsimp:
-                    self.Evaluation += str(sympy.powsimp(equation.rhs))
-                    self.Convert_Evaluation_to_LaTeX(sympy.Eq(equation.lhs,sympy.powsimp(equation.rhs)))
+                    self.Evaluation += str(sympy.simplify(sympy.powsimp(equation.rhs)))
+                    self.Convert_Evaluation_to_LaTeX(sympy.simplify(sympy.Eq(equation.lhs,sympy.powsimp(equation.rhs))))
                 else:
                     self.Evaluation += str(equation.rhs)
                     self.Convert_Evaluation_to_LaTeX(equation)
