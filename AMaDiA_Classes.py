@@ -201,6 +201,28 @@ class AMaS: # Astus' Mathematical Structure
 
         #self.f_ = False
 
+    def ExecuteFlags(self,expr):
+        try:
+            if self.f_eval:
+                expr = expr.evalf()
+        except AF.common_exceptions :
+            AF.ExceptionOutput(sys.exc_info())
+        try:
+            if self.f_powsimp:
+                if type(expr) == sympy.Equality:
+                    expr = sympy.Eq(sympy.powsimp(expr.lhs),sympy.powsimp(expr.rhs))
+                else:
+                    expr = sympy.powsimp(expr)
+        except AF.common_exceptions :
+            AF.ExceptionOutput(sys.exc_info())
+        try:
+            if self.f_simplify:
+                expr = sympy.simplify(expr)
+        except AF.common_exceptions :
+            AF.ExceptionOutput(sys.exc_info())
+        # TODO : Add the others
+        return expr
+
  # ---------------------------------- LaTeX Converter ----------------------------------
 
     def ConvertToLaTeX(self):
@@ -365,6 +387,7 @@ class AMaS: # Astus' Mathematical Structure
                 AF.ExceptionOutput(sys.exc_info())
                 ODE = False
         if ODE == True:
+            self.init_Flags() # Reset All Flags
             return ODE
 
         Error = "None"
@@ -389,18 +412,20 @@ class AMaS: # Astus' Mathematical Structure
                     except AF.common_exceptions:
                         Error = AF.ExceptionOutput(sys.exc_info())
                     try:
-                        self.Evaluation = str(ans.lhs) + " = "
-                        self.Evaluation += str(ans.rhs)
-                        self.Convert_Evaluation_to_LaTeX(ans)
+                        ansF = self.ExecuteFlags(ans)
+                        self.Evaluation = str(ansF.lhs) + " = "
+                        self.Evaluation += str(ansF.rhs)
+                        self.Convert_Evaluation_to_LaTeX(ansF)
                     except AF.common_exceptions:
-                        self.Evaluation = str(ans)
-                        self.Convert_Evaluation_to_LaTeX(ans)
+                        ansF = self.ExecuteFlags(ans)
+                        self.Evaluation = str(ansF)
+                        self.Convert_Evaluation_to_LaTeX(ansF)
                 except AF.common_exceptions:
                     ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                     self.Evaluation = "{ "
                     for i in ans:
-                        if self.f_eval and not type(i) == dict:
-                            i = i.evalf()
+                        if not type(i) == dict:
+                            i = self.ExecuteFlags(i)
                         i_temp = str(i)
                         i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers. Use re
                         self.Evaluation += i_temp
@@ -411,7 +436,7 @@ class AMaS: # Astus' Mathematical Structure
                     else:
                         ans = parse_expr(temp,local_dict=self.Variables)
                         ans = ans.doit()
-                        try:
+                        try: # TODO Maybe get rid of this evalf()
                             if self.f_eval: ans = ans.evalf()
                         except AF.common_exceptions:
                             AF.ExceptionOutput(sys.exc_info())
@@ -442,13 +467,14 @@ class AMaS: # Astus' Mathematical Structure
                         print("ODE Class:",sympy.classify_ode(ParsedInput))
                     except AF.common_exceptions:
                         Error = AF.ExceptionOutput(sys.exc_info())
+                    ansF = self.ExecuteFlags(ans)
                     try:
-                        self.Evaluation = str(ans.lhs) + " = "
-                        self.Evaluation += str(ans.rhs)
-                        self.Convert_Evaluation_to_LaTeX(ans)
+                        self.Evaluation = str(ansF.lhs) + " = "
+                        self.Evaluation += str(ansF.rhs)
+                        self.Convert_Evaluation_to_LaTeX(ansF)
                     except AF.common_exceptions:
-                        self.Evaluation = str(ans)
-                        self.Convert_Evaluation_to_LaTeX(ans)
+                        self.Evaluation = str(ansF)
+                        self.Convert_Evaluation_to_LaTeX(ansF)
                     separator = "   <==   "
                 except AF.common_exceptions:
                     separator = " = "
@@ -457,8 +483,9 @@ class AMaS: # Astus' Mathematical Structure
                             ans = ans.evalf()
                         except AF.common_exceptions:
                             ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
-                    self.Evaluation = str(ans)
-                    self.Convert_Evaluation_to_LaTeX(ans)
+                    ansF = self.ExecuteFlags(ans)
+                    self.Evaluation = str(ansF)
+                    self.Convert_Evaluation_to_LaTeX(ansF)
                 self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers. Use re
             except AF.common_exceptions: #as inst:
                 Error = AF.ExceptionOutput(sys.exc_info())
@@ -545,14 +572,11 @@ class AMaS: # Astus' Mathematical Structure
             func += ")"
             func = parse_expr(func)
             equation = sympy.dsolve(equation,func=func,ics=ics,simplify=self.f_simplify)
+            equation = self.ExecuteFlags(equation)
             try:
                 self.Evaluation = str(equation.lhs) + " = "
-                if self.f_powsimp:
-                    self.Evaluation += str(sympy.simplify(sympy.powsimp(equation.rhs)))
-                    self.Convert_Evaluation_to_LaTeX(sympy.simplify(sympy.Eq(equation.lhs,sympy.powsimp(equation.rhs))))
-                else:
-                    self.Evaluation += str(equation.rhs)
-                    self.Convert_Evaluation_to_LaTeX(equation)
+                self.Evaluation += str(equation.rhs)
+                self.Convert_Evaluation_to_LaTeX(equation)
             except AF.common_exceptions:
                 self.Evaluation = str(equation)
                 self.Convert_Evaluation_to_LaTeX(equation)

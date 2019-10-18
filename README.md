@@ -4,6 +4,7 @@ Current features:<br/>
  * Tab 1 : Scientific Calculator<br/>
    * Calculate with +,-,×,÷,√,^, Integral f(x) dx, d(f(x))/dx, y'(x), complex numbers, sin(), cos(), tan(), exp(), log() , π , E and more<br/>
    * Solve an equation with unknown variables<br/>
+   * Solve Differential Equations (including particular solutions)<br/>
    * Test for equality of two terms<br/>
    * Use mathematic Unicode symbols to type faster<br/>
  * Tab 2 : Convert input to LaTeX and display it<br/>

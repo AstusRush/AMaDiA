@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.11.1"
+Version = "0.11.1.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -672,11 +672,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ThreadList[ID].Return.connect(self.TR)
         self.ThreadList[ID].start()
 
-    def Set_AMaS_Flags(self,AMaS_Object, f_eval = None):
+    def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
         if f_eval == None:
             f_eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
 
+        #Temporary:
+        if f_powsimp == None:
+            f_powsimp = f_eval
+
         AMaS_Object.f_eval = f_eval
+        AMaS_Object.f_powsimp = f_powsimp
 
 # ---------------------------------- Tab_1_ Calculator ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):

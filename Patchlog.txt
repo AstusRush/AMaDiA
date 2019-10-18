@@ -21,3 +21,7 @@ v0.11.1: Always on Top
 + Added a checkbox to the options to try to force the Window to always stay in the foreground
 ++ Does not work always since this is only a request to the window manager which does not always grant this
 + When calculating an ODE the classifications are displayed in the console
+
+v0.11.1.1: Start of Flag implementation
++ Start of Flag implementation
+++ This has the effect that the output is easier to read
