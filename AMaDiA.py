@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.11.1.1"
+Version = "0.11.1.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -711,7 +711,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
 # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
-        if Text == None:
+        if type(Text) != str:
             Text = self.Tab_2_InputField.toPlainText()
         self.TC(lambda ID: AT.AMaS_Creator(self, Text, self.Tab_2_F_Display,ID))
         

@@ -25,3 +25,6 @@ v0.11.1: Always on Top
 v0.11.1.1: Start of Flag implementation
 + Start of Flag implementation
 ++ This has the effect that the output is easier to read
+
+v0.11.1.2: Fix for Convert Button
++ Convert Button on Tab 2 works again
