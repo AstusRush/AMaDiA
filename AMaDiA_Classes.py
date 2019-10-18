@@ -40,9 +40,9 @@ def ReloadModules():
 Iam_Lost = "Lost"
 Iam_Normal = "Normal"
 Iam_2D_plot = "2D-plot"
-Iam_DGL = "DGL"
+Iam_ODE = "ODE"
 Iam_Multi_Dim = "Multi-Dim"
-IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_DGL, Iam_Multi_Dim]
+IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_ODE, Iam_Multi_Dim]
 
 class AMaS: # Astus' Mathematical Structure
 
@@ -75,8 +75,8 @@ class AMaS: # Astus' Mathematical Structure
             self.INIT_Normal(string)
         elif self.Iam == Iam_2D_plot:
             self.INIT_2D_plot(string)
-        elif self.Iam == Iam_DGL:
-            self.INIT_DGL(string)
+        elif self.Iam == Iam_ODE:
+            self.INIT_ODE(string)
         elif self.Iam == Iam_Multi_Dim:
             self.INIT_Multi_Dim(string)
         else:
@@ -103,9 +103,10 @@ class AMaS: # Astus' Mathematical Structure
         self.init_Critical()
         self.init_2D_plot()
 
-    def INIT_DGL(self,string):
+    def INIT_ODE(self,string):
         #TODO
-        print("Iam_DGL IS NOT IMPLEMENTED YET!")
+        # https://docs.sympy.org/latest/modules/solvers/ode.html
+        print("Iam_ODE IS NOT IMPLEMENTED YET!")
         self.INIT_Normal(string)
 
     def INIT_Multi_Dim(self,string):
@@ -295,6 +296,8 @@ class AMaS: # Astus' Mathematical Structure
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
+
+        Error = "None"
         if self.cstr.count("=") == 1 :
             try:
                 temp = self.cstr
@@ -335,7 +338,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.Evaluation = str(ans)
                     
             except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
+                Error = AF.ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -353,27 +356,30 @@ class AMaS: # Astus' Mathematical Structure
                     AF.ExceptionOutput(sys.exc_info())
                 try:
                     ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                    separator = " <== "
                 except AF.common_exceptions:
-                    pass
-                if self.f_eval:
-                    try:
-                        ans = ans.evalf()
-                    except AF.common_exceptions:
-                        ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                    separator = " = "
+                    if self.f_eval:
+                        try:
+                            ans = ans.evalf()
+                        except AF.common_exceptions:
+                            ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                 self.Evaluation = str(ans)
                 self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers
             except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
+                Error = AF.ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
                 self.Evaluation = "Fail"
-            self.EvaluationEquation = self.Evaluation + " = "
+            self.EvaluationEquation = self.Evaluation + separator
             self.EvaluationEquation += self.Text
         
         self.init_Flags() # Reset All Flags
+        
+        
         if self.Evaluation == "Fail":
-            return False
+            return Error
         else:
             return True
         

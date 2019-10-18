@@ -47,6 +47,7 @@ def ExceptionOutput(exc_info,extraInfo = True):
             print(exc_type, " in", fname, " line", exc_tb.tb_lineno ,": ", exc_obj)
         else:
             print(exc_type, " in", fname, " line", exc_tb.tb_lineno)
+        return str(exc_obj)
     except common_exceptions:
         print("An exception occured while trying to print an exception!")
 
@@ -225,10 +226,10 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
 
 def AstusParse(string,ConsoleOutput = True):
     string = re.sub(r"√(\w)",r"sqrt(\1)",string)
-    string = re.sub(r"(\w*)\'\((\w)\)",r"diff(\1(\2),\2)",string)
-    string = re.sub(r"(\w*)\"\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\'\'\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
     string = re.sub(r"(\w*)\'\'\'\((\w)\)",r"diff(diff(diff(\1(\2),\2),\2),\2)",string)
+    string = re.sub(r"(\w*)\'\'\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w*)\"\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w*)\'\((\w)\)",r"diff(\1(\2),\2)",string)
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
     #----

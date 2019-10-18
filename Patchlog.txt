@@ -7,4 +7,8 @@ v0.10.2: Simple Differential Equation Support
 + Added a Patchlog.txt
 
 v0.10.2.1: Better Differential Parser
-+ The parser now supports y'(x) with y being any function (including sin etc.), ' being ','',",''' and x being any single unicode letter
++ The parser now supports y'(x) with y being any function (including sin etc.), ' being ',''," or ''' and x being any single unicode letter
+
+v0.10.2.2: Bug Fix
++ Fixed a bug where ''' and '' were not correctly parsed
++ improved handling of ODE's that do not include a "="
