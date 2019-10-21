@@ -69,7 +69,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_2_LaTeXOutput = QtWidgets.QLineEdit(self.layoutWidget)
         self.Tab_2_LaTeXOutput.setObjectName("Tab_2_LaTeXOutput")
         self.Tab_2_verticalLayout.addWidget(self.Tab_2_LaTeXOutput)
-        self.Tab_2_InputField = QtWidgets.QTextEdit(self.Tab_2_LowerSplitter)
+        self.Tab_2_InputField = TextEdit(self.Tab_2_LowerSplitter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -348,7 +348,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_5_FormulaInput = LineEdit(self.layoutWidget2)
         self.Tab_5_FormulaInput.setObjectName("Tab_5_FormulaInput")
         self.Tab_5_Display_gridLayout.addWidget(self.Tab_5_FormulaInput, 1, 0, 1, 1)
-        self.Tab_5_DirectInput = QtWidgets.QTextEdit(self.Tab_5_Splitter_Right)
+        self.Tab_5_DirectInput = TextEdit(self.Tab_5_Splitter_Right)
         self.Tab_5_DirectInput.setObjectName("Tab_5_DirectInput")
         self.gridLayout_7.addWidget(self.Tab_5_Splitter_Main, 0, 0, 1, 1)
         self.tabWidget.addTab(self.Tab_5, "")
@@ -497,6 +497,8 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_5_2_New_Equation_Name_Input.setToolTip(_translate("AMaDiA_Main_Window", "Enter the equation name"))
         self.Tab_5_2_New_Equation_Name_Input.setPlaceholderText(_translate("AMaDiA_Main_Window", "Enter the equation name"))
         self.Tab_5_tabWidget.setTabText(self.Tab_5_tabWidget.indexOf(self.Tab_5_Tab_2), _translate("AMaDiA_Main_Window", "History"))
+        self.Tab_5_FormulaInput.setPlaceholderText(_translate("AMaDiA_Main_Window", "WIP: Input a formula (using the names of the matrices) and hit return"))
+        self.Tab_5_DirectInput.setPlaceholderText(_translate("AMaDiA_Main_Window", "WIP: This Widget has currently no function and is a placholder..."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab_5), _translate("AMaDiA_Main_Window", "Multi-Dim"))
         self.Font_Size_spinBox.setToolTip(_translate("AMaDiA_Main_Window", "Font Size"))
         self.Menubar_Main_Options.setTitle(_translate("AMaDiA_Main_Window", "O&ptions"))
@@ -508,4 +510,4 @@ class Ui_AMaDiA_Main_Window(object):
         self.Menubar_Main_Options_action_WindowStaysOnTop.setText(_translate("AMaDiA_Main_Window", "Try: Always on top"))
         self.Menubar_Main_Options_action_WindowStaysOnTop.setToolTip(_translate("AMaDiA_Main_Window", "Try to keep this window always in foreground"))
 
-from AMaDiA_Widgets import LineEdit, MplWidget_2D_Plot, MplWidget_LaTeX
+from AMaDiA_Widgets import LineEdit, MplWidget_2D_Plot, MplWidget_LaTeX, TextEdit

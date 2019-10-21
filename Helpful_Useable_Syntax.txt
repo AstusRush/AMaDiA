@@ -22,4 +22,9 @@ expand_power_exp(exp)
 expand_power_base(exp)
 
 
+
+factorint(exp)	# returns primefactors
+isprime(exp)	# returns if exp is prime
+
+
 (exp).rewrite( function )      # A common way to deal with special functions is to rewrite them in terms of one another. For example: tan(x).rewrite(sin)

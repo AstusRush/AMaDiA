@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.11.1.2"
+Version = "0.11.1.3"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -257,9 +257,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ColourMain()
 
     def ToggleSyntaxHighlighter(self):
-        self.Tab_1_InputField.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
-        self.Tab_3_Formula_Field.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
-        self.Tab_5_FormulaInput.Highlighter.enabled = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
+        state = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
+        for i in self.findChildren(AW.ATextEdit):
+            i.Highlighter.enabled = state
 
     def ToggleWindowStaysOnTop(self):
         if self.Menubar_Main_Options_action_WindowStaysOnTop.isChecked():
@@ -692,7 +692,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
         # Input.EvaluateLaTeX() # Could be used to evaluate LaTeX but: left( and right) brakes it...
         TheInput = self.Tab_1_InputField.text()
-        TheInput = TheInput.replace("ans",self.ans)
+        TheInput = re.sub("(?!\w)ans(?!\w)",self.ans,TheInput)
         if TheInput == "len()":
             TheInput = str(len(self.ThreadList))
         self.TC(lambda ID: AT.AMaS_Creator(self, TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))

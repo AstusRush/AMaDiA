@@ -270,28 +270,47 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
         finally:
             self.UseTeX(False)
 
-class LineEdit(QtWidgets.QTextEdit):
+class ATextEdit(QtWidgets.QTextEdit):
     returnPressed = QtCore.pyqtSignal()
     def __init__(self, parent=None):
         QtWidgets.QTextEdit.__init__(self, parent)
-
-        QTextEdFontMetrics =  QtGui.QFontMetrics(self.font())
-        self.QTextEdRowHeight = QTextEdFontMetrics.lineSpacing()
-        self.setFixedHeight(2 * self.QTextEdRowHeight)
-        self.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
         self.Highlighter = LineEditHighlighter(self.document(), self)
-        self.installEventFilter(self)
-        # Connect Signals
-        self.textChanged.connect(self.validateCharacters)
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
+
+    def text(self):
+        return self.toPlainText()
+
+    def insertFromMimeData(self, MIMEData):
+        try:
+            Text = MIMEData.text()
+            self.textCursor().insertText(Text)
+        except AF.common_exceptions:
+            pass
 
     def CursorPositionChanged(self):
         cursor = self.textCursor()
         curPos = cursor.position()
         self.document().contentsChange.emit(curPos,0,0)
+
+class TextEdit(ATextEdit):
+    def __init__(self, parent=None):
+        ATextEdit.__init__(self, parent)
+
+class LineEdit(ATextEdit):
+    def __init__(self, parent=None):
+        ATextEdit.__init__(self, parent)
+
+        QTextEditFontMetrics =  QtGui.QFontMetrics(self.font())
+        self.QTextEditRowHeight = QTextEditFontMetrics.lineSpacing()
+        self.setFixedHeight(2 * self.QTextEditRowHeight)
+        self.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.installEventFilter(self)
+        # Connect Signals
+        self.textChanged.connect(self.validateCharacters)
+
 
     def validateCharacters(self):
         vorbiddenChars = ['\n']
@@ -311,8 +330,6 @@ class LineEdit(QtWidgets.QTextEdit):
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
 
-    def text(self):
-        return self.toPlainText()
 
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.FontChange):
@@ -348,7 +365,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
         self.init_Styles()
         self.enabled = True
 
-        # init the rules 
+        # init the rules # Currently Unused...
         rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
         self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
 
@@ -361,9 +378,15 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
         self.RedFormat.setForeground(QtGui.QColor('red'))
         self.GreenFormat = QtGui.QTextCharFormat()
         self.GreenFormat.setForeground(QtGui.QColor('green'))
+        self.BlueFormat = QtGui.QTextCharFormat()
+        self.BlueFormat.setForeground(QtGui.QColor('blue'))
+        self.CyanFormat = QtGui.QTextCharFormat()
+        self.CyanFormat.setForeground(QtGui.QColor('cyan'))
+        self.MagentaFormat = QtGui.QTextCharFormat()
+        self.MagentaFormat.setForeground(QtGui.QColor('magenta'))
 
         # Collect all Formats in a dictionary
-        self.STYLES = {'brace': self.RedFormat,}
+        self.STYLES = {'brace': self.RedFormat,'pair': self.RedFormat}
 
     def highlightBlock(self, text):
         if not self.enabled:
@@ -379,10 +402,8 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                     TheList.append(j[0])
                 if not j[1] in TheList:
                     TheList.append(j[1])
-        #TheList += ["integral","Integrate","integrate","int ","Int "]
         TheList.sort(key=len,reverse=True)
         for i in TheList:
-            #pattern += "'"
             pattern += re.escape(i)
             pattern += "|"
             pattern += re.escape(i)
@@ -392,7 +413,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
         braces_list.sort(key=AF.takeFirst,reverse=False)
         for i in braces_list:
             if curPos <= i[1] and curPos >= i[0]:
-                self.setFormat(i[0], i[1]-i[0], self.RedFormat)
+                self.setFormat(i[0], i[1]-i[0], self.STYLES['pair'])
                 Element = text[i[0]:i[1]]
                 try:
                     Pair = AF.Counterpart(Element, ListOfLists=ART.LIST_l_normal_pairs, Both=True)
@@ -401,9 +422,9 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                 if Pair[0] == Element:
                     Pair = Pair.FirstResult
                     a,b = AF.FindPair(text,Pair,i[0])
-                    self.setFormat(b, len(Pair[1]), self.RedFormat)
+                    self.setFormat(b, len(Pair[1]), self.STYLES['pair'])
                 else:
-                    # TODO: Do improve this
+                    # TODO: Improve this
 
                     #---------method1----------
                     # TODO: Does not work!!!!!!!!!!!!!! NEEDS FIX OF AF.FindPair ???
@@ -416,7 +437,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                         #        found = True
                         #    k+=1
                     #if found:
-                    #    self.setFormat(c, d, self.RedFormat)
+                    #    self.setFormat(c, d, self.STYLES['pair'])
 
 
                     #---------method2----------
@@ -436,7 +457,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                                 break
                             k+=1
                     if found:
-                        self.setFormat(c, d, self.RedFormat)
+                        self.setFormat(c, d, self.STYLES['pair'])
 
 
                 break

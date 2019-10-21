@@ -102,7 +102,7 @@
             </layout>
            </widget>
           </widget>
-          <widget class="QTextEdit" name="Tab_2_InputField">
+          <widget class="TextEdit" name="Tab_2_InputField">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -685,11 +685,19 @@ p, li { white-space: pre-wrap; }
               <widget class="MplWidget_LaTeX" name="Tab_5_Display" native="true"/>
              </item>
              <item row="1" column="0">
-              <widget class="LineEdit" name="Tab_5_FormulaInput"/>
+              <widget class="LineEdit" name="Tab_5_FormulaInput">
+               <property name="placeholderText">
+                <string>WIP: Input a formula (using the names of the matrices) and hit return</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
-           <widget class="QTextEdit" name="Tab_5_DirectInput"/>
+           <widget class="TextEdit" name="Tab_5_DirectInput">
+            <property name="placeholderText">
+             <string>WIP: This Widget has currently no function and is a placholder...</string>
+            </property>
+           </widget>
           </widget>
          </widget>
         </item>
@@ -827,6 +835,11 @@ p, li { white-space: pre-wrap; }
    <extends>QTextEdit</extends>
    <header location="global">AMaDiA_Widgets</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TextEdit</class>
+   <extends>QTextEdit</extends>
+   <header location="global">AMaDiA_Widgets</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -454,39 +454,45 @@ class AMaS: # Astus' Mathematical Structure
         else:
             try:
                 ans = parse_expr(self.cstr,local_dict=self.Variables)
+                separator = "   <==   "
                 ParsedInput = ans
-                try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
-                    # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
-                    ans = ans.doit()
-                except AF.common_exceptions:
-                    print("Could not simplify "+str(ans))
-                    AF.ExceptionOutput(sys.exc_info())
-                try:
-                    ans = sympy.dsolve(ans,simplify=self.f_simplify)
-                    try:
-                        print("ODE Class:",sympy.classify_ode(ParsedInput))
+                if type(ans) == bool:
+                    self.Evaluation = str(ans)
+                else:
+                    try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                        # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
+                        ans = ans.doit()
                     except AF.common_exceptions:
-                        Error = AF.ExceptionOutput(sys.exc_info())
-                    ansF = self.ExecuteFlags(ans)
+                        print("Could not simplify "+str(ans))
+                        AF.ExceptionOutput(sys.exc_info())
                     try:
-                        self.Evaluation = str(ansF.lhs) + " = "
-                        self.Evaluation += str(ansF.rhs)
-                        self.Convert_Evaluation_to_LaTeX(ansF)
+                        ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                        try:
+                            print("ODE Class:",sympy.classify_ode(ParsedInput))
+                        except AF.common_exceptions:
+                            Error = AF.ExceptionOutput(sys.exc_info())
+                        ansF = self.ExecuteFlags(ans)
+                        try:
+                            self.Evaluation = str(ansF.lhs) + " = "
+                            self.Evaluation += str(ansF.rhs)
+                            self.Convert_Evaluation_to_LaTeX(ansF)
+                        except AF.common_exceptions:
+                            self.Evaluation = str(ansF)
+                            self.Convert_Evaluation_to_LaTeX(ansF)
                     except AF.common_exceptions:
+                        separator = " = "
+                        if self.f_eval:
+                            try:
+                                ans = ans.evalf()
+                            except AF.common_exceptions:
+                                try:
+                                    ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                                except AF.common_exceptions:
+                                    pass
+                        ansF = self.ExecuteFlags(ans)
                         self.Evaluation = str(ansF)
                         self.Convert_Evaluation_to_LaTeX(ansF)
-                    separator = "   <==   "
-                except AF.common_exceptions:
-                    separator = " = "
-                    if self.f_eval:
-                        try:
-                            ans = ans.evalf()
-                        except AF.common_exceptions:
-                            ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
-                    ansF = self.ExecuteFlags(ans)
-                    self.Evaluation = str(ansF)
-                    self.Convert_Evaluation_to_LaTeX(ansF)
-                self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers. Use re
+                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers. Use re
             except AF.common_exceptions: #as inst:
                 Error = AF.ExceptionOutput(sys.exc_info())
                 #print(inst.args)
