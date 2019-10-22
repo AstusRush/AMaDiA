@@ -51,13 +51,15 @@ IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_ODE, Iam_Multi_Dim]
 class AMaS: # Astus' Mathematical Structure
 
  # ---------------------------------- INIT ----------------------------------
-    def __init__(self, string, Iam):
+    def __init__(self, string, Iam, evalf):
         self.Input = string
         self.TimeStamp = AF.cTimeSStr()
         self.TimeStampFull = AF.cTimeFullStr()
         self.Name = "No Name Given"
         self.init_bools()
         self.init_Flags()
+        if evalf == 1 : self.f_eval = False
+        elif evalf == 0: self.f_eval = True
         self.Iam = Iam
         self.Variables = {}
         self.VariablesUnev = {}
@@ -241,14 +243,14 @@ class AMaS: # Astus' Mathematical Structure
                         #self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
                         #with sympy.evaluate(False): # Breaks The calculator
                         #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
-                        expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev)
+                        expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval)
                         self.LaTeX += sympy.latex(expr)
                     self.LaTeX += " = "
                 self.LaTeX = self.LaTeX[:-3]
             else:
                 #self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
                 #expr = parse_expr(self.cstr,evaluate=False,local_dict=self.VariablesUnev)
-                expr = AF.SPParseNoEval(self.cstr,local_dict=self.VariablesUnev)
+                expr = AF.SPParseNoEval(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval)
                 self.LaTeX = sympy.latex(expr)
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
@@ -294,14 +296,14 @@ class AMaS: # Astus' Mathematical Structure
                         if len(j)>0:
                             #conv += sympy.latex( sympy.S(j,evaluate=False))
                             #expr = parse_expr(j,evaluate=False,local_dict=self.VariablesUnev)
-                            expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev)
+                            expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev,evalf=self.f_eval)
                             conv += sympy.latex(expr)
                         conv += " = "
                     LineText += conv[:-3]
                 else:
                     #LineText += sympy.latex( sympy.S(e,evaluate=False))
                     #expr = parse_expr(e,evaluate=False,local_dict=self.VariablesUnev)
-                    expr = AF.SPParseNoEval(e,local_dict=self.VariablesUnev)
+                    expr = AF.SPParseNoEval(e,local_dict=self.VariablesUnev,evalf=self.f_eval)
                     LineText = sympy.latex(expr)
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())

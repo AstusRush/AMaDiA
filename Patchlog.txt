@@ -46,3 +46,6 @@ v0.11.2: Better LaTeX Parser, better Derivative Input and new Test-Method
 + Added a test method that is executes many testinputs when typing "RUNTEST" in the calculator input
 + Added support for dots as derivatives
 + When a function without a variable is differentiated it is assumed x for ' and t for the dot
+
+v0.11.2.1: Evalf for LaTeX
++ Most inputs now use the Evalf Flag to decide whether to Evaluate when converting to LaTeX

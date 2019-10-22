@@ -221,7 +221,7 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
 
 # -----------------------------------------------------------------------------------------------------------------
 
-def SPParseNoEval(expr,local_dict=None):
+def SPParseNoEval(expr,local_dict=None,evalf=True):
     # This function parses a string into a sympy construct withou evaluating anything!
     
     try:
@@ -230,7 +230,7 @@ def SPParseNoEval(expr,local_dict=None):
         ExceptionOutput(sys.exc_info())
 
 
-    if "evalf" in expr:
+    if "evalf" in expr or evalf:
         expr = expr.replace("evalf","",1)
         with sympy.evaluate(True):
             rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)

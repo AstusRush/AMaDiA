@@ -50,7 +50,7 @@ class AMaS_Creator(QtCore.QThread):
         self.ID = ID
         
     def run(self):
-        self.AMaS_Object = AC.AMaS(self.Text, self.Iam)
+        self.AMaS_Object = AC.AMaS(self.Text, self.Iam, self.Eval)
         if self.AMaS_Object.Exists:
             self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
         self.exiting = True
