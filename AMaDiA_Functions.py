@@ -15,6 +15,7 @@ import sympy
 import re
 
 
+from sympy.parsing.sympy_parser import parse_expr
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -219,6 +220,46 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
     
 
 # -----------------------------------------------------------------------------------------------------------------
+
+def SPParseNoEval(expr,local_dict=None):
+    # This function parses a string into a sympy construct withou evaluating anything!
+    
+    try:
+        expr = Matrix_Encaser(expr)
+    except common_exceptions:
+        ExceptionOutput(sys.exc_info())
+
+
+    if "evalf" in expr:
+        expr = expr.replace("evalf","",1)
+        with sympy.evaluate(True):
+            rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+    else:
+        try:
+            with sympy.evaluate(False): # Breaks The calculator
+                #help(sympy.evaluate)
+                rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
+        except common_exceptions as Exc:
+            with sympy.evaluate(True):
+                rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict) # This reenables the evaluation if an exception occurs
+        with sympy.evaluate(True):
+            NOTrtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict) # This reenables the evaluation
+    return rtnexpr
+
+def Matrix_Encaser(string):
+    if "Matrix(" in string:
+        Before,Matrix = string.split("Matrix(",1)
+        Before = Before + "UnevaluatedExpr(Matrix"
+        Matrix = "("+Matrix
+        Matrix = Matrix_Encaser(Matrix)
+        Close = FindPair(Matrix,["(",")"])[1]
+        M,A = Matrix[:Close],Matrix[Close:]
+        A = ")"+A
+        string = Before+M+A
+    return string
+    
+
+# -----------------------------------------------------------------------------------------------------------------
 # Useful links:
     # https://pypi.org/project/parse/  # New library not in anacona so probably not good to use...
     # https://pyformat.info/
@@ -235,6 +276,14 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     string = re.sub(r"(\w*)\'\'\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
     string = re.sub(r"(\w*)\"\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
     string = re.sub(r"(\w*)\'\((\w)\)",r"diff(\1(\2),\2)",string)
+    string = re.sub(r"(\w*)\'\'\'",r"diff(diff(diff(\1(x),x),x),x)",string)
+    string = re.sub(r"(\w*)\'\'",r"diff(diff(\1(x),x),x)",string)
+    string = re.sub(r"(\w*)\"",r"diff(diff(\1(x),x),x)",string)
+    string = re.sub(r"(\w*)\'",r"diff(\1(x),x)",string)
+    string = re.sub(r"(\w*)\u0308\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w*)\u0307\((\w)\)",r"diff(\1(\2),\2)",string)
+    string = re.sub(r"(\w*)\u0308",r"diff(diff(\1(t),t),t)",string)
+    string = re.sub(r"(\w*)\u0307",r"diff(\1(t),t)",string)
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
     #----

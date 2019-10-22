@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.11.1.4"
+Version = "0.11.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -48,6 +48,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib
+from Test_Input import Test_Input
 
 
 
@@ -271,6 +272,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.setWindowFlags(QtCore.Qt.WindowFlags())
             self.show()
 
+    def RUNTEST(self):
+        for i in Test_Input:
+            self.Tab_1_InputField.setText(i)
+            self.Tab_1_F_Calculate_Field_Input()
+            time.sleep(0.1)
+        Text = "Test Complete. Expected Entries: "+str(len(Test_Input))
+        print(Text)
+        self.Tab_1_InputField.setText(Text)
 
 
 # ---------------------------------- Events and Context Menu ----------------------------------
@@ -692,10 +701,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
         # Input.EvaluateLaTeX() # Could be used to evaluate LaTeX but: left( and right) brakes it...
         TheInput = self.Tab_1_InputField.text()
-        TheInput = re.sub("(?!\w)ans(?!\w)",self.ans,TheInput)
-        if TheInput == "len()":
-            TheInput = str(len(self.ThreadList))
-        self.TC(lambda ID: AT.AMaS_Creator(self, TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
+        if TheInput == "RUNTEST":
+            self.RUNTEST()
+        else:
+            TheInput = re.sub("(?!\w)ans(?!\w)",self.ans,TheInput)
+            if TheInput == "len()":
+                TheInput = str(len(self.ThreadList))
+            self.TC(lambda ID: AT.AMaS_Creator(self, TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
         
         
         
@@ -886,41 +898,42 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TC(lambda ID: AT.AMaS_Creator(self,self.Tab_3_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))
         
     def Tab_3_F_Sympy_Plot(self , AMaS_Object):
-        try:
-            x,y,z = sympy.symbols('x y z')
-            
-            temp = AMaS_Object.cstr
-            if AMaS_Object.cstr.count("=") == 1 :
-                temp1 , temp2 = AMaS_Object.cstr.split("=",1)
-                temp = "Eq("+temp1
-                temp += ","
-                temp += temp2
-                temp += ")"
-            temp = parse_expr(temp)
-            xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
-            if xmax < xmin:
-                xmax , xmin = xmin , xmax
-            xlims = (xmin , xmax)
-            ymin , ymax = self.Tab_3_YLim_min.value(), self.Tab_3_YLim_max.value()
-            if ymax < ymin:
-                ymax , ymin = ymin , ymax
-            ylims = (ymin , ymax)
-            if self.Tab_3_XLim_Check.isChecked() and self.Tab_3_YLim_Check.isChecked():
-                sympy.plot(temp , xlim = xlims , ylim = ylims)
-            elif self.Tab_3_XLim_Check.isChecked():
-                sympy.plot(temp , xlim = xlims)
-            elif self.Tab_3_YLim_Check.isChecked():
-                sympy.plot(temp , ylim = ylims)
-            else:
-                sympy.plot(temp)
-        except AF.common_exceptions: # TODO: plot_implicit uses other syntax for limits
+        with sympy.evaluate(True):
             try:
-                sympy.plot_implicit(temp)
-            except AF.common_exceptions:
+                x,y,z = sympy.symbols('x y z')
+                
+                temp = AMaS_Object.cstr
+                if AMaS_Object.cstr.count("=") == 1 :
+                    temp1 , temp2 = AMaS_Object.cstr.split("=",1)
+                    temp = "Eq("+temp1
+                    temp += ","
+                    temp += temp2
+                    temp += ")"
+                temp = parse_expr(temp)
+                xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
+                if xmax < xmin:
+                    xmax , xmin = xmin , xmax
+                xlims = (xmin , xmax)
+                ymin , ymax = self.Tab_3_YLim_min.value(), self.Tab_3_YLim_max.value()
+                if ymax < ymin:
+                    ymax , ymin = ymin , ymax
+                ylims = (ymin , ymax)
+                if self.Tab_3_XLim_Check.isChecked() and self.Tab_3_YLim_Check.isChecked():
+                    sympy.plot(temp , xlim = xlims , ylim = ylims)
+                elif self.Tab_3_XLim_Check.isChecked():
+                    sympy.plot(temp , xlim = xlims)
+                elif self.Tab_3_YLim_Check.isChecked():
+                    sympy.plot(temp , ylim = ylims)
+                else:
+                    sympy.plot(temp)
+            except AF.common_exceptions: # TODO: plot_implicit uses other syntax for limits
                 try:
-                    sympy.plot_implicit(parse_expr(AMaS_Object.string))
+                    sympy.plot_implicit(temp)
                 except AF.common_exceptions:
-                    AF.ExceptionOutput(sys.exc_info())
+                    try:
+                        sympy.plot_implicit(parse_expr(AMaS_Object.string))
+                    except AF.common_exceptions:
+                        AF.ExceptionOutput(sys.exc_info())
 
 # ---------------------------------- Tab_4_ ??? ----------------------------------
         
@@ -1024,9 +1037,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         Matrix[i].append("0")
             # Convert list into Matrix and save it in the Equation
             if len(Matrix) == 1 and len(Matrix[0]) == 1:
-                Matrix = parse_expr(Matrix[0][0])
+                with sympy.evaluate(True):
+                    Matrix = parse_expr(Matrix[0][0])
             else:
-                Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
+                with sympy.evaluate(True):
+                    Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
             self.Tab_5_Active_Equation.AddVariable(Name,Matrix)
             
             # Preapare ListWidgetItem
@@ -1066,13 +1081,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def Tab_5_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
         self.Tab_5_Currently_Displayed = AMaS_Object.EvaluationEquation
         self.Tab_5_Currently_Displayed_Solution = AMaS_Object.Evaluation
-        self.Tab_5_Display.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
+        self.Tab_5_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                         ,self.Font_Size_spinBox.value(),self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         
     def Tab_5_F_Display_Matrix(self,Name,Matrix):
-        Text = sympy.latex(Matrix)
+        with sympy.evaluate(True):
+            Text = sympy.latex(Matrix)
         Text += "$"
         Text1 = "$\\displaystyle"+Text
         Text2 = "$"+Text

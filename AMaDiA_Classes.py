@@ -44,6 +44,10 @@ Iam_ODE = "ODE"
 Iam_Multi_Dim = "Multi-Dim"
 IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_ODE, Iam_Multi_Dim]
 
+
+#parse_expr\((.*),evaluate=False,local_dict=self.Variables\)
+#
+
 class AMaS: # Astus' Mathematical Structure
 
  # ---------------------------------- INIT ----------------------------------
@@ -56,6 +60,7 @@ class AMaS: # Astus' Mathematical Structure
         self.init_Flags()
         self.Iam = Iam
         self.Variables = {}
+        self.VariablesUnev = {}
         try:
             self.INIT_WhatAmI(string)
         except AF.common_exceptions :
@@ -234,13 +239,16 @@ class AMaS: # Astus' Mathematical Structure
                 for i in parts:
                     if len(i)>0:
                         #self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
-                        expr = parse_expr(i,evaluate=False,local_dict=self.Variables)
+                        #with sympy.evaluate(False): # Breaks The calculator
+                        #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
+                        expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev)
                         self.LaTeX += sympy.latex(expr)
                     self.LaTeX += " = "
                 self.LaTeX = self.LaTeX[:-3]
             else:
                 #self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-                expr = parse_expr(self.cstr,evaluate=False,local_dict=self.Variables)
+                #expr = parse_expr(self.cstr,evaluate=False,local_dict=self.VariablesUnev)
+                expr = AF.SPParseNoEval(self.cstr,local_dict=self.VariablesUnev)
                 self.LaTeX = sympy.latex(expr)
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
@@ -285,13 +293,15 @@ class AMaS: # Astus' Mathematical Structure
                     for j in parts:
                         if len(j)>0:
                             #conv += sympy.latex( sympy.S(j,evaluate=False))
-                            expr = parse_expr(j,evaluate=False,local_dict=self.Variables)
+                            #expr = parse_expr(j,evaluate=False,local_dict=self.VariablesUnev)
+                            expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev)
                             conv += sympy.latex(expr)
                         conv += " = "
                     LineText += conv[:-3]
                 else:
                     #LineText += sympy.latex( sympy.S(e,evaluate=False))
-                    expr = parse_expr(e,evaluate=False,local_dict=self.Variables)
+                    #expr = parse_expr(e,evaluate=False,local_dict=self.VariablesUnev)
+                    expr = AF.SPParseNoEval(e,local_dict=self.VariablesUnev)
                     LineText = sympy.latex(expr)
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
@@ -375,142 +385,144 @@ class AMaS: # Astus' Mathematical Structure
 
 
     def Evaluate(self):
+        with sympy.evaluate(True):
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
 
-        ODE = False
-        if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
-            try:
-                ODE = self.Solve_ODE_Version_1()
-            except AF.common_exceptions:
-                AF.ExceptionOutput(sys.exc_info())
-                ODE = False
-        if ODE == True:
-            self.init_Flags() # Reset All Flags
-            return ODE
+            ODE = False
+            if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
+                try:
+                    ODE = self.Solve_ODE_Version_1()
+                except AF.common_exceptions:
+                    AF.ExceptionOutput(sys.exc_info())
+                    ODE = False
+            if ODE == True:
+                self.init_Flags() # Reset All Flags
+                return ODE
 
-        Error = "None"
-        if self.cstr.count("=") == 1 :
-            try:
-                temp = self.cstr
-                #if Eval:
-                #    temp.replace("Integral","integrate")
-                temp = "(" + temp
-                temp = temp.replace("=" , ") - (")
-                temp = temp + ")"
-                ans = parse_expr(temp,local_dict=self.Variables)
-                ParsedInput = ans
+            Error = "None"
+            if self.cstr.count("=") == 1 :
                 try:
-                    ans = ans.doit()
-                except AF.common_exceptions:
-                    pass
-                try:
-                    ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                    temp = self.cstr
+                    #if Eval:
+                    #    temp.replace("Integral","integrate")
+                    temp = "(" + temp
+                    temp = temp.replace("=" , ") - (")
+                    temp = temp + ")"
+                    ans = parse_expr(temp,local_dict=self.Variables)
+                    ParsedInput = ans
                     try:
-                        print("ODE Class:",sympy.classify_ode(ParsedInput))
-                    except AF.common_exceptions:
-                        Error = AF.ExceptionOutput(sys.exc_info())
-                    try:
-                        ansF = self.ExecuteFlags(ans)
-                        self.Evaluation = str(ansF.lhs) + " = "
-                        self.Evaluation += str(ansF.rhs)
-                        self.Convert_Evaluation_to_LaTeX(ansF)
-                    except AF.common_exceptions:
-                        ansF = self.ExecuteFlags(ans)
-                        self.Evaluation = str(ansF)
-                        self.Convert_Evaluation_to_LaTeX(ansF)
-                except AF.common_exceptions:
-                    ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
-                    self.Evaluation = "{ "
-                    for i in ans:
-                        if not type(i) == dict:
-                            i = self.ExecuteFlags(i)
-                        i_temp = str(i)
-                        i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers. Use re
-                        self.Evaluation += i_temp
-                        self.Evaluation += " , "
-                    self.Evaluation = self.Evaluation[:-3]
-                    if len(self.Evaluation) > 0:
-                        self.Evaluation += " }"
-                    else:
-                        ans = parse_expr(temp,local_dict=self.Variables)
-                        ans = ans.doit()
-                        try: # TODO Maybe get rid of this evalf()
-                            if self.f_eval: ans = ans.evalf()
-                        except AF.common_exceptions:
-                            AF.ExceptionOutput(sys.exc_info())
-                        self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
-                    self.Convert_Evaluation_to_LaTeX()
-                    
-            except AF.common_exceptions: #as inst:
-                Error = AF.ExceptionOutput(sys.exc_info())
-                #print(inst.args)
-                #if callable(inst.args):
-                #    print(inst.args())
-                self.Evaluation = "Fail"
-            self.EvaluationEquation = self.Evaluation + "   <==   "
-            self.EvaluationEquation += self.Text
-        else:
-            try:
-                ans = parse_expr(self.cstr,local_dict=self.Variables)
-                separator = "   <==   "
-                ParsedInput = ans
-                if type(ans) == bool:
-                    self.Evaluation = str(ans)
-                else:
-                    try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
-                        # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
                         ans = ans.doit()
                     except AF.common_exceptions:
-                        print("Could not simplify "+str(ans))
-                        AF.ExceptionOutput(sys.exc_info())
+                        pass
                     try:
                         ans = sympy.dsolve(ans,simplify=self.f_simplify)
                         try:
                             print("ODE Class:",sympy.classify_ode(ParsedInput))
                         except AF.common_exceptions:
                             Error = AF.ExceptionOutput(sys.exc_info())
-                        ansF = self.ExecuteFlags(ans)
                         try:
+                            ansF = self.ExecuteFlags(ans)
                             self.Evaluation = str(ansF.lhs) + " = "
                             self.Evaluation += str(ansF.rhs)
                             self.Convert_Evaluation_to_LaTeX(ansF)
                         except AF.common_exceptions:
+                            ansF = self.ExecuteFlags(ans)
                             self.Evaluation = str(ansF)
                             self.Convert_Evaluation_to_LaTeX(ansF)
                     except AF.common_exceptions:
-                        separator = " = "
-                        if self.f_eval:
-                            try:
-                                ans = ans.evalf()
+                        Error = AF.ExceptionOutput(sys.exc_info())
+                        ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                        self.Evaluation = "{ "
+                        for i in ans:
+                            if not type(i) == dict:
+                                i = self.ExecuteFlags(i)
+                            i_temp = str(i)
+                            i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers. Use re
+                            self.Evaluation += i_temp
+                            self.Evaluation += " , "
+                        self.Evaluation = self.Evaluation[:-3]
+                        if len(self.Evaluation) > 0:
+                            self.Evaluation += " }"
+                        else:
+                            ans = parse_expr(temp,local_dict=self.Variables)
+                            ans = ans.doit()
+                            try: # TODO Maybe get rid of this evalf()
+                                if self.f_eval: ans = ans.evalf()
                             except AF.common_exceptions:
+                                AF.ExceptionOutput(sys.exc_info())
+                            self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
+                        self.Convert_Evaluation_to_LaTeX()
+                        
+                except AF.common_exceptions: #as inst:
+                    Error = AF.ExceptionOutput(sys.exc_info())
+                    #print(inst.args)
+                    #if callable(inst.args):
+                    #    print(inst.args())
+                    self.Evaluation = "Fail"
+                self.EvaluationEquation = self.Evaluation + "   <==   "
+                self.EvaluationEquation += self.Text
+            else:
+                try:
+                    ans = parse_expr(self.cstr,local_dict=self.Variables)
+                    separator = "   <==   "
+                    ParsedInput = ans
+                    if type(ans) == bool:
+                        self.Evaluation = str(ans)
+                    else:
+                        try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                            # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
+                            ans = ans.doit()
+                        except AF.common_exceptions:
+                            print("Could not simplify "+str(ans))
+                            AF.ExceptionOutput(sys.exc_info())
+                        try:
+                            ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                            try:
+                                print("ODE Class:",sympy.classify_ode(ParsedInput))
+                            except AF.common_exceptions:
+                                Error = AF.ExceptionOutput(sys.exc_info())
+                            ansF = self.ExecuteFlags(ans)
+                            try:
+                                self.Evaluation = str(ansF.lhs) + " = "
+                                self.Evaluation += str(ansF.rhs)
+                                self.Convert_Evaluation_to_LaTeX(ansF)
+                            except AF.common_exceptions:
+                                self.Evaluation = str(ansF)
+                                self.Convert_Evaluation_to_LaTeX(ansF)
+                        except AF.common_exceptions:
+                            separator = " = "
+                            if self.f_eval:
                                 try:
-                                    ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                                    ans = ans.evalf()
                                 except AF.common_exceptions:
-                                    pass
-                        ansF = self.ExecuteFlags(ans)
-                        self.Evaluation = str(ansF)
-                        self.Convert_Evaluation_to_LaTeX(ansF)
-                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers. Use re
-            except AF.common_exceptions: #as inst:
-                Error = AF.ExceptionOutput(sys.exc_info())
-                #print(inst.args)
-                #if callable(inst.args):
-                #    print(inst.args())
-                self.Evaluation = "Fail"
-                separator = "   <==   "
-            self.EvaluationEquation = self.Evaluation + separator
-            self.EvaluationEquation += self.Text
-        
-        self.init_Flags() # Reset All Flags
-        
-        
-        
-        if self.Evaluation == "Fail":
-            return Error
-        else:
-            return True
+                                    try:
+                                        ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                                    except AF.common_exceptions:
+                                        pass
+                            ansF = self.ExecuteFlags(ans)
+                            self.Evaluation = str(ansF)
+                            self.Convert_Evaluation_to_LaTeX(ansF)
+                        self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers. Use re
+                except AF.common_exceptions: #as inst:
+                    Error = AF.ExceptionOutput(sys.exc_info())
+                    #print(inst.args)
+                    #if callable(inst.args):
+                    #    print(inst.args())
+                    self.Evaluation = "Fail"
+                    separator = "   <==   "
+                self.EvaluationEquation = self.Evaluation + separator
+                self.EvaluationEquation += self.Text
+            
+            self.init_Flags() # Reset All Flags
+            
+            
+            
+            if self.Evaluation == "Fail":
+                return Error
+            else:
+                return True
         
     def EvaluateEquation_1(self): # This is currently being used
         temp = self.cstr
@@ -546,175 +558,179 @@ class AMaS: # Astus' Mathematical Structure
         return True
 
     def Solve_ODE_Version_1(self):
-        try:
-            Input = self.Input
-            Input = Input.split(",")
-            func = Input[1].strip()[0]
-            equation = AF.AstusParse(Input.pop(0))
-            if equation.count("=") == 1 :
-                equation = "(" + equation
-                equation = equation.replace("=" , ") - (")
-                equation = equation + ")"
-            var = equation.split(func,1)[1].split("(",1)[1].split(")",1)[0].strip()
-            print("Function:",func)
-            print("Variable:",var)
-            var_Parsed = parse_expr(var)
-            equation = parse_expr(equation,local_dict=self.Variables)
-            print("ODE Class:",sympy.classify_ode(equation))
-            ics = {}
-            for i in Input:
-                f,y=i.split("=")
-                f,x = f.split("(",1)
-                x = x.split(")",1)[0].strip()
-                f+="("
-                f+=var
-                f+=")"
-                f,x,y = parse_expr(AF.AstusParse(f,False)),parse_expr(AF.AstusParse(x,False),local_dict=self.Variables),parse_expr(AF.AstusParse(y,False),local_dict=self.Variables)
-                f = f.subs(var_Parsed,x)
-                ics[f] = y
-            #ics = {f1.subs(x,x1):y1,f2.subs(x,x2):y2}
-            func += "("
-            func += var
-            func += ")"
-            func = parse_expr(func)
-            equation = sympy.dsolve(equation,func=func,ics=ics,simplify=self.f_simplify)
-            equation = self.ExecuteFlags(equation)
+        with sympy.evaluate(True):
             try:
-                self.Evaluation = str(equation.lhs) + " = "
-                self.Evaluation += str(equation.rhs)
-                self.Convert_Evaluation_to_LaTeX(equation)
-            except AF.common_exceptions:
-                self.Evaluation = str(equation)
-                self.Convert_Evaluation_to_LaTeX(equation)
+                Input = self.Input
+                Input = Input.split(",")
+                func = Input[1].strip()[0]
+                equation = AF.AstusParse(Input.pop(0))
+                if equation.count("=") == 1 :
+                    equation = "(" + equation
+                    equation = equation.replace("=" , ") - (")
+                    equation = equation + ")"
+                var = equation.split(func,1)[1].split("(",1)[1].split(")",1)[0].strip()
+                print("Function:",func)
+                print("Variable:",var)
+                var_Parsed = parse_expr(var)
+                equation = parse_expr(equation,local_dict=self.Variables)
+                print("ODE Class:",sympy.classify_ode(equation))
+                ics = {}
+                for i in Input:
+                    f,y=i.split("=")
+                    f,x = f.split("(",1)
+                    x = x.split(")",1)[0].strip()
+                    f+="("
+                    f+=var
+                    f+=")"
+                    f,x,y = parse_expr(AF.AstusParse(f,False)),parse_expr(AF.AstusParse(x,False),local_dict=self.Variables),parse_expr(AF.AstusParse(y,False),local_dict=self.Variables)
+                    f = f.subs(var_Parsed,x)
+                    ics[f] = y
+                #ics = {f1.subs(x,x1):y1,f2.subs(x,x2):y2}
+                func += "("
+                func += var
+                func += ")"
+                func = parse_expr(func)
+                equation = sympy.dsolve(equation,func=func,ics=ics,simplify=self.f_simplify)
+                equation = self.ExecuteFlags(equation)
+                try:
+                    self.Evaluation = str(equation.lhs) + " = "
+                    self.Evaluation += str(equation.rhs)
+                    self.Convert_Evaluation_to_LaTeX(equation)
+                except AF.common_exceptions:
+                    self.Evaluation = str(equation)
+                    self.Convert_Evaluation_to_LaTeX(equation)
 
-        except AF.common_exceptions:
-            Error = AF.ExceptionOutput(sys.exc_info())
-            self.Evaluation = "Fail"
-        
-        self.EvaluationEquation = self.Evaluation + "   <==   "
-        self.EvaluationEquation += self.Text
+            except AF.common_exceptions:
+                Error = AF.ExceptionOutput(sys.exc_info())
+                self.Evaluation = "Fail"
             
-        if self.Evaluation == "Fail":
-            return Error
-        else:
-            return True
+            self.EvaluationEquation = self.Evaluation + "   <==   "
+            self.EvaluationEquation += self.Text
+                
+            if self.Evaluation == "Fail":
+                return Error
+            else:
+                return True
             
             
  # ---------------------------------- 2D Plotter Methods ----------------------------------
             
     def Plot_2D_Calc_Values(self):
-        if self.cstr.count("=")>=1:
-            try:
-                temp_line_split = self.cstr.split("=",1)
-                temp_line_split[0] = temp_line_split[0].strip()
-                if temp_line_split[0] == "x":
-                    temp_line_x_val = parse_expr(temp_line_split[1],local_dict=self.Variables)
-                    temp_line_x_val = float(temp_line_x_val.evalf())
-                    if type(temp_line_x_val) == int or type(temp_line_x_val) == float :
-                        self.plot_x_vals = temp_line_x_val
-                        self.plot_data_exists = True
-                        return True
-            except AF.common_exceptions:
-                pass
-        
-        
-        if True : #self.plottable: #TODO: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
-            x = sympy.symbols('x')
-            n = sympy.symbols('n')
-            try:
-                Function = parse_expr(self.cstr,local_dict=self.Variables)
-            except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
-                self.plottable = False
-                return False
-            try:
-                Function = Function.doit()
-            except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
-                
-            if self.plot_xmax < self.plot_xmin:
-                self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax
-            
-            if self.plot_per_unit:
-                steps = 1/self.plot_steps
-            else:
-                steps = (self.plot_xmax - self.plot_xmin)/self.plot_steps
-                
-            self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
-            try:
-                #e = sympy.numbers.E
-                evalfunc = sympy.lambdify(x, Function, modules='sympy') # Can not handle exp(x) and cos(),etc ... Maybe try the loop to go through every value...
-                self.plot_y_vals = evalfunc(self.plot_x_vals)
-                
-                
-                if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == (): #This also catches the case exp(x)
-                    self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
-                if self.plot_y_vals.shape != self.plot_x_vals.shape:
-                    raise Exception("Dimensions do not match")
-                
-            except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
-                #print(inst.args)
-                #if callable(inst.args):
-                #    print(inst.args())
-                # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
-                # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
-                # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
-                
-                # To Catch ValueError Invalid limits given
-                # This occures, for example, when trying to plot integrate(x**2)
-                # This is a weird bug #TODO: Investigate this bug...
-                
+        with sympy.evaluate(True):
+            if self.cstr.count("=")>=1:
                 try:
-                    if self.cstr.count("Integral") != 1:
-                        evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
-                        self.plot_y_vals = evalfunc(self.plot_x_vals)
-                        self.plot_y_vals = np.asarray(self.plot_y_vals)
-                        
-                        if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == ():
-                            self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
-                        if self.plot_y_vals.shape != self.plot_x_vals.shape:
-                            print(self.plot_y_vals.shape)
-                            raise Exception("Dimensions do not match")
-                    else:
-                        temp_Text = self.cstr
-                        temp_Text = temp_Text.replace("Integral","")
-                        evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
-                        
-                        def F(X):
-                            try:
-                                return [scipy.integrate.quad(evalfunc, 0, y) for y in X]
-                            except TypeError:
-                                return scipy.integrate.quad(evalfunc, 0, X)
-                        
-                        self.plot_y_vals = evalfunc(self.plot_x_vals)
-                        self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
-                        self.plot_y_vals = np.asarray(self.plot_y_vals)
-                        
-                        if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == 1:
-                            self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
-                        if self.plot_y_vals.shape != self.plot_x_vals.shape:
-                            raise Exception("Dimensions do not match")
+                    temp_line_split = self.cstr.split("=",1)
+                    temp_line_split[0] = temp_line_split[0].strip()
+                    if temp_line_split[0] == "x":
+                        temp_line_x_val = parse_expr(temp_line_split[1],local_dict=self.Variables)
+                        temp_line_x_val = float(temp_line_x_val.evalf())
+                        if type(temp_line_x_val) == int or type(temp_line_x_val) == float :
+                            self.plot_x_vals = temp_line_x_val
+                            self.plot_data_exists = True
+                            return True
+                except AF.common_exceptions:
+                    pass
+            
+            
+            if True : #self.plottable: #TODO: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
+                x = sympy.symbols('x')
+                n = sympy.symbols('n')
+                try:
+                    Function = parse_expr(self.cstr,local_dict=self.Variables)
                 except AF.common_exceptions: #as inst:
                     AF.ExceptionOutput(sys.exc_info())
+                    self.plottable = False
                     return False
+                try:
+                    Function = Function.doit()
+                except AF.common_exceptions: #as inst:
+                    AF.ExceptionOutput(sys.exc_info())
                     
-            self.plot_data_exists = True
-            return True
-        else:
-            return False
+                if self.plot_xmax < self.plot_xmin:
+                    self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax
+                
+                if self.plot_per_unit:
+                    steps = 1/self.plot_steps
+                else:
+                    steps = (self.plot_xmax - self.plot_xmin)/self.plot_steps
+                    
+                self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
+                try:
+                    #e = sympy.numbers.E
+                    evalfunc = sympy.lambdify(x, Function, modules='sympy') # Can not handle exp(x) and cos(),etc ... Maybe try the loop to go through every value...
+                    self.plot_y_vals = evalfunc(self.plot_x_vals)
+                    
+                    
+                    if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == (): #This also catches the case exp(x)
+                        self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
+                    if self.plot_y_vals.shape != self.plot_x_vals.shape:
+                        raise Exception("Dimensions do not match")
+                    
+                except AF.common_exceptions: #as inst:
+                    AF.ExceptionOutput(sys.exc_info())
+                    #print(inst.args)
+                    #if callable(inst.args):
+                    #    print(inst.args())
+                    # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
+                    # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
+                    # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
+                    
+                    # To Catch ValueError Invalid limits given
+                    # This occures, for example, when trying to plot integrate(x**2)
+                    # This is a weird bug #TODO: Investigate this bug...
+                    
+                    try:
+                        if self.cstr.count("Integral") != 1:
+                            evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
+                            self.plot_y_vals = evalfunc(self.plot_x_vals)
+                            self.plot_y_vals = np.asarray(self.plot_y_vals)
+                            
+                            if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == ():
+                                self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
+                            if self.plot_y_vals.shape != self.plot_x_vals.shape:
+                                print(self.plot_y_vals.shape)
+                                raise Exception("Dimensions do not match")
+                        else:
+                            temp_Text = self.cstr
+                            temp_Text = temp_Text.replace("Integral","")
+                            evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
+                            
+                            def F(X):
+                                try:
+                                    return [scipy.integrate.quad(evalfunc, 0, y) for y in X]
+                                except TypeError:
+                                    return scipy.integrate.quad(evalfunc, 0, X)
+                            
+                            self.plot_y_vals = evalfunc(self.plot_x_vals)
+                            self.plot_y_vals = [F(X)[0] for X in self.plot_x_vals]
+                            self.plot_y_vals = np.asarray(self.plot_y_vals)
+                            
+                            if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == 1:
+                                self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
+                            if self.plot_y_vals.shape != self.plot_x_vals.shape:
+                                raise Exception("Dimensions do not match")
+                    except AF.common_exceptions: #as inst:
+                        AF.ExceptionOutput(sys.exc_info())
+                        return False
+                        
+                self.plot_data_exists = True
+                return True
+            else:
+                return False
 
 
  # ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------
 
     def AddVariable(self, Name, Value):
         self.Variables[Name] = Value
+        self.VariablesUnev[Name] = sympy.UnevaluatedExpr(Value)
         return True
 
     def UpdateEquation(self, Text = None):
         if Text == None:
             Text = self.Input
-        self.Input = Text
+        else:
+            self.Input = Text
         self.string = Text
         self.init_Critical()
         self.Evaluate()
