@@ -3,9 +3,7 @@ Calculator:
 	
 	
 LaTeX:
-	exp(x+ln(x))	Displays: x e^{x}	Should display: exp(x+ln(x))
-	cos(2·2·π·t)	Displays: cos(2·π·t)	Should display: cos(2·2·π·t) or cos(4·π·t)
-	d(y(t))/dt=–λ·y(t)	Does not work!	Works: d(y(t))/dt=–y(t)·λ
+	d(y(t))/dt=–λ·y(t)	Does not work!	Works: d(y(t))/dt=–y(t)·λ (kinda)
 	
 	
 Plot:
