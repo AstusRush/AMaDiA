@@ -36,3 +36,6 @@ v0.11.1.3: Highlighting in LaTeX Input
 + "ans" is only replaced with the previous solution if it is not part of a word.
 ++ This means that you can Laplace transform (since the word transform was previously ripped apart...)
 
+v0.11.1.4: Preperation for MultiDim Parser
++ First preperation for parsing things like Matrixmultipliication and Transposing matricies
+

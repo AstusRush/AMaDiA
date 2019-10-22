@@ -224,7 +224,12 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
     # https://pyformat.info/
     # https://docs.python.org/3.4/library/string.html
 
-def AstusParse(string,ConsoleOutput = True):
+def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = None):
+    # TODO:
+    # If Iam_Multi_Dim replace everything except multiplication signs
+    # Then search with re for the LocalVars
+    # Then Parse the multiplication signs in accordance to the position of the LocalVars
+    
     string = re.sub(r"√(\w)",r"sqrt(\1)",string)
     string = re.sub(r"(\w*)\'\'\'\((\w)\)",r"diff(diff(diff(\1(\2),\2),\2),\2)",string)
     string = re.sub(r"(\w*)\'\'\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
