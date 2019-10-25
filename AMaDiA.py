@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0"
+Version = "0.12.0.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -59,13 +59,27 @@ ShiftModifier = QtCore.Qt.ShiftModifier
 
 
 class MainApp(QtWidgets.QApplication):
-    def notify(self, obj, event): # Reimplementation of notify that does nothing other than redirecting to normal implementation for now...
-        try:
-            return super().notify(obj, event)
-        except:
-            AF.ExceptionOutput(sys.exc_info())
-            print("Caught: ",obj,event)
-            return False
+    def __init__(self, args):
+        super(MainApp, self).__init__(args)
+    #    self.installEventFilter(self)
+    #
+    #def notify(self, obj, event): # Reimplementation of notify that does nothing other than redirecting to normal implementation for now...
+    #    try:
+    #        return super().notify(obj, event)
+    #    except:
+    #        AF.ExceptionOutput(sys.exc_info())
+    #        print("Caught: ",obj,event)
+    #        return False
+    #
+    #def eventFilter(self, source, event): #DOES NOT INTERCEPT ENOUGH to nagate all AltGr Stuff
+    #    try:
+    #        pass#print(event.key())
+    #    except AF.common_exceptions:
+    #        pass
+    #    if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
+    #        #print("AltGr")
+    #        return True
+    #    return super(MainApp, self).eventFilter(source, event)
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
@@ -115,6 +129,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_Display.canvas.ax.tick_params(axis='x', colors=self.TextColour)
         self.Tab_3_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
         
+        self.installEventFilter(self)
         # Set up context menus for the histories
         for i in self.findChildren(QtWidgets.QListWidget):
             i.installEventFilter(self)
@@ -253,15 +268,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def ToggleRemapper(self):
         if self.Menubar_Main_Options_action_MathRemap.isChecked():
-            keyboard.block_key("altgr")
             altgr = "altgr+"
             altgrshift = "altgr+shift+"
-            for i in ART.KR_AltGr:
-                Key = altgr + i[0]
-                keyboard.add_hotkey(Key, keyboard.write, args=(i[1]), suppress=True)
-            for i in ART.KR_AltGrShift:
-                Key = altgrshift + i[0]
-                keyboard.add_hotkey(Key, keyboard.write, args=(i[1]), suppress=True)
+            #keyboard.add_hotkey("shift",keyboard.release, args=("altgr"),trigger_on_release=True)
+            #keyboard.block_key("AltGr")
+            #keyboard.add_hotkey("control+alt+altgr",keyboard.release, args=("altgr"), suppress=True)
+            #keyboard.add_hotkey("control+alt+altgr+shift",keyboard.release, args=("altgr+shift"), suppress=True)
+            for i in ART.KR_Map:
+                if i[2] != " ":
+                    Key = altgr + i[0]
+                    keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
+                if i[3] != " ":
+                    Key = altgrshift + i[0]
+                    keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
+        else:
+            keyboard.clear_all_hotkeys()
 
 
 
@@ -437,20 +458,42 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_2_F_Convert()
             return True
      # ---------------------------------- Remap Keys to allow for Math Unicode Symbol input ----------------------------------
-        if self.Menubar_Main_Options_action_MathRemap.isChecked() and False:    #DOES NOT WORK WITH QTableWidget
-            if event.type() == QtCore.QEvent.KeyPress : print(source)
-            if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
-                print(event.key(), event.text())
-                if event.key() == QtCore.Qt.Key_1 and event.text() in ["1","!"]:
-                    if event.modifiers() == GroupSwitchModifier or event.modifiers() == (ControlModifier | AltModifier):
-                        #event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="∫")
-                        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers(),text="2")#∫")
-                        self.MainApp.sendEvent(source,event)
-                        return True
-                    elif event.modifiers() == (GroupSwitchModifier | ShiftModifier) or event.modifiers() == (ControlModifier | AltModifier | ShiftModifier):
-                        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="₁")
-                        self.MainApp.sendEvent(source,event)
-                        return True
+        #if event.type() == QtCore.QEvent.KeyPress : print(event.key())
+        #if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
+        #    print("AltGr")
+        #    return True
+        #if self.Menubar_Main_Options_action_MathRemap.isChecked():    #DOES NOT WORK WITH QTableWidget
+        #    if event.type() == QtCore.QEvent.KeyPress and event.modifiers() == (ControlModifier | AltModifier):
+        #        print("AltGr")
+        #        return True
+        #    if event.type() == QtCore.QEvent.KeyPress : print(source)
+        #    if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
+        #        print(event.key(), event.text())
+        #        if event.key() == QtCore.Qt.Key_1 and event.text() in ["1","!"]:
+        #            if event.modifiers() == GroupSwitchModifier or event.modifiers() == (ControlModifier | AltModifier):
+        #                #event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="∫")
+        #                event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers(),text="2")#∫")
+        #                self.MainApp.sendEvent(source,event)
+        #                return True
+        #            elif event.modifiers() == (GroupSwitchModifier | ShiftModifier) or event.modifiers() == (ControlModifier | AltModifier | ShiftModifier):
+        #                event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="₁")
+        #                self.MainApp.sendEvent(source,event)
+        #                return True
+
+
+        #if self.Menubar_Main_Options_action_MathRemap.isChecked():    #DOES NOT WORK WITH QTableWidget
+        #    if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
+        #        print(0,event.key())
+        #        if event.key() == QtCore.Qt.Key_3:
+        #            print("1",event.key())
+        #            if event.text() in ["3","\"","₃"]:
+        #                print("2",event.key())
+        #                if event.modifiers() == (GroupSwitchModifier | ShiftModifier) or event.modifiers() == (ControlModifier | AltModifier | ShiftModifier):
+        #                    #event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="∫")
+        #                    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers(),text="2")#∫")
+        #                    print("3",event.key())
+        #                    self.MainApp.sendEvent(source,event)
+        #                    return True
      # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
         return super(MainWindow, self).eventFilter(source, event)
         

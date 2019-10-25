@@ -48,4 +48,12 @@ v0.11.2: Better LaTeX Parser, better Derivative Input and new Test-Method
 + When a function without a variable is differentiated it is assumed x for ' and t for the dot
 
 v0.11.2.1: Evalf for LaTeX
-+ Most inputs now use the Evalf Flag to decide whether to Evaluate when converting to LaTeX
++ Most inputs now use the Evalf Flag to decide whether to Evaluate when converting to 
+
+v0.12.0: Keyboard Remapper Beginning
++ AltGr+1 now types ∫ , AltGr+3 now types √ , AltGr+p now types π
++ AltGr+Shift+Number types the number as subscript
+
+v0.12.0.1: Streamlined Keyboard Remapper
++ Merged the two lists
++ Remapper is now Toggable
