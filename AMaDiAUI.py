@@ -391,12 +391,17 @@ class Ui_AMaDiA_Main_Window(object):
         self.Menubar_Main_Options_action_WindowStaysOnTop = QtWidgets.QAction(AMaDiA_Main_Window)
         self.Menubar_Main_Options_action_WindowStaysOnTop.setCheckable(True)
         self.Menubar_Main_Options_action_WindowStaysOnTop.setObjectName("Menubar_Main_Options_action_WindowStaysOnTop")
+        self.Menubar_Main_Options_action_MathRemap = QtWidgets.QAction(AMaDiA_Main_Window)
+        self.Menubar_Main_Options_action_MathRemap.setCheckable(True)
+        self.Menubar_Main_Options_action_MathRemap.setChecked(True)
+        self.Menubar_Main_Options_action_MathRemap.setObjectName("Menubar_Main_Options_action_MathRemap")
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Reload_Modules)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Advanced_Mode)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Eval_Functions)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_Syntax_Highlighter)
         self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_WindowStaysOnTop)
+        self.Menubar_Main_Options.addAction(self.Menubar_Main_Options_action_MathRemap)
         self.Menubar_Main.addAction(self.Menubar_Main_Options.menuAction())
 
         self.retranslateUi(AMaDiA_Main_Window)
@@ -509,5 +514,6 @@ class Ui_AMaDiA_Main_Window(object):
         self.Menubar_Main_Options_action_Syntax_Highlighter.setText(_translate("AMaDiA_Main_Window", "Syntax Highlighter"))
         self.Menubar_Main_Options_action_WindowStaysOnTop.setText(_translate("AMaDiA_Main_Window", "Try: Always on top"))
         self.Menubar_Main_Options_action_WindowStaysOnTop.setToolTip(_translate("AMaDiA_Main_Window", "Try to keep this window always in foreground"))
+        self.Menubar_Main_Options_action_MathRemap.setText(_translate("AMaDiA_Main_Window", "Use Mathematical Keyboard"))
 
 from AMaDiA_Widgets import LineEdit, MplWidget_2D_Plot, MplWidget_LaTeX, TextEdit

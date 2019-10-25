@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.11.2.1"
+Version = "0.12.0"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
 from distutils.spawn import find_executable
 import sys
-from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
+from PyQt5 import QtWidgets,QtCore,QtGui
 from PyQt5.Qt import QApplication, QClipboard
 import PyQt5.Qt as Qt
 import socket
@@ -29,6 +29,7 @@ from sympy.parsing.sympy_parser import parse_expr
 import importlib
 import re
 
+from keyboard_master import keyboard
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -51,6 +52,11 @@ import matplotlib
 from Test_Input import Test_Input
 
 
+AltModifier = QtCore.Qt.AltModifier
+ControlModifier = QtCore.Qt.ControlModifier
+GroupSwitchModifier = QtCore.Qt.GroupSwitchModifier
+ShiftModifier = QtCore.Qt.ShiftModifier
+
 
 class MainApp(QtWidgets.QApplication):
     def notify(self, obj, event): # Reimplementation of notify that does nothing other than redirecting to normal implementation for now...
@@ -69,6 +75,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.MainApp = MainApp
         self.setupUi(self)
         
+
         # Create Folders if not already existing
         self.CreateFolders()
         
@@ -109,14 +116,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
         
         # Set up context menus for the histories
-        self.Tab_1_History.installEventFilter(self)
-        self.Tab_2_History.installEventFilter(self)
-        self.Tab_3_History.installEventFilter(self)
-        self.Tab_5_History.installEventFilter(self)
-        self.Tab_5_Matrix_List.installEventFilter(self)
-        
-        # Set up other Event Handlers
-        self.Tab_2_InputField.installEventFilter(self)
+        for i in self.findChildren(QtWidgets.QListWidget):
+            i.installEventFilter(self)
+        # Set up text input related Event Handlers
+        for i in self.findChildren(QtWidgets.QTextEdit):
+            i.installEventFilter(self)
+        for i in self.findChildren(QtWidgets.QLineEdit):
+            i.installEventFilter(self)
+        for i in self.findChildren(QtWidgets.QTableWidget):
+            i.installEventFilter(self)
         
         # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
@@ -148,6 +156,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # A new variable that checks if the plot has already been used and if the LaTeX view has been used.
             # If the first is False and the seccond True than clear when the plot button is pressed and cjange the variables to ensure that this only happens once
             #       to not accidentially erase the plots of the user as this would be really bad...
+
+        self.ToggleRemapper()
         self.Tab_1_InputField.setFocus()
 
         
@@ -240,7 +250,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 if e.errno != errno.EEXIST:
                     AF.ExceptionOutput(sys.exc_info())
                     self.pathOK = False
-        
+
+    def ToggleRemapper(self):
+        if self.Menubar_Main_Options_action_MathRemap.isChecked():
+            keyboard.block_key("altgr")
+            altgr = "altgr+"
+            altgrshift = "altgr+shift+"
+            for i in ART.KR_AltGr:
+                Key = altgr + i[0]
+                keyboard.add_hotkey(Key, keyboard.write, args=(i[1]), suppress=True)
+            for i in ART.KR_AltGrShift:
+                Key = altgrshift + i[0]
+                keyboard.add_hotkey(Key, keyboard.write, args=(i[1]), suppress=True)
+
+
+
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
     def ReloadModules(self):
         AC.ReloadModules()
@@ -369,7 +393,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 #item = source.itemAt(event.pos())
                 #QApplication.clipboard().setText(item.data(100).Text)
             return True
-     # ---------------------------------- Tab 5 Matrix List Context Menu ----------------------------------
+     # ---------------------------------- Tab_5 Matrix List Context Menu ----------------------------------
         elif (event.type() == QtCore.QEvent.ContextMenu and
             (source is self.Tab_5_Matrix_List)and source.itemAt(event.pos())):
             menu = QtWidgets.QMenu()
@@ -383,13 +407,51 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action.triggered.connect(lambda: self.action_Tab_5_M_Delete(source,event))
             menu.exec_(event.globalPos())
             return True
-     # ---------------------------------- Other Events ----------------------------------
+     # ---------------------------------- LineEdit Events ----------------------------------
+        elif type(source) == AW.LineEdit:
+            if (event.type() == QtCore.QEvent.FontChange): # Rescale if font size changes
+                QTextEdFontMetrics =  QtGui.QFontMetrics(source.font())
+                source.QTextEdRowHeight = QTextEdFontMetrics.lineSpacing()+9
+                source.setFixedHeight(source.QTextEdRowHeight)
+            if (event.type() == QtCore.QEvent.KeyPress # Connects to returnPressed
+            and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
+                source.returnPressed.emit()
+                return True
+            if (event.type() == QtCore.QEvent.KeyPress # Move to beginning if up key pressed
+            and event.key() == QtCore.Qt.Key_Up):
+                cursor = source.textCursor()
+                cursor.movePosition(cursor.Start)
+                source.setTextCursor(cursor)
+                return True
+            if (event.type() == QtCore.QEvent.KeyPress # Move to end if down key pressed
+            and event.key() == QtCore.Qt.Key_Down):
+                cursor = source.textCursor()
+                cursor.movePosition(cursor.End)
+                source.setTextCursor(cursor)
+                return True
+     # ---------------------------------- Tab_2_InputField ----------------------------------
         elif (event.type() == QtCore.QEvent.KeyPress  # Tab_2_InputField: use crtl+return to convert
               and source is self.Tab_2_InputField # TODO: Maybe use return to convert and shift+return for new lines...
               and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
               and event.modifiers() == QtCore.Qt.ControlModifier):
             self.Tab_2_F_Convert()
             return True
+     # ---------------------------------- Remap Keys to allow for Math Unicode Symbol input ----------------------------------
+        if self.Menubar_Main_Options_action_MathRemap.isChecked() and False:    #DOES NOT WORK WITH QTableWidget
+            if event.type() == QtCore.QEvent.KeyPress : print(source)
+            if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
+                print(event.key(), event.text())
+                if event.key() == QtCore.Qt.Key_1 and event.text() in ["1","!"]:
+                    if event.modifiers() == GroupSwitchModifier or event.modifiers() == (ControlModifier | AltModifier):
+                        #event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="∫")
+                        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers(),text="2")#∫")
+                        self.MainApp.sendEvent(source,event)
+                        return True
+                    elif event.modifiers() == (GroupSwitchModifier | ShiftModifier) or event.modifiers() == (ControlModifier | AltModifier | ShiftModifier):
+                        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="₁")
+                        self.MainApp.sendEvent(source,event)
+                        return True
+     # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
         return super(MainWindow, self).eventFilter(source, event)
         
 

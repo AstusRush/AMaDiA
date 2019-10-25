@@ -755,6 +755,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
     <addaction name="Menubar_Main_Options_action_Syntax_Highlighter"/>
     <addaction name="Menubar_Main_Options_action_WindowStaysOnTop"/>
+    <addaction name="Menubar_Main_Options_action_MathRemap"/>
    </widget>
    <addaction name="Menubar_Main_Options"/>
   </widget>
@@ -814,6 +815,17 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="toolTip">
     <string>Try to keep this window always in foreground</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_MathRemap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Mathematical Keyboard</string>
    </property>
   </action>
  </widget>

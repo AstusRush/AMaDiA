@@ -1,0 +1,23 @@
+[run]
+branch = True
+
+[report]
+exclude_lines =
+    pragma: no cover
+
+    pass
+
+    def __repr__
+
+    raise NotImplementedError
+
+    if __name__ == .__main__.:
+
+    from. import
+
+    import 
+
+    except ImportError:
+
+[html]
+directory = coverage_html_report

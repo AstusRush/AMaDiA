@@ -307,7 +307,7 @@ class LineEdit(ATextEdit):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        self.installEventFilter(self)
+        #self.installEventFilter(self)
         # Connect Signals
         self.textChanged.connect(self.validateCharacters)
 
@@ -330,33 +330,6 @@ class LineEdit(ATextEdit):
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
 
-
-    def eventFilter(self, source, event):
-        if (event.type() == QtCore.QEvent.FontChange):
-            QTextEdFontMetrics =  QtGui.QFontMetrics(self.font())
-            self.QTextEdRowHeight = QTextEdFontMetrics.lineSpacing()+9
-            self.setFixedHeight(self.QTextEdRowHeight)
-        if (event.type() == QtCore.QEvent.KeyPress
-        and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
-            self.returnPressed.emit()
-            return True
-        if (event.type() == QtCore.QEvent.KeyPress
-        and event.key() == QtCore.Qt.Key_Up):
-            cursor = self.textCursor()
-            cursor.movePosition(cursor.Start)#.setPosition(0)
-            self.setTextCursor(cursor)
-            return True
-        if (event.type() == QtCore.QEvent.KeyPress
-        and event.key() == QtCore.Qt.Key_Down):
-            cursor = self.textCursor()
-            cursor.movePosition(cursor.End)#setPosition(self.document().characterCount()-1)
-            self.setTextCursor(cursor)
-            return True
-        try:
-            return super(LineEdit, self).eventFilter(source, event)
-        except AF.common_exceptions:
-            # Reloading the Modules causes a Problem...
-            return False
 
 class LineEditHighlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, document, Widget):
