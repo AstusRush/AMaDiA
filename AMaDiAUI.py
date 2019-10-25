@@ -447,7 +447,7 @@ class Ui_AMaDiA_Main_Window(object):
     def retranslateUi(self, AMaDiA_Main_Window):
         _translate = QtCore.QCoreApplication.translate
         AMaDiA_Main_Window.setWindowTitle(_translate("AMaDiA_Main_Window", "AMaDiA"))
-        self.TopBar_MathRemap_checkBox.setToolTip(_translate("AMaDiA_Main_Window", "Use (Shift+)AltGr+Key to type Mathematical Symbols"))
+        self.TopBar_MathRemap_checkBox.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.</p><p>Refer to AMaDiA_ReplacementTables for mapping.</p><p>This works for all inputs including those in other applications!</p><p>(This might cause problems with anti cheat systems in games. Use with care.)</p></body></html>"))
         self.TopBar_MathRemap_checkBox.setText(_translate("AMaDiA_Main_Window", "MathKeyboard"))
         self.TopBar_Font_Size_spinBox.setToolTip(_translate("AMaDiA_Main_Window", "Font Size"))
         self.Tab_1_InputField.setPlaceholderText(_translate("AMaDiA_Main_Window", "Enter something and hit return to calculate. Use crtl+return to not solve divisions, roots, etc."))

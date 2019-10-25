@@ -24,7 +24,7 @@
     <item row="0" column="0">
      <widget class="QCheckBox" name="TopBar_MathRemap_checkBox">
       <property name="toolTip">
-       <string>Use (Shift+)AltGr+Key to type Mathematical Symbols</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;/p&gt;&lt;p&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;/p&gt;&lt;p&gt;This works for all inputs including those in other applications!&lt;/p&gt;&lt;p&gt;(This might cause problems with anti cheat systems in games. Use with care.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>MathKeyboard</string>

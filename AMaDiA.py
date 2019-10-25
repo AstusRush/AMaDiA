@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0.3"
+Version = "0.12.0.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -288,6 +288,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 keyboard.clear_all_hotkeys()
         except AF.common_exceptions :
             AF.ExceptionOutput(sys.exc_info())
+            try:
+                print(i,Key)
+            except AF.common_exceptions :
+                pass
 
 
 
