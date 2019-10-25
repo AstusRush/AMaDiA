@@ -21,7 +21,46 @@
     <bool>true</bool>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0" colspan="2">
+    <item row="0" column="0">
+     <widget class="QCheckBox" name="TopBar_MathRemap_checkBox">
+      <property name="toolTip">
+       <string>Use (Shift+)AltGr+Key to type Mathematical Symbols</string>
+      </property>
+      <property name="text">
+       <string>MathKeyboard</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QSpinBox" name="TopBar_Font_Size_spinBox">
+      <property name="toolTip">
+       <string>Font Size</string>
+      </property>
+      <property name="minimum">
+       <number>5</number>
+      </property>
+      <property name="maximum">
+       <number>25</number>
+      </property>
+      <property name="value">
+       <number>9</number>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="0" colspan="4">
      <widget class="QTabWidget" name="tabWidget">
       <property name="autoFillBackground">
        <bool>true</bool>
@@ -705,32 +744,16 @@ p, li { white-space: pre-wrap; }
       </widget>
      </widget>
     </item>
-    <item row="0" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="0" column="1">
-     <widget class="QSpinBox" name="Font_Size_spinBox">
+     <widget class="QCheckBox" name="TopBar_Syntax_Highlighter_checkBox">
       <property name="toolTip">
-       <string>Font Size</string>
+       <string>Syntax Highlighter for Brackets</string>
       </property>
-      <property name="minimum">
-       <number>5</number>
+      <property name="text">
+       <string>Highlighter</string>
       </property>
-      <property name="maximum">
-       <number>25</number>
-      </property>
-      <property name="value">
-       <number>9</number>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -753,16 +776,14 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Advanced_Mode"/>
     <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
-    <addaction name="Menubar_Main_Options_action_Syntax_Highlighter"/>
     <addaction name="Menubar_Main_Options_action_WindowStaysOnTop"/>
-    <addaction name="Menubar_Main_Options_action_MathRemap"/>
    </widget>
    <addaction name="Menubar_Main_Options"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="Menubar_Main_Options_action_Reload_Modules">
    <property name="text">
-    <string>&amp;Reload Modules</string>
+    <string>&amp;Reload Modules (DEBUG)</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Advanced_Mode">
@@ -771,6 +792,9 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>&amp;Advanced Mode</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+A</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Eval_Functions">
@@ -783,6 +807,9 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string>&amp;Eval Functions</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+E</string>
+   </property>
   </action>
   <action name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display">
    <property name="checkable">
@@ -792,7 +819,10 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>&amp;Use Pretty LaTeX Display</string>
+    <string>Use Pretty &amp;LaTeX Display</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+L</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Syntax_Highlighter">
@@ -811,10 +841,13 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Try: Always on top</string>
+    <string>Try: Always on &amp;Top</string>
    </property>
    <property name="toolTip">
     <string>Try to keep this window always in foreground</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+T</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_MathRemap">
@@ -822,7 +855,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Use Mathematical Keyboard</string>
@@ -855,7 +888,7 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>Font_Size_spinBox</tabstop>
+  <tabstop>TopBar_Font_Size_spinBox</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>Tab_1_History</tabstop>
   <tabstop>Tab_1_InputField</tabstop>

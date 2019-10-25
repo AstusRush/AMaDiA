@@ -19,8 +19,6 @@ import importlib
 import types
 import time
 
-from keyboard_master import keyboard
-
 import numpy as np
 import scipy.integrate
 

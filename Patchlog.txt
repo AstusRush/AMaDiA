@@ -55,5 +55,9 @@ v0.12.0: Keyboard Remapper Beginning
 + AltGr+Shift+Number types the number as subscript
 
 v0.12.0.1: Streamlined Keyboard Remapper
-+ Merged the two lists
-+ Remapper is now Toggable
++ Merged the two Remap lists
+(+ Remapper is now Toggable) (Not really)
+
+v0.12.0.2: Bug Fix and Top Bar
++ The Remapper is now really Toggable
++ The Checkboxs for the Remapper and the Syntaxhighlighter are now in the bar where the Font Size Spinbox is to make them more accessible

@@ -38,7 +38,7 @@ def ReloadModules():
 
 # -----------------------------------------------------------------------------------------------------------------
 
-common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError)
+common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError)
 def ExceptionOutput(exc_info,extraInfo = True):
     try:
         print(cTimeSStr(),":")

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0.1"
+Version = "0.12.0.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -29,8 +29,6 @@ from sympy.parsing.sympy_parser import parse_expr
 import importlib
 import re
 
-from keyboard_master import keyboard
-
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
@@ -51,6 +49,10 @@ from matplotlib.figure import Figure
 import matplotlib
 from Test_Input import Test_Input
 
+try:
+    from keyboard_master import keyboard
+except AF.common_exceptions :
+    AF.ExceptionOutput(sys.exc_info())
 
 AltModifier = QtCore.Qt.AltModifier
 ControlModifier = QtCore.Qt.ControlModifier
@@ -172,17 +174,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # If the first is False and the seccond True than clear when the plot button is pressed and cjange the variables to ensure that this only happens once
             #       to not accidentially erase the plots of the user as this would be really bad...
 
-        self.ToggleRemapper()
         self.Tab_1_InputField.setFocus()
 
         
 # ---------------------------------- Init and Maintanance ----------------------------------
 
     def ConnectSignals(self):
-        self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
+        self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
-        self.Menubar_Main_Options_action_Syntax_Highlighter.triggered.connect(self.ToggleSyntaxHighlighter)
+        self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
         self.Menubar_Main_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
+        self.TopBar_MathRemap_checkBox.toggled.connect(self.ToggleRemapper)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
@@ -214,7 +216,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         
     def ChangeFontSize(self):
-        Size = self.Font_Size_spinBox.value()
+        Size = self.TopBar_Font_Size_spinBox.value()
         newFont = QtGui.QFont()
         newFont.setFamily("Arial")
         newFont.setPointSize(Size)
@@ -267,22 +269,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     self.pathOK = False
 
     def ToggleRemapper(self):
-        if self.Menubar_Main_Options_action_MathRemap.isChecked():
-            altgr = "altgr+"
-            altgrshift = "altgr+shift+"
-            #keyboard.add_hotkey("shift",keyboard.release, args=("altgr"),trigger_on_release=True)
-            #keyboard.block_key("AltGr")
-            #keyboard.add_hotkey("control+alt+altgr",keyboard.release, args=("altgr"), suppress=True)
-            #keyboard.add_hotkey("control+alt+altgr+shift",keyboard.release, args=("altgr+shift"), suppress=True)
-            for i in ART.KR_Map:
-                if i[2] != " ":
-                    Key = altgr + i[0]
-                    keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
-                if i[3] != " ":
-                    Key = altgrshift + i[0]
-                    keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
-        else:
-            keyboard.clear_all_hotkeys()
+        try:
+            if self.TopBar_MathRemap_checkBox.isChecked():
+                altgr = "altgr+"
+                altgrshift = "altgr+shift+"
+                #keyboard.add_hotkey("shift",keyboard.release, args=("altgr"),trigger_on_release=True)
+                #keyboard.block_key("AltGr")
+                #keyboard.add_hotkey("control+alt+altgr",keyboard.release, args=("altgr"), suppress=True)
+                #keyboard.add_hotkey("control+alt+altgr+shift",keyboard.release, args=("altgr+shift"), suppress=True)
+                for i in ART.KR_Map:
+                    if i[2] != " ":
+                        Key = altgr + i[0]
+                        keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
+                    if i[3] != " ":
+                        Key = altgrshift + i[0]
+                        keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
+            else:
+                keyboard.clear_all_hotkeys()
+        except AF.common_exceptions :
+            AF.ExceptionOutput(sys.exc_info())
 
 
 
@@ -303,7 +308,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ColourMain()
 
     def ToggleSyntaxHighlighter(self):
-        state = self.Menubar_Main_Options_action_Syntax_Highlighter.isChecked()
+        state = self.TopBar_Syntax_Highlighter_checkBox.isChecked()
         for i in self.findChildren(AW.ATextEdit):
             i.Highlighter.enabled = state
 
@@ -462,7 +467,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
         #    print("AltGr")
         #    return True
-        #if self.Menubar_Main_Options_action_MathRemap.isChecked():    #DOES NOT WORK WITH QTableWidget
+        #if self.TopBar_MathRemap_checkBox.isChecked():    #DOES NOT WORK WITH QTableWidget
         #    if event.type() == QtCore.QEvent.KeyPress and event.modifiers() == (ControlModifier | AltModifier):
         #        print("AltGr")
         #        return True
@@ -481,7 +486,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #                return True
 
 
-        #if self.Menubar_Main_Options_action_MathRemap.isChecked():    #DOES NOT WORK WITH QTableWidget
+        #if self.TopBar_MathRemap_checkBox.isChecked():    #DOES NOT WORK WITH QTableWidget
         #    if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
         #        print(0,event.key())
         #        if event.key() == QtCore.Qt.Key_3:
@@ -841,7 +846,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if part == "Normal":
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
             self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
-                                            ,self.Font_Size_spinBox.value(),self.TextColour
+                                            ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         elif part == "Evaluation":
@@ -849,7 +854,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.Convert_Evaluation_to_LaTeX()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
             self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                            ,self.Font_Size_spinBox.value(),self.TextColour
+                                            ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         
@@ -1188,7 +1193,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_Currently_Displayed = AMaS_Object.EvaluationEquation
         self.Tab_5_Currently_Displayed_Solution = AMaS_Object.Evaluation
         self.Tab_5_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                        ,self.Font_Size_spinBox.value(),self.TextColour
+                                        ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         
@@ -1207,7 +1212,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_Currently_Displayed = Text + str(Matrix)
         self.Tab_5_Currently_Displayed_Solution = str(Matrix)
         self.Tab_5_Display.Display(Text1,Text2
-                                        ,self.Font_Size_spinBox.value(),self.TextColour
+                                        ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
 
