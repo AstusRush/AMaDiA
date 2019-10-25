@@ -61,3 +61,7 @@ v0.12.0.1: Streamlined Keyboard Remapper
 v0.12.0.2: Bug Fix and Top Bar
 + The Remapper is now really Toggable
 + The Checkboxs for the Remapper and the Syntaxhighlighter are now in the bar where the Font Size Spinbox is to make them more accessible
+
+v0.12.0.3: Remapp Table Filled
++ The Remap Table is now filled with my costum layout for my Linux Laptop
+
