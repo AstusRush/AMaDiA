@@ -3,7 +3,6 @@ Calculator:
 	
 	
 LaTeX:
-	d(y(t))/dt=–λ·y(t)	Does not work!	Works: d(y(t))/dt=–y(t)·λ (kinda)
 	
 	
 Plot:

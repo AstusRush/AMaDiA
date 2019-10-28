@@ -230,10 +230,14 @@ def SPParseNoEval(expr,local_dict=None,evalf=True):
         ExceptionOutput(sys.exc_info())
 
 
-    if "evalf" in expr or evalf:
+    if "evalf" in expr:
         expr = expr.replace("evalf","",1)
         with sympy.evaluate(True):
             rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+    elif evalf:
+        expr = expr.replace("evalf","",1)
+        with sympy.evaluate(True):
+            rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
     else:
         try:
             with sympy.evaluate(False): # Breaks The calculator

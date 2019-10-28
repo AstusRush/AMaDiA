@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0.4"
+Version = "0.12.0.5"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -770,28 +770,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
     def TC(self,Thread): # Thread Creator: All new threads are created here
         ID = -1
-        for i,e in enumerate(self.ThreadList):
-            # This is not 100% clean but only Threats that have reported back should
-            #   leave the list and thus only those can be cleaned by pythons garbage collector while not completely done
-            #   These would cause a crash but are intercepted by notify to ensure stability
-            try:
-                running = e.isRunning()
-            except (RuntimeError,AttributeError):
-                running = False
-            if not running:
-                try:
-                    e.setTerminationEnabled(True)
-                    e.terminate()
-                    e.wait()
-                except (RuntimeError,AttributeError):
-                    pass
-                self.ThreadList.pop(i)
-                ID = i
-                self.ThreadList.insert(i,Thread(i))
-                break
-        if ID == -1:
-            ID = len(self.ThreadList)
-            self.ThreadList.append(Thread(ID))
+
+        # TODO: This causes a creash due to garbagecollector deleting thrads before they are properly done cleaning themselves up
+        #       but after they have claimed to be done cleaning up
+        #for i,e in enumerate(self.ThreadList):
+        #    # This is not 100% clean but only Threats that have reported back should
+        #    #   leave the list and thus only those can be cleaned by pythons garbage collector while not completely done
+        #    #   These would cause a crash but are intercepted by notify to ensure stability
+        #    try:
+        #        running = e.isRunning()
+        #    except (RuntimeError,AttributeError):
+        #        running = False
+        #    if not running:
+        #        try:
+        #            e.setTerminationEnabled(True)
+        #            e.terminate()
+        #            e.wait()
+        #        except (RuntimeError,AttributeError):
+        #            pass
+        #        self.ThreadList.pop(i)
+        #        ID = i
+        #        self.ThreadList.insert(i,Thread(i))
+        #        break
+        #if ID == -1:
+        #    ID = len(self.ThreadList)
+        #    self.ThreadList.append(Thread(ID))
+
+        # TODO: This causes a memory leak but is better than random crashes
+        ID = len(self.ThreadList)
+        self.ThreadList.append(Thread(ID))
+
+
         self.ThreadList[ID].Return.connect(self.TR)
         self.ThreadList[ID].start()
 
@@ -818,7 +827,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if TheInput == "RUNTEST":
             self.RUNTEST()
         else:
-            TheInput = re.sub("(?!\w)ans(?!\w)",self.ans,TheInput)
+            TheInput = re.sub(r"(?<!\w)ans(?!\w)",self.ans,TheInput)
             if TheInput == "len()":
                 TheInput = str(len(self.ThreadList))
             self.TC(lambda ID: AT.AMaS_Creator(self, TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))

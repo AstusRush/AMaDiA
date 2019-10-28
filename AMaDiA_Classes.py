@@ -190,6 +190,7 @@ class AMaS: # Astus' Mathematical Structure
 # ---------------------------------- Flags ----------------------------------
     def init_Flags(self):
         self.f_eval = True         # converted to floating-point approximations (decimal numbers)
+        self.f_eval_LaTeX = True   # If False prohibits all evaluation when converting to LaTeX
 
         # TODO : FOLLOWING NEED IMPLEMENTATION:
 
@@ -243,14 +244,14 @@ class AMaS: # Astus' Mathematical Structure
                         #self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
                         #with sympy.evaluate(False): # Breaks The calculator
                         #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
-                        expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval)
+                        expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                         self.LaTeX += sympy.latex(expr)
                     self.LaTeX += " = "
                 self.LaTeX = self.LaTeX[:-3]
             else:
                 #self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
                 #expr = parse_expr(self.cstr,evaluate=False,local_dict=self.VariablesUnev)
-                expr = AF.SPParseNoEval(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval)
+                expr = AF.SPParseNoEval(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                 self.LaTeX = sympy.latex(expr)
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
@@ -296,14 +297,14 @@ class AMaS: # Astus' Mathematical Structure
                         if len(j)>0:
                             #conv += sympy.latex( sympy.S(j,evaluate=False))
                             #expr = parse_expr(j,evaluate=False,local_dict=self.VariablesUnev)
-                            expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev,evalf=self.f_eval)
+                            expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                             conv += sympy.latex(expr)
                         conv += " = "
                     LineText += conv[:-3]
                 else:
                     #LineText += sympy.latex( sympy.S(e,evaluate=False))
                     #expr = parse_expr(e,evaluate=False,local_dict=self.VariablesUnev)
-                    expr = AF.SPParseNoEval(e,local_dict=self.VariablesUnev,evalf=self.f_eval)
+                    expr = AF.SPParseNoEval(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                     LineText = sympy.latex(expr)
             except AF.common_exceptions: #as inst:
                 AF.ExceptionOutput(sys.exc_info())
