@@ -75,3 +75,7 @@ v0.12.0.5: Bugfixes
 + Caused a memory leak to prevent random crashes as the memory leak is small enough to ignore it... which does not make me happy and is a temporary solution but I NEED to stop the crashes... I hate QThreads...
 + Disabled option to not eval when converting to LaTeX for now due to unexpected bugs in sympy library...
 
+v0.12.0.6: Bugfixes: Evaluate LaTeX
++ Reenabled Eval for LaTeX but gave it its own checkbox.
+++ When the tick is not set a script is run independently from AMaDiA to convert to LaTeX to ensure that "with sympy.evaluate(False):" does not mess up everything (since it behaves odd when used in multithreaded Programms)
+

@@ -4,6 +4,7 @@
 #     pass
 
 import sys
+import subprocess
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
 import socket
 import datetime
@@ -221,7 +222,7 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
 
 # -----------------------------------------------------------------------------------------------------------------
 
-def SPParseNoEval(expr,local_dict=None,evalf=True):
+def LaTeX(expr,local_dict=None,evalf=True):
     # This function parses a string into a sympy construct withou evaluating anything!
     
     try:
@@ -229,25 +230,33 @@ def SPParseNoEval(expr,local_dict=None,evalf=True):
     except common_exceptions:
         ExceptionOutput(sys.exc_info())
 
-
-    if "evalf" in expr:
-        expr = expr.replace("evalf","",1)
-        with sympy.evaluate(True):
+    try:
+        if "evalf" in expr:
+            expr = expr.replace("evalf","",1)
             rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
-    elif evalf:
-        expr = expr.replace("evalf","",1)
-        with sympy.evaluate(True):
+            rtnexpr = sympy.latex(rtnexpr)
+        elif evalf:
             rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
-    else:
-        try:
-            with sympy.evaluate(False): # Breaks The calculator
-                #help(sympy.evaluate)
+            rtnexpr = sympy.latex(rtnexpr)
+
+        else:
+            try:
+                Path = os.path.dirname(__file__)
+                if platform.system() == 'Windows':
+                    Path += r"\NoEvalParse.py"
+                elif platform.system() == 'Linux':
+                    Path += r"/NoEvalParse.py"
+                rtnexpr = subprocess.check_output([sys.executable, Path, expr])#, local_dict]) # TODO: Make local_dict work
+                rtnexpr = rtnexpr.decode("utf8")
+            except common_exceptions:
+                ExceptionOutput(sys.exc_info())
                 rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
-        except common_exceptions as Exc:
-            with sympy.evaluate(True):
-                rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict) # This reenables the evaluation if an exception occurs
-        with sympy.evaluate(True):
-            NOTrtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict) # This reenables the evaluation
+                rtnexpr = sympy.latex(rtnexpr)
+    except common_exceptions:
+        ExceptionOutput(sys.exc_info())
+        rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+        rtnexpr = sympy.latex(rtnexpr)
+    
     return rtnexpr
 
 def Matrix_Encaser(string):

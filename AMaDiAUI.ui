@@ -24,7 +24,7 @@
     <item row="0" column="0">
      <widget class="QCheckBox" name="TopBar_MathRemap_checkBox">
       <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;/p&gt;&lt;p&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;/p&gt;&lt;p&gt;This works for all inputs including those in other applications!&lt;/p&gt;&lt;p&gt;(This might cause problems with anti cheat systems in games. Use with care.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;This works for all inputs including those in other applications!&lt;br/&gt;(This might cause problems with anti cheat systems in games. Use with care.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>MathKeyboard</string>
@@ -100,7 +100,7 @@
         <string>LaTeX</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0" colspan="2">
+        <item row="0" column="0" colspan="3">
          <widget class="QSplitter" name="Tab_2_LowerSplitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -154,6 +154,16 @@
           </widget>
          </widget>
         </item>
+        <item row="1" column="2" rowspan="2">
+         <widget class="QPushButton" name="Tab_2_ConvertButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shortcut: crtl+return while having the Input field selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Convert</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0">
          <spacer name="Tab_2_horizontalSpacerForButton">
           <property name="orientation">
@@ -167,13 +177,16 @@
           </property>
          </spacer>
         </item>
-        <item row="1" column="1" rowspan="2">
-         <widget class="QPushButton" name="Tab_2_ConvertButton">
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="Tab_2_Eval_checkBox">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shortcut: crtl+return while having the Input field selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Evaluate Function:&lt;br/&gt;Controls if functions in the input should be evaluated.&lt;br/&gt;If unchecked some things (like Derivatives) might look weird&lt;/p&gt;&lt;p&gt;Example:&lt;br/&gt;Input: sin(pi)&lt;br/&gt;Output if checked: 0&lt;br/&gt;Output if unchecked: sin(pi)&lt;/p&gt;&lt;p&gt;Input: exp(ln(x))&lt;br/&gt;Output if checked: x&lt;br/&gt;Output if unchecked: exp(ln(x))&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Convert</string>
+           <string>Eval</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -806,6 +819,9 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>&amp;Eval Functions</string>
+   </property>
+   <property name="toolTip">
+    <string>If unchecked functions that would return a float are not evaluated to ensure readability</string>
    </property>
    <property name="shortcut">
     <string>Alt+E</string>

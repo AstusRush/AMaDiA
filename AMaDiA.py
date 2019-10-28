@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0.5"
+Version = "0.12.0.6"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -846,10 +846,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
 # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
-        Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+        EvalL = self.Tab_2_Eval_checkBox.isChecked()
         if type(Text) != str:
             Text = self.Tab_2_InputField.toPlainText()
-        self.TC(lambda ID: AT.AMaS_Creator(self, Text, self.Tab_2_F_Display,ID,Eval=Eval))
+        self.TC(lambda ID: AT.AMaS_Creator(self, Text, self.Tab_2_F_Display,ID,EvalL=EvalL))
         
         
     def Tab_2_F_Display(self , AMaS_Object , part = "Normal"):
@@ -1022,42 +1022,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TC(lambda ID: AT.AMaS_Creator(self,self.Tab_3_Formula_Field.text() , self.Tab_3_F_Sympy_Plot,ID))
         
     def Tab_3_F_Sympy_Plot(self , AMaS_Object):
-        with sympy.evaluate(True):
+        try:
+            x,y,z = sympy.symbols('x y z')
+            
+            temp = AMaS_Object.cstr
+            if AMaS_Object.cstr.count("=") == 1 :
+                temp1 , temp2 = AMaS_Object.cstr.split("=",1)
+                temp = "Eq("+temp1
+                temp += ","
+                temp += temp2
+                temp += ")"
+            temp = parse_expr(temp)
+            xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
+            if xmax < xmin:
+                xmax , xmin = xmin , xmax
+            xlims = (xmin , xmax)
+            ymin , ymax = self.Tab_3_YLim_min.value(), self.Tab_3_YLim_max.value()
+            if ymax < ymin:
+                ymax , ymin = ymin , ymax
+            ylims = (ymin , ymax)
+            if self.Tab_3_XLim_Check.isChecked() and self.Tab_3_YLim_Check.isChecked():
+                sympy.plot(temp , xlim = xlims , ylim = ylims)
+            elif self.Tab_3_XLim_Check.isChecked():
+                sympy.plot(temp , xlim = xlims)
+            elif self.Tab_3_YLim_Check.isChecked():
+                sympy.plot(temp , ylim = ylims)
+            else:
+                sympy.plot(temp)
+        except AF.common_exceptions: # TODO: plot_implicit uses other syntax for limits
             try:
-                x,y,z = sympy.symbols('x y z')
-                
-                temp = AMaS_Object.cstr
-                if AMaS_Object.cstr.count("=") == 1 :
-                    temp1 , temp2 = AMaS_Object.cstr.split("=",1)
-                    temp = "Eq("+temp1
-                    temp += ","
-                    temp += temp2
-                    temp += ")"
-                temp = parse_expr(temp)
-                xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
-                if xmax < xmin:
-                    xmax , xmin = xmin , xmax
-                xlims = (xmin , xmax)
-                ymin , ymax = self.Tab_3_YLim_min.value(), self.Tab_3_YLim_max.value()
-                if ymax < ymin:
-                    ymax , ymin = ymin , ymax
-                ylims = (ymin , ymax)
-                if self.Tab_3_XLim_Check.isChecked() and self.Tab_3_YLim_Check.isChecked():
-                    sympy.plot(temp , xlim = xlims , ylim = ylims)
-                elif self.Tab_3_XLim_Check.isChecked():
-                    sympy.plot(temp , xlim = xlims)
-                elif self.Tab_3_YLim_Check.isChecked():
-                    sympy.plot(temp , ylim = ylims)
-                else:
-                    sympy.plot(temp)
-            except AF.common_exceptions: # TODO: plot_implicit uses other syntax for limits
+                sympy.plot_implicit(temp)
+            except AF.common_exceptions:
                 try:
-                    sympy.plot_implicit(temp)
+                    sympy.plot_implicit(parse_expr(AMaS_Object.string))
                 except AF.common_exceptions:
-                    try:
-                        sympy.plot_implicit(parse_expr(AMaS_Object.string))
-                    except AF.common_exceptions:
-                        AF.ExceptionOutput(sys.exc_info())
+                    AF.ExceptionOutput(sys.exc_info())
 
 # ---------------------------------- Tab_4_ ??? ----------------------------------
         
@@ -1161,11 +1160,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         Matrix[i].append("0")
             # Convert list into Matrix and save it in the Equation
             if len(Matrix) == 1 and len(Matrix[0]) == 1:
-                with sympy.evaluate(True):
-                    Matrix = parse_expr(Matrix[0][0])
+                Matrix = parse_expr(Matrix[0][0])
             else:
-                with sympy.evaluate(True):
-                    Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
+                Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
             self.Tab_5_Active_Equation.AddVariable(Name,Matrix)
             
             # Preapare ListWidgetItem
@@ -1211,8 +1208,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                                         )
         
     def Tab_5_F_Display_Matrix(self,Name,Matrix):
-        with sympy.evaluate(True):
-            Text = sympy.latex(Matrix)
+        Text = sympy.latex(Matrix)
         Text += "$"
         Text1 = "$\\displaystyle"+Text
         Text2 = "$"+Text
