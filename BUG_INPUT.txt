@@ -6,6 +6,12 @@ LaTeX:
 	
 	
 Plot:
-	
+	x*exp(x)
+		Works in the SymPy Plotter
+		Does not work in the integrated plotter as lambdify seems to be broken???
+			The Array is structured like this:
+				each field is x*exp(Array) with x being the value for x and Array being the Array of all values for x
+					It is an array of arrays...
+		exp(x*ln(x)) works
 	
 	

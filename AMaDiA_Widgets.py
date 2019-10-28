@@ -276,6 +276,7 @@ class ATextEdit(QtWidgets.QTextEdit):
         QtWidgets.QTextEdit.__init__(self, parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
+        self.textChanged.connect(self.validateCharacters)
 
     def text(self):
         return self.toPlainText()
@@ -291,6 +292,31 @@ class ATextEdit(QtWidgets.QTextEdit):
         cursor = self.textCursor()
         curPos = cursor.position()
         self.document().contentsChange.emit(curPos,0,0)
+
+    def validateCharacters(self):
+        #vorbiddenChars = []
+        cursor = self.textCursor()
+        curPos = cursor.position()
+        Text = self.toPlainText()
+        found = 0
+        #for e in vorbiddenChars:
+        #    found += Text.count(e)
+        #    Text = Text.replace(e, '')
+
+        # Windows doesn't like to type the combining dot above or double dot. This is a fix for the behaviour that I observe on my PC
+        found += Text.count("\u005C\u0307")
+        Text = Text.replace("\u005C\u0307","\u0307")
+        found += Text.count("\u00BF\u0308")
+        Text = Text.replace("\u00BF\u0308","\u0308")
+        
+        self.blockSignals(True)
+        self.setText(Text)
+        self.blockSignals(False)
+        try:
+            cursor.setPosition(curPos-found)
+            self.setTextCursor(cursor)
+        except AF.common_exceptions:
+            AF.ExceptionOutput(sys.exc_info())
 
 class TextEdit(ATextEdit):
     def __init__(self, parent=None):
@@ -321,6 +347,7 @@ class LineEdit(ATextEdit):
         for e in vorbiddenChars:
             found += Text.count(e)
             Text = Text.replace(e, '')
+        
         self.blockSignals(True)
         self.setText(Text)
         self.blockSignals(False)
@@ -329,6 +356,7 @@ class LineEdit(ATextEdit):
             self.setTextCursor(cursor)
         except AF.common_exceptions:
             AF.ExceptionOutput(sys.exc_info())
+        super(LineEdit, self).validateCharacters()
 
 
 class LineEditHighlighter(QtGui.QSyntaxHighlighter):

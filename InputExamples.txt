@@ -1,4 +1,8 @@
 Calculator Examples:
+	Equations with unknown Variables:
+		s^3+5s^2+8s+4=0
+			To get the multiplicity of the solutions use: roots(s^3+5s^2+8s+4)
+		x²+3x-4=0
 	Integrals:
 		integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))),(x,0,pi/2))
 			Alternatively:	integrate{(0)(pi/2)} sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))) dx

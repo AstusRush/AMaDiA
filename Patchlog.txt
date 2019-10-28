@@ -79,3 +79,6 @@ v0.12.0.6: Bugfixes: Evaluate LaTeX
 + Reenabled Eval for LaTeX but gave it its own checkbox.
 ++ When the tick is not set a script is run independently from AMaDiA to convert to LaTeX to ensure that "with sympy.evaluate(False):" does not mess up everything (since it behaves odd when used in multithreaded Programms)
 
+v0.12.0.7: Bugfix: Combining dot above for Windows
++ fixed the keyboardremap for the combining dots above for ATextEdit and derived Classes. It is still broken in all other cases since Windows is stupid...
+
