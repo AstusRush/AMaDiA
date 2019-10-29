@@ -16,13 +16,17 @@ Feedback is welcome<br/>
 Suggestions are welcome<br/>
 Requests are welcome<br/>
 <br/><br/>
-Screenshot from Version 0.2.1<br/>
+Screenshot from the very old Version 0.2.1<br/>
 <img src="/AMaDiA v0.2.1 Demo.png" alt="Demo Picture"/>
 <br/><br/>
-Planned features for near future (in approximately this order):<br/>
-- Better parser to allow a more flexible input<br/>
+Planned features for near future (order reflects priority):<br/>
+- Make a new Demo Screenshot since the 0.2.1 is quite outdated<br/>
+- Make Tab 4 even easier to use<br/>
 - Differential equations<br/>
 - Plot complex functions<br/>
+- Better parser to allow a more flexible input<br/>
 - Simple Texteditor<br/>
 - Save/load the history<br/>
+- Allow the user to change the Font<br/>
+- Allow the user to change the colour<br/>
 - Unit converter<br/>

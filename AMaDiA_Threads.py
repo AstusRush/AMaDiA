@@ -56,8 +56,8 @@ class AMaS_Creator(QtCore.QThread):
             self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
         self.exiting = True
         self.exit()
-        self.quit()
-        self.deleteLater()
+        #self.quit()
+        #self.deleteLater()
         
 """Usage: only replace __***__
 self.TC(lambda ID: AT.AMaS_Creator(self, __Text__ , self.__Return_to_Method__ ,ID))
@@ -83,8 +83,8 @@ class AMaS_Thread(QtCore.QThread):
             self.ReturnError.emit(self.AMaS_Object , Success , self.Return_Function , self.ID)
         self.exiting = True
         self.exit()
-        self.quit()
-        self.deleteLater()
+        #self.quit()
+        #self.deleteLater()
         
         
 """Usage: only replace __***__

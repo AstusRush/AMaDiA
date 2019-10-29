@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0.7"
+Version = "0.12.0.8"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -121,15 +121,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("AMaDiA" , WindowTitle))
-        self.TextColour = (215/255, 213/255, 201/255)
         
-        # Setup the graphic displays:
-        self.Tab_3_Display.canvas.ax.spines['bottom'].set_color(self.TextColour)
-        self.Tab_3_Display.canvas.ax.spines['left'].set_color(self.TextColour)
-        self.Tab_3_Display.canvas.ax.xaxis.label.set_color(self.TextColour)
-        self.Tab_3_Display.canvas.ax.yaxis.label.set_color(self.TextColour)
-        self.Tab_3_Display.canvas.ax.tick_params(axis='x', colors=self.TextColour)
-        self.Tab_3_Display.canvas.ax.tick_params(axis='y', colors=self.TextColour)
         
         self.installEventFilter(self)
         # Set up context menus for the histories
@@ -150,7 +142,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         # Run other init methods
         self.ConnectSignals()
-        self.ColourMain()
+        self.Colour_Font_Init()
         self.OtherContextMenuSetup()
         self.InstallSyntaxHighlighter()
 
@@ -206,13 +198,52 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_2_New_Equation_Name_Input.returnPressed.connect(self.Tab_5_F_New_Equation)
         self.Tab_5_2_Load_Selected_Button.clicked.connect(self.Tab_5_F_Load_Selected_Equation)
     
-    def ColourMain(self):
-        palette = AMaDiA_Colour.palette()
+    def Colour_Font_Init(self):
+        self.FontFamily = "Arial"
+        palette,BG,FG = AMaDiA_Colour.Dark()
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(9)
         self.setFont(font)
         self.setPalette(palette)
+        self.BG_Colour = BG
+        self.TextColour = FG
+        for i in self.findChildren(AW.MplWidget):
+            i.SetColour(self.BG_Colour, self.TextColour)
+
+    def SetFont(self,Family = None, PointSize = 0):
+        if Family == None:
+            Family = self.FontFamily
+        else:
+            self.FontFamily = Family
+        if type(PointSize) == str:
+            PointSize = int(PointSize)
+        if PointSize <= 5:
+            PointSize = self.TopBar_Font_Size_spinBox.value()
+        else:
+            # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
+            # If the new Value is the same it is NOT emited.
+            # To ensure thatthis behaves correctly either way the signals are blocked while changeing the Value.
+            self.TopBar_Font_Size_spinBox.blockSignals(True)
+            self.TopBar_Font_Size_spinBox.setValue(PointSize)
+            self.TopBar_Font_Size_spinBox.blockSignals(False)
+        
+        font = QtGui.QFont()
+        font.setFamily(Family)
+        font.setPointSize(PointSize)
+        self.setFont(font)
+
+
+    def Recolour(self, Colour = "Dark"):
+        if Colour == "Dark":
+            palette,BG,FG = AMaDiA_Colour.Dark()
+        elif Colour == "Bright":
+            palette,BG,FG = AMaDiA_Colour.Bright()
+        self.setPalette(palette)
+        self.BG_Colour = BG
+        self.TextColour = FG
+        for i in self.findChildren(AW.MplWidget):
+            i.SetColour(self.BG_Colour, self.TextColour)
         
         
     def ChangeFontSize(self):
@@ -666,7 +697,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Filename += ".png"
             try:
                 print(Filename)
-                self.Tab_3_Display.canvas.fig.savefig(Filename , facecolor=AF.background_Colour , edgecolor=AF.background_Colour )
+                self.Tab_3_Display.canvas.fig.savefig(Filename , facecolor=self.BG_Colour , edgecolor=self.BG_Colour )
             except:
                 AF.ExceptionOutput(sys.exc_info())
         else:
@@ -859,7 +890,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if part == "Normal":
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
             self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
-                                            ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
+                                            ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         elif part == "Evaluation":
@@ -867,7 +898,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.Convert_Evaluation_to_LaTeX()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
             self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                            ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
+                                            ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         
@@ -1203,7 +1234,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_Currently_Displayed = AMaS_Object.EvaluationEquation
         self.Tab_5_Currently_Displayed_Solution = AMaS_Object.Evaluation
         self.Tab_5_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                        ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
+                                        ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         
@@ -1221,7 +1252,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_Currently_Displayed = Text + str(Matrix)
         self.Tab_5_Currently_Displayed_Solution = str(Matrix)
         self.Tab_5_Display.Display(Text1,Text2
-                                        ,self.TopBar_Font_Size_spinBox.value(),self.TextColour
+                                        ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
 

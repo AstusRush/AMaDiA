@@ -29,12 +29,20 @@ def ReloadModules():
     importlib.reload(ART)
 
 
-# 10.07.2019 from https://stackoverflow.com/questions/43947318/plotting-matplotlib-figure-inside-qwidget-using-qt-designer-form-and-pyqt5?noredirect=1&lq=1
 # Use MplWidget for things that have a matplot output
 # Ensure using PyQt5 backend
 matplotlib.use('QT5Agg')
 
 # Matplotlib canvas class to create figure
+
+class MplWidget(QtWidgets.QWidget):
+    def SetColour(self,BG,FG):
+        self.background_Colour = BG
+        self.TextColour = FG
+        self.canvas.fig.set_facecolor(self.background_Colour)
+        self.canvas.ax.set_facecolor(self.background_Colour)
+
+
 class MplCanvas_2D_Plot(Canvas):
     def __init__(self):
         #plt.style.use('dark_background')
@@ -50,7 +58,8 @@ class MplCanvas_2D_Plot(Canvas):
         Canvas.updateGeometry(self)
 
 # Matplotlib widget
-class MplWidget_2D_Plot(QtWidgets.QWidget):
+class MplWidget_2D_Plot(MplWidget):
+    # Inspired by https://stackoverflow.com/questions/43947318/plotting-matplotlib-figure-inside-qwidget-using-qt-designer-form-and-pyqt5?noredirect=1&lq=1 from 10.07.2019
     def __init__(self, parent=None):
 #        super(MplWidget, self).__init__(parent)
         QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
@@ -59,6 +68,14 @@ class MplWidget_2D_Plot(QtWidgets.QWidget):
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
         
+    def SetColour(self,BG,FG):
+        super(MplWidget_2D_Plot, self).SetColour(BG,FG)
+        self.canvas.ax.spines['bottom'].set_color(self.TextColour)
+        self.canvas.ax.spines['left'].set_color(self.TextColour)
+        self.canvas.ax.xaxis.label.set_color(self.TextColour)
+        self.canvas.ax.yaxis.label.set_color(self.TextColour)
+        self.canvas.ax.tick_params(axis='x', colors=self.TextColour)
+        self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
     
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
@@ -99,7 +116,7 @@ class MplCanvas_LaTeX(Canvas):
         #Canvas.setSizePolicy(self, QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         #Canvas.updateGeometry(self)
 
-class MplWidget_LaTeX(QtWidgets.QWidget):
+class MplWidget_LaTeX(MplWidget):
     def __init__(self, parent=None):
 #        super(MplWidget, self).__init__(parent)
         QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
@@ -129,10 +146,13 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
         plt.rc('text', usetex=TheBool)
         return matplotlib.rcParams['text.usetex']
     
-    def Display(self,Text_L,Text_N,Font_Size,TextColour,Use_LaTeX = False):
+    def Display(self,Text_L,Text_N,Font_Size,background_Colour,TextColour,Use_LaTeX = False):
         self.Text = Text_L
         self.Font_Size = Font_Size * 2
         self.TextColour = TextColour
+        self.background_Colour = background_Colour
+        self.canvas.fig.set_facecolor(self.background_Colour)
+        self.canvas.ax.set_facecolor(self.background_Colour)
         #-----------IMPORTANT-----------
         if Use_LaTeX:
             self.Text = Text_L
@@ -160,7 +180,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                       verticalalignment='top',
                       fontsize=self.Font_Size,
                       color = self.TextColour
-                      ,bbox=dict(boxstyle="round", facecolor=AF.background_Colour,
+                      ,bbox=dict(boxstyle="round", facecolor=self.background_Colour,
                       ec="0.1", pad=0.1, alpha=0)
                       )
                       
@@ -173,7 +193,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                       verticalalignment='top',
                       fontsize=self.Font_Size,
                       color = self.TextColour
-                      ,bbox=dict(boxstyle="round", facecolor=AF.background_Colour,
+                      ,bbox=dict(boxstyle="round", facecolor=self.background_Colour,
                       ec="0.1", pad=0.1, alpha=0)
                       )
         """
@@ -186,7 +206,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                       verticalalignment='top',
                       fontsize=self.Font_Size,
                       color = self.TextColour
-                      ,bbox=dict(boxstyle="round", facecolor=AF.background_Colour,
+                      ,bbox=dict(boxstyle="round", facecolor=self.background_Colour,
                       ec="0.1", pad=0.1, alpha=0)
                       )
         """
@@ -210,7 +230,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                       verticalalignment='top',
                       fontsize=self.Font_Size,
                       color = self.TextColour
-                      ,bbox=dict(boxstyle="round", facecolor=AF.background_Colour,
+                      ,bbox=dict(boxstyle="round", facecolor=self.background_Colour,
                       ec="0.1", pad=0.1, alpha=0)
                       )
             self.canvas.ax.axis('off')
@@ -232,7 +252,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                           verticalalignment='top',
                           fontsize=self.Font_Size,
                           color = self.TextColour
-                          ,bbox=dict(boxstyle="round", facecolor=AF.background_Colour,
+                          ,bbox=dict(boxstyle="round", facecolor=self.background_Colour,
                           ec="0.1", pad=0.1, alpha=0)
                           )
                 self.canvas.ax.axis('off')
@@ -257,7 +277,7 @@ class MplWidget_LaTeX(QtWidgets.QWidget):
                             verticalalignment='top',
                             fontsize=self.Font_Size,
                             color = self.TextColour
-                            ,bbox=dict(boxstyle="round", facecolor=AF.background_Colour,
+                            ,bbox=dict(boxstyle="round", facecolor=self.background_Colour,
                             ec="0.1", pad=0.1, alpha=0)
                             )
                     self.canvas.ax.axis('off')

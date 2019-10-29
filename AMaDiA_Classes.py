@@ -388,7 +388,15 @@ class AMaS: # Astus' Mathematical Structure
  # ---------------------------------- Calculator Methods ----------------------------------
 
 
-    def Evaluate(self):
+    def Evaluate(self, Method=0):
+        if Method==0:
+            return self.Evaluate_SymPy()
+        if Method==1:
+            return self.Evaluate_()
+
+
+
+    def Evaluate_SymPy(self):
         #TODO:CALCULATE MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
@@ -614,6 +622,10 @@ class AMaS: # Astus' Mathematical Structure
         else:
             return True
             
+
+    def Evaluate_(self):
+        # Placeholder
+        return True
             
  # ---------------------------------- 2D Plotter Methods ----------------------------------
             

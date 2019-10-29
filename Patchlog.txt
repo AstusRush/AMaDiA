@@ -82,3 +82,6 @@ v0.12.0.6: Bugfixes: Evaluate LaTeX
 v0.12.0.7: Bugfix: Combining dot above for Windows
 + fixed the keyboardremap for the combining dots above for ATextEdit and derived Classes. It is still broken in all other cases since Windows is stupid...
 
+v0.12.0.8: Preparation for Colour Changing
++ Restructured everything about Colours and Fonts in preparation to make these things changeable during runtime
+

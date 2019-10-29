@@ -13,5 +13,6 @@ Plot:
 				each field is x*exp(Array) with x being the value for x and Array being the Array of all values for x
 					It is an array of arrays...
 		exp(x*ln(x)) works
+		exp(x+ln(x)) ( = x*exp(x) ) does not work...
 	
 	
