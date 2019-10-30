@@ -222,7 +222,7 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
 
 # -----------------------------------------------------------------------------------------------------------------
 
-def LaTeX(expr,local_dict=None,evalf=True):
+def LaTeX(expr,local_dict=None,evalf=1):
     # This function parses a string into a sympy construct withou evaluating anything!
     
     try:
@@ -231,11 +231,11 @@ def LaTeX(expr,local_dict=None,evalf=True):
         ExceptionOutput(sys.exc_info())
 
     try:
-        if "evalf" in expr:
+        if evalf == 2:
             expr = expr.replace("evalf","",1)
             rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
             rtnexpr = sympy.latex(rtnexpr)
-        elif evalf:
+        elif evalf == 1:
             rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
             rtnexpr = sympy.latex(rtnexpr)
 

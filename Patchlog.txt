@@ -85,3 +85,11 @@ v0.12.0.7: Bugfix: Combining dot above for Windows
 v0.12.0.8: Preparation for Colour Changing
 + Restructured everything about Colours and Fonts in preparation to make these things changeable during runtime
 
+v0.12.0.9: LaTeX Eval Tristate
++ The Eval checkbox on the LaTeX tab is now tristate:
+++ Do not evaluate everything
+++ Evaluate some things
+++ Set Evaluate=True when parsing with SymPy
++ Fixed a bug that cauused a crsh when plotting fails
++ The Advanced Mode now allows you to try to plot everything from all tabs
+

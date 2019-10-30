@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0.8"
+Version = "0.12.0.9"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -117,6 +117,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Initialize important variables and lists
         self.ans = "1"
         self.ThreadList = []
+        self.Tab_2_Eval_checkBox.setCheckState(1)
+        #QtWidgets.QCheckBox.setCheckState(1)
         
         
         _translate = QtCore.QCoreApplication.translate
@@ -439,6 +441,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
             if source.itemAt(event.pos()).data(100).plottable :
                 action = menu.addAction('New Plot')
+                action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+            elif self.Menubar_Main_Options_action_Advanced_Mode.isChecked() :
+                action = menu.addAction('+ New Plot')
                 action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
             if source.itemAt(event.pos()).data(100).plot_data_exists and self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
                 menu.addSeparator()

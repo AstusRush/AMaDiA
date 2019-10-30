@@ -51,7 +51,7 @@ IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_ODE, Iam_Multi_Dim]
 class AMaS: # Astus' Mathematical Structure
 
  # ---------------------------------- INIT ----------------------------------
-    def __init__(self, string, Iam, EvalL = True):
+    def __init__(self, string, Iam, EvalL = 1):
         self.Input = string
         self.TimeStamp = AF.cTimeSStr()
         self.TimeStampFull = AF.cTimeFullStr()
@@ -189,7 +189,8 @@ class AMaS: # Astus' Mathematical Structure
 # ---------------------------------- Flags ----------------------------------
     def init_Flags(self):
         self.f_eval = True         # converted to floating-point approximations (decimal numbers)
-        self.f_eval_LaTeX = True   # If False prohibits all evaluation when converting to LaTeX
+        self.f_eval_LaTeX = 1      # If 0 prohibits all evaluation when converting to LaTeX
+                                   # If 2 Allows most Evaluation
 
         # TODO : FOLLOWING NEED IMPLEMENTATION:
 

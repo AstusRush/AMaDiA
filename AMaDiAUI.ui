@@ -180,12 +180,15 @@
         <item row="1" column="1">
          <widget class="QCheckBox" name="Tab_2_Eval_checkBox">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Evaluate Function:&lt;br/&gt;Controls if functions in the input should be evaluated.&lt;br/&gt;If unchecked some things (like Derivatives) might look weird&lt;/p&gt;&lt;p&gt;Example:&lt;br/&gt;Input: sin(pi)&lt;br/&gt;Output if checked: 0&lt;br/&gt;Output if unchecked: sin(pi)&lt;/p&gt;&lt;p&gt;Input: exp(ln(x))&lt;br/&gt;Output if checked: x&lt;br/&gt;Output if unchecked: exp(ln(x))&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Evaluate Function:&lt;br/&gt;Controls if functions in the input should be evaluated.&lt;br/&gt;If unchecked some things (like Derivatives) might look weird.&lt;br/&gt;If half-checked only basic functions will be evaluated and only if they return integers&lt;br/&gt;If checked most things will be evaluated&lt;/p&gt;&lt;p&gt;Example:&lt;br/&gt;Input: sin(pi)&lt;br/&gt;Output if half-checked: 0&lt;br/&gt;Output if unchecked: sin(pi)&lt;/p&gt;&lt;p&gt;Input: exp(ln(x))&lt;br/&gt;Output if half-checked: x&lt;br/&gt;Output if unchecked: exp(ln(x))&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Eval</string>
           </property>
           <property name="checked">
+           <bool>true</bool>
+          </property>
+          <property name="tristate">
            <bool>true</bool>
           </property>
          </widget>
@@ -285,7 +288,7 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>234</width>
+                       <width>218</width>
                        <height>310</height>
                       </rect>
                      </property>
@@ -581,7 +584,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>578</width>
-                <height>329</height>
+                <height>327</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -778,7 +781,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>906</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="Menubar_Main_Options">
