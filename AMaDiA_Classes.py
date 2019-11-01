@@ -65,8 +65,8 @@ class AMaS: # Astus' Mathematical Structure
         try:
             self.INIT_WhatAmI(string)
         except AF.common_exceptions :
-            AF.ExceptionOutput(sys.exc_info())
-            self.Exists = False
+            Error = AF.ExceptionOutput(sys.exc_info())
+            self.Exists = Error
         else:
             self.Exists = True
     
@@ -356,11 +356,11 @@ class AMaS: # Astus' Mathematical Structure
                         expr = parse_expr(self.Evaluation,evaluate=False,local_dict=self.Variables)
                         self.LaTeX_E = sympy.latex(expr)
                 except AF.common_exceptions:
-                    AF.ExceptionOutput(sys.exc_info())
+                    Error = AF.ExceptionOutput(sys.exc_info())
                     self.LaTeX_E = "Could not convert"
                     self.LaTeX_E_L += self.LaTeX_E
                     self.LaTeX_E_N += self.LaTeX_E
-                    return False
+                    return Error
             self.LaTeX_E_L = "$\displaystyle"
             self.LaTeX_E_N = "$"
             self.LaTeX_E_L += self.LaTeX_E
@@ -368,8 +368,8 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_E_L += "$"
             self.LaTeX_E_N += "$"
         except AF.common_exceptions: #as inst:
-            AF.ExceptionOutput(sys.exc_info())
-            return False
+            Error = AF.ExceptionOutput(sys.exc_info())
+            return Error
         return True
         
     
@@ -561,12 +561,12 @@ class AMaS: # Astus' Mathematical Structure
             ans = ans.evalf()
             self.Evaluation = str(ans)
         except AF.common_exceptions: #as inst:
-            AF.ExceptionOutput(sys.exc_info())
+            Error = AF.ExceptionOutput(sys.exc_info())
             #print(inst.args)
             #if callable(inst.args):
             #    print(inst.args())
             self.Evaluation = "Fail"
-            return False
+            return Error
         return True
 
     def Solve_ODE_Version_1(self):
@@ -652,9 +652,9 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables)
             except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
+                Error = AF.ExceptionOutput(sys.exc_info())
                 self.plottable = False
-                return False
+                return Error
             try:
                 Function = Function.doit()
             except AF.common_exceptions: #as inst:
@@ -724,13 +724,13 @@ class AMaS: # Astus' Mathematical Structure
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             raise Exception("Dimensions do not match")
                 except AF.common_exceptions: #as inst:
-                    AF.ExceptionOutput(sys.exc_info())
-                    return False
+                    Error = AF.ExceptionOutput(sys.exc_info())
+                    return Error
                     
             self.plot_data_exists = True
             return True
         else:
-            return False
+            return "Not Plotable"
 
 
  # ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------

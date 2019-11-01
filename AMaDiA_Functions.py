@@ -49,7 +49,7 @@ def ExceptionOutput(exc_info,extraInfo = True):
             print(exc_type, " in", fname, " line", exc_tb.tb_lineno ,": ", exc_obj)
         else:
             print(exc_type, " in", fname, " line", exc_tb.tb_lineno)
-        return str(exc_obj)
+        return str(exc_type)+": "+str(exc_obj)
     except common_exceptions:
         print("An exception occured while trying to print an exception!")
 

@@ -90,6 +90,11 @@ v0.12.0.9: LaTeX Eval Tristate
 ++ Do not evaluate everything
 ++ Evaluate some things
 ++ Set Evaluate=True when parsing with SymPy
-+ Fixed a bug that cauused a crsh when plotting fails
++ Fixed a bug that caused a crash when plotting fails
 + The Advanced Mode now allows you to try to plot everything from all tabs
+
+v0.12.1: Exception Notification
++ When an Error occurs the user is now notified in the main window and gets a short description as a tooltip when hovering over the message
+++ Only the most recent Error, Warning or Notification is displayed. For older Errors and warning look in the console.
+++ Not all exceptions are displayed in the main window. For all exceptions and more details you still have to look in the console.
 

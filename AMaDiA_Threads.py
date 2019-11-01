@@ -37,6 +37,7 @@ def ReloadModules():
 #------------------------------------------------------------------------------
 
 class AMaS_Creator(QtCore.QThread):
+    ReturnError = QtCore.pyqtSignal(AC.AMaS , str , types.MethodType , int)
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int , int)
     def __init__(self, Parent, Text, Return_Function, ID, Eval=None, EvalL=1, Iam = AC.Iam_Normal):
         QtCore.QThread.__init__(self, Parent)
@@ -52,8 +53,10 @@ class AMaS_Creator(QtCore.QThread):
         
     def run(self):
         self.AMaS_Object = AC.AMaS(self.Text, self.Iam, EvalL=self.EvalL)
-        if self.AMaS_Object.Exists:
+        if self.AMaS_Object.Exists == True:
             self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
+        else:
+            self.ReturnError = QtCore.pyqtSignal(self.AMaS_Object , self.AMaS_Object.Exists , self.Return_Function , self.ID)
         self.exiting = True
         self.exit()
         #self.quit()
@@ -65,7 +68,7 @@ self.TC(lambda ID: AT.AMaS_Creator(self, __Text__ , self.__Return_to_Method__ ,I
 #------------------------------------------------------------------------------
 
 class AMaS_Thread(QtCore.QThread):
-    ReturnError = QtCore.pyqtSignal(AC.AMaS , str , types.MethodType , int) #TODO: Connect this in AMaDiA. Maybe set the string as the tooltip?
+    ReturnError = QtCore.pyqtSignal(AC.AMaS , str , types.MethodType , int)
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
     def __init__(self, Parent, AMaS_Object, AMaS_Function, Return_Function, ID):
         QtCore.QThread.__init__(self, Parent)

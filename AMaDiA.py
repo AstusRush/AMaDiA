@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.0.9"
+Version = "0.12.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -84,9 +84,9 @@ class MainApp(QtWidgets.QApplication):
     #    return super(MainApp, self).eventFilter(source, event)
 
 
-class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
+class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def __init__(self,MainApp, parent = None):
-        super(MainWindow, self).__init__(parent)
+        super(AMaDiA_Main_Window, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
         self.MainApp = MainApp
         self.setupUi(self)
@@ -147,6 +147,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Colour_Font_Init()
         self.OtherContextMenuSetup()
         self.InstallSyntaxHighlighter()
+        self.INIT_Animation()
 
         # Initialize the first equation in Tab 4
         self.Tab_5_2_New_Equation_Name_Input.setText("Equation 1")
@@ -202,16 +203,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     
     def Colour_Font_Init(self):
         self.FontFamily = "Arial"
-        palette,BG,FG = AMaDiA_Colour.Dark()
+        self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(9)
         self.setFont(font)
-        self.setPalette(palette)
-        self.BG_Colour = BG
-        self.TextColour = FG
+        self.setPalette(self.Palette)
+        #self.Palette = palette
+        #self.BG_Colour = BG
+        #self.TextColour = FG
         for i in self.findChildren(AW.MplWidget):
             i.SetColour(self.BG_Colour, self.TextColour)
+
+        #self.Error_Palette = AMaDiA_Colour.Red_ERROR()[0] # Currently not in use
 
     def SetFont(self,Family = None, PointSize = 0):
         if Family == None:
@@ -238,12 +242,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def Recolour(self, Colour = "Dark"):
         if Colour == "Dark":
-            palette,BG,FG = AMaDiA_Colour.Dark()
+            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
         elif Colour == "Bright":
-            palette,BG,FG = AMaDiA_Colour.Bright()
-        self.setPalette(palette)
-        self.BG_Colour = BG
-        self.TextColour = FG
+            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Bright()
+        self.setPalette(self.Palette)
+        #self.Palette = palette
+        #self.BG_Colour = BG
+        #self.TextColour = FG
         for i in self.findChildren(AW.MplWidget):
             i.SetColour(self.BG_Colour, self.TextColour)
         
@@ -261,6 +266,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def InstallSyntaxHighlighter(self):
         #self.Tab_1_InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1_InputField.document())
         pass
+
+    def INIT_Animation(self):
+        self.init_ErrorFlash()
         
     def CreateFolders(self):
         self.pathOK = False
@@ -320,13 +328,83 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             else:
                 keyboard.clear_all_hotkeys()
         except AF.common_exceptions :
-            AF.ExceptionOutput(sys.exc_info())
+            Error = AF.ExceptionOutput(sys.exc_info())
+            self.Error_Display(Error)
             try:
                 print(i,Key)
             except AF.common_exceptions :
                 pass
 
+# ---------------------------------- Error Handling ----------------------------------
+    def init_ErrorFlash(self):
+        self.ErrorFlash = QtCore.QPropertyAnimation(self,b'ERROR_colour')
+        self.ErrorFlash.setDuration(1000)
+        self.ErrorFlash.setLoopCount(1)
+        self.ErrorFlash.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.ErrorFlash.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.ErrorFlash.setKeyValueAt(0.5, QtGui.QColor(255, 0, 0))
+        self.ErrorFlash.finished.connect(self.ErrorFlashFinished)
+        
+        self.WarningFlash = QtCore.QPropertyAnimation(self,b'ERROR_colour')
+        self.WarningFlash.setDuration(1000)
+        self.WarningFlash.setLoopCount(1)
+        self.WarningFlash.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.WarningFlash.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.WarningFlash.setKeyValueAt(0.5, QtGui.QColor(255, 255, 0))
+        self.WarningFlash.finished.connect(self.ErrorFlashFinished)
 
+        self.NotificationFlash = QtCore.QPropertyAnimation(self,b'ERROR_colour')
+        self.NotificationFlash.setDuration(1000)
+        self.NotificationFlash.setLoopCount(1)
+        self.NotificationFlash.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NotificationFlash.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NotificationFlash.setKeyValueAt(0.5, QtGui.QColor(0, 0, 255))
+        self.NotificationFlash.finished.connect(self.ErrorFlashFinished)
+
+    def _set_ERROR_colour(self, col): # Handles chnges to the Property ERROR_colour
+        palette = self.Palette
+        palette.setColor(QtGui.QPalette.Window, col)
+        self.setPalette(palette)
+    ERROR_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_ERROR_colour) # Defines the Property ERROR_colour
+
+    def Error_Display(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        Text = "Error at " + Time
+        self.TopBar_Error_Label.setText(Text)
+        self.TopBar_Error_Label.setToolTip(Error_Text)
+
+        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
+
+        self.ErrorFlash.start()
+
+    def Warning_Display(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        Text = "Warning at " + Time
+        self.TopBar_Error_Label.setText(Text)
+        self.TopBar_Error_Label.setToolTip(Error_Text)
+
+        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
+
+        self.WarningFlash.start()
+
+    def Notification_Display(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        Text = "Notification at " + Time
+        self.TopBar_Error_Label.setText(Text)
+        self.TopBar_Error_Label.setToolTip(Error_Text)
+
+        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
+
+        self.NotificationFlash.start()
+
+    def ErrorFlashFinished(self):
+        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
 
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
     def ReloadModules(self):
@@ -455,9 +533,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action = menu.addAction('Delete')
             action.triggered.connect(lambda: self.action_H_Delete(source,event))
             menu.exec_(event.globalPos())
-            #    pass #TODO: This if-case seems rather pointless but without something in the in it's condition it doesn't work... sort this out...
-                #item = source.itemAt(event.pos())
-                #QApplication.clipboard().setText(item.data(100).Text)
             return True
      # ---------------------------------- Tab_5 Matrix List Context Menu ----------------------------------
         elif (event.type() == QtCore.QEvent.ContextMenu and
@@ -540,7 +615,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #                    self.MainApp.sendEvent(source,event)
         #                    return True
      # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
-        return super(MainWindow, self).eventFilter(source, event)
+        return super(AMaDiA_Main_Window, self).eventFilter(source, event)
         
 
 
@@ -704,9 +779,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 print(Filename)
                 self.Tab_3_Display.canvas.fig.savefig(Filename , facecolor=self.BG_Colour , edgecolor=self.BG_Colour )
             except:
-                AF.ExceptionOutput(sys.exc_info())
+                Error = AF.ExceptionOutput(sys.exc_info())
+                self.Error_Display(Error)
         else:
             print("Could not save Plot: Could not validate save location")
+            self.Error_Display("Could not save Plot: Could not validate save location")
         
 # ---------------------------------- Tab_5_Display_Context_Menu ----------------------------------
     def action_Tab_5_Display_Copy_Displayed(self):
@@ -838,7 +915,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 
         self.ThreadList[ID].Return.connect(self.TR)
+        self.ThreadList[ID].ReturnError.connect(self.Error_Redirect)
         self.ThreadList[ID].start()
+
+    def Error_Redirect(self, AMaS_Object , Error_Text , ReturnFunction , ID):
+        #TODO:Improve
+        self.Error_Display(Error_Text)
 
     def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
         if f_eval == None:
@@ -999,9 +1081,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.Tab_3_Display.UseTeX(False)
                 self.Tab_3_Display.canvas.draw()
         except AF.common_exceptions :
-            AF.ExceptionOutput(sys.exc_info(),False)
+            Error = AF.ExceptionOutput(sys.exc_info(),False)
             print("y_vals = ",AMaS_Object.plot_y_vals,type(AMaS_Object.plot_y_vals))
             AMaS_Object.plottable = False
+            self.Error_Display(Error)
             
     def Tab_3_F_RedrawPlot(self):
         xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
@@ -1092,7 +1175,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 try:
                     sympy.plot_implicit(parse_expr(AMaS_Object.string))
                 except AF.common_exceptions:
-                    AF.ExceptionOutput(sys.exc_info())
+                    Error = AF.ExceptionOutput(sys.exc_info())
+                    self.Error_Display(Error)
 
 # ---------------------------------- Tab_4_ ??? ----------------------------------
         
@@ -1136,7 +1220,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 item.setData(101,Variable)
                 self.Tab_5_Matrix_List.addItem(item)
             except AF.common_exceptions:
-                AF.ExceptionOutput(sys.exc_info())
+                Error = AF.ExceptionOutput(sys.exc_info())
+                self.Error_Display(Error)
 
     def Tab_5_F_Load_Matrix(self,Name,Matrix):
         h,w = AF.shape2(Matrix)
@@ -1193,6 +1278,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         else:
                             Matrix[i].append("0")
                     except AF.common_exceptions:
+                        Error = "Could not add item to Matrix at ({},{}). Inserting a Zero instead."
+                        Error += AF.ExceptionOutput(sys.exc_info())
+                        self.Warning_Display(Error)
                         Matrix[i].append("0")
             # Convert list into Matrix and save it in the Equation
             if len(Matrix) == 1 and len(Matrix[0]) == 1:
@@ -1222,7 +1310,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # Display the Matrix
             self.Tab_5_F_Display_Matrix(Name,Matrix)
         except AF.common_exceptions:
-            AF.ExceptionOutput(sys.exc_info())
+            Error = AF.ExceptionOutput(sys.exc_info())
+            self.Error_Display(Error)
         
     def Tab_5_F_Update_Equation(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -1275,7 +1364,7 @@ if __name__ == "__main__":
     app = MainApp([])
     #app = QtWidgets.QApplication([])
     app.setStyle("fusion")
-    window = MainWindow(app)
+    window = AMaDiA_Main_Window(app)
     window.show()
     sys.exit(app.exec_())
 
