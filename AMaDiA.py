@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.1.1"
+Version = "0.12.1.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -951,9 +951,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ThreadList[ID].ReturnError.connect(self.Error_Redirect)
         self.ThreadList[ID].start()
 
-    def Error_Redirect(self, AMaS_Object , Error_Text , ReturnFunction , ID):
+    def Error_Redirect(self, AMaS_Object , ErrorType , Error_Text , ReturnFunction , ID):
         #TODO:Improve
-        self.NotifyUser(1,Error_Text)
+        self.NotifyUser(ErrorType,Error_Text)
 
     def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
         if f_eval == None:

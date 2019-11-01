@@ -121,6 +121,8 @@ class AMaS: # Astus' Mathematical Structure
         self.init_Critical()
 
     def init_Critical(self):
+        self.NotificationsStr = ""
+        self.NotificationsLevel = 100
         self.Text = AF.AstusParseInverse(self.string)
         self.Evaluation = "Not evaluated yet."
         self.EvaluationEquation = "? = " + self.Text
@@ -231,6 +233,28 @@ class AMaS: # Astus' Mathematical Structure
         # TODO : Add the others
         return expr
 
+ # ---------------------------------- Notifications ----------------------------------
+
+    def Notifications(self):
+        """Returns the NotificationsStr and clears it"""
+        lvl , rtnStr = self.NotificationsLevel, self.NotificationsStr
+        self.NotificationsStr = ""
+        self.NotificationsLevel = 100
+        return lvl, rtnStr
+
+    def Notify(self,lvl,text):
+        """Used to add Notifications"""
+        self.NotificationsStr += text
+        self.NotificationsStr += "\n"
+        if lvl < self.NotificationsLevel:
+            self.NotificationsLevel = lvl
+
+    def NotifyFromNumpy(self,text,flag=""):
+        """Used to add Notifications from Numpy"""
+        print(text,flag)
+        text += flag
+        self.Notify(3,text)
+
  # ---------------------------------- LaTeX Converter ----------------------------------
 
     def ConvertToLaTeX(self):
@@ -256,8 +280,10 @@ class AMaS: # Astus' Mathematical Structure
                 #self.LaTeX = sympy.latex(expr)
                 self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
         except AF.common_exceptions:
-            AF.ExceptionOutput(sys.exc_info())
+            error = AF.ExceptionOutput(sys.exc_info())
             self.LaTeX = "Could not convert"
+            ErrTxt = "Could not convert to LaTeX: " + error
+            self.Notify(2,ErrTxt)
         
         # Set up the strings that are used in the LaTeX Displays
         if self.multiline:
@@ -327,7 +353,7 @@ class AMaS: # Astus' Mathematical Structure
 
 
     def Convert_Evaluation_to_LaTeX(self, expr=None):
-        """expr must be a Sympy Expression (NOT A STRING!)
+        """expr must be a Sympy Expression (NOT A STRING!)\n
         If not given or not convertable try to convert self.Evaluation"""
         try:
             if expr != None:
@@ -369,6 +395,8 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_E_N += "$"
         except AF.common_exceptions: #as inst:
             Error = AF.ExceptionOutput(sys.exc_info())
+            ErrTxt = "Could not convert Evaluation to LaTeX: " + error
+            self.Notify(2,ErrTxt)
             return Error
         return True
         
@@ -631,6 +659,7 @@ class AMaS: # Astus' Mathematical Structure
  # ---------------------------------- 2D Plotter Methods ----------------------------------
             
     def Plot_2D_Calc_Values(self):
+        oldErrCall = np.seterrcall(self.NotifyFromNumpy)
         if self.cstr.count("=")>=1:
             try:
                 temp_line_split = self.cstr.split("=",1)
@@ -641,6 +670,7 @@ class AMaS: # Astus' Mathematical Structure
                     if type(temp_line_x_val) == int or type(temp_line_x_val) == float :
                         self.plot_x_vals = temp_line_x_val
                         self.plot_data_exists = True
+                        np.seterrcall(oldErrCall)
                         return True
             except AF.common_exceptions:
                 pass
@@ -654,6 +684,7 @@ class AMaS: # Astus' Mathematical Structure
             except AF.common_exceptions: #as inst:
                 Error = AF.ExceptionOutput(sys.exc_info())
                 self.plottable = False
+                np.seterrcall(oldErrCall)
                 return Error
             try:
                 Function = Function.doit()
@@ -725,11 +756,14 @@ class AMaS: # Astus' Mathematical Structure
                             raise Exception("Dimensions do not match")
                 except AF.common_exceptions: #as inst:
                     Error = AF.ExceptionOutput(sys.exc_info())
+                    np.seterrcall(oldErrCall)
                     return Error
                     
             self.plot_data_exists = True
+            np.seterrcall(oldErrCall)
             return True
         else:
+            np.seterrcall(oldErrCall)
             return "Not Plotable"
 
 

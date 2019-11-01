@@ -103,3 +103,6 @@ v0.12.1.1: More Notifications
 + Converted the Comments that described the functions and methods into strings to allow VSC to display it in the quick info
 + Fixed a crash wehen AMaS.Exists != True
 
+v0.12.1.2: AMaS notifications
++ AMaS can now return notifications when successful (Previously only when not successful)
+
