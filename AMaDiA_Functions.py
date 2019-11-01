@@ -41,6 +41,12 @@ def ReloadModules():
 
 common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError)
 def ExceptionOutput(exc_info,extraInfo = True):
+    """
+    Console output for exceptions\n
+    Use in `except:`: Error = ExceptionOutput(sys.exc_info())\n
+    Prints Time, ExceptionType, Filename+Line and (if extraInfo in not False) the exception description to the console\n
+    Returns a string with Exception Type and description
+    """
     try:
         print(cTimeSStr(),":")
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -57,12 +63,25 @@ background_Colour = (54/255, 57/255, 63/255)
 # -----------------------------------------------------------------------------------------------------------------
 
 def cTimeStr():
+    """
+    Returns the time (excluding seconds) as a string\n
+    %H:%M
+    """
     return str(datetime.datetime.now().strftime('%H:%M'))
 
 def cTimeSStr():
+    """
+    Returns the time (including seconds) as a string\n
+    %H:%M:%S
+    """
     return str(datetime.datetime.now().strftime('%H:%M:%S'))
 
 def cTimeFullStr(seperator = None):
+    """
+    Returns the date and time as a string\n
+    If given uses `separator` to seperate the values\n
+    %Y.%m.%d-%H:%M:%S or seperator.join(['%Y','%m','%d','%H','%M','%S'])
+    """
     if seperator == None:
         return str(datetime.datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
     else:
@@ -75,7 +94,8 @@ def takeSecond(elem):
     return elem[1]
 
 def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
-    # Finds nth occurence of tofind in string between start and end, else returns -1
+    """Finds nth occurence of tofind in string between start and end\n
+    returns the index or -1 if not found"""
     if end == 0:
         end = len(string)
     val = start - 1
@@ -86,8 +106,13 @@ def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     return val
 
 
-def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs): # Version that recognizes all pairs so that it returns -1 for "({)}" when searching for ["(",")"]
-    # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
+def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs):
+    """
+    Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B\n
+    recognizes all pairs so that it returns -1 for "({)}" when searching for ["(",")"]\n
+    \n
+    DOES NOT WORK YET IF AT LEAST 2 OPENING TOO MANY
+    """
     # TODO: DOES NOT WORK IF AT LEAST 2 OPENING TOO MANY
     if end == 0:
         end = len(string)+1
@@ -139,7 +164,7 @@ def FindEndOfBlock(string, Target, listlist, start=0, end=0):
 
 
 def FindPair_simple(string, AB, start=0, end=0):
-    # Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B
+    """Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B"""
     if end == 0:
         end = len(string)+1
     Apos = string.find(AB[0], start, end)
@@ -223,7 +248,7 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
 # -----------------------------------------------------------------------------------------------------------------
 
 def LaTeX(expr,local_dict=None,evalf=1):
-    # This function parses a string into a sympy construct withou evaluating anything!
+    """This function parses a string into a sympy construct withou evaluating anything!"""
     
     try:
         expr = Matrix_Encaser(expr)
@@ -402,9 +427,11 @@ def AstusParseInverse(string):
 
 
 def Replace(string,List,a=0,b=1):
-    # Replaces everything in string that is in List[][a] with List[][b]
-    # The List must only contain lists with that all contain at least two strings or Lists that contain such lists
-    # Alternatively takes a dictionary and replaces all keys in the string with their Value
+    """
+    Replaces everything in string that is in List[][a] with List[][b]\n
+    The List must only contain lists with that all contain at least two strings or Lists that contain such lists\n
+    Alternatively takes a dictionary and replaces all keys in the string with their Value
+    """
     if type(List) == dict:
         for Key, Value in List.items():
             string = string.replace(Key,str(Value))

@@ -234,7 +234,7 @@ class AMaS: # Astus' Mathematical Structure
  # ---------------------------------- LaTeX Converter ----------------------------------
 
     def ConvertToLaTeX(self):
-        # Create the string that the user can copy
+        """Create the string that the user can copy"""
         try:
             if "=" in self.cstr:
                 parts = self.cstr.split("=")
@@ -327,8 +327,8 @@ class AMaS: # Astus' Mathematical Structure
 
 
     def Convert_Evaluation_to_LaTeX(self, expr=None):
-        # expr must be a Sympy Expression (NOT A STRING!)
-        # If not given or not convertable try to convert self.Evaluation
+        """expr must be a Sympy Expression (NOT A STRING!)
+        If not given or not convertable try to convert self.Evaluation"""
         try:
             if expr != None:
                 try:

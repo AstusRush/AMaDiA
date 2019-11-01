@@ -147,12 +147,14 @@ class MplWidget_LaTeX(MplWidget):
         return matplotlib.rcParams['text.usetex']
     
     def Display(self,Text_L,Text_N,Font_Size,background_Colour,TextColour,Use_LaTeX = False):
+        """Returns (0,0) if everything worked, (3,str) if minor exception, (2,str) if medium exception, (1,str) if not able to display"""
         self.Text = Text_L
         self.Font_Size = Font_Size * 2
         self.TextColour = TextColour
         self.background_Colour = background_Colour
         self.canvas.fig.set_facecolor(self.background_Colour)
         self.canvas.ax.set_facecolor(self.background_Colour)
+        returnTuple = (0,0)
         #-----------IMPORTANT-----------
         if Use_LaTeX:
             self.Text = Text_L
@@ -216,6 +218,7 @@ class MplWidget_LaTeX(MplWidget):
         try:
             self.canvas.draw()
         except AF.common_exceptions:
+            returnTuple = (3,"Could not display in Mathmode")
             self.Text = Text_N
             if Use_LaTeX:
                 self.UseTeX(True)
@@ -241,6 +244,7 @@ class MplWidget_LaTeX(MplWidget):
             except AF.common_exceptions:
                 AF.ExceptionOutput(sys.exc_info())
                 print("Trying to output without LaTeX")
+                returnTuple = (2,"Could not display with LaTeX")
                 self.Text = Text_N.replace("\limits","")
                 self.UseTeX(False)
                 self.canvas.ax.clear()
@@ -261,6 +265,7 @@ class MplWidget_LaTeX(MplWidget):
                     self.canvas.draw()
                 except AF.common_exceptions:
                     AF.ExceptionOutput(sys.exc_info())
+                    returnTuple = (1,"Could not display at all")
                     self.UseTeX(False)
                     self.canvas.ax.clear()
                     if Use_LaTeX:
@@ -285,10 +290,12 @@ class MplWidget_LaTeX(MplWidget):
                         self.canvas.draw()
                     except AF.common_exceptions:
                         AF.ExceptionOutput(sys.exc_info())
+                        returnTuple = (1,"Critical Error: MatPlotLib Display seems broken")
                         print("Can not display anything")
                 
         finally:
             self.UseTeX(False)
+            return returnTuple
 
 class ATextEdit(QtWidgets.QTextEdit):
     returnPressed = QtCore.pyqtSignal()

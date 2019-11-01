@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.1"
+Version = "0.12.1.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -48,11 +48,19 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 import matplotlib
 from Test_Input import Test_Input
+import reprlib
+r = reprlib.Repr()
+r.maxlist = 20       # max elements displayed for lists
+r.maxarray = 20       # max elements displayed for arrays
+r.maxother = 500       # max elements displayed for other including np.ndarray
+r.maxstring = 40    # max characters displayed for strings
 
 try:
     from keyboard_master import keyboard
 except AF.common_exceptions :
     AF.ExceptionOutput(sys.exc_info())
+
+np.set_printoptions(threshold=100)
 
 AltModifier = QtCore.Qt.AltModifier
 ControlModifier = QtCore.Qt.ControlModifier
@@ -329,7 +337,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 keyboard.clear_all_hotkeys()
         except AF.common_exceptions :
             Error = AF.ExceptionOutput(sys.exc_info())
-            self.Error_Display(Error)
+            self.NotifyUser(1,Error)
             try:
                 print(i,Key)
             except AF.common_exceptions :
@@ -366,6 +374,20 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         palette.setColor(QtGui.QPalette.Window, col)
         self.setPalette(palette)
     ERROR_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_ERROR_colour) # Defines the Property ERROR_colour
+
+    def NotifyUser(self,Type,Text,Time=None):
+        """1 = Error , 2 = Warning , 3 = Notification"""
+        if Type == 1:
+            self.Error_Display(Text,Time)
+        elif Type == 2:
+            self.Warning_Display(Text,Time)
+        elif Type == 3:
+            self.Notification_Display(Text,Time)
+        else:
+            nText = "Notification of type "+str(Type)
+            nText += " (Type unknown):\n"
+            nText += Text
+            self.Warning_Display(nText,Time)
 
     def Error_Display(self,Error_Text,Time=None):
         if Time==None:
@@ -442,7 +464,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_1_InputField.setText(i)
             self.Tab_1_F_Calculate_Field_Input()
             time.sleep(0.1)
-        Text = "Test Complete. Expected Entries: "+str(len(Test_Input))
+        Text = "Expected Entries after all calulations: "+str(len(Test_Input))
         print(Text)
         self.Tab_1_InputField.setText(Text)
 
@@ -698,24 +720,32 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
  # ----------------
         
     def action_H_Copy_x_Values(self,source,event):
-        item = source.itemAt(event.pos())
-        Text = "[ "
-        for i in item.data(100).plot_x_vals:
-            Text += str(i)
-            Text += " , "
-        Text = Text[:-3]
-        Text += " ]"
-        QApplication.clipboard().setText(Text)
+        try:
+            item = source.itemAt(event.pos())
+            Text = "[ "
+            for i in item.data(100).plot_x_vals:
+                Text += str(i)
+                Text += " , "
+            Text = Text[:-3]
+            Text += " ]"
+            QApplication.clipboard().setText(Text)
+        except AF.common_exceptions:
+            Error = AF.ExceptionOutput(sys.exc_info())
+            self.NotifyUser(2,Error)
         
     def action_H_Copy_y_Values(self,source,event):
-        item = source.itemAt(event.pos())
-        Text = "[ "
-        for i in item.data(100).plot_y_vals:
-            Text += str(i)
-            Text += " , "
-        Text = Text[:-3]
-        Text += " ]"
-        QApplication.clipboard().setText(Text)
+        try:
+            item = source.itemAt(event.pos())
+            Text = "[ "
+            for i in item.data(100).plot_y_vals:
+                Text += str(i)
+                Text += " , "
+            Text = Text[:-3]
+            Text += " ]"
+            QApplication.clipboard().setText(Text)
+        except AF.common_exceptions:
+            Error = AF.ExceptionOutput(sys.exc_info())
+            self.NotifyUser(2,Error)
 
  # ----------------
          
@@ -779,11 +809,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 print(Filename)
                 self.Tab_3_Display.canvas.fig.savefig(Filename , facecolor=self.BG_Colour , edgecolor=self.BG_Colour )
             except:
-                Error = AF.ExceptionOutput(sys.exc_info())
-                self.Error_Display(Error)
+                Error = "Could not save Plot: "
+                Error += AF.ExceptionOutput(sys.exc_info())
+                self.NotifyUser(1,Error)
+            else:
+                self.NotifyUser(3,Filename)
         else:
             print("Could not save Plot: Could not validate save location")
-            self.Error_Display("Could not save Plot: Could not validate save location")
+            self.NotifyUser(1,"Could not save Plot: Could not validate save location")
         
 # ---------------------------------- Tab_5_Display_Context_Menu ----------------------------------
     def action_Tab_5_Display_Copy_Displayed(self):
@@ -920,7 +953,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def Error_Redirect(self, AMaS_Object , Error_Text , ReturnFunction , ID):
         #TODO:Improve
-        self.Error_Display(Error_Text)
+        self.NotifyUser(1,Error_Text)
 
     def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
         if f_eval == None:
@@ -976,7 +1009,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         if part == "Normal":
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
-            self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
+            returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
                                             ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
@@ -984,10 +1017,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             if AMaS_Object.LaTeX_E == "Not converted yet":
                 AMaS_Object.Convert_Evaluation_to_LaTeX()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
-            self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
+            returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                             ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
+        if returnTuple[0] != 0:
+            self.NotifyUser(returnTuple[0],returnTuple[1])
         
 # ---------------------------------- Tab_3_ 2D-Plot ----------------------------------
     def Tab_3_F_Plot_Button(self):
@@ -1082,9 +1117,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.Tab_3_Display.canvas.draw()
         except AF.common_exceptions :
             Error = AF.ExceptionOutput(sys.exc_info(),False)
-            print("y_vals = ",AMaS_Object.plot_y_vals,type(AMaS_Object.plot_y_vals))
+            print("y_vals = ",r.repr(AMaS_Object.plot_y_vals),type(AMaS_Object.plot_y_vals),"\nYou can copy all elements in advanced mode in the contextmenu")
+            #print("y_vals = ")
+            #print(AMaS_Object.plot_y_vals)
+            #print(type(AMaS_Object.plot_y_vals))
             AMaS_Object.plottable = False
-            self.Error_Display(Error)
+            self.NotifyUser(1,Error)
             
     def Tab_3_F_RedrawPlot(self):
         xmin , xmax = self.Tab_3_XLim_min.value(), self.Tab_3_XLim_max.value()
@@ -1176,7 +1214,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     sympy.plot_implicit(parse_expr(AMaS_Object.string))
                 except AF.common_exceptions:
                     Error = AF.ExceptionOutput(sys.exc_info())
-                    self.Error_Display(Error)
+                    self.NotifyUser(1,Error)
 
 # ---------------------------------- Tab_4_ ??? ----------------------------------
         
@@ -1221,7 +1259,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.Tab_5_Matrix_List.addItem(item)
             except AF.common_exceptions:
                 Error = AF.ExceptionOutput(sys.exc_info())
-                self.Error_Display(Error)
+                self.NotifyUser(1,Error)
 
     def Tab_5_F_Load_Matrix(self,Name,Matrix):
         h,w = AF.shape2(Matrix)
@@ -1263,12 +1301,13 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             if Name == "" or " " in Name: #TODO: Better checks!!!
                 NameInvalid=True
 
-            if NameInvalid: #TODO: Improve this!
-                self.Tab_5_1_Name_Input.setText("Invalid!")
+            if NameInvalid:
+                self.NotifyUser(1,"Matrix Name Invalid")
                 return False
             
             # Read the Input and save it in a nested List
             Matrix = []
+            MError = ""
             for i in range(self.Tab_5_1_Matrix_Input.rowCount()):
                 Matrix.append([])
                 for j in range(self.Tab_5_1_Matrix_Input.columnCount()):
@@ -1278,10 +1317,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         else:
                             Matrix[i].append("0")
                     except AF.common_exceptions:
-                        Error = "Could not add item to Matrix at ({},{}). Inserting a Zero instead."
-                        Error += AF.ExceptionOutput(sys.exc_info())
-                        self.Warning_Display(Error)
+                        MError += "Could not add item to Matrix at ({},{}). Inserting a Zero instead. ".format(i+1,j+1)
+                        #MError += AF.ExceptionOutput(sys.exc_info())
+                        MError += "\n"
                         Matrix[i].append("0")
+            if MError != "":
+                self.NotifyUser(2,MError)
             # Convert list into Matrix and save it in the Equation
             if len(Matrix) == 1 and len(Matrix[0]) == 1:
                 Matrix = parse_expr(Matrix[0][0])
@@ -1311,7 +1352,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_5_F_Display_Matrix(Name,Matrix)
         except AF.common_exceptions:
             Error = AF.ExceptionOutput(sys.exc_info())
-            self.Error_Display(Error)
+            self.NotifyUser(1,Error)
         
     def Tab_5_F_Update_Equation(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -1327,10 +1368,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def Tab_5_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
         self.Tab_5_Currently_Displayed = AMaS_Object.EvaluationEquation
         self.Tab_5_Currently_Displayed_Solution = AMaS_Object.Evaluation
-        self.Tab_5_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
+        returnTuple = self.Tab_5_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                         ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
+        if returnTuple[0] != 0:
+            self.NotifyUser(returnTuple[0],returnTuple[1])
         
     def Tab_5_F_Display_Matrix(self,Name,Matrix):
         Text = sympy.latex(Matrix)
@@ -1345,10 +1388,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Text1,Text2 = Text+Text1 , Text+Text2
         self.Tab_5_Currently_Displayed = Text + str(Matrix)
         self.Tab_5_Currently_Displayed_Solution = str(Matrix)
-        self.Tab_5_Display.Display(Text1,Text2
+        returnTuple = self.Tab_5_Display.Display(Text1,Text2
                                         ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
+        if returnTuple[0] != 0:
+            self.NotifyUser(returnTuple[0],returnTuple[1])
 
 # ---------------------------------- Tab_6_ ??? ----------------------------------
 

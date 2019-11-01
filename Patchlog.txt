@@ -98,3 +98,8 @@ v0.12.1: Exception Notification
 ++ Only the most recent Error, Warning or Notification is displayed. For older Errors and warning look in the console.
 ++ Not all exceptions are displayed in the main window. For all exceptions and more details you still have to look in the console.
 
+v0.12.1.1: More Notifications
++ Added more Notifications
++ Converted the Comments that described the functions and methods into strings to allow VSC to display it in the quick info
++ Fixed a crash wehen AMaS.Exists != True
+

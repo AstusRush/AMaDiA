@@ -56,7 +56,7 @@ class AMaS_Creator(QtCore.QThread):
         if self.AMaS_Object.Exists == True:
             self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
         else:
-            self.ReturnError = QtCore.pyqtSignal(self.AMaS_Object , self.AMaS_Object.Exists , self.Return_Function , self.ID)
+            self.ReturnError.emit(self.AMaS_Object , str(self.AMaS_Object.Exists) , self.Return_Function , self.ID)
         self.exiting = True
         self.exit()
         #self.quit()
