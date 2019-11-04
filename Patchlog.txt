@@ -119,3 +119,6 @@ v0.13.1: New Paint
 v0.13.1.1: Bugfix
 + Fixed a bug that would crash everything when trying to send a message from the Chat Server
 
+v0.13.1.2: Bugfix
++ Fixed: Notifications in Bright Mode were resetting the Backgroundcolour to the Dark Mode. Now the Bright Mode stays bright.
+

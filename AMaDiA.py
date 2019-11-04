@@ -269,6 +269,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.TextColour = FG
         for i in self.findChildren(AW.MplWidget):
             i.SetColour(self.BG_Colour, self.TextColour)
+        self.init_Animations_With_Colour()
         
         
     def ChangeFontSize(self):
@@ -288,6 +289,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         pass
 
     def INIT_Animation(self):
+        self.init_Animations_With_Colour()
+
+    def init_Animations_With_Colour(self):
         self.init_ErrorFlash()
         
     def CreateFolders(self):
