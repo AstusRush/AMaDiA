@@ -122,3 +122,6 @@ v0.13.1.1: Bugfix
 v0.13.1.2: Bugfix
 + Fixed: Notifications in Bright Mode were resetting the Backgroundcolour to the Dark Mode. Now the Bright Mode stays bright.
 
+v0.13.1.3: Canvas Paint
++ When changing the colour all Canvas elements automatically refresh their colour
+

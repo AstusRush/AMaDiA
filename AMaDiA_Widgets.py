@@ -41,6 +41,7 @@ class MplWidget(QtWidgets.QWidget):
         self.TextColour = FG
         self.canvas.fig.set_facecolor(self.background_Colour)
         self.canvas.ax.set_facecolor(self.background_Colour)
+        self.canvas.draw()
 
 
 class MplCanvas_2D_Plot(Canvas):
@@ -76,6 +77,7 @@ class MplWidget_2D_Plot(MplWidget):
         self.canvas.ax.yaxis.label.set_color(self.TextColour)
         self.canvas.ax.tick_params(axis='x', colors=self.TextColour)
         self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
+        self.canvas.draw()
     
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
@@ -132,6 +134,18 @@ class MplWidget_LaTeX(MplWidget):
         #self.Tab_2_LaTeX_LaTeXOutput.nav = NavigationToolbar(self.Tab_2_LaTeX_LaTeXOutput.canvas, self.Tab_2_LaTeX_LaTeXOutput)
         #self.Tab_2_LaTeX_LaTeXOutput.layout().addWidget(self.Tab_2_LaTeX_LaTeXOutput.nav)
         self.layout().addWidget(self.scroll)
+
+        self.LastCall = False
+        
+    def SetColour(self,BG,FG):
+        super(MplWidget_LaTeX, self).SetColour(BG,FG)
+        if self.LastCall != False:
+            self.Display(self.LastCall[0],self.LastCall[1],self.LastCall[2],self.LastCall[3])
+        else:
+            try:
+                self.canvas.draw()
+            except AF.common_exceptions:
+                pass
     
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
@@ -146,14 +160,12 @@ class MplWidget_LaTeX(MplWidget):
         plt.rc('text', usetex=TheBool)
         return matplotlib.rcParams['text.usetex']
     
-    def Display(self,Text_L,Text_N,Font_Size,background_Colour,TextColour,Use_LaTeX = False):
+    def Display(self,Text_L,Text_N,Font_Size,Use_LaTeX = False):
         """Returns (0,0) if everything worked, (3,str) if minor exception, (2,str) if medium exception, (1,str) if not able to display"""
+        self.LastCall = [Text_L, Text_N, Font_Size, Use_LaTeX]
+
         self.Text = Text_L
         self.Font_Size = Font_Size * 2
-        self.TextColour = TextColour
-        self.background_Colour = background_Colour
-        self.canvas.fig.set_facecolor(self.background_Colour)
-        self.canvas.ax.set_facecolor(self.background_Colour)
         returnTuple = (0,0)
         #-----------IMPORTANT-----------
         if Use_LaTeX:

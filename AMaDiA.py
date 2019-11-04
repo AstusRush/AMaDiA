@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.13.1.1"
+Version = "0.13.1.3"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -1037,7 +1037,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if part == "Normal":
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
-                                            ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
+                                            ,self.TopBar_Font_Size_spinBox.value()
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         elif part == "Evaluation":
@@ -1045,7 +1045,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.Convert_Evaluation_to_LaTeX()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                            ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
+                                            ,self.TopBar_Font_Size_spinBox.value()
                                             ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         if returnTuple[0] != 0:
@@ -1396,7 +1396,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_Currently_Displayed = AMaS_Object.EvaluationEquation
         self.Tab_5_Currently_Displayed_Solution = AMaS_Object.Evaluation
         returnTuple = self.Tab_5_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                        ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
+                                        ,self.TopBar_Font_Size_spinBox.value()
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
@@ -1416,7 +1416,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_Currently_Displayed = Text + str(Matrix)
         self.Tab_5_Currently_Displayed_Solution = str(Matrix)
         returnTuple = self.Tab_5_Display.Display(Text1,Text2
-                                        ,self.TopBar_Font_Size_spinBox.value(),self.BG_Colour,self.TextColour
+                                        ,self.TopBar_Font_Size_spinBox.value()
                                         ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
