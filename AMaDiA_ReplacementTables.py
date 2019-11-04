@@ -163,12 +163,13 @@ s_constants_engineering = [["j"," I "],["e"," E "]]
 
 # ---------------------------------- Replacements Simple to Python r_s_ ----------------------------------
 
+r_s_superscript_numbers_neg = [["⁻¹","**(-1)"],["⁻²","**(-2)"],["⁻³","**(-3)"],["⁻⁴","**(-4)"],["⁻⁵","**(-5)"],["⁻⁶","**(-6)"],["⁻⁷","**(-7)"],["⁻⁸","**(-8)"],["⁻⁹","**(-9)"],["⁻⁰","**(-0)"]]
 r_s_superscript_numbers = [["¹","**(1)"],["²","**(2)"],["³","**(3)"],["⁴","**(4)"],["⁵","**(5)"],["⁶","**(6)"],["⁷","**(7)"],["⁸","**(8)"],["⁹","**(9)"],["⁰","**(0)"]]
 r_s_subscript_numbers = [["₁","_1"],["₂","_2"],["₃","_3"],["₄","_4"],["₅","_5"],["₆","_6"],["₇","_7"],["₈","_8"],["₉","_9"],["₀","_0"]]
-r_s_superscript_letters = [["ⁿ","**(n)"]]
+r_s_superscript_letters = [["ⁿ","**(n)"],["ᵀ",".T"]]
 r_s_subscript_letters = [["ₙ","_n"]]
 
-LIST_r_s_scripts = [r_s_superscript_numbers , r_s_subscript_numbers , r_s_superscript_letters , r_s_subscript_letters]
+LIST_r_s_scripts = [r_s_superscript_numbers_neg, r_s_superscript_numbers , r_s_subscript_numbers , r_s_superscript_letters , r_s_subscript_letters]
 
 
 

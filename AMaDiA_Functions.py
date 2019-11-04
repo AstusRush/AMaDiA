@@ -443,6 +443,16 @@ def Replace(string,List,a=0,b=1):
             for i in List:
                 string = string.replace(i[a],i[b])
     return string
+
+def number_shaver(ch,
+                  regx = re.compile('(?<![\d.])0*(?:'
+                                    '(\d+)\.?|\.(0)'
+                                    '|(\.\d+?)|(\d+\.\d+?)'
+                                    ')0*(?![\d.])')  ,
+                  repl = lambda mat: mat.group(mat.lastindex)
+                                     if mat.lastindex!=3
+                                     else '0' + mat.group(3) ):
+    return regx.sub(repl,ch)
 # -----------------------------------------------------------------------------------------------------------------
 
 

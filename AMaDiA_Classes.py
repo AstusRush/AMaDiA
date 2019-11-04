@@ -544,7 +544,7 @@ class AMaS: # Astus' Mathematical Structure
                         ansF = self.ExecuteFlags(ans)
                         self.Evaluation = str(ansF)
                         self.Convert_Evaluation_to_LaTeX(ansF)
-                    self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #TODO: make this work for complex numbers. Use re
+                    #self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation # Already implemented with AF.number_shaver
             except AF.common_exceptions: #as inst:
                 Error = AF.ExceptionOutput(sys.exc_info())
                 #print(inst.args)
@@ -557,7 +557,8 @@ class AMaS: # Astus' Mathematical Structure
         
         self.init_Flags() # Reset All Flags
         
-        
+        self.EvaluationEquation = AF.number_shaver(self.EvaluationEquation)
+        self.Evaluation = AF.number_shaver(self.Evaluation)
         
         if self.Evaluation == "Fail":
             return Error
