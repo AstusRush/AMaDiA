@@ -11,6 +11,13 @@ Current features:<br/>
  * Tab 2 : Convert input to LaTeX and display it<br/>
  * Tab 3 : Plot 2D Graphs<br/>
  * Tab 4 : Equations with matrices and vectors as well as systems of linear equations<br/>
+ * LAN chat program<br/>
+   * Intended for sharing equations with other users in the same network to make cooperative working easier<br/>
+   * Separate Server and Client applications<br/>
+   * Allows sending of text and text files<br/>
+   * Share text files with all other users in the network via drag'n'drop into the input field<br/>
+   * Server has some moderation tools (Muting/Kicking/Banning<br/>
+   * WARNING: Messages are currently not encrypted! Do not send sensitive data!!!<br/>
 <br/>
 Feedback is welcome<br/>
 Suggestions are welcome<br/>

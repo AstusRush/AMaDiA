@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.12.1.2"
+Version = "0.13.0"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -43,6 +43,9 @@ import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART
 import AMaDiA_Colour
 import AMaDiA_Threads as AT
+import AstusChat_Client
+import AstusChat_Server
+
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
@@ -183,10 +186,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 # ---------------------------------- Init and Maintanance ----------------------------------
 
     def ConnectSignals(self):
-        self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
-        self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
         self.Menubar_Main_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
+
+        self.Menubar_Main_Chat_action_Open_Client.triggered.connect(self.OpenClient)
+        self.Menubar_Main_Chat_action_Open_Server.triggered.connect(self.OpenServer)
+
+        self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
+        self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
         self.TopBar_MathRemap_checkBox.toggled.connect(self.ToggleRemapper)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
@@ -264,7 +271,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def ChangeFontSize(self):
         Size = self.TopBar_Font_Size_spinBox.value()
         newFont = QtGui.QFont()
-        newFont.setFamily("Arial")
+        newFont.setFamily(self.FontFamily)
         newFont.setPointSize(Size)
         self.setFont(newFont)
         self.centralwidget.setFont(newFont)
@@ -467,6 +474,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Text = "Expected Entries after all calulations: "+str(len(Test_Input))
         print(Text)
         self.Tab_1_InputField.setText(Text)
+
+
+# ---------------------------------- Chat Toolbar Funtions ----------------------------------
+
+    def OpenClient(self):
+        self.Chat = AstusChat_Client.MainWindow(self.Palette,self.FontFamily)
+        self.Chat.show()
+
+    def OpenServer(self):
+        self.Sever = AstusChat_Server.MainWindow(self.Palette,self.FontFamily)
+        self.Sever.show()
 
 
 # ---------------------------------- Events and Context Menu ----------------------------------

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ServerInterface</class>
+ <widget class="QMainWindow" name="ServerInterface">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>983</width>
+    <height>668</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Chat Server by Astus</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="6" colspan="12">
+     <widget class="QTextBrowser" name="ChatDisplay"/>
+    </item>
+    <item row="1" column="0" rowspan="2" colspan="5">
+     <widget class="QListWidget" name="OnlineList">
+      <property name="autoScroll">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="8" alignment="Qt::AlignLeft">
+     <widget class="QLineEdit" name="PortField">
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="inputMask">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>Port</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="13">
+     <widget class="QSpinBox" name="FontSizeBox">
+      <property name="minimum">
+       <number>6</number>
+      </property>
+      <property name="maximum">
+       <number>18</number>
+      </property>
+      <property name="value">
+       <number>9</number>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="10">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="6">
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="3">
+     <widget class="QPushButton" name="MuteButton">
+      <property name="text">
+       <string>Mute</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="14">
+     <spacer name="horizontalSpacer_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="15" colspan="2">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="7">
+     <widget class="QLineEdit" name="IPField">
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="inputMask">
+       <string/>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>IP</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="11">
+     <widget class="QLabel" name="FontText">
+      <property name="text">
+       <string>Set Font Size</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="17">
+     <widget class="QPushButton" name="SendButton">
+      <property name="text">
+       <string>Send</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="9">
+     <widget class="QCheckBox" name="ConnectCheckBox">
+      <property name="text">
+       <string>SetUp</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QPushButton" name="BanButton">
+      <property name="text">
+       <string>Ban</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QPushButton" name="KickButton">
+      <property name="text">
+       <string>Kick</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="6" colspan="11">
+     <widget class="QLineEdit" name="InputField">
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="placeholderText">
+       <string>Message</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>983</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

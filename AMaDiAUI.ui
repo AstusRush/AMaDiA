@@ -817,7 +817,15 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
     <addaction name="Menubar_Main_Options_action_WindowStaysOnTop"/>
    </widget>
+   <widget class="QMenu" name="Menubar_Main_Chat">
+    <property name="title">
+     <string>Chat</string>
+    </property>
+    <addaction name="Menubar_Main_Chat_action_Open_Client"/>
+    <addaction name="Menubar_Main_Chat_action_Open_Server"/>
+   </widget>
    <addaction name="Menubar_Main_Options"/>
+   <addaction name="Menubar_Main_Chat"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="Menubar_Main_Options_action_Reload_Modules">
@@ -901,6 +909,16 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>Use Mathematical Keyboard</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Chat_action_Open_Client">
+   <property name="text">
+    <string>Open Client</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Chat_action_Open_Server">
+   <property name="text">
+    <string>Open Server</string>
    </property>
   </action>
  </widget>

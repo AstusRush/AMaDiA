@@ -106,3 +106,9 @@ v0.12.1.1: More Notifications
 v0.12.1.2: AMaS notifications
 + AMaS can now return notifications when successful (Previously only when not successful)
 
+v0.13.0: Chat
++ Added my simple chat program
+++ You can use it to send text and text files over LAN connections
+++ The implementation is not final.
+++ The messages are not encrypted! Do not send sensible data
+

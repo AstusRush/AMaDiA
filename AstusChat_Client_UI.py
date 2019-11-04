@@ -1,0 +1,90 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'AstusChat_Client_UI.ui'
+#
+# Created by: PyQt5 UI code generator 5.9.2
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_ClientInterface(object):
+    def setupUi(self, ClientInterface):
+        ClientInterface.setObjectName("ClientInterface")
+        ClientInterface.resize(1018, 622)
+        self.centralwidget = QtWidgets.QWidget(ClientInterface)
+        self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
+        self.SendButton = QtWidgets.QPushButton(self.centralwidget)
+        self.SendButton.setObjectName("SendButton")
+        self.gridLayout.addWidget(self.SendButton, 3, 13, 1, 1)
+        self.FontSizeBox = QtWidgets.QSpinBox(self.centralwidget)
+        self.FontSizeBox.setMinimum(6)
+        self.FontSizeBox.setMaximum(18)
+        self.FontSizeBox.setProperty("value", 9)
+        self.FontSizeBox.setObjectName("FontSizeBox")
+        self.gridLayout.addWidget(self.FontSizeBox, 1, 9, 1, 1)
+        self.ConnectCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.ConnectCheckBox.setObjectName("ConnectCheckBox")
+        self.gridLayout.addWidget(self.ConnectCheckBox, 1, 5, 1, 1)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem, 1, 6, 1, 1)
+        self.OnlineList = QtWidgets.QTextBrowser(self.centralwidget)
+        self.OnlineList.setObjectName("OnlineList")
+        self.gridLayout.addWidget(self.OnlineList, 1, 0, 3, 2)
+        self.IPField = QtWidgets.QLineEdit(self.centralwidget)
+        self.IPField.setAutoFillBackground(True)
+        self.IPField.setInputMask("")
+        self.IPField.setText("")
+        self.IPField.setObjectName("IPField")
+        self.gridLayout.addWidget(self.IPField, 1, 3, 1, 1)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem1, 1, 2, 1, 1)
+        self.ChatDisplay = QtWidgets.QTextBrowser(self.centralwidget)
+        self.ChatDisplay.setObjectName("ChatDisplay")
+        self.gridLayout.addWidget(self.ChatDisplay, 2, 2, 1, 12)
+        self.FontText = QtWidgets.QLabel(self.centralwidget)
+        self.FontText.setObjectName("FontText")
+        self.gridLayout.addWidget(self.FontText, 1, 7, 1, 1)
+        self.PortField = QtWidgets.QLineEdit(self.centralwidget)
+        self.PortField.setAutoFillBackground(True)
+        self.PortField.setInputMask("")
+        self.PortField.setObjectName("PortField")
+        self.gridLayout.addWidget(self.PortField, 1, 4, 1, 1, QtCore.Qt.AlignLeft)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem2, 1, 10, 1, 1)
+        self.RequestChatHistoryBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.RequestChatHistoryBox.setToolTipDuration(-1)
+        self.RequestChatHistoryBox.setText("")
+        self.RequestChatHistoryBox.setObjectName("RequestChatHistoryBox")
+        self.gridLayout.addWidget(self.RequestChatHistoryBox, 1, 13, 1, 1, QtCore.Qt.AlignRight)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem3, 1, 11, 1, 2)
+        self.InputField = QtWidgets.QLineEdit(self.centralwidget)
+        self.InputField.setAutoFillBackground(True)
+        self.InputField.setObjectName("InputField")
+        self.gridLayout.addWidget(self.InputField, 3, 2, 1, 11)
+        ClientInterface.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(ClientInterface)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1018, 21))
+        self.menubar.setObjectName("menubar")
+        ClientInterface.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(ClientInterface)
+        self.statusbar.setObjectName("statusbar")
+        ClientInterface.setStatusBar(self.statusbar)
+
+        self.retranslateUi(ClientInterface)
+        QtCore.QMetaObject.connectSlotsByName(ClientInterface)
+
+    def retranslateUi(self, ClientInterface):
+        _translate = QtCore.QCoreApplication.translate
+        ClientInterface.setWindowTitle(_translate("ClientInterface", "MainWindow"))
+        self.SendButton.setText(_translate("ClientInterface", "Send"))
+        self.ConnectCheckBox.setText(_translate("ClientInterface", "Connect"))
+        self.IPField.setPlaceholderText(_translate("ClientInterface", "IP"))
+        self.FontText.setText(_translate("ClientInterface", "Set Font Size"))
+        self.PortField.setPlaceholderText(_translate("ClientInterface", "Port"))
+        self.RequestChatHistoryBox.setToolTip(_translate("ClientInterface", "Request Chat History on Login"))
+        self.InputField.setPlaceholderText(_translate("ClientInterface", "Message"))
+
