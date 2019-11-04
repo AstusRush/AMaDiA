@@ -25,6 +25,7 @@ WindowTitle = ServerVersionAuthor
 global bConnected
 bConnected = False
 
+MakeHistory = False
 
 
 #--------------------------------------------------------------------------------------------------------------------------
@@ -71,11 +72,12 @@ class ConnectionList(QtCore.QThread):
         self.SendToAll("THE SERVER IS CLOSING NOW")
         formmsg = cTimeSStr() + "THE SERVER IS CLOSING NOW"
         self.printer.emit(formmsg)
-        try:
-            with open('history.txt','a') as text_file:
-                text_file.write(formmsg+'\n')
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ChatHistory.txt','a') as text_file:
+                    text_file.write(formmsg+'\n')
+            except:
+                pass
         i=0
         while i < len(self) :
             if self[i].IsLoggedIn:
@@ -92,11 +94,12 @@ class ConnectionList(QtCore.QThread):
     def SendToAll(self,Message):
         # Encode the massage here once to save the time to encode it for every user
         Message = cTimeStr() + Message
-        try:
-            with open('ClientChatHistory.txt','a') as text_file:
-                text_file.write(Message+"\n")
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ClientChatHistory.txt','a') as text_file:
+                    text_file.write(Message+"\n")
+            except:
+                pass
         Message = Message.encode("utf8")
         i=0
         while i < len(self) :
@@ -111,11 +114,12 @@ class ConnectionList(QtCore.QThread):
     def SendToAllButOne(self,MyID,Message):
         # Encode the massage here once to save the time to encode it for every user
         Message = cTimeStr() + Message
-        try:
-            with open('ClientChatHistory.txt','a') as text_file:
-                text_file.write(Message+"\n")
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ClientChatHistory.txt','a') as text_file:
+                    text_file.write(Message+"\n")
+            except:
+                pass
         Message = Message.encode("utf8")
         i=0
         while i < len(self) :
@@ -143,11 +147,12 @@ class ConnectionList(QtCore.QThread):
             ErrorMessage += " as this Name is not logged in"
             formmsg = cTimeSStr() + ErrorMessage
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+ErrorMessage+"\n")
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+ErrorMessage+"\n")
+                except:
+                    pass
             raise Exception(ErrorMessage)
         
     def SendToIP(self, RecipientIP, Message):
@@ -166,11 +171,12 @@ class ConnectionList(QtCore.QThread):
             ErrorMessage += " as this IP is not logged in"
             formmsg = cTimeSStr() + ErrorMessage
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+ErrorMessage+"\n")
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+ErrorMessage+"\n")
+                except:
+                    pass
             raise Exception(ErrorMessage)
             
         
@@ -190,11 +196,12 @@ class ConnectionList(QtCore.QThread):
             ErrorMessage += " as it is not logged in"
             formmsg = cTimeSStr() + ErrorMessage
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+ErrorMessage+"\n")
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+ErrorMessage+"\n")
+                except:
+                    pass
             raise Exception(ErrorMessage)
             
     def SendToID(self, RecipientID, Message):
@@ -206,11 +213,12 @@ class ConnectionList(QtCore.QThread):
             ErrorMessage += " as this ID is not logged in"
             formmsg = cTimeSStr() + ErrorMessage
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+ErrorMessage+"\n")
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+ErrorMessage+"\n")
+                except:
+                    pass
             raise Exception(ErrorMessage)
             
     def CheckUsername(self, Username):
@@ -265,11 +273,12 @@ class ConnectionList(QtCore.QThread):
         Message += "\""
         formmsg = cTimeSStr() + Message
         self.printer.emit(formmsg)
-        try:
-            with open('history.txt','a') as text_file:
-                text_file.write(cTimeSStr()+Message+'\n')
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ChatHistory.txt','a') as text_file:
+                    text_file.write(cTimeSStr()+Message+'\n')
+            except:
+                pass
         self.SendToAll(Message)
         time.sleep(0.1)
         i=0
@@ -294,11 +303,12 @@ class ConnectionList(QtCore.QThread):
             Message += rawMessage
             formmsg = cTimeSStr() + Message
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+Message+'\n')
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+Message+'\n')
+                except:
+                    pass
             self.SendToAll(Message)
             
         elif Commands[0] == "none":
@@ -307,11 +317,12 @@ class ConnectionList(QtCore.QThread):
             Message += Commands[2]
             formmsg = cTimeSStr() + Message
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+Message+'\n')
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+Message+'\n')
+                except:
+                    pass
             self.SendToAll(Message)
             
         elif len(Commands[0]) >= 2 and Commands[0][1]=="w":
@@ -334,11 +345,12 @@ class ConnectionList(QtCore.QThread):
                 sMessage = Message + sMessage
                 formmsg = cTimeSStr() + sMessage
                 self.printer.emit(formmsg)
-                try:
-                    with open('history.txt','a') as text_file:
-                        text_file.write(cTimeSStr()+sMessage+'\n')
-                except:
-                    pass
+                if MakeHistory:
+                    try:
+                        with open('ChatHistory.txt','a') as text_file:
+                            text_file.write(cTimeSStr()+sMessage+'\n')
+                    except:
+                        pass
                 Message += "you:"
                 Message += Commands[2]
                 if Commands[0] == "/w":
@@ -376,11 +388,12 @@ class ConnectionList(QtCore.QThread):
             formmsg = cTimeSStr() + self[ID].Username
             formmsg += " has requested the list of all clients"
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+self[ID].Username+" has requested the list of all clients\n")
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+self[ID].Username+" has requested the list of all clients\n")
+                except:
+                    pass
             try:
                 self.SendToID(ID,Message)
             except Exception:
@@ -396,11 +409,12 @@ class ConnectionList(QtCore.QThread):
                 self[ID].Username = NewName
                 formmsg = cTimeSStr() + Message
                 self.printer.emit(formmsg)
-                try:
-                    with open('history.txt','a') as text_file:
-                        text_file.write(cTimeSStr()+Message+'\n')
-                except:
-                    pass
+                if MakeHistory:
+                    try:
+                        with open('ChatHistory.txt','a') as text_file:
+                            text_file.write(cTimeSStr()+Message+'\n')
+                    except:
+                        pass
                 self.SendToAll(Message)
                 self.SendToAll_Updated_Client_List()
             except NameTaken as inst:
@@ -424,11 +438,12 @@ class ConnectionList(QtCore.QThread):
             Message += self[ID].Username
             formmsg = cTimeSStr() + Message
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+Message+'\n')
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+Message+'\n')
+                except:
+                    pass
             self.SendToAll(Message)
             
         elif Commands[0] == "scream":
@@ -437,11 +452,12 @@ class ConnectionList(QtCore.QThread):
             Message += " runs around in circles, screaming!</i>"
             formmsg = cTimeSStr() + Message
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+Message+'\n')
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+Message+'\n')
+                except:
+                    pass
             self.SendToAll(Message)
             
         elif Commands[0] == "me":
@@ -451,11 +467,12 @@ class ConnectionList(QtCore.QThread):
             Message += "</i>"
             formmsg = cTimeSStr() + Message
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+Message+'\n')
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+Message+'\n')
+                except:
+                    pass
             self.SendToAll(Message)
             
             
@@ -476,11 +493,12 @@ class ConnectionList(QtCore.QThread):
             formmsg = cTimeSStr() + self[ID].Username
             formmsg += " has requested the list of commands"
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+self[ID].Username+"has requested the list of commands\n")
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+self[ID].Username+"has requested the list of commands\n")
+                except:
+                    pass
             try:
                 self.SendToID(ID,Message)
             except Exception:
@@ -603,12 +621,15 @@ class ConnectionObject(QtCore.QThread):
                     continue
                 self.Username = Connections.CheckUsername(Username)
                 if requHist:
-                    try:
-                        with open('ClientChatHistory.txt', 'r') as content_file:
-                            ClientChatHistory = "\n\nChatHistory:\n\n"
-                            ClientChatHistory += content_file.read()
-                    except:
-                        ClientChatHistory = "No Chat History"
+                    if MakeHistory:
+                        try:
+                            with open('ClientChatHistory.txt', 'r') as content_file:
+                                ClientChatHistory = "\n\nChatHistory:\n\n"
+                                ClientChatHistory += content_file.read()
+                        except:
+                            ClientChatHistory = "No Chat History"
+                    else:
+                        ClientChatHistory = "Chat History is disabled by the Server"
                     self.client_socket.send(ClientChatHistory.encode("utf8"))
                 break
             except NameTaken as inst:
@@ -622,11 +643,12 @@ class ConnectionObject(QtCore.QThread):
         Message += str(self.MyID)
         formmsg = cTimeSStr() + Message
         self.printer.emit(formmsg)
-        try:
-            with open('history.txt','a') as text_file:
-                text_file.write(cTimeSStr()+Message+'\n')
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ChatHistory.txt','a') as text_file:
+                    text_file.write(cTimeSStr()+Message+'\n')
+            except:
+                pass
         self.IsLoggedIn = True
         self.CommandRights = True
         Connections.SendToAll(Message)
@@ -652,11 +674,12 @@ class ConnectionObject(QtCore.QThread):
         msg = self.Username + " has been Kicked"
         formmsg = cTimeSStr() + msg
         self.printer.emit(formmsg)
-        try:
-            with open('history.txt','a') as text_file:
-                text_file.write(formmsg+'\n')
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ChatHistory.txt','a') as text_file:
+                    text_file.write(formmsg+'\n')
+            except:
+                pass
         Connections.SendToAll(msg)
 
     def Mute(self):
@@ -667,11 +690,12 @@ class ConnectionObject(QtCore.QThread):
             msg = self.Username + " is no longer Muted"
         formmsg = cTimeSStr() + msg
         self.printer.emit(formmsg)
-        try:
-            with open('history.txt','a') as text_file:
-                text_file.write(formmsg+'\n')
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ChatHistory.txt','a') as text_file:
+                    text_file.write(formmsg+'\n')
+            except:
+                pass
         Connections.SendToAll(msg)
         Connections.SendToAll_Updated_Client_List()
 
@@ -683,11 +707,12 @@ class ConnectionObject(QtCore.QThread):
         msg += " has been Banned"
         formmsg = cTimeSStr() + msg
         self.printer.emit(formmsg)
-        try:
-            with open('history.txt','a') as text_file:
-                text_file.write(formmsg+'\n')
-        except:
-            pass
+        if MakeHistory:
+            try:
+                with open('ChatHistory.txt','a') as text_file:
+                    text_file.write(formmsg+'\n')
+            except:
+                pass
         Connections.SendToAll(msg)
 
 
@@ -715,11 +740,12 @@ class handle_client(QtCore.QThread):
             Message += " has disconnected"
             formmsg = cTimeSStr() + Message
             self.printer.emit(formmsg)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(cTimeSStr()+Message+'\n')
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(cTimeSStr()+Message+'\n')
+                except:
+                    pass
             if Connections[self.MyID].Username != "/Username Not Set Yet":
                 Connections.SendToAllButOne(self.MyID,Message)
                 Connections.SendToAll_Updated_Client_List()
@@ -772,16 +798,17 @@ class Server(QtCore.QThread):
             Message += str(self.IP)
             Message += "\',"
             Message += str(self.Port)
-            try:
-                with open('history.txt','a') as text_file:
-                    text_file.write(Message+'\n')
-            except:
-                pass
-            try:
-                with open('ClientChatHistory.txt','a') as text_file:
-                    text_file.write(Message+"\n")
-            except:
-                pass
+            if MakeHistory:
+                try:
+                    with open('ChatHistory.txt','a') as text_file:
+                        text_file.write(Message+'\n')
+                except:
+                    pass
+                try:
+                    with open('ClientChatHistory.txt','a') as text_file:
+                        text_file.write(Message+"\n")
+                except:
+                    pass
             self.receiver.emit(Message)
             threadList = []
             sock.listen() #maybe add a fixed number but a "reasonable value" is chosen automatically
@@ -855,12 +882,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         self.InputField.returnPressed.connect(self.on_sendButtonClicked)
         self.FontSizeBox.valueChanged.connect(self.ChangeFontSize)
         
-        try:
-            with open('History.txt', 'r') as content_file:
-                History = "\n\nChatHistory:\n\n"
-                History += content_file.read()
-        except:
-            History = "No Chat History"
+        if MakeHistory:
+            try:
+                with open('ChatHistory.txt', 'r') as content_file:
+                    History = "\n\nChatHistory:\n\n"
+                    History += content_file.read()
+            except:
+                History = "No Chat History"
+        else:
+            History = "Chat History is disabled by the Server"
         self.print_message(History)
         
 
@@ -903,11 +933,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
                             msg = Connections[ID].Username + msg
                             formmsg = cTimeSStr() + msg
                             form.print_message(formmsg)
-                            try:
-                                with open('history.txt','a') as text_file:
-                                    text_file.write(cTimeSStr()+msg+'\n')
-                            except:
-                                pass
+                            if MakeHistory:
+                                try:
+                                    with open('ChatHistory.txt','a') as text_file:
+                                        text_file.write(cTimeSStr()+msg+'\n')
+                                except:
+                                    pass
                             Connections.SendToAll_Updated_Client_List()
                             Connections.SendToAll(msg)
                         else:
@@ -921,21 +952,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
                     msg = "   SERVER   : " + msg
                     formmsg = cTimeSStr() + msg
                     form.print_message(formmsg)
-                    try:
-                        with open('history.txt','a') as text_file:
-                            text_file.write(cTimeSStr()+msg+'\n')
-                    except:
-                        pass
+                    if MakeHistory:
+                        try:
+                            with open('ChatHistory.txt','a') as text_file:
+                                text_file.write(cTimeSStr()+msg+'\n')
+                        except:
+                            pass
                     Connections.SendToAll(msg)
             else:
                 msg = "   SERVER   : " + msg
                 formmsg = cTimeSStr() + msg
                 form.print_message(formmsg)
-                try:
-                    with open('history.txt','a') as text_file:
-                        text_file.write(cTimeSStr()+msg+'\n')
-                except:
-                    pass
+                if MakeHistory:
+                    try:
+                        with open('ChatHistory.txt','a') as text_file:
+                            text_file.write(cTimeSStr()+msg+'\n')
+                    except:
+                        pass
                 Connections.SendToAll(msg)
         else:
             msg = "   SERVER   : " + msg

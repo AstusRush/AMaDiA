@@ -17,3 +17,5 @@ Config
 *.code-workspace
 .vscode
 Test.py
+ChatHistory.txt
+ClientChatChatHistory.txt
