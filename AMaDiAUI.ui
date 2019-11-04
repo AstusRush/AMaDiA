@@ -824,7 +824,15 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Chat_action_Open_Client"/>
     <addaction name="Menubar_Main_Chat_action_Open_Server"/>
    </widget>
+   <widget class="QMenu" name="Menubar_Main_Colour">
+    <property name="title">
+     <string>Colour</string>
+    </property>
+    <addaction name="Menubar_Main_Colour_action_Dark"/>
+    <addaction name="Menubar_Main_Colour_action_Bright"/>
+   </widget>
    <addaction name="Menubar_Main_Options"/>
+   <addaction name="Menubar_Main_Colour"/>
    <addaction name="Menubar_Main_Chat"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -919,6 +927,16 @@ p, li { white-space: pre-wrap; }
   <action name="Menubar_Main_Chat_action_Open_Server">
    <property name="text">
     <string>Open Server</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Colour_action_Dark">
+   <property name="text">
+    <string>Dark</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Colour_action_Bright">
+   <property name="text">
+    <string>Bright</string>
    </property>
   </action>
  </widget>

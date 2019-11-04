@@ -112,3 +112,7 @@ v0.13.0: Chat
 ++ The implementation is not final.
 ++ The messages are not encrypted! Do not send sensible data
 
+v0.13.1: New Paint
++ Added the option to choose between 2 Colour Palettes: Dark and Bright
++ The Chatwindows take the colour of the main window when they were opened
+

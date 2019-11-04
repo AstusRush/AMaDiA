@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.13.0"
+Version = "0.13.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -191,6 +191,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.Menubar_Main_Chat_action_Open_Client.triggered.connect(self.OpenClient)
         self.Menubar_Main_Chat_action_Open_Server.triggered.connect(self.OpenServer)
+        
+        self.Menubar_Main_Colour_action_Dark.triggered.connect(lambda: self.Recolour("Dark"))
+        self.Menubar_Main_Colour_action_Bright.triggered.connect(lambda: self.Recolour("Bright"))
 
         self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
@@ -277,6 +280,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.centralwidget.setFont(newFont)
         self.Menubar_Main.setFont(newFont)
         self.Menubar_Main_Options.setFont(newFont)
+        self.Menubar_Main_Colour.setFont(newFont)
         self.Menubar_Main_Chat.setFont(newFont)
 
     def InstallSyntaxHighlighter(self):
