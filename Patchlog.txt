@@ -116,3 +116,6 @@ v0.13.1: New Paint
 + Added the option to choose between 2 Colour Palettes: Dark and Bright
 + The Chatwindows take the colour of the main window when they were opened
 
+v0.13.1.1: Bugfix
++ Fixed a bug that would crash everything when trying to send a message from the Chat Server
+

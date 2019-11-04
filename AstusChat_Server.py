@@ -47,7 +47,6 @@ class ExcBanned(Exception):
         return repr(self.Message)
 
 class ConnectionList(QtCore.QThread):
-    global form
     # Do not do "List = []" here as it would be shared by all objects of
     # this class (even thoough it would probably not matter in this programm
     printer = QtCore.pyqtSignal(str)
@@ -557,7 +556,6 @@ def LookForCommands(Message):
 
 class ConnectionObject(QtCore.QThread):
     printer = QtCore.pyqtSignal(str)
-    global form
     global Connections
     def __init__(self,i):
         QtCore.QThread.__init__(self)
@@ -726,7 +724,6 @@ class handle_client(QtCore.QThread):
 
     def run(self):
         global Connections
-        global form
         try:
             formmsg = cTimeSStr() + "New Connection:"
             formmsg += str(Connections[self.MyID].client_socket)
@@ -773,7 +770,6 @@ class Server(QtCore.QThread):
     def run(self):
         global Connections
         global sock
-        global form
         global threadList
         
         try:
@@ -926,7 +922,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
                                 msg = " can use commands again"
                             msg = Connections[ID].Username + msg
                             formmsg = cTimeSStr() + msg
-                            form.print_message(formmsg)
+                            self.print_message(formmsg)
                             if MakeHistory:
                                 try:
                                     with open('ChatHistory.txt','a') as text_file:
@@ -945,7 +941,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
                 else:
                     msg = "   SERVER   : " + msg
                     formmsg = cTimeSStr() + msg
-                    form.print_message(formmsg)
+                    self.print_message(formmsg)
                     if MakeHistory:
                         try:
                             with open('ChatHistory.txt','a') as text_file:
@@ -956,7 +952,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
             else:
                 msg = "   SERVER   : " + msg
                 formmsg = cTimeSStr() + msg
-                form.print_message(formmsg)
+                self.print_message(formmsg)
                 if MakeHistory:
                     try:
                         with open('ChatHistory.txt','a') as text_file:
@@ -1131,7 +1127,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
 
 
 def main():
-    global form
     global bConnected
     bConnected = False
     app = QtWidgets.QApplication(sys.argv)
