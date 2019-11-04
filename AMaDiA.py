@@ -277,6 +277,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.centralwidget.setFont(newFont)
         self.Menubar_Main.setFont(newFont)
         self.Menubar_Main_Options.setFont(newFont)
+        self.Menubar_Main_Chat.setFont(newFont)
 
     def InstallSyntaxHighlighter(self):
         #self.Tab_1_InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1_InputField.document())

@@ -95,11 +95,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
         sockclient = socket.socket()
         #sockclient.settimeout(5)
         
-        InputFieldColour = "background-color: rgb(67, 71, 78);color: rgb(215, 213, 201);"
-        self.IPField.setStyleSheet(InputFieldColour)
-        self.PortField.setStyleSheet(InputFieldColour)
-        self.InputField.setStyleSheet(InputFieldColour)
-        self.FontSizeBox.setStyleSheet(InputFieldColour)
         
         self.RequestChatHistoryBox.setToolTip("Request Chat History on Login")
         self.OnlineList.setPlainText("No Server Connected")
@@ -215,6 +210,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
         newFont.setFamily(self.FontFamily)
         newFont.setPointSize(Size)
         self.setFont(newFont)
+        self.centralwidget.setFont(newFont)
         
     def wheelEvent(self, QWheelEvent):
         modifiers = QtGui.QGuiApplication.keyboardModifiers()

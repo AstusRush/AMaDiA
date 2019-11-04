@@ -855,12 +855,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         global bConnected
         
         
-        InputFieldColour = "background-color: rgb(67, 71, 78);color: rgb(215, 213, 201);"
-        self.IPField.setStyleSheet(InputFieldColour)
-        self.PortField.setStyleSheet(InputFieldColour)
-        self.InputField.setStyleSheet(InputFieldColour)
-        self.FontSizeBox.setStyleSheet(InputFieldColour)
-        
         
         self.PortField.setText("32005")
         myIP = str(socket.gethostbyname(socket.gethostname()))
@@ -1132,6 +1126,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         newFont.setFamily(self.FontFamily)
         newFont.setPointSize(Size)
         self.setFont(newFont)
+        self.centralwidget.setFont(newFont)
 
 
 
