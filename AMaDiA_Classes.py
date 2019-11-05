@@ -34,8 +34,8 @@ import AMaDiA_ReplacementTables as ART
 #from External_Libraries.python_control_master import control
 try:
     import control
-except AF.common_exceptions:
-    Error = AF.ExceptionOutput(sys.exc_info())
+except ModuleNotFoundError:
+    print("Could not import control module")
 
 import importlib
 def ReloadModules():
