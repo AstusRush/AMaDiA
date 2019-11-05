@@ -26,10 +26,16 @@ from matplotlib import pyplot as plt
 from matplotlib import colors
 import scipy
 
+
 import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
 
 
+#from External_Libraries.python_control_master import control
+try:
+    import control
+except AF.common_exceptions:
+    Error = AF.ExceptionOutput(sys.exc_info())
 
 import importlib
 def ReloadModules():

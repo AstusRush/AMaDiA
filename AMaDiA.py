@@ -59,7 +59,7 @@ r.maxother = 500       # max elements displayed for other including np.ndarray
 r.maxstring = 40    # max characters displayed for strings
 
 try:
-    from keyboard_master import keyboard
+    from External_Libraries.keyboard_master import keyboard
 except AF.common_exceptions :
     AF.ExceptionOutput(sys.exc_info())
 
