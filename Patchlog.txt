@@ -130,3 +130,6 @@ v0.13.1.4: negative power
 + The parser now supports ᵀ to transpose a matrix
 + All trailing zeroes are now removed from all numbers
 
+v0.13.1.5: Inactive Plot Colour
++ Fixed the colour of inactive plots in bright mode
+
