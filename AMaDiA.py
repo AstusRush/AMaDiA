@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.13.1.4"
+Version = "0.13.1.5"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -270,6 +270,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         for i in self.findChildren(AW.MplWidget):
             i.SetColour(self.BG_Colour, self.TextColour)
         self.init_Animations_With_Colour()
+        brush = self.Palette.text()
+        for i in range(self.Tab_3_History.count()):
+            if self.Tab_3_History.item(i).data(100).current_ax == None:
+                self.Tab_3_History.item(i).setForeground(brush)
         
         
     def ChangeFontSize(self):
@@ -1196,8 +1200,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_Display.UseTeX(False)
             self.Tab_3_Display.canvas.ax.clear()
             self.Tab_3_Display.canvas.draw()
-        brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
-        brush.setStyle(QtCore.Qt.SolidPattern)
+        brush = self.Palette.text()
         for i in range(self.Tab_3_History.count()):
             self.Tab_3_History.item(i).setForeground(brush)
             self.Tab_3_History.item(i).data(100).current_ax = None
