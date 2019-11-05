@@ -159,10 +159,10 @@ class AMaS: # Astus' Mathematical Structure
         self.tab_1_ref = None
         self.tab_2_is = False
         self.tab_2_ref = None
-        self.tab_3_is = False
-        self.tab_3_ref = None
-        self.Tab_5_is = False
-        self.Tab_5_ref = None
+        self.Tab_3_tab_1_is = False
+        self.Tab_3_tab_1_ref = None
+        self.Tab_4_is = False
+        self.Tab_4_ref = None
                 
     def init_2D_plot(self):
         self.Plot_is_initialized = True

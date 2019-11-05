@@ -91,6 +91,9 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <property name="usesScrollButtons">
+       <bool>false</bool>
+      </property>
       <widget class="QWidget" name="Tab_1">
        <property name="autoFillBackground">
         <bool>true</bool>
@@ -220,319 +223,329 @@
       </widget>
       <widget class="QWidget" name="Tab_3">
        <attribute name="title">
-        <string>2D Plot</string>
+        <string>Plotter</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_10">
-        <item row="1" column="3">
-         <widget class="QPushButton" name="Tab_3_Button_Clear">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item row="0" column="0">
+         <widget class="QTabWidget" name="Tab_3_tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
           </property>
-          <property name="text">
-           <string>Clear</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="LineEdit" name="Tab_3_Formula_Field">
-          <property name="placeholderText">
-           <string>Enter a function f(x) (eg. &quot;x^2&quot;) or a constant (eg. &quot;23+4&quot; for a horizontal line or &quot;x=23+4&quot; for a vertical line at 27) and hit return.</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="4">
-         <widget class="QPushButton" name="Tab_3_Button_Plot">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Plot</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="5">
-         <layout class="QGridLayout" name="Tab_3_gridLayout">
-          <item row="0" column="0">
-           <widget class="QSplitter" name="Tab_3_splitter">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <widget class="QWidget" name="layoutWidget">
-             <layout class="QGridLayout" name="Tab_3_gridLayout_upper">
-              <item row="0" column="2">
-               <widget class="QTabWidget" name="Tab_3_TabWidget">
-                <property name="currentIndex">
-                 <number>0</number>
+          <widget class="QWidget" name="Tab_3_tab_1">
+           <attribute name="title">
+            <string>2D</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="Tab_3_tab_1_gridLayout">
+              <item row="1" column="1">
+               <widget class="QPushButton" name="Tab_3_tab_1_Button_Clear">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <widget class="QWidget" name="Tab_3_Tab_1_History">
-                 <attribute name="title">
-                  <string>History</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_5">
-                  <item row="0" column="0">
-                   <widget class="QListWidget" name="Tab_3_History">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="LineEdit" name="Tab_3_tab_1_Formula_Field">
+                <property name="placeholderText">
+                 <string>Enter a function f(x) (eg. &quot;x^2&quot;) or a constant (eg. &quot;23+4&quot; for a horizontal line or &quot;x=23+4&quot; for a vertical line at 27) and hit return.</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="Tab_3_tab_1_Button_Plot">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Plot</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="3">
+               <widget class="QSplitter" name="Tab_3_tab_1_splitter">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <widget class="QWidget" name="layoutWidget">
+                 <layout class="QGridLayout" name="Tab_3_tab_1_gridLayout_upper">
+                  <item row="0" column="2">
+                   <widget class="QTabWidget" name="Tab_3_tab_1_TabWidget">
+                    <property name="currentIndex">
+                     <number>0</number>
                     </property>
-                    <property name="selectionMode">
-                     <enum>QAbstractItemView::ExtendedSelection</enum>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="Tab_3_Tab_2_Config">
-                 <attribute name="title">
-                  <string>Config</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_8">
-                  <item row="12" column="0">
-                   <widget class="QScrollArea" name="Tab_3_Tab_2_Config_scrollArea">
-                    <property name="widgetResizable">
-                     <bool>true</bool>
-                    </property>
-                    <widget class="QWidget" name="Tab_3_Tab_2_Config_scrollAreaWidgetContents">
-                     <property name="geometry">
-                      <rect>
-                       <x>0</x>
-                       <y>0</y>
-                       <width>234</width>
-                       <height>310</height>
-                      </rect>
-                     </property>
-                     <layout class="QGridLayout" name="gridLayout_11">
-                      <item row="8" column="0">
-                       <widget class="QCheckBox" name="Tab_3_YLim_Check">
-                        <property name="toolTip">
-                         <string>Limit the part of the y axis that is shown</string>
-                        </property>
-                        <property name="text">
-                         <string>Limit Y</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="7" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_XLim_max">
-                        <property name="decimals">
-                         <number>5</number>
-                        </property>
-                        <property name="minimum">
-                         <double>-1000000.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                         <double>1000000.000000000000000</double>
-                        </property>
-                        <property name="value">
-                         <double>5.000000000000000</double>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="7" column="0">
-                       <widget class="QDoubleSpinBox" name="Tab_3_XLim_min">
-                        <property name="decimals">
-                         <number>5</number>
-                        </property>
-                        <property name="minimum">
-                         <double>-1000000.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                         <double>1000000.000000000000000</double>
-                        </property>
-                        <property name="value">
-                         <double>-5.000000000000000</double>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="4" column="0" colspan="2">
-                       <widget class="Line" name="line_2">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="5" column="1">
-                       <widget class="QCheckBox" name="Tab_3_Axis_ratio_Checkbox">
-                        <property name="text">
-                         <string>1:1 axis ratio</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_To_Spinbox">
-                        <property name="decimals">
-                         <number>5</number>
-                        </property>
-                        <property name="minimum">
-                         <double>-1000000.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                         <double>1000000.000000000000000</double>
-                        </property>
-                        <property name="value">
-                         <double>10.000000000000000</double>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="12" column="0" colspan="2">
-                       <spacer name="verticalSpacer">
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>20</width>
-                          <height>40</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                      <item row="2" column="0">
-                       <widget class="QComboBox" name="Tab_3_Steps_comboBox">
-                        <property name="currentText">
-                         <string>Steps total</string>
-                        </property>
-                        <property name="currentIndex">
-                         <number>0</number>
-                        </property>
-                        <item>
-                         <property name="text">
-                          <string>Steps total</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Steps per Unit</string>
-                         </property>
-                        </item>
-                       </widget>
-                      </item>
-                      <item row="9" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_YLim_max">
-                        <property name="decimals">
-                         <number>5</number>
-                        </property>
-                        <property name="minimum">
-                         <double>-1000000.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                         <double>1000000.000000000000000</double>
-                        </property>
-                        <property name="value">
-                         <double>50.000000000000000</double>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="1">
-                       <widget class="QDoubleSpinBox" name="Tab_3_From_Spinbox">
-                        <property name="decimals">
-                         <number>5</number>
-                        </property>
-                        <property name="minimum">
-                         <double>-1000000.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                         <double>1000000.000000000000000</double>
-                        </property>
-                        <property name="value">
-                         <double>-10.000000000000000</double>
-                        </property>
-                       </widget>
-                      </item>
+                    <widget class="QWidget" name="Tab_3_tab_1_tab_1_History">
+                     <attribute name="title">
+                      <string>History</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_5">
                       <item row="0" column="0">
-                       <widget class="QLabel" name="Tab_3_Label_from">
-                        <property name="text">
-                         <string>From</string>
+                       <widget class="QListWidget" name="Tab_3_tab_1_History">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
                         </property>
-                        <property name="alignment">
-                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="6" column="0">
-                       <widget class="QCheckBox" name="Tab_3_XLim_Check">
-                        <property name="toolTip">
-                         <string>Limit the part of the x axis that is shown</string>
-                        </property>
-                        <property name="text">
-                         <string>Limit X</string>
+                        <property name="selectionMode">
+                         <enum>QAbstractItemView::ExtendedSelection</enum>
                         </property>
                        </widget>
                       </item>
-                      <item row="11" column="0" colspan="2">
-                       <widget class="Line" name="line">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="9" column="0">
-                       <widget class="QDoubleSpinBox" name="Tab_3_YLim_min">
-                        <property name="decimals">
-                         <number>5</number>
-                        </property>
-                        <property name="minimum">
-                         <double>-1000000.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                         <double>1000000.000000000000000</double>
-                        </property>
-                        <property name="value">
-                         <double>-25.000000000000000</double>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="5" column="0">
-                       <widget class="QCheckBox" name="Tab_3_Draw_Grid_Checkbox">
-                        <property name="text">
-                         <string>Draw Grid</string>
-                        </property>
-                        <property name="checked">
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="Tab_3_tab_1_tab_2_Config">
+                     <attribute name="title">
+                      <string>Config</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_8">
+                      <item row="12" column="0">
+                       <widget class="QScrollArea" name="Tab_3_tab_1_tab_2_Config_scrollArea">
+                        <property name="widgetResizable">
                          <bool>true</bool>
                         </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="1">
-                       <widget class="QSpinBox" name="Tab_3_Steps_Spinbox">
-                        <property name="minimum">
-                         <number>1</number>
-                        </property>
-                        <property name="maximum">
-                         <number>100000</number>
-                        </property>
-                        <property name="value">
-                         <number>1000</number>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="Tab_3_Label_to">
-                        <property name="text">
-                         <string>To</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="13" column="1">
-                       <widget class="QPushButton" name="Tab_3_Button_Plot_SymPy">
-                        <property name="toolTip">
-                         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+                        <widget class="QWidget" name="Tab_3_tab_1_tab_2_Config_scrollAreaWidgetContents">
+                         <property name="geometry">
+                          <rect>
+                           <x>0</x>
+                           <y>0</y>
+                           <width>234</width>
+                           <height>310</height>
+                          </rect>
+                         </property>
+                         <layout class="QGridLayout" name="gridLayout_11">
+                          <item row="8" column="0">
+                           <widget class="QCheckBox" name="Tab_3_tab_1_YLim_Check">
+                            <property name="toolTip">
+                             <string>Limit the part of the y axis that is shown</string>
+                            </property>
+                            <property name="text">
+                             <string>Limit Y</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="7" column="1">
+                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_XLim_max">
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>-1000000.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>1000000.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>5.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="7" column="0">
+                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_XLim_min">
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>-1000000.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>1000000.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>-5.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="0" colspan="2">
+                           <widget class="Line" name="line_2">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="1">
+                           <widget class="QCheckBox" name="Tab_3_tab_1_Axis_ratio_Checkbox">
+                            <property name="text">
+                             <string>1:1 axis ratio</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_To_Spinbox">
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>-1000000.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>1000000.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>10.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="12" column="0" colspan="2">
+                           <spacer name="verticalSpacer">
+                            <property name="orientation">
+                             <enum>Qt::Vertical</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>20</width>
+                              <height>40</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                          <item row="2" column="0">
+                           <widget class="QComboBox" name="Tab_3_tab_1_Steps_comboBox">
+                            <property name="currentText">
+                             <string>Steps total</string>
+                            </property>
+                            <property name="currentIndex">
+                             <number>0</number>
+                            </property>
+                            <item>
+                             <property name="text">
+                              <string>Steps total</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Steps per Unit</string>
+                             </property>
+                            </item>
+                           </widget>
+                          </item>
+                          <item row="9" column="1">
+                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_YLim_max">
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>-1000000.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>1000000.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>50.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_From_Spinbox">
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>-1000000.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>1000000.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>-10.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="Tab_3_tab_1_Label_from">
+                            <property name="text">
+                             <string>From</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="6" column="0">
+                           <widget class="QCheckBox" name="Tab_3_tab_1_XLim_Check">
+                            <property name="toolTip">
+                             <string>Limit the part of the x axis that is shown</string>
+                            </property>
+                            <property name="text">
+                             <string>Limit X</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="11" column="0" colspan="2">
+                           <widget class="Line" name="line">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="9" column="0">
+                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_YLim_min">
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>-1000000.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>1000000.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>-25.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="0">
+                           <widget class="QCheckBox" name="Tab_3_tab_1_Draw_Grid_Checkbox">
+                            <property name="text">
+                             <string>Draw Grid</string>
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QSpinBox" name="Tab_3_tab_1_Steps_Spinbox">
+                            <property name="minimum">
+                             <number>1</number>
+                            </property>
+                            <property name="maximum">
+                             <number>100000</number>
+                            </property>
+                            <property name="value">
+                             <number>1000</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="Tab_3_tab_1_Label_to">
+                            <property name="text">
+                             <string>To</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="13" column="1">
+                           <widget class="QPushButton" name="Tab_3_tab_1_Button_Plot_SymPy">
+                            <property name="toolTip">
+                             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -552,30 +565,34 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2';&quot;&gt;  (The main plotter has several methods of plotting which are used&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2';&quot;&gt;   if the normal method fails while the SymPy plotter only has the normal method)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>Plot with SymPy</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="10" column="0" colspan="2">
-                       <widget class="QPushButton" name="Tab_3_RedrawPlot_Button">
-                        <property name="toolTip">
-                         <string>Apply settings</string>
-                        </property>
-                        <property name="text">
-                         <string>Redraw Plot</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="13" column="0">
-                       <widget class="QPushButton" name="Tab_3_Button_SavePlot">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the current Plot (exactly as displayed including size and resoltuion)&lt;/p&gt;&lt;p&gt;as a .png in the Plots folder where the AMaDiA.py is located.&lt;/p&gt;&lt;p&gt;Tip: This option is also accessible in the right klick menu of the Plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>Save Plot</string>
-                        </property>
+                            </property>
+                            <property name="text">
+                             <string>Plot with SymPy</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="10" column="0" colspan="2">
+                           <widget class="QPushButton" name="Tab_3_tab_1_RedrawPlot_Button">
+                            <property name="toolTip">
+                             <string>Apply settings</string>
+                            </property>
+                            <property name="text">
+                             <string>Redraw Plot</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="13" column="0">
+                           <widget class="QPushButton" name="Tab_3_tab_1_Button_SavePlot">
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the current Plot (exactly as displayed including size and resoltuion)&lt;/p&gt;&lt;p&gt;as a .png in the Plots folder where the AMaDiA.py is located.&lt;/p&gt;&lt;p&gt;Tip: This option is also accessible in the right klick menu of the Plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
+                            <property name="text">
+                             <string>Save Plot</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
                        </widget>
                       </item>
                      </layout>
@@ -584,83 +601,88 @@ p, li { white-space: pre-wrap; }
                   </item>
                  </layout>
                 </widget>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QScrollArea" name="Tab_3_ScrollArea">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>5</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="sizeAdjustPolicy">
-              <enum>QAbstractScrollArea::AdjustToContents</enum>
-             </property>
-             <property name="widgetResizable">
-              <bool>true</bool>
-             </property>
-             <widget class="QWidget" name="Tab_3_ScrollArea_Layout">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>578</width>
-                <height>329</height>
-               </rect>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_6">
-               <item row="0" column="0">
-                <widget class="MplWidget_2D_Plot" name="Tab_3_Display" native="true">
+                <widget class="QScrollArea" name="Tab_3_tab_1_ScrollArea">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-                   <horstretch>0</horstretch>
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>5</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="sizeAdjustPolicy">
+                  <enum>QAbstractScrollArea::AdjustToContents</enum>
+                 </property>
+                 <property name="widgetResizable">
+                  <bool>true</bool>
+                 </property>
+                 <widget class="QWidget" name="Tab_3_tab_1_ScrollArea_Layout">
+                  <property name="geometry">
+                   <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>556</width>
+                    <height>309</height>
+                   </rect>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_6">
+                   <item row="0" column="0">
+                    <widget class="MplWidget_2D_Plot" name="Tab_3_tab_1_Display" native="true">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </widget>
-               </item>
-              </layout>
-             </widget>
-            </widget>
-           </widget>
-          </item>
-         </layout>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="Tab_3_tab_2">
+           <attribute name="title">
+            <string>WIP</string>
+           </attribute>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Tab_5">
+      <widget class="QWidget" name="Tab_4">
        <attribute name="title">
         <string>Multi-Dim</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="0" column="0">
-         <widget class="QSplitter" name="Tab_5_Splitter_Main">
+         <widget class="QSplitter" name="Tab_4_Splitter_Main">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QSplitter" name="Tab_5_Splitter_Left">
+          <widget class="QSplitter" name="Tab_4_Splitter_Left">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <widget class="QTabWidget" name="Tab_5_tabWidget">
+           <widget class="QTabWidget" name="Tab_4_tabWidget">
             <property name="currentIndex">
              <number>0</number>
             </property>
-            <widget class="QWidget" name="Tab_5_Tab_1">
+            <widget class="QWidget" name="Tab_4_tab_1">
              <attribute name="title">
               <string>Matrix Input</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout_9">
               <item row="1" column="0">
-               <widget class="QLineEdit" name="Tab_5_1_Dimension_Input">
+               <widget class="QLineEdit" name="Tab_4_1_Dimension_Input">
                 <property name="inputMask">
                  <string>00\xD0</string>
                 </property>
@@ -670,7 +692,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="0" column="0" colspan="4">
-               <widget class="QTableWidget" name="Tab_5_1_Matrix_Input">
+               <widget class="QTableWidget" name="Tab_4_1_Matrix_Input">
                 <property name="rowCount">
                  <number>3</number>
                 </property>
@@ -686,21 +708,21 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="1" column="3">
-               <widget class="QPushButton" name="Tab_5_1_Save_Matrix_Button">
+               <widget class="QPushButton" name="Tab_4_1_Save_Matrix_Button">
                 <property name="text">
                  <string>Save</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QPushButton" name="Tab_5_1_Configure_Button">
+               <widget class="QPushButton" name="Tab_4_1_Configure_Button">
                 <property name="text">
                  <string>Configure</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QLineEdit" name="Tab_5_1_Name_Input">
+               <widget class="QLineEdit" name="Tab_4_1_Name_Input">
                 <property name="placeholderText">
                  <string>Name</string>
                 </property>
@@ -708,34 +730,34 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="Tab_5_Tab_2">
+            <widget class="QWidget" name="Tab_4_tab_2">
              <attribute name="title">
               <string>History</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout_4">
               <item row="1" column="3">
-               <widget class="QPushButton" name="Tab_5_2_New_Equation_Button">
+               <widget class="QPushButton" name="Tab_4_2_New_Equation_Button">
                 <property name="text">
                  <string>New Equation</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="0" colspan="4">
-               <widget class="QListWidget" name="Tab_5_History">
+               <widget class="QListWidget" name="Tab_4_History">
                 <property name="selectionMode">
                  <enum>QAbstractItemView::ExtendedSelection</enum>
                 </property>
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QPushButton" name="Tab_5_2_Load_Selected_Button">
+               <widget class="QPushButton" name="Tab_4_2_Load_Selected_Button">
                 <property name="text">
                  <string>Load Selected</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="Tab_5_2_New_Equation_Name_Input">
+               <widget class="QLineEdit" name="Tab_4_2_New_Equation_Name_Input">
                 <property name="toolTip">
                  <string>Enter the equation name</string>
                 </property>
@@ -747,23 +769,23 @@ p, li { white-space: pre-wrap; }
              </layout>
             </widget>
            </widget>
-           <widget class="QListWidget" name="Tab_5_Matrix_List">
+           <widget class="QListWidget" name="Tab_4_Matrix_List">
             <property name="selectionMode">
              <enum>QAbstractItemView::ExtendedSelection</enum>
             </property>
            </widget>
           </widget>
-          <widget class="QSplitter" name="Tab_5_Splitter_Right">
+          <widget class="QSplitter" name="Tab_4_Splitter_Right">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
            <widget class="QWidget" name="layoutWidget">
-            <layout class="QGridLayout" name="Tab_5_Display_gridLayout">
+            <layout class="QGridLayout" name="Tab_4_Display_gridLayout">
              <item row="0" column="0">
-              <widget class="MplWidget_LaTeX" name="Tab_5_Display" native="true"/>
+              <widget class="MplWidget_LaTeX" name="Tab_4_Display" native="true"/>
              </item>
              <item row="1" column="0">
-              <widget class="LineEdit" name="Tab_5_FormulaInput">
+              <widget class="LineEdit" name="Tab_4_FormulaInput">
                <property name="placeholderText">
                 <string>WIP: Input a formula (using the names of the matrices) and hit return</string>
                </property>
@@ -771,11 +793,45 @@ p, li { white-space: pre-wrap; }
              </item>
             </layout>
            </widget>
-           <widget class="TextEdit" name="Tab_5_DirectInput">
+           <widget class="TextEdit" name="Tab_4_DirectInput">
             <property name="placeholderText">
              <string>WIP: This Widget has currently no function and is a placholder...</string>
             </property>
            </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Tab_5">
+       <attribute name="title">
+        <string>Control</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_13">
+        <item row="0" column="0">
+         <widget class="QTabWidget" name="Tab_5_tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="Tab_5_tab_1">
+           <attribute name="title">
+            <string>Tab 1</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="Tab_5_tab_2">
+           <attribute name="title">
+            <string>Tab 2</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="Tab_5_tab_3">
+           <attribute name="title">
+            <string>Seite</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="Tab_5_tab_4">
+           <attribute name="title">
+            <string>Seite</string>
+           </attribute>
           </widget>
          </widget>
         </item>
@@ -974,27 +1030,24 @@ p, li { white-space: pre-wrap; }
   <tabstop>Tab_2_ConvertButton</tabstop>
   <tabstop>Tab_2_LaTeXOutput</tabstop>
   <tabstop>Tab_2_History</tabstop>
-  <tabstop>Tab_3_Formula_Field</tabstop>
-  <tabstop>Tab_3_Button_Plot</tabstop>
-  <tabstop>Tab_3_Button_Clear</tabstop>
-  <tabstop>Tab_3_ScrollArea</tabstop>
-  <tabstop>Tab_3_TabWidget</tabstop>
-  <tabstop>Tab_3_History</tabstop>
-  <tabstop>Tab_3_Tab_2_Config_scrollArea</tabstop>
-  <tabstop>Tab_3_From_Spinbox</tabstop>
-  <tabstop>Tab_3_To_Spinbox</tabstop>
-  <tabstop>Tab_3_Steps_comboBox</tabstop>
-  <tabstop>Tab_3_Steps_Spinbox</tabstop>
-  <tabstop>Tab_3_Draw_Grid_Checkbox</tabstop>
-  <tabstop>Tab_3_Axis_ratio_Checkbox</tabstop>
-  <tabstop>Tab_3_XLim_Check</tabstop>
-  <tabstop>Tab_3_XLim_min</tabstop>
-  <tabstop>Tab_3_XLim_max</tabstop>
-  <tabstop>Tab_3_YLim_Check</tabstop>
-  <tabstop>Tab_3_YLim_min</tabstop>
-  <tabstop>Tab_3_YLim_max</tabstop>
-  <tabstop>Tab_3_RedrawPlot_Button</tabstop>
-  <tabstop>Tab_3_Button_Plot_SymPy</tabstop>
+  <tabstop>Tab_3_tab_1_ScrollArea</tabstop>
+  <tabstop>Tab_3_tab_1_TabWidget</tabstop>
+  <tabstop>Tab_3_tab_1_History</tabstop>
+  <tabstop>Tab_3_tab_1_tab_2_Config_scrollArea</tabstop>
+  <tabstop>Tab_3_tab_1_From_Spinbox</tabstop>
+  <tabstop>Tab_3_tab_1_To_Spinbox</tabstop>
+  <tabstop>Tab_3_tab_1_Steps_comboBox</tabstop>
+  <tabstop>Tab_3_tab_1_Steps_Spinbox</tabstop>
+  <tabstop>Tab_3_tab_1_Draw_Grid_Checkbox</tabstop>
+  <tabstop>Tab_3_tab_1_Axis_ratio_Checkbox</tabstop>
+  <tabstop>Tab_3_tab_1_XLim_Check</tabstop>
+  <tabstop>Tab_3_tab_1_XLim_min</tabstop>
+  <tabstop>Tab_3_tab_1_XLim_max</tabstop>
+  <tabstop>Tab_3_tab_1_YLim_Check</tabstop>
+  <tabstop>Tab_3_tab_1_YLim_min</tabstop>
+  <tabstop>Tab_3_tab_1_YLim_max</tabstop>
+  <tabstop>Tab_3_tab_1_RedrawPlot_Button</tabstop>
+  <tabstop>Tab_3_tab_1_Button_Plot_SymPy</tabstop>
  </tabstops>
  <resources/>
  <connections/>
