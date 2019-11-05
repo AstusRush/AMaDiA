@@ -133,3 +133,7 @@ v0.13.1.4: negative power
 v0.13.1.5: Inactive Plot Colour
 + Fixed the colour of inactive plots in bright mode
 
+v0.13.1.6: Copy Notifications
++ Doubleclicking the notification now copies it to the clipboard.
++ If LaTeX or Control are not installed the user now gets a notification.
+

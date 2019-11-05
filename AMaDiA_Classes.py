@@ -31,11 +31,10 @@ import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
 
 
-#from External_Libraries.python_control_master import control
 try:
     import control
 except ModuleNotFoundError:
-    print("Could not import control module")
+    pass
 
 import importlib
 def ReloadModules():

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.13.1.5"
+Version = "0.13.1.6"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -62,6 +62,13 @@ try:
     from External_Libraries.keyboard_master import keyboard
 except AF.common_exceptions :
     AF.ExceptionOutput(sys.exc_info())
+    
+try:
+    import control
+except ModuleNotFoundError:
+    Control_Installed = False
+else:
+    Control_Installed = True
 
 np.set_printoptions(threshold=100)
 
@@ -127,6 +134,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         # Initialize important variables and lists
         self.ans = "1"
+        self.LastNotification = ""
         self.ThreadList = []
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
@@ -147,6 +155,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             i.installEventFilter(self)
         for i in self.findChildren(QtWidgets.QTableWidget):
             i.installEventFilter(self)
+        self.TopBar_Error_Label.installEventFilter(self)
         
         # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
@@ -181,6 +190,18 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             #       to not accidentially erase the plots of the user as this would be really bad...
 
         self.Tab_1_InputField.setFocus()
+        
+        msg = ""
+        if not AF.LaTeX_dvipng_Installed:
+            msg += "Please install LaTeX and dvipng to enable the LaTeX output"
+        if not Control_Installed:
+            if msg != "":
+                msg += "\n\n"
+            msg += "Control is not installed. To enable the Control tab install control\n"
+            msg += "If you have conda installed use: conda install -c conda-forge control\n"
+            msg += "Otherwise reffer to: https://python-control.readthedocs.io/en/0.8.2/intro.html#installation"
+        if msg != "":
+            self.NotifyUser(3,msg)
 
         
 # ---------------------------------- Init and Maintanance ----------------------------------
@@ -397,6 +418,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def NotifyUser(self,Type,Text,Time=None):
         """1 = Error , 2 = Warning , 3 = Notification"""
+        self.LastNotification = Text
         if Type == 1:
             self.Error_Display(Text,Time)
         elif Type == 2:
@@ -667,6 +689,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #                    print("3",event.key())
         #                    self.MainApp.sendEvent(source,event)
         #                    return True
+     # ---------------------------------- Other Events ----------------------------------
+        elif (event.type() == 4 and source is self.TopBar_Error_Label): # Copy last Notification on Doubleclick
+              QApplication.clipboard().setText(self.LastNotification)
      # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
         return super(AMaDiA_Main_Window, self).eventFilter(source, event)
         
