@@ -1,6 +1,10 @@
+# Required:
 sympy
 numpy
 scipy
+
+# Recommended:
+slycot
 
 # Already Included to make installation easier:
 control
