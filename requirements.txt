@@ -1,6 +1,7 @@
 # Required:
 sympy
 numpy
+matplotlib
 scipy
 
 # Recommended:
