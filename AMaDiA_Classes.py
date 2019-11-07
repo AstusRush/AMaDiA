@@ -31,10 +31,7 @@ import AMaDiA_Functions as AF
 import AMaDiA_ReplacementTables as ART
 
 
-try:
-    import control
-except ModuleNotFoundError:
-    pass
+from External_Libraries.python_control_master import control
 
 import importlib
 def ReloadModules():
@@ -657,6 +654,12 @@ class AMaS: # Astus' Mathematical Structure
         else:
             return True
             
+    def Solve_PDE_Version_1(self):
+        #TODO: Add support for Partial Differential Equations
+        # https://docs.sympy.org/latest/modules/solvers/pde.html
+        # PDEs are currently solveable with:
+        # pdsolve(1 + (2*(d(u(x,y))/dx)) + (3*(d(u(x,y))/dy)))
+        pass
 
     def Evaluate_(self):
         # Placeholder

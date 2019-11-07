@@ -22,6 +22,8 @@ import time
 import numpy as np
 import scipy.integrate
 
+from External_Libraries.python_control_master import control
+
 import AMaDiA
 import AMaDiA_Widgets as AW
 import AMaDiA_Functions as AF

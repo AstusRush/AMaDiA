@@ -17,6 +17,7 @@ import sympy
 import sys
 import re
 
+from External_Libraries.python_control_master import control
 
 import AMaDiA_Functions as AF
 import AMaDiA_Classes as AC

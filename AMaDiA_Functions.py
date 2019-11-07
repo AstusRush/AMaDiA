@@ -22,6 +22,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
 
+from External_Libraries.python_control_master import control
 
 import AMaDiA_Classes as AC
 import AMaDiA_ReplacementTables as ART

@@ -141,3 +141,8 @@ v0.13.1.7: UI Preparation
 + Added Tab 5 for System Control
 + Added a tab widget to tab 3 in preparation for 3D-, Complex- and nD- Plotter
 
+v0.13.1.8: Full Screen
++ F11 toggles fullscreen
++ Added the control library to the new External_Libraries folder
++ Added "How to install" to the readme and added 2 batch files to make installation and Running/Updating easy on Windows
+

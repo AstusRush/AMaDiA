@@ -1,0 +1,25 @@
+*.pyc
+build/
+dist/
+htmlcov/
+.ropeproject/
+MANIFEST
+control/_version.py
+__conda_*.txt
+record.txt
+build.log
+*.egg-info/
+.eggs/
+.coverage
+doc/_build
+doc/generated
+examples/.ipynb_checkpoints/
+.settings/org.eclipse.core.resources.prefs
+.pydevproject
+.project
+Untitled*.ipynb
+*.idea/
+
+# Files created by or for emacs (RMM, 29 Dec 2017)
+*~
+TAGS

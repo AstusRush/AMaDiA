@@ -8,6 +8,8 @@ roots(exp)		# solve exp for unknown variables and show the multiplicity of each 
 
 linsolve(exp)	# If exp is a  n x n+1  Matrix than this solves the linear system of equations
 
+pdsolve(exp)	# solve a partial differential equation
+
 # Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
 simplify(exp)     # Simplifies
 expand(exp)       # Solve all * and **

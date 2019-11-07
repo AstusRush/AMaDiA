@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.13.1.7"
+Version = "0.13.1.8"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -13,26 +13,36 @@ if __name__ == "__main__":
     print(WindowTitle)
     print("Loading Modules")#,end="")
 
+
+# import qt Modules
+from PyQt5.Qt import QApplication, QClipboard
+from PyQt5 import QtWidgets,QtCore,QtGui,Qt
+#import PyQt5.Qt as Qt
+
+# import standard modules
 from distutils.spawn import find_executable
 import sys
-from PyQt5 import QtWidgets,QtCore,QtGui
-from PyQt5.Qt import QApplication, QClipboard
-import PyQt5.Qt as Qt
 import socket
 import time
 import platform
 import errno
 import os
 import pathlib
-import sympy
-from sympy.parsing.sympy_parser import parse_expr
 import importlib
 import re
 
+# import Math modules
+import sympy
+from sympy.parsing.sympy_parser import parse_expr
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+import matplotlib
 
+# Import AMaDiA Core Modules
 # To Convert ui to py: (Commands for Anaconda Prompt)
 # cd C:"\Users\Robin\Desktop\Projects\AMaDiA"
 # pyuic5 AMaDiAUI.ui -o AMaDiAUI.py
@@ -45,12 +55,10 @@ import AMaDiA_Colour
 import AMaDiA_Threads as AT
 import AstusChat_Client
 import AstusChat_Server
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
-import matplotlib
 from Test_Input import Test_Input
+
+
+# To limit the length of output (Currently used to reduce the length of the y vector when an error in the plotter occurs)
 import reprlib
 r = reprlib.Repr()
 r.maxlist = 20       # max elements displayed for lists
@@ -58,17 +66,24 @@ r.maxarray = 20       # max elements displayed for arrays
 r.maxother = 500       # max elements displayed for other including np.ndarray
 r.maxstring = 40    # max characters displayed for strings
 
+# Load External Libraries
+# These are not part of the standard Anaconda package and thus are already part of AMaDiA to make installation easy
+from External_Libraries.python_control_master import control
 try:
     from External_Libraries.keyboard_master import keyboard
 except AF.common_exceptions :
     AF.ExceptionOutput(sys.exc_info())
-    
-try:
-    import control
-except ModuleNotFoundError:
-    Control_Installed = False
+    Keyboard_Remap_Works = False
 else:
-    Control_Installed = True
+    Keyboard_Remap_Works = True
+
+# Slycot is needed for some features of control but can not be included in AMaDiA as it needs system dependent compiling
+try:
+    import slycot
+except ModuleNotFoundError:
+    slycot_Installed = False
+else:
+    slycot_Installed = True
 
 np.set_printoptions(threshold=100)
 
@@ -136,6 +151,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ans = "1"
         self.LastNotification = ""
         self.ThreadList = []
+        self.LastOpenState = self.showNormal
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
         
@@ -194,14 +210,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         msg = ""
         if not AF.LaTeX_dvipng_Installed:
             msg += "Please install LaTeX and dvipng to enable the LaTeX output"
-        if not Control_Installed:
-            self.tabWidget.setTabEnabled(4,False)
+        if not slycot_Installed:
             if msg != "":
                 msg += "\n\n"
-            msg += "Control is not installed. To enable the Control tab install control\n"
-            msg += "If you have conda installed use: conda install -c conda-forge control\n"
-            msg += "Alternatively try adding conda-forge as a channel in the Anaconda Navigator and instll it there (in the Anaconda Navigator) \n"
-            msg += "Otherwise refer to: https://python-control.readthedocs.io/en/0.8.2/intro.html#installation"
+            msg += "slycot is not installed. The Control Tab might not work correctly\n"
+            msg += "If you have conda installed use: conda install -c conda-forge slycot\n"
+            msg += "Otherwise refer to: https://github.com/python-control/Slycot"
+        if not Keyboard_Remap_Works:
+            if msg != "":
+                msg += "\n\n"
+            msg += "The Keyboard Remapping does not work\n"
+            msg += "If you are using Linux you need to run as root to enable Keyboard Remapping"
         if msg != "":
             self.NotifyUser(3,msg)
 
@@ -386,6 +405,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             except AF.common_exceptions :
                 pass
 
+
 # ---------------------------------- Error Handling ----------------------------------
     def init_ErrorFlash(self):
         self.ErrorFlash = QtCore.QPropertyAnimation(self,b'ERROR_colour')
@@ -471,6 +491,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def ErrorFlashFinished(self):
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
+
 
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
     def ReloadModules(self):
@@ -561,7 +582,13 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def eventFilter(self, source, event): # TODO: Add more
         #print(event.type())
      # ---------------------------------- History Context Menu ----------------------------------
-        if (event.type() == QtCore.QEvent.ContextMenu and
+        if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_F11 and source is self:
+            if not self.isFullScreen():
+                self.LastOpenState = self.showMaximized if self.isMaximized() else self.showNormal
+                self.showFullScreen()
+            else:
+                self.LastOpenState()
+        elif (event.type() == QtCore.QEvent.ContextMenu and
             (source is self.Tab_1_History 
                 or source is self.Tab_2_History 
                 or source is self.Tab_3_tab_1_History 
@@ -696,8 +723,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
               QApplication.clipboard().setText(self.LastNotification)
      # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
         return super(AMaDiA_Main_Window, self).eventFilter(source, event)
-        
-
+  
 
 # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
  # ----------------
@@ -832,7 +858,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 else:
                     item.data(100).Tab_4_is = False
                     item.data(100).Tab_4_ref = None
-                    
+
+
 # ---------------------------------- Tab_4_Matrix_List Context Menu Actions/Functions ----------------------------------
     def action_tab_5_M_Load_into_Editor(self,source,event):
         item = source.itemAt(event.pos())
@@ -857,6 +884,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             a = source.takeItem(source.row(item))
             del self.Tab_4_Active_Equation.Variables[a.data(100)]
         
+
 # ---------------------------------- Tab_3_tab_1_Display_Context_Menu ----------------------------------
     def action_tab_3_tab_1_Display_SavePlt(self):
         if self.pathOK:
@@ -876,12 +904,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             print("Could not save Plot: Could not validate save location")
             self.NotifyUser(1,"Could not save Plot: Could not validate save location")
         
+
 # ---------------------------------- Tab_4_Display_Context_Menu ----------------------------------
     def action_tab_5_Display_Copy_Displayed(self):
         QApplication.clipboard().setText(self.Tab_4_Currently_Displayed)
         
     def action_tab_5_Display_Copy_Displayed_Solution(self):
         QApplication.clipboard().setText(self.Tab_4_Currently_Displayed_Solution)
+
 
 # ---------------------------------- HistoryHandler ----------------------------------
 
@@ -957,6 +987,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             print("History of Tab {} is unknown".format(Tab))
 
+
 # ---------------------------------- Thread Handler ----------------------------------
 
     def TR(self, AMaS_Object , Function , ID=-1 , Eval = -1): # Thread Return: Threads report back here when they are done
@@ -1024,6 +1055,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         AMaS_Object.f_eval = f_eval
         AMaS_Object.f_powsimp = f_powsimp
 
+
 # ---------------------------------- Tab_1_ Calculator ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -1053,6 +1085,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.HistoryHandler(AMaS_Object,1)
         self.ans = AMaS_Object.Evaluation
         
+
 # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
         EvalL = self.Tab_2_Eval_checkBox.isChecked()
@@ -1082,6 +1115,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if returnTuple[0] != 0:
             self.NotifyUser(returnTuple[0],returnTuple[1])
         
+
 # ---------------------------------- Tab_3_tab_1_ 2D-Plot ----------------------------------
     def Tab_3_tab_1_F_Plot_Button(self):
         self.TC(lambda ID: AT.AMaS_Creator(self,self.Tab_3_tab_1_Formula_Field.text() , self.Tab_3_tab_1_F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
@@ -1273,7 +1307,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     Error = AF.ExceptionOutput(sys.exc_info())
                     self.NotifyUser(1,Error)
 
-        
+
 # ---------------------------------- Tab_4_ Multi-Dim ----------------------------------
     def Tab_4_F_New_Equation(self):
         Name = ""+self.Tab_4_2_New_Equation_Name_Input.text().strip()
@@ -1451,7 +1485,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if returnTuple[0] != 0:
             self.NotifyUser(returnTuple[0],returnTuple[1])
 
+
 # ---------------------------------- Tab_5_ Control ----------------------------------
+
 
 # ---------------------------------- Tab_6_ ??? ----------------------------------
 

@@ -11,7 +11,7 @@ Calculator Examples:
 			Interpretable by WolframAlpha  (but not by AMaDiA, yet):
 					(integrate (integrate x^2 dx , x=0..y) + y dy, y=0..3 )+ integrate x^2 dx , x=0..3
 		((3)(∫ d(x²)/dx+x dx)(2))/6
-	Differential Equations:
+	Ordinary Differential Equations:
 		d(y(t))/dt=-λ·y(t)
 		x'(t) *x(t)^2 = sin(0.2 + t)
 			∫x² dx - ∫sin(t+0.2)dt
@@ -23,6 +23,9 @@ Calculator Examples:
 		y(x)·(2x^4+y(x))·y'(x)=(1-4·x·(y(x))^2)·x^2
 			Compared with WolframAlpha's solution:
 				(-3*x**8/(-81*C1/2 + 27*x**12 - 27*x**3/2 + 27*sqrt(9*C1**2 - 12*C1*x**12 + 6*C1*x**3 - 4*x**15 + x**6)/2)**(1/3) - x**4 - (-81*C1/2 + 27*x**12 - 27*x**3/2 + 27*sqrt(9*C1**2 - 12*C1*x**12 + 6*C1*x**3 - 4*x**15 + x**6)/2)**(1/3)/3) = ((sqrt((81*c_1 - 54*x^(12) + 27*x^3)^2 - 2916*x^(24)) + 81*c_1 - 54*x^(12) + 27*x^3)^(1/3)/(3*2^(1/3)) + (3*2^(1/3)*x^8)/(sqrt((81*c_1 - 54* x^(12) + 27 *x^3)^2 - 2916* x^(24)) + 81*c_1 - 54*x^(12) + 27*x^3)^(1/3) - x^4)
+	Partial Differential Equations: (autodetection (to avoid the need for "pdsolve") will come in the future)
+		pdsolve(1 + (2·(d(u(x,y))/dx)/u(x,y)) + (3·(d(u(x,y))/dy)/u(x,y)))
+		pdsolve(1 + (2*(d(u(x,y))/dx)) + (3*(d(u(x,y))/dy)))
 	Sums:
 		Sum(1/(k-3),(k,4,8)) = 137/60
 	Complex Numbers:
