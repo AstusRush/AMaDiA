@@ -25,7 +25,7 @@ Suggestions are welcome<br/>
 Requests are welcome<br/>
 <br/><br/>
 
-# Install:
+# How to Install
 On Windows:<br/>
  * Install https://gitforwindows.org/<br/>
  * Install https://www.anaconda.com/distribution/<br/>
