@@ -19,3 +19,6 @@ Config
 Test.py
 ChatHistory.txt
 ClientChatHistory.txt
+
+!WINDOWS-INSTALL/**
+
