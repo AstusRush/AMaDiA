@@ -32,14 +32,17 @@ On Windows:<br/>
  * Create two files "AMaDiA.bat" and "AMaDiA_INSTALL.bat" and copy the text from the two file in WINDOWS-INSTALL into them by rightcklicking on them and selecting the modify option<br/>
  * doubleclick on "AMaDiA_INSTALL.bat" to install AMaDiA<br/>
  * From now on doubleclicking on AMaDiA.bat will update and then run AMaDiA<br/>
+ 
 (Disclaimer: Use theses .bat files on your own risk. I doubt they can cause any harm but i am no expert on batch files and can not foresee all eventualities)<br/>
 <br/>
-On Linux [WIP]:<br/>
+
+   On Linux [WIP]:<br/>
  * sudo apt-install git<br/>
  * Install https://www.anaconda.com/distribution/ or sudo apt-install ...<br/>
  * [Console commands for installation and Alias for Update/Start coming soon]<br/>
 <br/>
-On OSX [???]:<br/>
+
+   On OSX [???]:<br/>
  * I don't have access to OSX and am not even sure how good AMaDiA runs on it... Sorry but I can not help you...<br/>
  * If anyone has a good description how to easily install/update+run a python script on OSX feel free to inform me so I can add it here<br/>
 
@@ -61,4 +64,5 @@ Planned features for (near) future (order reflects priority):<br/>
 - Unit converter<br/>
 - Unit calculator<br/>
 - Automatic recognition for PDEs so that the user no longer has to put them in "pdsolve(...)"<br/>
+- PDF-Viewer<br/>
 - Save/load the history<br/>
