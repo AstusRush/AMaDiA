@@ -1,7 +1,7 @@
-pip install sympy
-pip install numpy
-pip install scipy
+sympy
+numpy
+scipy
 
 # Already Included to make installation easier:
-pip install control
-pip install keyboard
+control
+keyboard
