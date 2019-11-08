@@ -6,6 +6,8 @@ WindowTitle+= Version
 WindowTitle+= " by "
 WindowTitle+= Author
 
+#region ---------------------------------- imports ----------------------------------
+
 import datetime
 if __name__ == "__main__":
     print()
@@ -91,7 +93,7 @@ AltModifier = QtCore.Qt.AltModifier
 ControlModifier = QtCore.Qt.ControlModifier
 GroupSwitchModifier = QtCore.Qt.GroupSwitchModifier
 ShiftModifier = QtCore.Qt.ShiftModifier
-
+#endregion
 
 class MainApp(QtWidgets.QApplication):
     def __init__(self, args):
@@ -581,13 +583,13 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 # ---------------------------------- Event Filter ----------------------------------
     def eventFilter(self, source, event): # TODO: Add more
         #print(event.type())
-     # ---------------------------------- History Context Menu ----------------------------------
-        if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_F11 and source is self:
+        if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_F11 and source is self: # F11 to toggle Fullscreen
             if not self.isFullScreen():
                 self.LastOpenState = self.showMaximized if self.isMaximized() else self.showNormal
                 self.showFullScreen()
             else:
                 self.LastOpenState()
+     # ---------------------------------- History Context Menu ----------------------------------
         elif (event.type() == QtCore.QEvent.ContextMenu and
             (source is self.Tab_1_History 
                 or source is self.Tab_2_History 
@@ -681,7 +683,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
               and event.modifiers() == QtCore.Qt.ControlModifier):
             self.Tab_2_F_Convert()
             return True
-     # ---------------------------------- Remap Keys to allow for Math Unicode Symbol input ----------------------------------
+     # ---------------------------------- Remap Keys to allow for Math Unicode Symbol input ---------------------------------- #TODO:DELETE THIS
+        
         #if event.type() == QtCore.QEvent.KeyPress : print(event.key())
         #if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
         #    print("AltGr")
@@ -719,7 +722,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #                    self.MainApp.sendEvent(source,event)
         #                    return True
      # ---------------------------------- Other Events ----------------------------------
-        elif (event.type() == 4 and source is self.TopBar_Error_Label): # Copy last Notification on Doubleclick
+        elif (event.type() == 4 and source is self.TopBar_Error_Label): # Copy last Notification on Doubleclick on the Top Bar Label
               QApplication.clipboard().setText(self.LastNotification)
      # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
         return super(AMaDiA_Main_Window, self).eventFilter(source, event)

@@ -3,6 +3,7 @@ sympy
 numpy
 matplotlib
 scipy
+PyQt5
 
 # Recommended:
 slycot
