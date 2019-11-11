@@ -64,7 +64,7 @@ _nichols_defaults = {
 }
 
 
-def nichols_plot(sys_list, omega=None, grid=None):
+def nichols_plot(sys_list, omega=None, grid=None, number_of_samples=100):
     """Nichols plot for a system
 
     Plots a Nichols plot for the system over a (optional) frequency range.
@@ -92,7 +92,7 @@ def nichols_plot(sys_list, omega=None, grid=None):
 
     # Select a default range if none is provided
     if omega is None:
-        omega = default_frequency_range(sys_list)
+        omega = default_frequency_range(sys_list, number_of_samples=number_of_samples)
 
     for sys in sys_list:
         # Get the magnitude and phase of the system

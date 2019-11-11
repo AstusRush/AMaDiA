@@ -156,8 +156,8 @@ class AMaS: # Astus' Mathematical Structure
         self.tab_1_ref = None
         self.tab_2_is = False
         self.tab_2_ref = None
-        self.Tab_3_tab_1_is = False
-        self.Tab_3_tab_1_ref = None
+        self.Tab_3_1_is = False
+        self.Tab_3_1_ref = None
         self.Tab_4_is = False
         self.Tab_4_ref = None
                 

@@ -231,15 +231,15 @@
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <widget class="QWidget" name="Tab_3_tab_1">
+          <widget class="QWidget" name="Tab_3_1">
            <attribute name="title">
             <string>2D</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="Tab_3_tab_1_gridLayout">
+             <layout class="QGridLayout" name="Tab_3_1_gridLayout">
               <item row="1" column="1">
-               <widget class="QPushButton" name="Tab_3_tab_1_Button_Clear">
+               <widget class="QPushButton" name="Tab_3_1_Button_Clear">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -252,14 +252,14 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="LineEdit" name="Tab_3_tab_1_Formula_Field">
+               <widget class="LineEdit" name="Tab_3_1_Formula_Field">
                 <property name="placeholderText">
                  <string>Enter a function f(x) (eg. &quot;x^2&quot;) or a constant (eg. &quot;23+4&quot; for a horizontal line or &quot;x=23+4&quot; for a vertical line at 27) and hit return.</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QPushButton" name="Tab_3_tab_1_Button_Plot">
+               <widget class="QPushButton" name="Tab_3_1_Button_Plot">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -272,7 +272,7 @@
                </widget>
               </item>
               <item row="0" column="0" colspan="3">
-               <widget class="QSplitter" name="Tab_3_tab_1_splitter">
+               <widget class="QSplitter" name="Tab_3_1_splitter">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -283,19 +283,19 @@
                  <enum>Qt::Horizontal</enum>
                 </property>
                 <widget class="QWidget" name="layoutWidget">
-                 <layout class="QGridLayout" name="Tab_3_tab_1_gridLayout_upper">
+                 <layout class="QGridLayout" name="Tab_3_1_gridLayout_upper">
                   <item row="0" column="2">
-                   <widget class="QTabWidget" name="Tab_3_tab_1_TabWidget">
+                   <widget class="QTabWidget" name="Tab_3_1_TabWidget">
                     <property name="currentIndex">
                      <number>0</number>
                     </property>
-                    <widget class="QWidget" name="Tab_3_tab_1_tab_1_History">
+                    <widget class="QWidget" name="Tab_3_1_tab_1_History">
                      <attribute name="title">
                       <string>History</string>
                      </attribute>
                      <layout class="QGridLayout" name="gridLayout_5">
                       <item row="0" column="0">
-                       <widget class="QListWidget" name="Tab_3_tab_1_History">
+                       <widget class="QListWidget" name="Tab_3_1_History">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                           <horstretch>0</horstretch>
@@ -309,17 +309,17 @@
                       </item>
                      </layout>
                     </widget>
-                    <widget class="QWidget" name="Tab_3_tab_1_tab_2_Config">
+                    <widget class="QWidget" name="Tab_3_1_tab_2_Config">
                      <attribute name="title">
                       <string>Config</string>
                      </attribute>
                      <layout class="QGridLayout" name="gridLayout_8">
                       <item row="12" column="0">
-                       <widget class="QScrollArea" name="Tab_3_tab_1_tab_2_Config_scrollArea">
+                       <widget class="QScrollArea" name="Tab_3_1_tab_2_Config_scrollArea">
                         <property name="widgetResizable">
                          <bool>true</bool>
                         </property>
-                        <widget class="QWidget" name="Tab_3_tab_1_tab_2_Config_scrollAreaWidgetContents">
+                        <widget class="QWidget" name="Tab_3_1_tab_2_Config_scrollAreaWidgetContents">
                          <property name="geometry">
                           <rect>
                            <x>0</x>
@@ -330,7 +330,7 @@
                          </property>
                          <layout class="QGridLayout" name="gridLayout_11">
                           <item row="8" column="0">
-                           <widget class="QCheckBox" name="Tab_3_tab_1_YLim_Check">
+                           <widget class="QCheckBox" name="Tab_3_1_YLim_Check">
                             <property name="toolTip">
                              <string>Limit the part of the y axis that is shown</string>
                             </property>
@@ -340,7 +340,7 @@
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_XLim_max">
+                           <widget class="QDoubleSpinBox" name="Tab_3_1_XLim_max">
                             <property name="decimals">
                              <number>5</number>
                             </property>
@@ -356,7 +356,7 @@
                            </widget>
                           </item>
                           <item row="7" column="0">
-                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_XLim_min">
+                           <widget class="QDoubleSpinBox" name="Tab_3_1_XLim_min">
                             <property name="decimals">
                              <number>5</number>
                             </property>
@@ -379,14 +379,14 @@
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QCheckBox" name="Tab_3_tab_1_Axis_ratio_Checkbox">
+                           <widget class="QCheckBox" name="Tab_3_1_Axis_ratio_Checkbox">
                             <property name="text">
                              <string>1:1 axis ratio</string>
                             </property>
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_To_Spinbox">
+                           <widget class="QDoubleSpinBox" name="Tab_3_1_To_Spinbox">
                             <property name="decimals">
                              <number>5</number>
                             </property>
@@ -415,7 +415,7 @@
                            </spacer>
                           </item>
                           <item row="2" column="0">
-                           <widget class="QComboBox" name="Tab_3_tab_1_Steps_comboBox">
+                           <widget class="QComboBox" name="Tab_3_1_Steps_comboBox">
                             <property name="currentText">
                              <string>Steps total</string>
                             </property>
@@ -435,7 +435,7 @@
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_YLim_max">
+                           <widget class="QDoubleSpinBox" name="Tab_3_1_YLim_max">
                             <property name="decimals">
                              <number>5</number>
                             </property>
@@ -451,7 +451,7 @@
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_From_Spinbox">
+                           <widget class="QDoubleSpinBox" name="Tab_3_1_From_Spinbox">
                             <property name="decimals">
                              <number>5</number>
                             </property>
@@ -467,7 +467,7 @@
                            </widget>
                           </item>
                           <item row="0" column="0">
-                           <widget class="QLabel" name="Tab_3_tab_1_Label_from">
+                           <widget class="QLabel" name="Tab_3_1_Label_from">
                             <property name="text">
                              <string>From</string>
                             </property>
@@ -477,7 +477,7 @@
                            </widget>
                           </item>
                           <item row="6" column="0">
-                           <widget class="QCheckBox" name="Tab_3_tab_1_XLim_Check">
+                           <widget class="QCheckBox" name="Tab_3_1_XLim_Check">
                             <property name="toolTip">
                              <string>Limit the part of the x axis that is shown</string>
                             </property>
@@ -494,7 +494,7 @@
                            </widget>
                           </item>
                           <item row="9" column="0">
-                           <widget class="QDoubleSpinBox" name="Tab_3_tab_1_YLim_min">
+                           <widget class="QDoubleSpinBox" name="Tab_3_1_YLim_min">
                             <property name="decimals">
                              <number>5</number>
                             </property>
@@ -510,7 +510,7 @@
                            </widget>
                           </item>
                           <item row="5" column="0">
-                           <widget class="QCheckBox" name="Tab_3_tab_1_Draw_Grid_Checkbox">
+                           <widget class="QCheckBox" name="Tab_3_1_Draw_Grid_Checkbox">
                             <property name="text">
                              <string>Draw Grid</string>
                             </property>
@@ -520,7 +520,7 @@
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QSpinBox" name="Tab_3_tab_1_Steps_Spinbox">
+                           <widget class="QSpinBox" name="Tab_3_1_Steps_Spinbox">
                             <property name="minimum">
                              <number>1</number>
                             </property>
@@ -533,7 +533,7 @@
                            </widget>
                           </item>
                           <item row="1" column="0">
-                           <widget class="QLabel" name="Tab_3_tab_1_Label_to">
+                           <widget class="QLabel" name="Tab_3_1_Label_to">
                             <property name="text">
                              <string>To</string>
                             </property>
@@ -543,7 +543,7 @@
                            </widget>
                           </item>
                           <item row="13" column="1">
-                           <widget class="QPushButton" name="Tab_3_tab_1_Button_Plot_SymPy">
+                           <widget class="QPushButton" name="Tab_3_1_Button_Plot_SymPy">
                             <property name="toolTip">
                              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -572,7 +572,7 @@ p, li { white-space: pre-wrap; }
                            </widget>
                           </item>
                           <item row="10" column="0" colspan="2">
-                           <widget class="QPushButton" name="Tab_3_tab_1_RedrawPlot_Button">
+                           <widget class="QPushButton" name="Tab_3_1_RedrawPlot_Button">
                             <property name="toolTip">
                              <string>Apply settings</string>
                             </property>
@@ -582,7 +582,7 @@ p, li { white-space: pre-wrap; }
                            </widget>
                           </item>
                           <item row="13" column="0">
-                           <widget class="QPushButton" name="Tab_3_tab_1_Button_SavePlot">
+                           <widget class="QPushButton" name="Tab_3_1_Button_SavePlot">
                             <property name="toolTip">
                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the current Plot (exactly as displayed including size and resoltuion)&lt;/p&gt;&lt;p&gt;as a .png in the Plots folder where the AMaDiA.py is located.&lt;/p&gt;&lt;p&gt;Tip: This option is also accessible in the right klick menu of the Plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                             </property>
@@ -601,7 +601,7 @@ p, li { white-space: pre-wrap; }
                   </item>
                  </layout>
                 </widget>
-                <widget class="QScrollArea" name="Tab_3_tab_1_ScrollArea">
+                <widget class="QScrollArea" name="Tab_3_1_ScrollArea">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>5</horstretch>
@@ -614,7 +614,7 @@ p, li { white-space: pre-wrap; }
                  <property name="widgetResizable">
                   <bool>true</bool>
                  </property>
-                 <widget class="QWidget" name="Tab_3_tab_1_ScrollArea_Layout">
+                 <widget class="QWidget" name="Tab_3_1_ScrollArea_Layout">
                   <property name="geometry">
                    <rect>
                     <x>0</x>
@@ -631,7 +631,7 @@ p, li { white-space: pre-wrap; }
                   </property>
                   <layout class="QGridLayout" name="gridLayout_6">
                    <item row="0" column="0">
-                    <widget class="MplWidget_2D_Plot" name="Tab_3_tab_1_Display" native="true">
+                    <widget class="MplWidget_2D_Plot" name="Tab_3_1_Display" native="true">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
                        <horstretch>0</horstretch>
@@ -649,7 +649,7 @@ p, li { white-space: pre-wrap; }
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="Tab_3_tab_2">
+          <widget class="QWidget" name="Tab_3_2">
            <attribute name="title">
             <string>WIP</string>
            </attribute>
@@ -813,25 +813,41 @@ p, li { white-space: pre-wrap; }
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <widget class="QWidget" name="Tab_5_tab_1">
+          <widget class="QWidget" name="Tab_5_1">
            <attribute name="title">
-            <string>Tab 1</string>
+            <string>Input</string>
            </attribute>
+           <layout class="QGridLayout" name="gridLayout_15"/>
           </widget>
-          <widget class="QWidget" name="Tab_5_tab_2">
+          <widget class="QWidget" name="Tab_5_2">
            <attribute name="title">
-            <string>Tab 2</string>
+            <string>Plots</string>
            </attribute>
+           <layout class="QGridLayout" name="gridLayout_14">
+            <item row="0" column="0">
+             <widget class="MplWidget_CONTROL" name="Tab_5_2_Display" native="true"/>
+            </item>
+           </layout>
           </widget>
-          <widget class="QWidget" name="Tab_5_tab_3">
+          <widget class="QWidget" name="Tab_5_3">
            <attribute name="title">
-            <string>Seite</string>
+            <string>Single Plot</string>
            </attribute>
+           <layout class="QGridLayout" name="gridLayout_17">
+            <item row="0" column="0">
+             <widget class="MplWidget_EmptyPlot" name="Tab_5_3_SingleDisplay" native="true"/>
+            </item>
+           </layout>
           </widget>
-          <widget class="QWidget" name="Tab_5_tab_4">
+          <widget class="QWidget" name="Tab_5_4">
            <attribute name="title">
-            <string>Seite</string>
+            <string>Code Input</string>
            </attribute>
+           <layout class="QGridLayout" name="gridLayout_16">
+            <item row="0" column="0">
+             <widget class="TextEdit" name="Tab_5_4_Dirty_Input"/>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
@@ -1020,6 +1036,18 @@ p, li { white-space: pre-wrap; }
    <extends>QTextEdit</extends>
    <header location="global">AMaDiA_Widgets</header>
   </customwidget>
+  <customwidget>
+   <class>MplWidget_CONTROL</class>
+   <extends>QWidget</extends>
+   <header location="global">AMaDiA_Widgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MplWidget_EmptyPlot</class>
+   <extends>QWidget</extends>
+   <header location="global">AMaDiA_Widgets</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>TopBar_Font_Size_spinBox</tabstop>
@@ -1030,24 +1058,24 @@ p, li { white-space: pre-wrap; }
   <tabstop>Tab_2_ConvertButton</tabstop>
   <tabstop>Tab_2_LaTeXOutput</tabstop>
   <tabstop>Tab_2_History</tabstop>
-  <tabstop>Tab_3_tab_1_ScrollArea</tabstop>
-  <tabstop>Tab_3_tab_1_TabWidget</tabstop>
-  <tabstop>Tab_3_tab_1_History</tabstop>
-  <tabstop>Tab_3_tab_1_tab_2_Config_scrollArea</tabstop>
-  <tabstop>Tab_3_tab_1_From_Spinbox</tabstop>
-  <tabstop>Tab_3_tab_1_To_Spinbox</tabstop>
-  <tabstop>Tab_3_tab_1_Steps_comboBox</tabstop>
-  <tabstop>Tab_3_tab_1_Steps_Spinbox</tabstop>
-  <tabstop>Tab_3_tab_1_Draw_Grid_Checkbox</tabstop>
-  <tabstop>Tab_3_tab_1_Axis_ratio_Checkbox</tabstop>
-  <tabstop>Tab_3_tab_1_XLim_Check</tabstop>
-  <tabstop>Tab_3_tab_1_XLim_min</tabstop>
-  <tabstop>Tab_3_tab_1_XLim_max</tabstop>
-  <tabstop>Tab_3_tab_1_YLim_Check</tabstop>
-  <tabstop>Tab_3_tab_1_YLim_min</tabstop>
-  <tabstop>Tab_3_tab_1_YLim_max</tabstop>
-  <tabstop>Tab_3_tab_1_RedrawPlot_Button</tabstop>
-  <tabstop>Tab_3_tab_1_Button_Plot_SymPy</tabstop>
+  <tabstop>Tab_3_1_ScrollArea</tabstop>
+  <tabstop>Tab_3_1_TabWidget</tabstop>
+  <tabstop>Tab_3_1_History</tabstop>
+  <tabstop>Tab_3_1_tab_2_Config_scrollArea</tabstop>
+  <tabstop>Tab_3_1_From_Spinbox</tabstop>
+  <tabstop>Tab_3_1_To_Spinbox</tabstop>
+  <tabstop>Tab_3_1_Steps_comboBox</tabstop>
+  <tabstop>Tab_3_1_Steps_Spinbox</tabstop>
+  <tabstop>Tab_3_1_Draw_Grid_Checkbox</tabstop>
+  <tabstop>Tab_3_1_Axis_ratio_Checkbox</tabstop>
+  <tabstop>Tab_3_1_XLim_Check</tabstop>
+  <tabstop>Tab_3_1_XLim_min</tabstop>
+  <tabstop>Tab_3_1_XLim_max</tabstop>
+  <tabstop>Tab_3_1_YLim_Check</tabstop>
+  <tabstop>Tab_3_1_YLim_min</tabstop>
+  <tabstop>Tab_3_1_YLim_max</tabstop>
+  <tabstop>Tab_3_1_RedrawPlot_Button</tabstop>
+  <tabstop>Tab_3_1_Button_Plot_SymPy</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -6,16 +6,20 @@
 from PyQt5 import QtWidgets,QtCore,QtGui
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas #TODO: Delete this line?
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
 from mpl_toolkits.axes_grid1 import Divider, Size
 from mpl_toolkits.axes_grid1.mpl_axes import Axes
+import numpy as np
 import sympy
 import sys
 import re
+import time
+
+import warnings
 
 from External_Libraries.python_control_master import control
 
@@ -40,10 +44,19 @@ class MplWidget(QtWidgets.QWidget):
     def SetColour(self,BG,FG):
         self.background_Colour = BG
         self.TextColour = FG
-        self.canvas.fig.set_facecolor(self.background_Colour)
-        self.canvas.ax.set_facecolor(self.background_Colour)
-        self.canvas.draw()
+        self.HexcolourText = '#%02x%02x%02x' % (int(self.TextColour[0]*255),int(self.TextColour[1]*255),int(self.TextColour[2]*255))
+        try:
+            self.canvas.fig.set_facecolor(self.background_Colour)
+            self.canvas.fig.set_edgecolor(self.background_Colour)
+            self.canvas.ax.set_facecolor(self.background_Colour)
+        except AF.common_exceptions:
+            pass
+        try:
+            self.canvas.draw()
+        except AF.common_exceptions:
+            Error = AF.ExceptionOutput(sys.exc_info())
 
+# -----------------------------------------------------------------------------------------------------------------
 
 class MplCanvas_2D_Plot(Canvas):
     def __init__(self):
@@ -63,7 +76,7 @@ class MplCanvas_2D_Plot(Canvas):
 class MplWidget_2D_Plot(MplWidget):
     # Inspired by https://stackoverflow.com/questions/43947318/plotting-matplotlib-figure-inside-qwidget-using-qt-designer-form-and-pyqt5?noredirect=1&lq=1 from 10.07.2019
     def __init__(self, parent=None):
-#        super(MplWidget, self).__init__(parent)
+        #super(MplWidget, self).__init__(parent)
         QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
         self.canvas = MplCanvas_2D_Plot()                  # Create canvas object
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
@@ -121,7 +134,7 @@ class MplCanvas_LaTeX(Canvas):
 
 class MplWidget_LaTeX(MplWidget):
     def __init__(self, parent=None):
-#        super(MplWidget, self).__init__(parent)
+        #super(MplWidget, self).__init__(parent)
         QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
         self.canvas = MplCanvas_LaTeX(100,100)                  # Create canvas object
         #self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
@@ -160,10 +173,47 @@ class MplWidget_LaTeX(MplWidget):
         matplotlib.rcParams['text.usetex'] = TheBool
         plt.rc('text', usetex=TheBool)
         return matplotlib.rcParams['text.usetex']
+
+    def PreloadLaTeX(self):
+        try:
+            self.UseTeX(True)
+            self.canvas.ax.clear()
+            self.canvas.ax.set_title("$1$",
+                        loc = "left",
+                        y=(1.15-(20/5000)),
+                        horizontalalignment='left',
+                        verticalalignment='top',
+                        fontsize=20,
+                        color = "white"
+                        ,bbox=dict(boxstyle="round", facecolor="black",
+                        ec="0.1", pad=0.1, alpha=0)
+                        )
+            self.canvas.ax.axis('off')
+            self.canvas.draw()
+            time.sleep(0.1)
+            self.canvas.ax.clear()
+            self.canvas.ax.axis('off')
+            self.canvas.draw()
+            self.UseTeX(False)
+        except AF.common_exceptions:
+            try:
+                self.UseTeX(False)
+            except AF.common_exceptions:
+                AF.ExceptionOutput(sys.exc_info())
+            AF.ExceptionOutput(sys.exc_info())
     
     def Display(self,Text_L,Text_N,Font_Size,Use_LaTeX = False):
-        """Returns (0,0) if everything worked, (3,str) if minor exception, (2,str) if medium exception, (1,str) if not able to display"""
+        """
+        Retrun Value compatible with NotifyUser.\n
+        Returns (0,0) if everything worked, (3,str) if minor exception, (2,str) if medium exception, (1,str) if not able to display
+        """
         self.LastCall = [Text_L, Text_N, Font_Size, Use_LaTeX]
+
+        #TODO: https://matplotlib.org/3.1.1/_modules/matplotlib/text.html#Text _get_rendered_text_width and similar
+        # Use this to adjust the size of the "plot" to the Text?
+
+        # You can set Usetex for each individual text object. Example:
+        # plt.xlabel('$x$', usetex=True)
 
         self.Text = Text_L
         self.Font_Size = Font_Size * 2
@@ -231,7 +281,7 @@ class MplWidget_LaTeX(MplWidget):
         try:
             self.canvas.draw()
         except AF.common_exceptions:
-            returnTuple = (3,"Could not display in Mathmode")
+            returnTuple = (4,"Could not display in Mathmode")
             self.Text = Text_N
             if Use_LaTeX:
                 self.UseTeX(True)
@@ -310,13 +360,403 @@ class MplWidget_LaTeX(MplWidget):
             self.UseTeX(False)
             return returnTuple
 
+
+# -----------------------------------------------------------------------------------------------------------------
+
+class MplCanvas_CONTROL(Canvas):
+    Titles = ['Step Response','Impulse Response','TODO: Other Response?',
+                        'Bode Plot','BODE_PLOT_2',
+                        'Nyquist Plot','Nichols Plot','Pole-Zero-Plot',
+                        'Root-Locus-Plot','LaTeX-Display']
+    def __init__(self):
+        #plt.style.use('dark_background')
+        self.fig = plt.figure(num="CONTROL",constrained_layout =True)
+        self.fig.set_facecolor(AF.background_Colour)
+
+        combined = True # should Phase and Magnitude of the Bodeplot share a plot?
+        if combined:
+            self.gs = self.fig.add_gridspec(3, 3)
+            
+            self.p_step_response = self.fig.add_subplot(self.gs[0,0])
+            self.p_impulse_response = self.fig.add_subplot(self.gs[0,1])
+            self.p_TODO = self.fig.add_subplot(self.gs[0,2])     #TODO
+            self.p_bode_plot_1 = self.fig.add_subplot(self.gs[1,0])
+            self.p_bode_plot_2 = self.p_bode_plot_1.twinx()
+            self.p_nyquist_plot = self.fig.add_subplot(self.gs[1,1])
+            self.p_nichols_plot = self.fig.add_subplot(self.gs[1,2])
+            self.p_pzmap = self.fig.add_subplot(self.gs[2:,0])
+            self.p_root_locus = self.fig.add_subplot(self.gs[2:,1])
+            self.p_LaTeX_Display = self.fig.add_subplot(self.gs[2:,2])
+        
+        else:
+            self.gs = self.fig.add_gridspec(6, 3)
+            
+            self.p_step_response = self.fig.add_subplot(self.gs[0:2,0])
+            self.p_impulse_response = self.fig.add_subplot(self.gs[0:2,1])
+            self.p_TODO = self.fig.add_subplot(self.gs[0:2,2])     #TODO
+            self.p_bode_plot_2 = self.fig.add_subplot(self.gs[3,0])
+            self.p_bode_plot_1 = self.fig.add_subplot(self.gs[2,0],sharex=self.p_bode_plot_2)
+            self.p_nyquist_plot = self.fig.add_subplot(self.gs[2:4,1])
+            self.p_nichols_plot = self.fig.add_subplot(self.gs[2:4,2])
+            self.p_pzmap = self.fig.add_subplot(self.gs[4:,0])
+            self.p_root_locus = self.fig.add_subplot(self.gs[4:,1])
+            self.p_LaTeX_Display = self.fig.add_subplot(self.gs[4:,2])
+
+        self.p_plot_LIST = [ self.p_step_response, self.p_impulse_response, self.p_TODO, #TODO
+                            self.p_bode_plot_1, self.p_bode_plot_2,
+                            self.p_nyquist_plot, self.p_nichols_plot, self.p_pzmap,
+                            self.p_root_locus, self.p_LaTeX_Display]
+        
+        for i,p in enumerate(self.p_plot_LIST):
+            p.set_facecolor(AF.background_Colour)
+            if self.Titles[i] == "BODE_PLOT_2":
+                p.set_title("  ")
+            elif self.Titles[i] != 'LaTeX-Display':
+                p.set_title(self.Titles[i])
+            # set labels that control can find the axes
+            if self.Titles[i] == "Bode Plot":
+                p.set_label('control-bode-magnitude')
+            elif self.Titles[i] == "BODE_PLOT_2":
+                p.set_label('control-bode-phase')
+            #elif self.Titles[i] == 'Nyquist Plot':
+            #    p.set_label('control-nyquist')
+        #self.fig.tight_layout()
+        
+        Canvas.__init__(self, self.fig)
+        Canvas.setSizePolicy(self, QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        Canvas.updateGeometry(self)
+
+class MplWidget_CONTROL(MplWidget):
+    def __init__(self, parent=None):
+        #super(MplWidget, self).__init__(parent)
+        QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
+        self.canvas = MplCanvas_CONTROL()                  # Create canvas object
+        self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
+        self.vbl.addWidget(self.canvas)
+        self.setLayout(self.vbl)
+        
+        
+        #self.setLayout(QtWidgets.QVBoxLayout())
+        #self.scroll = QtWidgets.QScrollArea(self)
+        #self.scroll.setWidget(self.canvas)
+
+        self.LastCall = False
+        self.Curr_Sys_LaTeX = ""
+        
+    def SetColour(self,BG=None,FG=None):
+        if BG != None and FG != None:
+            self.background_Colour = BG
+            self.TextColour = FG
+            self.HexcolourText = '#%02x%02x%02x' % (int(self.TextColour[0]*255),int(self.TextColour[1]*255),int(self.TextColour[2]*255))
+        self.canvas.fig.set_facecolor(self.background_Colour)
+        self.canvas.fig.set_edgecolor(self.background_Colour)
+        for i,p in enumerate(self.canvas.p_plot_LIST):
+            p.set_facecolor(self.background_Colour)
+            if self.canvas.Titles[i] == "BODE_PLOT_2":
+                p.set_title("  ",color=self.TextColour)
+            elif self.canvas.Titles[i] != 'LaTeX-Display':
+                p.set_title(self.canvas.Titles[i],color=self.TextColour)
+            if self.canvas.Titles[i] == "BODE_PLOT_2" or self.canvas.Titles[i] == 'Bode Plot':
+                p.spines['right'].set_color(self.TextColour)
+            else:
+                p.yaxis.label.set_color(self.TextColour)
+            p.xaxis.label.set_color(self.TextColour)
+            p.spines['bottom'].set_color(self.TextColour)
+            p.spines['left'].set_color(self.TextColour)
+            p.tick_params(axis='x', colors=self.TextColour)
+            p.tick_params(axis='y', colors=self.TextColour)
+            if self.canvas.Titles[i] == 'LaTeX-Display':
+                p.axis('off')
+        self.canvas.p_LaTeX_Display.text(0.5,0.5,self.Curr_Sys_LaTeX, horizontalalignment='center', verticalalignment='center',color=self.TextColour)#,usetex=True)
+        try:
+            self.canvas.draw()
+        except AF.common_exceptions:
+            Error = AF.ExceptionOutput(sys.exc_info())
+        
+        #if self.LastCall != False:
+        #    self.Display(self.LastCall[0],self.LastCall[1],self.LastCall[2],self.LastCall[3])
+        #else:
+        #    try:
+        #        self.canvas.draw()
+        #    except AF.common_exceptions:
+        #        pass
+    
+    def UseTeX(self,TheBool):
+        # This Method changes the settings for not only one but all widgets...
+        # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
+        # It could help to seperate the two widgets into two files...
+        # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
+        # Maybe test this in a little testprogram to not waste that much time...
+        
+        matplotlib.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+        #Both seem to do the same:
+        matplotlib.rcParams['text.usetex'] = TheBool
+        plt.rc('text', usetex=TheBool)
+        return matplotlib.rcParams['text.usetex']
+    
+    def Display(self,sys1,Use_LaTeX = False):
+        """
+        Retrun Value compatible with NotifyUser.
+        """
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            for i in self.canvas.p_plot_LIST:
+                i.clear()
+        self.Curr_Sys = sys1
+        self.Curr_Sys_LaTeX = str(sys1) #TODO: MAKE PROPER LaTeX
+        self.canvas.p_bode_plot_1.set_label('control-bode-magnitude')
+        self.canvas.p_bode_plot_2.set_label('control-bode-phase')
+        returnTuple = (0,0)
+        try:
+            T,y = control.step_response(sys1, number_of_samples=500)
+            self.canvas.p_step_response.plot(T,y)
+            T,y = control.impulse_response(sys1, number_of_samples=500)
+            self.canvas.p_impulse_response.plot(T,y)
+
+            plt.figure(self.canvas.fig.number) # set figure to current that .gfc() in control.bode_plot can find it
+            control.bode_plot(sys1, dB=True, omega_num=500)
+
+            plt.sca(self.canvas.p_nyquist_plot)
+            control.nyquist_plot(sys1,number_of_samples=500)
+            plt.sca(self.canvas.p_nichols_plot)
+            control.nichols_plot(sys1, number_of_samples=500)
+
+
+            poles,zeros = control.pzmap(sys1,Plot=False)
+            if len(poles) > 0:
+                self.canvas.p_pzmap.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c="red")
+            if len(zeros) > 0:
+                self.canvas.p_pzmap.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c="orange")
+            self.canvas.p_pzmap.grid(True)
+
+            #plt.sca(self.canvas.p_root_locus)
+            #control.rlocus(sys1)
+            control.root_locus_AMaDiA(sys1,self.canvas.p_root_locus)
+            self.canvas.p_root_locus.grid(True)
+
+            self.SetColour() # Set Colour, Titles, etc... and the Display
+        except AF.common_exceptions:
+            returnTuple = (1, AF.ExceptionOutput(sys.exc_info()))
+        self.UseTeX(False)
+        return returnTuple
+
+# -----------------------------------------------------------------------------------------------------------------
+
+class MplCanvas_EmptyPlot(Canvas):
+    def __init__(self):
+        self.fig = plt.figure(constrained_layout =True)
+        self.fig.set_facecolor(AF.background_Colour)
+        
+        self.ax = self.fig.add_subplot(111)
+        self.ax1 = self.ax.twinx()
+        self.ax1.axis('off')
+        
+        Canvas.__init__(self, self.fig)
+        Canvas.setSizePolicy(self, QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        Canvas.updateGeometry(self)
+
+class MplWidget_EmptyPlot(MplWidget):
+    def __init__(self, parent=None):
+        #super(MplWidget, self).__init__(parent)
+        QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
+        self.canvas = MplCanvas_EmptyPlot()                  # Create canvas object
+        self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
+        self.vbl.addWidget(self.canvas)
+        self.setLayout(self.vbl)
+        self.Bode = False
+        self.Title = "Doubleclick on a control plot to display it here"
+        
+    def SetColour(self,BG=None,FG=None):
+        if BG != None and FG != None:
+            super(MplWidget_EmptyPlot, self).SetColour(BG,FG)
+        try:
+            self.canvas.ax.set_facecolor(self.background_Colour)
+            self.canvas.ax.spines['bottom'].set_color(self.TextColour)
+            self.canvas.ax.spines['left'].set_color(self.TextColour)
+            if not self.Bode:
+                self.canvas.ax.yaxis.label.set_color(self.TextColour)
+            self.canvas.ax.xaxis.label.set_color(self.TextColour)
+            self.canvas.ax.tick_params(axis='x', colors=self.TextColour)
+            self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
+            self.canvas.ax.set_title(self.Title, color=self.TextColour)
+            if self.Bode:
+                self.canvas.ax1.set_facecolor(self.background_Colour)
+                self.canvas.ax1.spines['bottom'].set_color(self.TextColour)
+                self.canvas.ax1.spines['left'].set_color(self.TextColour)
+                self.canvas.ax1.tick_params(axis='x', colors=self.TextColour)
+                self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
+            if self.Bode:
+                self.canvas.ax1.grid(c='orange',ls='--')
+                self.canvas.ax.spines['right'].set_color(self.TextColour)
+                self.canvas.ax1.spines['right'].set_color(self.TextColour)
+        except AF.common_exceptions:
+            pass
+        self.canvas.draw()
+    
+    def UseTeX(self,TheBool):
+        # This Method changes the settings for not only one but all widgets...
+        # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
+        # It could help to seperate the two widgets into two files...
+        # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
+        # Maybe test this in a little testprogram to not waste that much time...
+        
+        #Both seem to do the same:
+        matplotlib.rcParams['text.usetex'] = TheBool
+        plt.rc('text', usetex=TheBool)
+        return matplotlib.rcParams['text.usetex']
+
+    def clear(self):
+        self.Title = "Doubleclick on a control plot to display it here"
+        try:
+            self.canvas.ax.remove()
+        except AF.common_exceptions:
+            pass
+        try:
+            self.canvas.ax1.remove()
+        except AF.common_exceptions:
+            pass
+        try:
+            self.canvas.fig.clear()
+        except AF.common_exceptions:
+            pass
+        try:
+            self.canvas.ax = self.canvas.fig.add_subplot(111)
+            self.canvas.ax1 = self.canvas.ax.twinx()
+            self.canvas.ax1.axis('off')
+        except AF.common_exceptions:
+            pass
+        self.Bode = False
+        try: # TODO: CHANDE FOR ax1 and ax2
+            self.canvas.ax.set_facecolor(self.background_Colour)
+            self.canvas.ax.spines['bottom'].set_color(self.TextColour)
+            self.canvas.ax.spines['left'].set_color(self.TextColour)
+            if not self.Bode:
+                self.canvas.ax.yaxis.label.set_color(self.TextColour)
+            self.canvas.ax.xaxis.label.set_color(self.TextColour)
+            self.canvas.ax.tick_params(axis='x', colors=self.TextColour)
+            self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
+            self.canvas.ax.set_title(self.Title, color=self.TextColour)
+            if self.Bode:
+                self.canvas.ax1.set_facecolor(self.background_Colour)
+                self.canvas.ax1.spines['bottom'].set_color(self.TextColour)
+                self.canvas.ax1.spines['left'].set_color(self.TextColour)
+                self.canvas.ax1.tick_params(axis='x', colors=self.TextColour)
+                self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
+            if self.Bode:
+                self.canvas.ax1.grid(c='orange',ls='--')
+                self.canvas.ax.spines['right'].set_color(self.TextColour)
+                self.canvas.ax1.spines['right'].set_color(self.TextColour)
+        except AF.common_exceptions:
+            pass
+        try:
+            self.canvas.draw()
+        except AF.common_exceptions:
+            pass
+
+    def Plot(self,sys1,PlotName):
+        """
+        Retrun Value compatible with NotifyUser.
+        """
+        returnTuple = (0,0)
+        Titles = MplCanvas_CONTROL.Titles
+
+        self.clear()
+
+        # Plot the Plot
+        try:
+            if PlotName == Titles[0]:
+                T,y = control.step_response(sys1, number_of_samples=5000)
+                self.canvas.ax.plot(T,y)
+            elif PlotName == Titles[1]:
+                T,y = control.impulse_response(sys1, number_of_samples=5000)
+                self.canvas.ax.plot(T,y)
+            elif PlotName == Titles[2]:
+                return (4,"This Plot is not implemented yet")
+            elif PlotName == Titles[3] or PlotName == Titles[4] or PlotName == "  ":
+                self.Bode = True
+                self.canvas.ax1.axis('on')
+                self.canvas.ax.set_label('control-bode-magnitude')
+                self.canvas.ax1.set_label('control-bode-phase')
+                plt.figure(self.canvas.fig.number)
+                control.bode_plot(sys1, dB=True, omega_num=5000)
+            elif PlotName == Titles[5]:
+                plt.sca(self.canvas.ax)
+                control.nyquist_plot(sys1, number_of_samples=5000)
+            elif PlotName == Titles[6]:
+                plt.sca(self.canvas.ax)
+                control.nichols_plot(sys1, number_of_samples=5000)
+            elif PlotName == Titles[7]:
+                poles,zeros = control.pzmap(sys1,Plot=False)
+                if len(poles) > 0:
+                    self.canvas.ax.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c="red")
+                if len(zeros) > 0:
+                    self.canvas.ax.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c="orange")
+                self.canvas.ax.grid(True)
+            elif PlotName == Titles[8]:
+                control.root_locus_AMaDiA(sys1,self.canvas.ax)
+                self.canvas.ax.grid(True)
+            else: # LaTeX Display (Uses Tilte as display string)
+                return (4,"This Plot is not implemented yet")
+            
+
+
+            # Get Plotname
+            if PlotName == Titles[3] or PlotName == Titles[4] or PlotName == "  ":
+                self.Title = Titles[3]
+            else:
+                self.Title = PlotName
+
+            #Colour everything
+            try: # TODO: CHANDE FOR ax1 and ax2
+                self.canvas.ax.set_facecolor(self.background_Colour)
+                self.canvas.ax.spines['bottom'].set_color(self.TextColour)
+                self.canvas.ax.spines['left'].set_color(self.TextColour)
+                if not self.Bode:
+                    self.canvas.ax.yaxis.label.set_color(self.TextColour)
+                self.canvas.ax.xaxis.label.set_color(self.TextColour)
+                self.canvas.ax.tick_params(axis='x', colors=self.TextColour)
+                self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
+                self.canvas.ax.set_title(self.Title, color=self.TextColour)
+                if self.Bode:
+                    self.canvas.ax1.set_facecolor(self.background_Colour)
+                    self.canvas.ax1.spines['bottom'].set_color(self.TextColour)
+                    self.canvas.ax1.spines['left'].set_color(self.TextColour)
+                    self.canvas.ax1.tick_params(axis='x', colors=self.TextColour)
+                    self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
+                if self.Bode:
+                    self.canvas.ax1.grid(c='orange',ls='--')
+                    self.canvas.ax.spines['right'].set_color(self.TextColour)
+                    self.canvas.ax1.spines['right'].set_color(self.TextColour)
+                self.canvas.draw()
+            except AF.common_exceptions:
+                returnTuple = (1, AF.ExceptionOutput(sys.exc_info()))
+        except AF.common_exceptions:
+            returnTuple = (1, AF.ExceptionOutput(sys.exc_info()))
+        self.UseTeX(False)
+        return returnTuple
+
+
+# -----------------------------------------------------------------------------------------------------------------
+
 class ATextEdit(QtWidgets.QTextEdit):
     returnPressed = QtCore.pyqtSignal()
+    returnCrtlPressed = QtCore.pyqtSignal()
     def __init__(self, parent=None):
         QtWidgets.QTextEdit.__init__(self, parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
         self.textChanged.connect(self.validateCharacters)
+        self.installEventFilter(self)
+        
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
+                and event.modifiers() == QtCore.Qt.ControlModifier):
+            source.returnCrtlPressed.emit()
+        if (event.type() == QtCore.QEvent.KeyPress # Connects to returnPressed
+                and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
+            source.returnPressed.emit()
+        return super(ATextEdit, self).eventFilter(source, event)
 
     def text(self):
         return self.toPlainText()
@@ -361,6 +801,14 @@ class ATextEdit(QtWidgets.QTextEdit):
 class TextEdit(ATextEdit):
     def __init__(self, parent=None):
         ATextEdit.__init__(self, parent)
+        self.installEventFilter(self)
+        
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
+                and event.modifiers() == QtCore.Qt.ControlModifier):
+            source.returnCrtlPressed.emit()
+            return True
+        return super(TextEdit, self).eventFilter(source, event)
 
 class LineEdit(ATextEdit):
     def __init__(self, parent=None):
@@ -373,10 +821,31 @@ class LineEdit(ATextEdit):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        #self.installEventFilter(self)
+        self.installEventFilter(self)
         # Connect Signals
         self.textChanged.connect(self.validateCharacters)
 
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.FontChange): # Rescale if font size changes
+            QTextEdFontMetrics =  QtGui.QFontMetrics(source.font())
+            source.QTextEdRowHeight = QTextEdFontMetrics.lineSpacing()+9
+            source.setFixedHeight(source.QTextEdRowHeight)
+        if (event.type() == QtCore.QEvent.KeyPress # Move to beginning if up key pressed
+                and event.key() == QtCore.Qt.Key_Up):
+            cursor = source.textCursor()
+            cursor.movePosition(cursor.Start)
+            source.setTextCursor(cursor)
+            return True
+        if (event.type() == QtCore.QEvent.KeyPress # Move to end if down key pressed
+                and event.key() == QtCore.Qt.Key_Down):
+            cursor = source.textCursor()
+            cursor.movePosition(cursor.End)
+            source.setTextCursor(cursor)
+            return True
+        if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
+            source.returnPressed.emit()
+            return True
+        return super(LineEdit, self).eventFilter(source, event)
 
     def validateCharacters(self):
         vorbiddenChars = ['\n']

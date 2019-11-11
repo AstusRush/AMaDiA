@@ -429,7 +429,7 @@ def _get_ss_simo(sys, input=None, output=None):
 
 
 def step_response(sys, T=None, X0=0., input=None, output=None,
-                  transpose=False, return_x=False, squeeze=True):
+                  transpose=False, return_x=False, squeeze=True, number_of_samples=100):
     # pylint: disable=W0622
     """Step response of a linear system
 
@@ -495,10 +495,10 @@ def step_response(sys, T=None, X0=0., input=None, output=None,
     sys = _get_ss_simo(sys, input, output)
     if T is None:
         if isctime(sys):
-            T = _default_response_times(sys.A, 100)
+            T = _default_response_times(sys.A, number_of_samples)
         else:
             # For discrete time, use integers
-            tvec = _default_response_times(sys.A, 100)
+            tvec = _default_response_times(sys.A, number_of_samples)
             T = range(int(np.ceil(max(tvec))))
 
     U = np.ones_like(T)
@@ -608,7 +608,7 @@ def step_info(sys, T=None, SettlingTimeThreshold=0.02,
 
 
 def initial_response(sys, T=None, X0=0., input=0, output=None,
-                     transpose=False, return_x=False, squeeze=True):
+                     transpose=False, return_x=False, squeeze=True, number_of_samples=1000):
     # pylint: disable=W0622
     """Initial condition response of a linear system
 
@@ -675,10 +675,10 @@ def initial_response(sys, T=None, X0=0., input=0, output=None,
     # The initial vector X0 is created in forced_response(...) if necessary
     if T is None:
         if isctime(sys):
-            T = _default_response_times(sys.A, 1000)
+            T = _default_response_times(sys.A, number_of_samples)
         else:
             # For discrete time, use integers
-            tvec = _default_response_times(sys.A, 1000)
+            tvec = _default_response_times(sys.A, number_of_samples)
             T = range(int(np.ceil(max(tvec))))
     U = np.zeros_like(T)
 
@@ -692,7 +692,7 @@ def initial_response(sys, T=None, X0=0., input=0, output=None,
 
 
 def impulse_response(sys, T=None, X0=0., input=0, output=None,
-                     transpose=False, return_x=False, squeeze=True):
+                     transpose=False, return_x=False, squeeze=True, number_of_samples=100):
     # pylint: disable=W0622
     """Impulse response of a linear system
 
@@ -772,10 +772,10 @@ def impulse_response(sys, T=None, X0=0., input=0, output=None,
     # Compute T and U, no checks necessary, they will be checked in lsim
     if T is None:
         if isctime(sys):
-            T = _default_response_times(sys.A, 100)
+            T = _default_response_times(sys.A, number_of_samples)
         else:
             # For discrete time, use integers
-            tvec = _default_response_times(sys.A, 100)
+            tvec = _default_response_times(sys.A, number_of_samples)
             T = range(int(np.ceil(max(tvec))))
 
     U = np.zeros_like(T)

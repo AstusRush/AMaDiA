@@ -146,3 +146,11 @@ v0.13.1.8: Full Screen
 + Added the control library to the new External_Libraries folder
 + Added "How to install" to the readme and added 2 batch files to make installation and Running/Updating easy on Windows
 
+v0.14.0: Assuming Direct CONTROL
++ New Tab: Control Tab
+++ This tab is all about System Control
+++ Input transfer function or state system  to plot all associated plots
+++ Doubleclick a plot to make it larger
+++ Better Input and more output coming soon
++ (User Request) The LaTeX process is now started at the same time as AMaDiA to make the first display lass annoying
+

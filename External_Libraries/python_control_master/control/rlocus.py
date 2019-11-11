@@ -58,7 +58,7 @@ from .exception import ControlMIMONotImplemented
 from .sisotool import _SisotoolUpdate
 from . import config
 
-__all__ = ['root_locus', 'rlocus']
+__all__ = ['root_locus', 'rlocus','root_locus_AMaDiA']
 
 # Default values for module parameters
 _rlocus_defaults = {
@@ -204,6 +204,117 @@ def root_locus(sys, kvect=None, xlim=None, ylim=None,
         else:
             ax.axhline(0., linestyle=':', color='k', zorder=-20)
             ax.axvline(0., linestyle=':', color='k')
+        
+
+    return mymat, kvect
+
+
+# Main function: compute a root locus diagram
+def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
+               plotstr=None, Plot=True, PrintGain=None, grid=None, **kwargs):
+
+    """Root locus plot
+
+    Calculate the root locus by finding the roots of 1+k*TF(s)
+    where TF is self.num(s)/self.den(s) and each k is an element
+    of kvect.
+
+    Parameters
+    ----------
+    sys : LTI object
+        Linear input/output systems (SISO only, for now).
+    kvect : list or ndarray, optional
+        List of gains to use in computing diagram.
+    xlim : tuple or list, optional
+        Set limits of x axis, normally with tuple (see matplotlib.axes).
+    ylim : tuple or list, optional
+        Set limits of y axis, normally with tuple (see matplotlib.axes).
+    Plot : boolean, optional
+        If True (default), plot root locus diagram.
+    PrintGain : bool
+        If True (default), report mouse clicks when close to the root locus
+        branches, calculate gain, damping and print.
+    grid : bool
+        If True plot omega-damping grid.  Default is False.
+
+    Returns
+    -------
+    rlist : ndarray
+        Computed root locations, given as a 2D array
+    klist : ndarray or list
+        Gains used.  Same as klist keyword argument if provided.
+    """
+    # Get parameter values
+    plotstr = config._get_param('rlocus', 'plotstr', plotstr, _rlocus_defaults)
+    grid = config._get_param('rlocus', 'grid', grid, _rlocus_defaults)
+    PrintGain = config._get_param(
+        'rlocus', 'PrintGain', PrintGain, _rlocus_defaults)
+
+    # Convert numerator and denominator to polynomials if they aren't
+    (nump, denp) = _systopoly1d(sys)
+
+    if kvect is None:
+        start_mat = _RLFindRoots(nump, denp, [1])
+        kvect, mymat, xlim, ylim = _default_gains(nump, denp, xlim, ylim)
+    else:
+        start_mat = _RLFindRoots(nump, denp, [kvect[0]])
+        mymat = _RLFindRoots(nump, denp, kvect)
+        mymat = _RLSortRoots(mymat)
+
+    # Check for sisotool mode
+    sisotool = False if 'sisotool' not in kwargs else True
+
+    # Create the Plot
+    if Plot:
+        figure_number = pylab.get_fignums()
+        figure_title = [
+            pylab.figure(numb).canvas.get_window_title()
+            for numb in figure_number]
+        new_figure_name = "Root Locus"
+        rloc_num = 1
+        while new_figure_name in figure_title:
+            new_figure_name = "Root Locus " + str(rloc_num)
+            rloc_num += 1
+        f = pylab.figure(new_figure_name)
+
+        # zoom update on xlim/ylim changed, only then data on new limits
+        # is available, i.e., cannot combine with _RLClickDispatcher
+        dpfun = partial(
+            _RLZoomDispatcher, sys=sys, ax_rlocus=ax, plotstr=plotstr)
+        # TODO: the next too lines seem to take a long time to execute
+        # TODO: is there a way to speed them up?  (RMM, 6 Jun 2019)
+        #ax.callbacks.connect('xlim_changed', dpfun)
+        #ax.callbacks.connect('ylim_changed', dpfun)
+
+        # plot open loop poles
+        poles = array(denp.r)
+        ax.plot(real(poles), imag(poles), 'x', c="red")
+
+        # plot open loop zeros
+        zeros = array(nump.r)
+        if zeros.size > 0:
+            ax.plot(real(zeros), imag(zeros), 'o', c="orange")
+
+        # Now plot the loci
+        for index, col in enumerate(mymat.T):
+            ax.plot(real(col), imag(col), plotstr, label='rootlocus')
+
+        # Set up plot axes and labels
+        if xlim:
+            ax.set_xlim(xlim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        ax.set_xlabel('Real')
+        ax.set_ylabel('Imaginary')
+        if grid and sisotool:
+            _sgrid_func(f)
+        elif grid:
+            _sgrid_func()
+        else:
+            ax.axhline(0., linestyle=':', color='k', zorder=-20)
+            ax.axvline(0., linestyle=':', color='k')
+        
 
     return mymat, kvect
 
