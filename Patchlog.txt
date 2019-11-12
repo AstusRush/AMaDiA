@@ -154,3 +154,6 @@ v0.14.0: Assuming Direct CONTROL
 ++ Better Input and more output coming soon
 + (User Request) The LaTeX process is now started at the same time as AMaDiA to make the first display lass annoying
 
+v0.14.0.1: 2nd Control Example
++ Added a 2nd Control Code Input Example to show a syntax for state space input
+
