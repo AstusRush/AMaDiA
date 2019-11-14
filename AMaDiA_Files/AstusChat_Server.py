@@ -12,13 +12,15 @@ ServerVersionAuthor+= Author
 
 
 import sys
+sys.path.append('..')
 from PyQt5 import QtWidgets, QtCore, QtGui
 import socket
 import time
 import platform
 import datetime
-from AstusChat_Server_UI import Ui_ServerInterface
-import AMaDiA_Colour
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
+from AMaDiA_Files.AstusChat_Server_UI import Ui_ServerInterface
+from AMaDiA_Files import AMaDiA_Colour
 
 WindowTitle = ServerVersionAuthor
 

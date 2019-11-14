@@ -3,7 +3,8 @@
 # if__name__ == "__main__":
 #     pass
 
-import sys
+import sys 
+sys.path.append('..')
 import subprocess
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
 import socket
@@ -24,8 +25,7 @@ from matplotlib import colors
 
 from External_Libraries.python_control_master import control
 
-import AMaDiA_Classes as AC
-import AMaDiA_ReplacementTables as ART
+from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
 import importlib
 
@@ -61,6 +61,8 @@ def ExceptionOutput(exc_info,extraInfo = True):
         print("An exception occured while trying to print an exception!")
 
 background_Colour = (54/255, 57/255, 63/255)
+
+from AMaDiA_Files import AMaDiA_Classes as AC
 # -----------------------------------------------------------------------------------------------------------------
 
 def cTimeStr():

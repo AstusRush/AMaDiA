@@ -11,13 +11,15 @@ WindowTitle+= " by "
 WindowTitle+= Author
 
 import sys
+sys.path.append('..')
 from PyQt5 import QtWidgets,QtCore,QtGui
 import socket
 import platform
 import errno
 import os
-from AstusChat_Client_UI import Ui_ClientInterface
-import AMaDiA_Colour
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
+from AMaDiA_Files.AstusChat_Client_UI import Ui_ClientInterface
+from AMaDiA_Files import AMaDiA_Colour
 
 
 bConnected = False

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.0.1"
+Version = "0.14.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
 
 # import qt Modules
-from PyQt5.Qt import QApplication, QClipboard
+from PyQt5.Qt import QApplication, QClipboard # pylint: disable=no-name-in-module
 from PyQt5 import QtWidgets,QtCore,QtGui,Qt
 #import PyQt5.Qt as Qt
 
@@ -48,16 +48,17 @@ import matplotlib
 # To Convert ui to py: (Commands for Anaconda Prompt)
 # cd C:"\Users\Robin\Desktop\Projects\AMaDiA"
 # pyuic5 AMaDiAUI.ui -o AMaDiAUI.py
-from AMaDiAUI import Ui_AMaDiA_Main_Window
-import AMaDiA_Widgets as AW
-import AMaDiA_Functions as AF
-import AMaDiA_Classes as AC
-import AMaDiA_ReplacementTables as ART
-import AMaDiA_Colour
-import AMaDiA_Threads as AT
-import AstusChat_Client
-import AstusChat_Server
-from Test_Input import Test_Input
+from AMaDiA_Files.AMaDiAUI import Ui_AMaDiA_Main_Window
+from AMaDiA_Files import AMaDiA_Widgets as AW
+from AMaDiA_Files import AMaDiA_Functions as AF
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
+from AMaDiA_Files import AMaDiA_Classes as AC
+from AMaDiA_Files import AMaDiA_ReplacementTables as ART
+from AMaDiA_Files import AMaDiA_Colour
+from AMaDiA_Files import AMaDiA_Threads as AT
+from AMaDiA_Files import AstusChat_Client
+from AMaDiA_Files import AstusChat_Server
+from AMaDiA_Files.Test_Input import Test_Input
 
 
 # To limit the length of output (Currently used to reduce the length of the y vector when an error in the plotter occurs)
@@ -73,8 +74,8 @@ r.maxstring = 40    # max characters displayed for strings
 from External_Libraries.python_control_master import control
 try:
     from External_Libraries.keyboard_master import keyboard
-except AF.common_exceptions :
-    AF.ExceptionOutput(sys.exc_info())
+except common_exceptions :
+    ExceptionOutput(sys.exc_info())
     Keyboard_Remap_Works = False
 else:
     Keyboard_Remap_Works = True
@@ -95,6 +96,73 @@ GroupSwitchModifier = QtCore.Qt.GroupSwitchModifier
 ShiftModifier = QtCore.Qt.ShiftModifier
 #endregion
 
+class AMaDiA_File_Display(QtWidgets.QMainWindow):
+    def __init__(self,FileName,Palette,Font,parent = None):
+        try:
+            super(AMaDiA_File_Display, self).__init__(parent)
+            self.setWindowTitle(FileName)
+            self.resize(900, 500)
+            self.setAutoFillBackground(True)
+            self.setPalette(Palette)
+            self.setFont(Font)
+
+            self.centralwidget = QtWidgets.QWidget(self)
+            self.centralwidget.setAutoFillBackground(True)
+            self.centralwidget.setObjectName("centralwidget")
+            self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+            self.gridLayout.setObjectName("gridLayout")
+            
+            self.TextBrowser = QtWidgets.QTextBrowser(self)
+            self.TextBrowser.setObjectName("TopBar_Error_Label")
+            self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
+
+
+            self.setCentralWidget(self.centralwidget)
+
+            self.FolderPath = os.path.dirname(__file__)
+            # Check if the path that was returned is correct
+            FileName = os.path.join(self.FolderPath,FileName)
+            with open(FileName,'r',encoding="utf-8") as text_file:
+                Text = text_file.read()
+            
+            #self.TextBrowser.setPlainText(Text)
+            self.TextBrowser.setText(Text)
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+
+    def Scroll_To_End(self):
+        self.TextBrowser.verticalScrollBar().setValue(self.TextBrowser.verticalScrollBar().maximum())
+
+class AMaDiA_About_Display(QtWidgets.QMainWindow):
+    def __init__(self,Palette,Font,parent = None):
+        try:
+            super(AMaDiA_About_Display, self).__init__(parent)
+            self.setWindowTitle("About AMaDiA")
+            self.resize(400, 600)
+            self.setAutoFillBackground(True)
+            self.setPalette(Palette)
+            self.setFont(Font)
+
+            self.centralwidget = QtWidgets.QWidget(self)
+            self.centralwidget.setAutoFillBackground(True)
+            self.centralwidget.setObjectName("centralwidget")
+            self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+            self.gridLayout.setObjectName("gridLayout")
+            
+            self.TextBrowser = QtWidgets.QTextBrowser(self)
+            self.TextBrowser.setObjectName("TopBar_Error_Label")
+            self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
+            #self.layout = QtWidgets.QVBoxLayout()
+            #self.layout.addWidget(self.TextBrowser)
+            #self.setLayout(self.layout)
+            self.setCentralWidget(self.centralwidget)
+
+            Text = WindowTitle+"\nWIP: More coming soon"
+            
+            self.TextBrowser.setText(Text)
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+
 class MainApp(QtWidgets.QApplication):
     def __init__(self, args):
         super(MainApp, self).__init__(args)
@@ -104,14 +172,14 @@ class MainApp(QtWidgets.QApplication):
     #    try:
     #        return super().notify(obj, event)
     #    except:
-    #        AF.ExceptionOutput(sys.exc_info())
+    #        ExceptionOutput(sys.exc_info())
     #        print("Caught: ",obj,event)
     #        return False
     #
     #def eventFilter(self, source, event): #DOES NOT INTERCEPT ENOUGH to nagate all AltGr Stuff
     #    try:
     #        pass#print(event.key())
-    #    except AF.common_exceptions:
+    #    except common_exceptions:
     #        pass
     #    if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
     #        #print("AltGr")
@@ -125,7 +193,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         sympy.init_printing() # doctest: +SKIP
         self.MainApp = MainApp
         self.setupUi(self)
-        
+
+        self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter
+
+        # TODO: Do something with the Statusbar 
 
         # Create Folders if not already existing
         self.CreateFolders()
@@ -152,18 +223,31 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Initialize important variables and lists
         self.ans = "1"
         self.LastNotification = ""
-        self.ThreadList = []
         self.LastOpenState = self.showNormal
         self.Bool_PreloadLaTeX = True
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
+
+        # Initialize Thread Related Things:
+        self.ThreadList = []
+        self.threadpool = QtCore.QThreadPool()
+        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        # Thread Mode
+        self.Threading = "POOL"
+        #self.Threading = "LIST"
         
         
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("AMaDiA" , WindowTitle))
 
-        self.Tab_5_4_Dirty_Input.setPlaceholderText("Example:\n\nK_P = 5\nK_D = 0\nK_i = 0\n\nsys1 = tf([K_D,K_P,K_i],[1,1.33+K_D,1+K_P,K_i])\n\nOther example:\nsys1 = ss([[2,8],[1,0]],[[1],[-0.5000]],[-1/8,-1],[0])")
-        self.Tab_5_4_Dirty_Input.setText("#Example:\n\nK_P = 5\nK_D = 0\nK_i = 0\n\nsys1 = tf([K_D,K_P,K_i],[1,1.33+K_D,1+K_P,K_i])\n\n#Other example:\n#sys1 = ss([[2,8],[1,0]],[[1],[-0.5000]],[-1/8,-1],[0])")
+        Tab_5_4_Dirty_Input_Text = "#Example:\n\n"
+        Tab_5_4_Dirty_Input_Text += "K_P = 5\nK_D = 0\nK_i = 0\n\nsys1 = tf([K_D,K_P,K_i],[1,1.33+K_D,1+K_P,K_i])\n\n"
+        Tab_5_4_Dirty_Input_Text += "#Other example:\n#sys1 = tf([1],[1,2,3])\n\n"
+        Tab_5_4_Dirty_Input_Text += "#Other example:\n#sys1 = ss([[2,8],[1,0]],[[1],[-0.5000]],[-1/8,-1],[0])\n\n"
+        Tab_5_4_Dirty_Input_Text += "#Setting Input Function:\nf=\"sin(x)\"\n#f=\"1/(x+1)\""
+        
+        self.Tab_5_4_Dirty_Input.setPlaceholderText(Tab_5_4_Dirty_Input_Text)
+        self.Tab_5_4_Dirty_Input.setText(Tab_5_4_Dirty_Input_Text)
         
         
         self.installEventFilter(self)
@@ -239,12 +323,18 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def ConnectSignals(self):
         self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
         self.Menubar_Main_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
+        self.Menubar_Main_Options_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
 
         self.Menubar_Main_Chat_action_Open_Client.triggered.connect(self.OpenClient)
         self.Menubar_Main_Chat_action_Open_Server.triggered.connect(self.OpenServer)
         
         self.Menubar_Main_Colour_action_Dark.triggered.connect(lambda: self.Recolour("Dark"))
         self.Menubar_Main_Colour_action_Bright.triggered.connect(lambda: self.Recolour("Bright"))
+
+        self.Menubar_Main_Help_action_Examples.triggered.connect(lambda: self.Show_AMaDiA_Text_File("InputExamples.txt"))
+        self.Menubar_Main_Help_action_Helpful_Commands.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Helpful_Useable_Syntax.txt"))
+        self.Menubar_Main_Help_action_Patchlog.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Patchlog.txt"))
+        self.Menubar_Main_Help_action_About.triggered.connect(self.Show_About)
 
         self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
@@ -281,13 +371,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         font.setPointSize(9)
         self.setFont(font)
         self.setPalette(self.Palette)
-        #self.Palette = palette
-        #self.BG_Colour = BG
-        #self.TextColour = FG
         for i in self.findChildren(AW.MplWidget):
             i.SetColour(self.BG_Colour, self.TextColour)
 
+
         #self.Error_Palette = AMaDiA_Colour.Red_ERROR()[0] # Currently not in use
+
+        # Always keep Statusbar Font small
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(9)
+        self.statusbar.setFont(font)
 
     def SetFont(self,Family = None, PointSize = 0):
         if Family == None:
@@ -310,6 +404,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         font.setFamily(Family)
         font.setPointSize(PointSize)
         self.setFont(font)
+
+        # Always keep Statusbar Font small
+        font = QtGui.QFont()
+        font.setFamily(Family)
+        font.setPointSize(9)
+        self.statusbar.setFont(font)
 
 
     def Recolour(self, Colour = "Dark"):
@@ -341,6 +441,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Menubar_Main_Options.setFont(newFont)
         self.Menubar_Main_Colour.setFont(newFont)
         self.Menubar_Main_Chat.setFont(newFont)
+        self.Menubar_Main_Help.setFont(newFont)
 
     def InstallSyntaxHighlighter(self):
         #self.Tab_1_InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1_InputField.document())
@@ -358,37 +459,25 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.selfPath = os.path.abspath(__file__)
         self.FolderPath = os.path.dirname(__file__)
         # Check if the path that was returned is correct
-        fpath = self.FolderPath
-        if platform.system() == 'Windows':
-            fpath += "\\AMaDiA.py"
-        elif platform.system() == 'Linux':
-            fpath += "/AMaDiA.py"
+        fpath = os.path.join(self.FolderPath,"AMaDiA.py")
         fpath = pathlib.Path(fpath)
         if fpath.is_file():
             self.pathOK = True
             # Create Plots folder to save plots
-            self.PlotPath = self.FolderPath
-            if platform.system() == 'Windows':
-                self.PlotPath += "\\Plots\\"
-            elif platform.system() == 'Linux':
-                self.PlotPath += "/Plots/"
+            self.PlotPath = os.path.join(self.FolderPath,"Plots")
             try:
-                os.makedirs(self.PlotPath[:-1])
+                os.makedirs(self.PlotPath)
             except OSError as e:
                 if e.errno != errno.EEXIST:
-                    AF.ExceptionOutput(sys.exc_info())
+                    ExceptionOutput(sys.exc_info())
                     self.pathOK = False
             # Create Config folder to save configs
-            self.ConfigFolderPath = self.FolderPath
-            if platform.system() == 'Windows':
-                self.ConfigFolderPath += "\\Config\\"
-            elif platform.system() == 'Linux':
-                self.ConfigFolderPath += "/Config/"
+            self.ConfigFolderPath = os.path.join(self.FolderPath,"Config")
             try:
-                os.makedirs(self.ConfigFolderPath[:-1])
+                os.makedirs(self.ConfigFolderPath)
             except OSError as e:
                 if e.errno != errno.EEXIST:
-                    AF.ExceptionOutput(sys.exc_info())
+                    ExceptionOutput(sys.exc_info())
                     self.pathOK = False
 
     def ToggleRemapper(self):
@@ -409,12 +498,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
             else:
                 keyboard.clear_all_hotkeys()
-        except AF.common_exceptions :
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions :
+            Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(1,Error)
             try:
                 print(i,Key)
-            except AF.common_exceptions :
+            except common_exceptions :
                 pass
 
 
@@ -547,11 +636,30 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         for i in Test_Input:
             self.Tab_1_InputField.setText(i)
             self.Tab_1_F_Calculate_Field_Input()
-            time.sleep(0.1)
         Text = "Expected Entries after all calulations: "+str(len(Test_Input))
         print(Text)
         self.Tab_1_InputField.setText(Text)
 
+    def ToggleThreadMode(self):
+        if self.Menubar_Main_Options_action_Use_Threadpool.isChecked():
+            self.Threading = "POOL"
+        else:
+            self.Threading = "LIST"
+
+    def Show_AMaDiA_Text_File(self,FileName):
+        self.AMaDiA_Text_File_Window = AMaDiA_File_Display(FileName,self.Palette,self.font())
+        self.AMaDiA_Text_File_Window.show()
+        if FileName == "Patchlog.txt":
+            worker = AT.Timer(0.1) # pylint: disable=no-value-for-parameter
+            worker.signals.finished.connect(self.AMaDiA_Text_File_SCROLLTOEND)
+            self.threadpool.start(worker)
+        
+    def AMaDiA_Text_File_SCROLLTOEND(self):
+        self.AMaDiA_Text_File_Window.Scroll_To_End()
+
+    def Show_About(self):
+        self.AMaDiA_About_Display_Window = AMaDiA_About_Display(self.Palette,self.font())
+        self.AMaDiA_About_Display_Window.show()
 
 # ---------------------------------- Chat Toolbar Funtions ----------------------------------
 
@@ -606,9 +714,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     self.Tab_5_tabWidget.setCurrentIndex(2)
                 else:
                     self.NotifyUser(message)
-        except AF.common_exceptions as inst:
+        except common_exceptions as inst:
             if type(inst) != AttributeError:
-                self.NotifyUser(1,AF.ExceptionOutput(sys.exc_info()))
+                self.NotifyUser(1,ExceptionOutput(sys.exc_info()))
             self.Tab_5_tabWidget.setCurrentIndex(1)
         self.Tab_5_tabWidget.setFocus()
     
@@ -849,8 +957,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Text = Text[:-3]
             Text += " ]"
             QApplication.clipboard().setText(Text)
-        except AF.common_exceptions:
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(2,Error)
         
     def action_H_Copy_y_Values(self,source,event):
@@ -863,8 +971,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Text = Text[:-3]
             Text += " ]"
             QApplication.clipboard().setText(Text)
-        except AF.common_exceptions:
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(2,Error)
 
  # ----------------
@@ -924,15 +1032,15 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 # ---------------------------------- Tab_3_1_Display_Context_Menu ----------------------------------
     def action_tab_3_tab_1_Display_SavePlt(self):
         if self.pathOK:
-            Filename = self.PlotPath
-            Filename += AF.cTimeFullStr("-")
+            Filename = AF.cTimeFullStr("-")
             Filename += ".png"
+            Filename = os.path.join(self.PlotPath,Filename)
             try:
                 print(Filename)
                 self.Tab_3_1_Display.canvas.fig.savefig(Filename , facecolor=self.BG_Colour , edgecolor=self.BG_Colour )
             except:
                 Error = "Could not save Plot: "
-                Error += AF.ExceptionOutput(sys.exc_info())
+                Error += ExceptionOutput(sys.exc_info())
                 self.NotifyUser(1,Error)
             else:
                 self.NotifyUser(3,Filename)
@@ -1038,8 +1146,37 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Function(AMaS_Object,Eval)
         else:
             self.Function(AMaS_Object)
+
+    def TC(self, Kind, *args, **kwargs):
+        try:
+            if self.Threading == "LIST":
+                ID = len(self.ThreadList)
+                
+                if Kind == "NEW":
+                    Thread = AT.AMaS_Creator_Thread(self,*args,ID=ID,**kwargs)
+                elif Kind == "WORK":
+                    Thread = AT.AMaS_Thread(self,*args,ID=ID) # pylint: disable=no-value-for-parameter
+                
+                self.ThreadList.append(Thread)
+
+                self.ThreadList[ID].Return.connect(self.TR)
+                self.ThreadList[ID].ReturnError.connect(self.Error_Redirect)
+                self.ThreadList[ID].start()
+
+            elif self.Threading == "POOL":
+                if Kind == "NEW":
+                    worker = AT.AMaS_Creator(*args,**kwargs)
+                elif Kind == "WORK":
+                    worker = AT.AMaS_Worker(*args) # pylint: disable=no-value-for-parameter
+                worker.signals.result.connect(self.TR)
+                worker.signals.error.connect(self.Error_Redirect)
+                #worker.signals.finished.connect(self.NONE)
+                self.threadpool.start(worker) 
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            self.NotifyUser(1,Error)
         
-    def TC(self,Thread): # Thread Creator: All new threads are created here
+    def TC_old(self,Thread): # Thread Creator: All new threads are created here
         ID = -1
 
         # TODO: This causes a creash due to garbagecollector deleting thrads before they are properly done cleaning themselves up
@@ -1076,7 +1213,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ThreadList[ID].ReturnError.connect(self.Error_Redirect)
         self.ThreadList[ID].start()
 
-    def Error_Redirect(self, AMaS_Object , ErrorType , Error_Text , ReturnFunction , ID):
+    def Error_Redirect(self, AMaS_Object , ErrorType , Error_Text , ReturnFunction , ID=-1):
         #TODO:Improve
         self.NotifyUser(ErrorType,Error_Text)
 
@@ -1107,7 +1244,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             TheInput = re.sub(r"(?<!\w)ans(?!\w)",self.ans,TheInput)
             if TheInput == "len()":
                 TheInput = str(len(self.ThreadList))
-            self.TC(lambda ID: AT.AMaS_Creator(self, TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
+            #self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
+            self.TC("NEW",TheInput,self.Tab_1_F_Calculate,Eval=Eval)
         
         
         
@@ -1115,7 +1253,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if Eval == None:
             Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
-        self.TC(lambda ID: AT.AMaS_Thread(self, AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
+        #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
+        self.TC("WORK", AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display)
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,1)
@@ -1127,7 +1266,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         EvalL = self.Tab_2_Eval_checkBox.isChecked()
         if type(Text) != str:
             Text = self.Tab_2_InputField.toPlainText()
-        self.TC(lambda ID: AT.AMaS_Creator(self, Text, self.Tab_2_F_Display,ID,EvalL=EvalL))
+        #self.TC(lambda ID: AT.AMaS_Creator(Text, self.Tab_2_F_Display,ID,EvalL=EvalL))
+        self.TC("NEW",Text, self.Tab_2_F_Display,EvalL=EvalL)
         
         
     def Tab_2_F_Display(self , AMaS_Object , part = "Normal"):
@@ -1153,7 +1293,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Tab_3_1_ 2D-Plot ----------------------------------
     def Tab_3_1_F_Plot_Button(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self,self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
+        #self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
+        self.TC("NEW",self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Plot_init, Iam=AC.Iam_2D_plot)
         
         
     def Tab_3_1_F_Plot_init(self , AMaS_Object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
@@ -1182,7 +1323,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 ymax , ymin = ymin , ymax
             AMaS_Object.plot_ylim_vals = (ymin , ymax)
         
-        self.TC(lambda ID: AT.AMaS_Thread(self,AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_1_F_Plot ,ID))
+        #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_1_F_Plot ,ID))
+        self.TC("WORK",AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_1_F_Plot)
         
         
         
@@ -1205,7 +1347,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 p = self.Tab_3_1_Display.canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
             try:
                 AMaS_Object.current_ax = p[0]
-            except AF.common_exceptions:
+            except common_exceptions:
                 AMaS_Object.current_ax = p
             
             if AMaS_Object.plot_grid:
@@ -1229,7 +1371,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 brush = QtGui.QBrush(QtGui.QColor(colour))
                 brush.setStyle(QtCore.Qt.SolidPattern)
                 AMaS_Object.Tab_3_1_ref.setForeground(brush)
-            except AF.common_exceptions:
+            except common_exceptions:
                 colour = "#FF0000"
                 brush = QtGui.QBrush(QtGui.QColor(colour))
                 brush.setStyle(QtCore.Qt.SolidPattern)
@@ -1238,12 +1380,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             try:
                 self.Tab_3_1_Display.canvas.draw()
             except RuntimeError:
-                AF.ExceptionOutput(sys.exc_info(),False)
+                ExceptionOutput(sys.exc_info(),False)
                 print("Trying to output without LaTeX")
                 self.Tab_3_1_Display.UseTeX(False)
                 self.Tab_3_1_Display.canvas.draw()
-        except AF.common_exceptions :
-            Error = AF.ExceptionOutput(sys.exc_info(),False)
+        except common_exceptions :
+            Error = ExceptionOutput(sys.exc_info(),False)
             print("y_vals = ",r.repr(AMaS_Object.plot_y_vals),type(AMaS_Object.plot_y_vals),"\nYou can copy all elements in advanced mode in the contextmenu")
             #print("y_vals = ")
             #print(AMaS_Object.plot_y_vals)
@@ -1279,7 +1421,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         try:
             self.Tab_3_1_Display.canvas.draw()
         except RuntimeError:
-            AF.ExceptionOutput(sys.exc_info(),False)
+            ExceptionOutput(sys.exc_info(),False)
             print("Trying to output without LaTeX")
             self.Tab_3_1_Display.UseTeX(False)
             self.Tab_3_1_Display.canvas.draw()
@@ -1291,7 +1433,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         try:
             self.Tab_3_1_Display.canvas.draw()
         except RuntimeError:
-            AF.ExceptionOutput(sys.exc_info(),False)
+            ExceptionOutput(sys.exc_info(),False)
             print("Trying to output without LaTeX")
             self.Tab_3_1_Display.UseTeX(False)
             self.Tab_3_1_Display.canvas.ax.clear()
@@ -1302,7 +1444,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_1_History.item(i).data(100).current_ax = None
             
     def Tab_3_1_F_Sympy_Plot_Button(self):
-        self.TC(lambda ID: AT.AMaS_Creator(self,self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot,ID))
+        #self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot,ID))
+        self.TC("NEW",self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot)
         
     def Tab_3_1_F_Sympy_Plot(self , AMaS_Object):
         try:
@@ -1332,14 +1475,16 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 sympy.plot(temp , ylim = ylims)
             else:
                 sympy.plot(temp)
-        except AF.common_exceptions: # TODO: plot_implicit uses other syntax for limits
+        except common_exceptions: # TODO: plot_implicit uses other syntax for limits
+            Error = ExceptionOutput(sys.exc_info())
             try:
                 sympy.plot_implicit(temp)
-            except AF.common_exceptions:
+            except common_exceptions:
+                Error = ExceptionOutput(sys.exc_info())
                 try:
                     sympy.plot_implicit(parse_expr(AMaS_Object.string))
-                except AF.common_exceptions:
-                    Error = AF.ExceptionOutput(sys.exc_info())
+                except common_exceptions:
+                    Error = ExceptionOutput(sys.exc_info())
                     self.NotifyUser(1,Error)
 
 
@@ -1348,7 +1493,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Name = ""+self.Tab_4_2_New_Equation_Name_Input.text().strip()
         if Name == "":
             Name="Unnamed Equation"
-        self.TC(lambda ID: AT.AMaS_Creator(self,Name,self.Tab_4_F_New_Equation_Done,ID=ID,Iam=AC.Iam_Multi_Dim))
+        #self.TC(lambda ID: AT.AMaS_Creator(Name,self.Tab_4_F_New_Equation_Done,ID=ID,Iam=AC.Iam_Multi_Dim))
+        self.TC("NEW",Name,self.Tab_4_F_New_Equation_Done,Iam=AC.Iam_Multi_Dim)
     def Tab_4_F_New_Equation_Done(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,4)
 
@@ -1372,7 +1518,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 item.setData(101,Variable)
                 self.Tab_4_Matrix_List.addItem(item)
         except ValueError:
-            AF.ExceptionOutput(sys.exc_info())
+            ExceptionOutput(sys.exc_info())
             try:
                 Name, Variable = self.Tab_4_Active_Equation.Variables.items()
                 h, w = AF.shape2(Variable)
@@ -1382,8 +1528,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 item.setData(100,Name)
                 item.setData(101,Variable)
                 self.Tab_4_Matrix_List.addItem(item)
-            except AF.common_exceptions:
-                Error = AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions:
+                Error = ExceptionOutput(sys.exc_info())
                 self.NotifyUser(1,Error)
 
     def Tab_4_F_Load_Matrix(self,Name,Matrix):
@@ -1409,12 +1555,12 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         try:
             h = int(h) if int(h) > 0 else 1
             self.Tab_4_1_Matrix_Input.setRowCount(h)
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         try:
             w = int(w)
             self.Tab_4_1_Matrix_Input.setColumnCount(w)
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         for i in range(self.Tab_4_1_Matrix_Input.columnCount()):
             self.Tab_4_1_Matrix_Input.setColumnWidth(i,75)
@@ -1441,9 +1587,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                             Matrix[i].append(AF.AstusParse(self.Tab_4_1_Matrix_Input.item(i,j).text(),False))
                         else:
                             Matrix[i].append("0")
-                    except AF.common_exceptions:
+                    except common_exceptions:
                         MError += "Could not add item to Matrix at ({},{}). Inserting a Zero instead. ".format(i+1,j+1)
-                        #MError += AF.ExceptionOutput(sys.exc_info())
+                        #MError += ExceptionOutput(sys.exc_info())
                         MError += "\n"
                         Matrix[i].append("0")
             if MError != "":
@@ -1475,8 +1621,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_4_Matrix_List.addItem(item)
             # Display the Matrix
             self.Tab_4_F_Display_Matrix(Name,Matrix)
-        except AF.common_exceptions:
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(1,Error)
         
     def Tab_4_F_Update_Equation(self):
@@ -1488,7 +1634,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Text = self.Tab_4_FormulaInput.text()
         AMaS_Object = self.Tab_4_Active_Equation
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
-        self.TC(lambda ID: AT.AMaS_Thread(self,AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text), self.Tab_4_F_Display , ID))
+        #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text), self.Tab_4_F_Display , ID))
+        self.TC("WORK",AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text), self.Tab_4_F_Display)
 
     def Tab_4_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
         self.Tab_4_Currently_Displayed = AMaS_Object.EvaluationEquation
@@ -1527,17 +1674,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.NotifyUser(3,"This is the danger zone!\nPlease activate Advanced Mode to confirm that you know what you are doing!")
         else:
             self.Tab_5_tabWidget.setCurrentIndex(1)
-            input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\n" + self.Tab_5_4_Dirty_Input.toPlainText()
-            K_D,K_P,K_i = 0,1,0
+            input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal f\nf=\"\"\n" + self.Tab_5_4_Dirty_Input.toPlainText()
+            #K_D,K_P,K_i = 0,1,0
             try:
                 g,l = dict(),dict()
                 exec(input_text,g,l)
                 print(g["sys1"])
-                self.NotifyUser(self.Tab_5_2_Display.Display(g["sys1"]))
+                self.NotifyUser(self.Tab_5_2_Display.Display(g["sys1"],Ufunc=g["f"]))
                 self.Tab_5_tabWidget.setFocus()
                 self.Tab_5_3_SingleDisplay.clear()
-            except AF.common_exceptions:
-                Error = AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions:
+                Error = ExceptionOutput(sys.exc_info())
                 self.Tab_5_tabWidget.setCurrentIndex(3)
                 self.NotifyUser(1,Error)
 

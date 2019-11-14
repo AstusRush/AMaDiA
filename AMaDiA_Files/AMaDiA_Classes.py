@@ -9,6 +9,7 @@ Created on Wed Sep  4 14:55:31 2019
 #     pass
 
 import sys
+sys.path.append('..')
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
 import socket
 import datetime
@@ -27,8 +28,9 @@ from matplotlib import colors
 import scipy
 
 
-import AMaDiA_Functions as AF
-import AMaDiA_ReplacementTables as ART
+from AMaDiA_Files import AMaDiA_Functions as AF
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
+from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
 
 from External_Libraries.python_control_master import control
@@ -66,8 +68,8 @@ class AMaS: # Astus' Mathematical Structure
         self.VariablesUnev = {}
         try:
             self.INIT_WhatAmI(string)
-        except AF.common_exceptions :
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions :
+            Error = ExceptionOutput(sys.exc_info())
             self.Exists = Error
         else:
             self.Exists = True
@@ -217,21 +219,21 @@ class AMaS: # Astus' Mathematical Structure
         try:
             if self.f_eval:
                 expr = expr.evalf()
-        except AF.common_exceptions :
-            AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
         try:
             if self.f_powsimp:
                 if type(expr) == sympy.Equality:
                     expr = sympy.Eq(sympy.powsimp(expr.lhs),sympy.powsimp(expr.rhs))
                 else:
                     expr = sympy.powsimp(expr)
-        except AF.common_exceptions :
-            AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
         try:
             if self.f_simplify:
                 expr = sympy.simplify(expr)
-        except AF.common_exceptions :
-            AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
         # TODO : Add the others
         return expr
 
@@ -281,8 +283,8 @@ class AMaS: # Astus' Mathematical Structure
                 #expr = AF.SPParseNoEval(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                 #self.LaTeX = sympy.latex(expr)
                 self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-        except AF.common_exceptions:
-            error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            error = ExceptionOutput(sys.exc_info())
             self.LaTeX = "Could not convert"
             ErrTxt = "Could not convert to LaTeX: " + error
             self.Notify(2,ErrTxt)
@@ -336,8 +338,8 @@ class AMaS: # Astus' Mathematical Structure
                     #expr = parse_expr(e,evaluate=False,local_dict=self.VariablesUnev)
                     #expr = AF.SPParseNoEval(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                     LineText = AF.LaTeX(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)#sympy.latex(expr)
-            except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions: #as inst:
+                ExceptionOutput(sys.exc_info())
                 # LineText += AF.AstusParseInverse(e) #TODO: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
                 LineText += e
                 if n > 0:
@@ -361,8 +363,8 @@ class AMaS: # Astus' Mathematical Structure
             if expr != None:
                 try:
                     self.LaTeX_E = sympy.latex(expr)
-                except AF.common_exceptions:
-                    AF.ExceptionOutput(sys.exc_info())
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
                     self.LaTeX_E = "Could not convert"
                     expr = None
             if expr == None:
@@ -383,8 +385,8 @@ class AMaS: # Astus' Mathematical Structure
                         #self.LaTeX_E = sympy.latex( sympy.S(self.Evaluation,evaluate=False))
                         expr = parse_expr(self.Evaluation,evaluate=False,local_dict=self.Variables)
                         self.LaTeX_E = sympy.latex(expr)
-                except AF.common_exceptions:
-                    Error = AF.ExceptionOutput(sys.exc_info())
+                except common_exceptions:
+                    Error = ExceptionOutput(sys.exc_info())
                     self.LaTeX_E = "Could not convert"
                     self.LaTeX_E_L += self.LaTeX_E
                     self.LaTeX_E_N += self.LaTeX_E
@@ -395,9 +397,9 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_E_N += self.LaTeX_E
             self.LaTeX_E_L += "$"
             self.LaTeX_E_N += "$"
-        except AF.common_exceptions: #as inst:
-            Error = AF.ExceptionOutput(sys.exc_info())
-            ErrTxt = "Could not convert Evaluation to LaTeX: " + error
+        except common_exceptions: #as inst:
+            Error = ExceptionOutput(sys.exc_info())
+            ErrTxt = "Could not convert Evaluation to LaTeX: " + Error
             self.Notify(2,ErrTxt)
             return Error
         return True
@@ -436,8 +438,8 @@ class AMaS: # Astus' Mathematical Structure
         if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
             try:
                 ODE = self.Solve_ODE_Version_1()
-            except AF.common_exceptions:
-                AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions:
+                ExceptionOutput(sys.exc_info())
                 ODE = False
         if ODE == True:
             self.init_Flags() # Reset All Flags
@@ -456,25 +458,25 @@ class AMaS: # Astus' Mathematical Structure
                 ParsedInput = ans
                 try:
                     ans = ans.doit()
-                except AF.common_exceptions:
+                except common_exceptions:
                     pass
                 try:
                     ans = sympy.dsolve(ans,simplify=self.f_simplify)
                     try:
                         print("ODE Class:",sympy.classify_ode(ParsedInput))
-                    except AF.common_exceptions:
-                        Error = AF.ExceptionOutput(sys.exc_info())
+                    except common_exceptions:
+                        Error = ExceptionOutput(sys.exc_info())
                     try:
                         ansF = self.ExecuteFlags(ans)
                         self.Evaluation = str(ansF.lhs) + " = "
                         self.Evaluation += str(ansF.rhs)
                         self.Convert_Evaluation_to_LaTeX(ansF)
-                    except AF.common_exceptions:
+                    except common_exceptions:
                         ansF = self.ExecuteFlags(ans)
                         self.Evaluation = str(ansF)
                         self.Convert_Evaluation_to_LaTeX(ansF)
-                except AF.common_exceptions:
-                    Error = AF.ExceptionOutput(sys.exc_info())
+                except common_exceptions:
+                    Error = ExceptionOutput(sys.exc_info())
                     ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                     self.Evaluation = "{ "
                     for i in ans:
@@ -492,13 +494,13 @@ class AMaS: # Astus' Mathematical Structure
                         ans = ans.doit()
                         try: # TODO Maybe get rid of this evalf()
                             if self.f_eval: ans = ans.evalf()
-                        except AF.common_exceptions:
-                            AF.ExceptionOutput(sys.exc_info())
+                        except common_exceptions:
+                            ExceptionOutput(sys.exc_info())
                         self.Evaluation = "True" if ans == 0 else "False: right side deviates by "+str(ans)
                     self.Convert_Evaluation_to_LaTeX()
                     
-            except AF.common_exceptions: #as inst:
-                Error = AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions: #as inst:
+                Error = ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -516,39 +518,39 @@ class AMaS: # Astus' Mathematical Structure
                     try: # A problem was introduced with version 0.7.0 which necessitates this when inputting integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
                         # The Problem seems to be gone at least since version 0.8.0.3 but Keep this anyways in case other problems occure here...
                         ans = ans.doit()
-                    except AF.common_exceptions:
+                    except common_exceptions:
                         print("Could not simplify "+str(ans))
-                        AF.ExceptionOutput(sys.exc_info())
+                        ExceptionOutput(sys.exc_info())
                     try:
                         ans = sympy.dsolve(ans,simplify=self.f_simplify)
                         try:
                             print("ODE Class:",sympy.classify_ode(ParsedInput))
-                        except AF.common_exceptions:
-                            Error = AF.ExceptionOutput(sys.exc_info())
+                        except common_exceptions:
+                            Error = ExceptionOutput(sys.exc_info())
                         ansF = self.ExecuteFlags(ans)
                         try:
                             self.Evaluation = str(ansF.lhs) + " = "
                             self.Evaluation += str(ansF.rhs)
                             self.Convert_Evaluation_to_LaTeX(ansF)
-                        except AF.common_exceptions:
+                        except common_exceptions:
                             self.Evaluation = str(ansF)
                             self.Convert_Evaluation_to_LaTeX(ansF)
-                    except AF.common_exceptions:
+                    except common_exceptions:
                         separator = " = "
                         if self.f_eval:
                             try:
                                 ans = ans.evalf()
-                            except AF.common_exceptions:
+                            except common_exceptions:
                                 try:
                                     ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
-                                except AF.common_exceptions:
+                                except common_exceptions:
                                     pass
                         ansF = self.ExecuteFlags(ans)
                         self.Evaluation = str(ansF)
                         self.Convert_Evaluation_to_LaTeX(ansF)
                     #self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation # Already implemented with AF.number_shaver
-            except AF.common_exceptions: #as inst:
-                Error = AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions: #as inst:
+                Error = ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -591,8 +593,8 @@ class AMaS: # Astus' Mathematical Structure
             ans = parse_latex(self.LaTeX)
             ans = ans.evalf()
             self.Evaluation = str(ans)
-        except AF.common_exceptions: #as inst:
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions: #as inst:
+            Error = ExceptionOutput(sys.exc_info())
             #print(inst.args)
             #if callable(inst.args):
             #    print(inst.args())
@@ -638,12 +640,12 @@ class AMaS: # Astus' Mathematical Structure
                 self.Evaluation = str(equation.lhs) + " = "
                 self.Evaluation += str(equation.rhs)
                 self.Convert_Evaluation_to_LaTeX(equation)
-            except AF.common_exceptions:
+            except common_exceptions:
                 self.Evaluation = str(equation)
                 self.Convert_Evaluation_to_LaTeX(equation)
 
-        except AF.common_exceptions:
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
             self.Evaluation = "Fail"
         
         self.EvaluationEquation = self.Evaluation + "   <==   "
@@ -681,7 +683,7 @@ class AMaS: # Astus' Mathematical Structure
                         self.plot_data_exists = True
                         np.seterrcall(oldErrCall)
                         return True
-            except AF.common_exceptions:
+            except common_exceptions:
                 pass
         
         
@@ -690,15 +692,15 @@ class AMaS: # Astus' Mathematical Structure
             n = sympy.symbols('n')
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables)
-            except AF.common_exceptions: #as inst:
-                Error = AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions: #as inst:
+                Error = ExceptionOutput(sys.exc_info())
                 self.plottable = False
                 np.seterrcall(oldErrCall)
                 return Error
             try:
                 Function = Function.doit()
-            except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions: #as inst:
+                ExceptionOutput(sys.exc_info())
                 
             if self.plot_xmax < self.plot_xmin:
                 self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax
@@ -720,8 +722,8 @@ class AMaS: # Astus' Mathematical Structure
                 if self.plot_y_vals.shape != self.plot_x_vals.shape:
                     raise Exception("Dimensions do not match")
                 
-            except AF.common_exceptions: #as inst:
-                AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions: #as inst:
+                ExceptionOutput(sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -763,8 +765,8 @@ class AMaS: # Astus' Mathematical Structure
                             self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             raise Exception("Dimensions do not match")
-                except AF.common_exceptions: #as inst:
-                    Error = AF.ExceptionOutput(sys.exc_info())
+                except common_exceptions: #as inst:
+                    Error = ExceptionOutput(sys.exc_info())
                     np.seterrcall(oldErrCall)
                     return Error
                     

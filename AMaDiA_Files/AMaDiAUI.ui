@@ -888,6 +888,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
     <addaction name="Menubar_Main_Options_action_WindowStaysOnTop"/>
+    <addaction name="Menubar_Main_Options_action_Use_Threadpool"/>
    </widget>
    <widget class="QMenu" name="Menubar_Main_Chat">
     <property name="title">
@@ -903,9 +904,19 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Colour_action_Dark"/>
     <addaction name="Menubar_Main_Colour_action_Bright"/>
    </widget>
+   <widget class="QMenu" name="Menubar_Main_Help">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="Menubar_Main_Help_action_Examples"/>
+    <addaction name="Menubar_Main_Help_action_Helpful_Commands"/>
+    <addaction name="Menubar_Main_Help_action_Patchlog"/>
+    <addaction name="Menubar_Main_Help_action_About"/>
+   </widget>
    <addaction name="Menubar_Main_Options"/>
    <addaction name="Menubar_Main_Colour"/>
    <addaction name="Menubar_Main_Chat"/>
+   <addaction name="Menubar_Main_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="Menubar_Main_Options_action_Reload_Modules">
@@ -1011,41 +1022,77 @@ p, li { white-space: pre-wrap; }
     <string>Bright</string>
    </property>
   </action>
+  <action name="Menubar_Main_Help_action_Examples">
+   <property name="text">
+    <string>Examples</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Help_action_Helpful_Commands">
+   <property name="text">
+    <string>Helpful Commands</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Help_action_License">
+   <property name="text">
+    <string>License</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Help_action_About">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_Use_Threadpool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Threadpool</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Help_action_Patchlog">
+   <property name="text">
+    <string>Patchlog</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>MplWidget_LaTeX</class>
    <extends>QWidget</extends>
-   <header location="global">AMaDiA_Widgets</header>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>MplWidget_2D_Plot</class>
    <extends>QWidget</extends>
-   <header location="global">AMaDiA_Widgets</header>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LineEdit</class>
    <extends>QTextEdit</extends>
-   <header location="global">AMaDiA_Widgets</header>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TextEdit</class>
    <extends>QTextEdit</extends>
-   <header location="global">AMaDiA_Widgets</header>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
   </customwidget>
   <customwidget>
    <class>MplWidget_CONTROL</class>
    <extends>QWidget</extends>
-   <header location="global">AMaDiA_Widgets</header>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>MplWidget_EmptyPlot</class>
    <extends>QWidget</extends>
-   <header location="global">AMaDiA_Widgets</header>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

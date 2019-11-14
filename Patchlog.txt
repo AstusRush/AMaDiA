@@ -1,7 +1,8 @@
 TODO: Include Patchnotes before 0.10.2
 
 v0.10.2: Simple Differential Equation Support
-+ The Calculator now supports differential equations (only general solution)(Differential Equations will get their own tab for more complex tasks like particular solution)
++ The Calculator now supports differential equations (only general solution)
+++ (Differential Equations will get their own tab for more complex tasks like particular solution)
 + The startupmessage is now displayed before the modules load to give a feedback to the user that the program is loading.
 + You can now copy the x and y values for a plot with the contextmenu in the history if the advanced mode is enabled
 + Added a Patchlog.txt
@@ -14,7 +15,8 @@ v0.10.2.2: Bug Fix
 + improved handling of ODE's that do not include a "="
 
 v0.11.0: Particular Solution
-+ First Support for solving the particular solution of linear differential equations (WIP: Needs Testing) (see InputExamples.txt for examples
++ First Support for solving the particular solution of linear differential equations
+++ (WIP: Needs Testing) (see InputExamples.txt for examples
 + You can now display the LaTeX version of the Solution of a history item via the context menu
 
 v0.11.1: Always on Top
@@ -72,15 +74,18 @@ v0.12.0.4: Bugfix
 
 v0.12.0.5: Bugfixes
 + Fixed ans not being replaced by last answer
-+ Caused a memory leak to prevent random crashes as the memory leak is small enough to ignore it... which does not make me happy and is a temporary solution but I NEED to stop the crashes... I hate QThreads...
++ Caused a memory leak to prevent random crashes as the memory leak is small enough to ignore it...
+++ This does not make me happy and is a temporary solution but I NEED to stop the crashes... I hate QThreads...
 + Disabled option to not eval when converting to LaTeX for now due to unexpected bugs in sympy library...
 
 v0.12.0.6: Bugfixes: Evaluate LaTeX
 + Reenabled Eval for LaTeX but gave it its own checkbox.
-++ When the tick is not set a script is run independently from AMaDiA to convert to LaTeX to ensure that "with sympy.evaluate(False):" does not mess up everything (since it behaves odd when used in multithreaded Programms)
+++ When the tick is not set a script is run independently from AMaDiA to convert to LaTeX
++++ This ensures that "with sympy.evaluate(False):" does not mess up everything (since it behaves odd when used in multithreaded Programms)
 
 v0.12.0.7: Bugfix: Combining dot above for Windows
-+ fixed the keyboardremap for the combining dots above for ATextEdit and derived Classes. It is still broken in all other cases since Windows is stupid...
++ fixed the keyboardremap for the combining dots above for ATextEdit and derived Classes.
+++ It is still broken in all other cases since Windows is stupid...
 
 v0.12.0.8: Preparation for Colour Changing
 + Restructured everything about Colours and Fonts in preparation to make these things changeable during runtime
@@ -94,7 +99,8 @@ v0.12.0.9: LaTeX Eval Tristate
 + The Advanced Mode now allows you to try to plot everything from all tabs
 
 v0.12.1: Exception Notification
-+ When an Error occurs the user is now notified in the main window and gets a short description as a tooltip when hovering over the message
++ When an Error occurs the user is now notified in the main window
+++ A short Description is displayed as a tooltip when hovering over the message
 ++ Only the most recent Error, Warning or Notification is displayed. For older Errors and warning look in the console.
 ++ Not all exceptions are displayed in the main window. For all exceptions and more details you still have to look in the console.
 
@@ -156,4 +162,16 @@ v0.14.0: Assuming Direct CONTROL
 
 v0.14.0.1: 2nd Control Example
 + Added a 2nd Control Code Input Example to show a syntax for state space input
+
+v0.14.1: Housecleaning
++ Cleaned up AMaDiA Folder by moving most code into a sub folder
+++ Adjusted imports accordingly
++ Changed the Threading to use a Threadpool and worker classes
+++ This Fixes the memory leak and prohibits that too many threads are active at the same time
+++ The Threading mode can be changed back in the options menu
++ The Control Tab can now plot a system response for a specific input function
++ Some text files are now accessible from the UI
++ Temporarily disabled the Sympy Plotter because the control tab has broken it for unknown reasons...
+++ Fixing this might take a while...
++ Streamlined folder-detection
 

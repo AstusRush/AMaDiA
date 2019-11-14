@@ -3,6 +3,8 @@
 # if__name__ == "__main__":
 #     pass
 
+import sys
+sys.path.append('..')
 from PyQt5 import QtWidgets,QtCore,QtGui
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
@@ -14,8 +16,9 @@ matplotlib.use('Qt5Agg')
 from mpl_toolkits.axes_grid1 import Divider, Size
 from mpl_toolkits.axes_grid1.mpl_axes import Axes
 import numpy as np
+import scipy
 import sympy
-import sys
+from sympy.parsing.sympy_parser import parse_expr
 import re
 import time
 
@@ -23,9 +26,10 @@ import warnings
 
 from External_Libraries.python_control_master import control
 
-import AMaDiA_Functions as AF
-import AMaDiA_Classes as AC
-import AMaDiA_ReplacementTables as ART
+from AMaDiA_Files import AMaDiA_Functions as AF
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
+from AMaDiA_Files import AMaDiA_Classes as AC
+from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
 import importlib
 def ReloadModules():
@@ -49,12 +53,12 @@ class MplWidget(QtWidgets.QWidget):
             self.canvas.fig.set_facecolor(self.background_Colour)
             self.canvas.fig.set_edgecolor(self.background_Colour)
             self.canvas.ax.set_facecolor(self.background_Colour)
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         try:
             self.canvas.draw()
-        except AF.common_exceptions:
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
 
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -158,7 +162,7 @@ class MplWidget_LaTeX(MplWidget):
         else:
             try:
                 self.canvas.draw()
-            except AF.common_exceptions:
+            except common_exceptions:
                 pass
     
     def UseTeX(self,TheBool):
@@ -195,12 +199,12 @@ class MplWidget_LaTeX(MplWidget):
             self.canvas.ax.axis('off')
             self.canvas.draw()
             self.UseTeX(False)
-        except AF.common_exceptions:
+        except common_exceptions:
             try:
                 self.UseTeX(False)
-            except AF.common_exceptions:
-                AF.ExceptionOutput(sys.exc_info())
-            AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions:
+                ExceptionOutput(sys.exc_info())
+            ExceptionOutput(sys.exc_info())
     
     def Display(self,Text_L,Text_N,Font_Size,Use_LaTeX = False):
         """
@@ -280,7 +284,7 @@ class MplWidget_LaTeX(MplWidget):
         # Show the "graph"
         try:
             self.canvas.draw()
-        except AF.common_exceptions:
+        except common_exceptions:
             returnTuple = (4,"Could not display in Mathmode")
             self.Text = Text_N
             if Use_LaTeX:
@@ -304,8 +308,8 @@ class MplWidget_LaTeX(MplWidget):
             
             try:
                 self.canvas.draw()
-            except AF.common_exceptions:
-                AF.ExceptionOutput(sys.exc_info())
+            except common_exceptions:
+                ExceptionOutput(sys.exc_info())
                 print("Trying to output without LaTeX")
                 returnTuple = (2,"Could not display with LaTeX")
                 self.Text = Text_N.replace("\limits","")
@@ -326,8 +330,8 @@ class MplWidget_LaTeX(MplWidget):
                 #--------------------------
                 try:
                     self.canvas.draw()
-                except AF.common_exceptions:
-                    AF.ExceptionOutput(sys.exc_info())
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
                     returnTuple = (1,"Could not display at all")
                     self.UseTeX(False)
                     self.canvas.ax.clear()
@@ -351,8 +355,8 @@ class MplWidget_LaTeX(MplWidget):
                     self.canvas.ax.axis('off')
                     try:
                         self.canvas.draw()
-                    except AF.common_exceptions:
-                        AF.ExceptionOutput(sys.exc_info())
+                    except common_exceptions:
+                        ExceptionOutput(sys.exc_info())
                         returnTuple = (1,"Critical Error: MatPlotLib Display seems broken")
                         print("Can not display anything")
                 
@@ -364,7 +368,7 @@ class MplWidget_LaTeX(MplWidget):
 # -----------------------------------------------------------------------------------------------------------------
 
 class MplCanvas_CONTROL(Canvas):
-    Titles = ['Step Response','Impulse Response','TODO: Other Response?',
+    Titles = ['Step Response','Impulse Response','Forced Response',
                         'Bode Plot','BODE_PLOT_2',
                         'Nyquist Plot','Nichols Plot','Pole-Zero-Plot',
                         'Root-Locus-Plot','LaTeX-Display']
@@ -379,7 +383,7 @@ class MplCanvas_CONTROL(Canvas):
             
             self.p_step_response = self.fig.add_subplot(self.gs[0,0])
             self.p_impulse_response = self.fig.add_subplot(self.gs[0,1])
-            self.p_TODO = self.fig.add_subplot(self.gs[0,2])     #TODO
+            self.p_forced_response = self.fig.add_subplot(self.gs[0,2])
             self.p_bode_plot_1 = self.fig.add_subplot(self.gs[1,0])
             self.p_bode_plot_2 = self.p_bode_plot_1.twinx()
             self.p_nyquist_plot = self.fig.add_subplot(self.gs[1,1])
@@ -402,7 +406,7 @@ class MplCanvas_CONTROL(Canvas):
             self.p_root_locus = self.fig.add_subplot(self.gs[4:,1])
             self.p_LaTeX_Display = self.fig.add_subplot(self.gs[4:,2])
 
-        self.p_plot_LIST = [ self.p_step_response, self.p_impulse_response, self.p_TODO, #TODO
+        self.p_plot_LIST = [ self.p_step_response, self.p_impulse_response, self.p_forced_response,
                             self.p_bode_plot_1, self.p_bode_plot_2,
                             self.p_nyquist_plot, self.p_nichols_plot, self.p_pzmap,
                             self.p_root_locus, self.p_LaTeX_Display]
@@ -440,6 +444,7 @@ class MplWidget_CONTROL(MplWidget):
         #self.scroll = QtWidgets.QScrollArea(self)
         #self.scroll.setWidget(self.canvas)
 
+        self.Curr_Sys = (None, None, 0.0, 0.0, "", "")
         self.LastCall = False
         self.Curr_Sys_LaTeX = ""
         
@@ -468,17 +473,19 @@ class MplWidget_CONTROL(MplWidget):
             if self.canvas.Titles[i] == 'LaTeX-Display':
                 p.axis('off')
         self.canvas.p_LaTeX_Display.text(0.5,0.5,self.Curr_Sys_LaTeX, horizontalalignment='center', verticalalignment='center',color=self.TextColour)#,usetex=True)
+        if self.Curr_Sys[4] != "" and False: # Disabled since the Legend covers the entire axes when Window not fullscreen
+            self.canvas.p_forced_response.legend(["Input Function: "+self.Curr_Sys[4]])#,color=self.TextColour)
         try:
             self.canvas.draw()
-        except AF.common_exceptions:
-            Error = AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
         
         #if self.LastCall != False:
         #    self.Display(self.LastCall[0],self.LastCall[1],self.LastCall[2],self.LastCall[3])
         #else:
         #    try:
         #        self.canvas.draw()
-        #    except AF.common_exceptions:
+        #    except common_exceptions:
         #        pass
     
     def UseTeX(self,TheBool):
@@ -494,35 +501,84 @@ class MplWidget_CONTROL(MplWidget):
         plt.rc('text', usetex=TheBool)
         return matplotlib.rcParams['text.usetex']
     
-    def Display(self,sys1,Use_LaTeX = False):
+    def Display(self,sys1,Use_LaTeX = False, T=None, X0 = 0.0, U=0.0, Ufunc = ""):
         """
         Retrun Value compatible with NotifyUser.
+        sys1 = System
+        Use_LaTeX = bool
+        T = Time steps at which the input is defined; values must be evenly spaced.
+        X0 = Initial condition
+        U = Input array giving input at each time T used for "Forced Response"-plot
+        Ufunc = string (Name of the function that created U)
         """
         
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             for i in self.canvas.p_plot_LIST:
                 i.clear()
-        self.Curr_Sys = sys1
+        Torig = T
+        Uorig = U
+        if T == None:
+            syst = control.timeresp._get_ss_simo(sys1)
+            T = scipy.signal.ltisys._default_response_times(syst.A, 500)
+
+
+        # If U not given try to create using Ufunc. If Ufunc not given or creation failed set U and Ufunc to 0
+        if U == 0.0:
+            if Ufunc != "":
+                try:
+                    Function = parse_expr(AF.AstusParse(Ufunc))
+                    x = sympy.symbols('x')
+                    evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy'])
+                    U = evalfunc(T)
+                    U = np.asarray(U)
+                    if type(U) == int or type(U) == float or U.shape == (): #This also catches the case exp(x)
+                        U = np.full_like(T, U)
+                    if U.shape != T.shape:
+                        raise Exception("Dimensions do not match")
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
+                    Ufunc = ""
+            if Ufunc == "":
+                Ufunc = "u(x)=0"
+
+
         self.Curr_Sys_LaTeX = str(sys1) #TODO: MAKE PROPER LaTeX
+        self.Curr_Sys = (sys1, Torig, X0, Uorig, Ufunc, self.Curr_Sys_LaTeX)
+
+
         self.canvas.p_bode_plot_1.set_label('control-bode-magnitude')
         self.canvas.p_bode_plot_2.set_label('control-bode-phase')
         returnTuple = (0,0)
         try:
-            T,y = control.step_response(sys1, number_of_samples=500)
-            self.canvas.p_step_response.plot(T,y)
-            T,y = control.impulse_response(sys1, number_of_samples=500)
-            self.canvas.p_impulse_response.plot(T,y)
+            # 0
+            oT,y = control.step_response(sys1, number_of_samples=500, T=T, X0 = X0)
+            self.canvas.p_step_response.plot(oT,y)
 
+            # 1
+            oT,y = control.impulse_response(sys1, number_of_samples=500, T=T, X0 = X0)
+            self.canvas.p_impulse_response.plot(oT,y)
+
+            # 2
+            try:
+                oT,y, xout = control.forced_response(sys1, T=T, X0 = X0, U=U)
+                self.canvas.p_forced_response.plot(oT,y)
+            except common_exceptions:
+                returnTuple = (3, ExceptionOutput(sys.exc_info()))
+
+            # 3+4
             plt.figure(self.canvas.fig.number) # set figure to current that .gfc() in control.bode_plot can find it
             control.bode_plot(sys1, dB=True, omega_num=500)
 
+            # 5
             plt.sca(self.canvas.p_nyquist_plot)
             control.nyquist_plot(sys1,number_of_samples=500)
+
+            # 6
             plt.sca(self.canvas.p_nichols_plot)
             control.nichols_plot(sys1, number_of_samples=500)
 
-
+            # 7
             poles,zeros = control.pzmap(sys1,Plot=False)
             if len(poles) > 0:
                 self.canvas.p_pzmap.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c="red")
@@ -530,14 +586,16 @@ class MplWidget_CONTROL(MplWidget):
                 self.canvas.p_pzmap.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c="orange")
             self.canvas.p_pzmap.grid(True)
 
+            # 8
             #plt.sca(self.canvas.p_root_locus)
             #control.rlocus(sys1)
             control.root_locus_AMaDiA(sys1,self.canvas.p_root_locus)
             self.canvas.p_root_locus.grid(True)
 
+            # 9 + Plot
             self.SetColour() # Set Colour, Titles, etc... and the Display
-        except AF.common_exceptions:
-            returnTuple = (1, AF.ExceptionOutput(sys.exc_info()))
+        except common_exceptions:
+            returnTuple = (1, ExceptionOutput(sys.exc_info()))
         self.UseTeX(False)
         return returnTuple
 
@@ -565,9 +623,11 @@ class MplWidget_EmptyPlot(MplWidget):
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
         self.Bode = False
+        self.FuncLabel = ""
         self.Title = "Doubleclick on a control plot to display it here"
         
     def SetColour(self,BG=None,FG=None):
+        returnTuple = (0,0)
         if BG != None and FG != None:
             super(MplWidget_EmptyPlot, self).SetColour(BG,FG)
         try:
@@ -590,9 +650,18 @@ class MplWidget_EmptyPlot(MplWidget):
                 self.canvas.ax1.grid(c='orange',ls='--')
                 self.canvas.ax.spines['right'].set_color(self.TextColour)
                 self.canvas.ax1.spines['right'].set_color(self.TextColour)
-        except AF.common_exceptions:
-            pass
-        self.canvas.draw()
+            if self.FuncLabel != "":
+                self.canvas.ax.legend()#,color=self.TextColour)
+        except common_exceptions:
+            returnTuple = (2, ExceptionOutput(sys.exc_info()))
+        try:
+            self.canvas.draw()
+        except common_exceptions:
+            if returnTuple == (0,0):
+                returnTuple = (1, ExceptionOutput(sys.exc_info()))
+            else:
+                returnTuple = (1, returnTuple[1]+ExceptionOutput(sys.exc_info()))
+        return returnTuple
     
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
@@ -610,21 +679,21 @@ class MplWidget_EmptyPlot(MplWidget):
         self.Title = "Doubleclick on a control plot to display it here"
         try:
             self.canvas.ax.remove()
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         try:
             self.canvas.ax1.remove()
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         try:
             self.canvas.fig.clear()
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         try:
             self.canvas.ax = self.canvas.fig.add_subplot(111)
             self.canvas.ax1 = self.canvas.ax.twinx()
             self.canvas.ax1.axis('off')
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         self.Bode = False
         try: # TODO: CHANDE FOR ax1 and ax2
@@ -647,32 +716,58 @@ class MplWidget_EmptyPlot(MplWidget):
                 self.canvas.ax1.grid(c='orange',ls='--')
                 self.canvas.ax.spines['right'].set_color(self.TextColour)
                 self.canvas.ax1.spines['right'].set_color(self.TextColour)
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
         try:
             self.canvas.draw()
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
 
-    def Plot(self,sys1,PlotName):
+    def Plot(self,system,PlotName):
         """
         Retrun Value compatible with NotifyUser.
         """
         returnTuple = (0,0)
+        self.FuncLabel = ""
         Titles = MplCanvas_CONTROL.Titles
-
+        (sys1, T, X0 , U, Ufunc, Curr_Sys_LaTeX) = system
+        if T == None:
+            syst = control.timeresp._get_ss_simo(sys1)
+            T = scipy.signal.ltisys._default_response_times(syst.A, 5000)
         self.clear()
 
         # Plot the Plot
         try:
             if PlotName == Titles[0]:
-                T,y = control.step_response(sys1, number_of_samples=5000)
-                self.canvas.ax.plot(T,y)
+                oT,y = control.step_response(sys1, number_of_samples=5000, T=T, X0 = X0)
+                self.canvas.ax.plot(oT,y)
             elif PlotName == Titles[1]:
-                T,y = control.impulse_response(sys1, number_of_samples=5000)
-                self.canvas.ax.plot(T,y)
+                oT,y = control.impulse_response(sys1, number_of_samples=5000, T=T, X0 = X0)
+                self.canvas.ax.plot(oT,y)
             elif PlotName == Titles[2]:
-                return (4,"This Plot is not implemented yet")
+                # If U not given try to create using Ufunc. If Ufunc not given or creation failed set U and Ufunc to 0
+                if U == 0.0:
+                    if Ufunc != "":
+                        try:
+                            Function = parse_expr(AF.AstusParse(Ufunc))
+                            x = sympy.symbols('x')
+                            evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy'])
+                            U = evalfunc(T)
+                            U = np.asarray(U)
+                            if type(U) == int or type(U) == float or U.shape == (): #This also catches the case exp(x)
+                                U = np.full_like(T, U)
+                            if U.shape != T.shape:
+                                raise Exception("Dimensions do not match")
+                        except common_exceptions:
+                            ExceptionOutput(sys.exc_info())
+                            Ufunc = ""
+                    if Ufunc == "":
+                        Ufunc = "u(x)=0"
+                
+                self.FuncLabel = Ufunc
+                oT,y,xout = control.forced_response(sys1, T=T, X0 = X0, U=U)
+                self.canvas.ax.plot(oT,y,label="Response")
+                self.canvas.ax.plot(T,U,label="Input Function: "+Ufunc)
             elif PlotName == Titles[3] or PlotName == Titles[4] or PlotName == "  ":
                 self.Bode = True
                 self.canvas.ax1.axis('on')
@@ -707,32 +802,16 @@ class MplWidget_EmptyPlot(MplWidget):
             else:
                 self.Title = PlotName
 
-            #Colour everything
-            try: # TODO: CHANDE FOR ax1 and ax2
-                self.canvas.ax.set_facecolor(self.background_Colour)
-                self.canvas.ax.spines['bottom'].set_color(self.TextColour)
-                self.canvas.ax.spines['left'].set_color(self.TextColour)
-                if not self.Bode:
-                    self.canvas.ax.yaxis.label.set_color(self.TextColour)
-                self.canvas.ax.xaxis.label.set_color(self.TextColour)
-                self.canvas.ax.tick_params(axis='x', colors=self.TextColour)
-                self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
-                self.canvas.ax.set_title(self.Title, color=self.TextColour)
-                if self.Bode:
-                    self.canvas.ax1.set_facecolor(self.background_Colour)
-                    self.canvas.ax1.spines['bottom'].set_color(self.TextColour)
-                    self.canvas.ax1.spines['left'].set_color(self.TextColour)
-                    self.canvas.ax1.tick_params(axis='x', colors=self.TextColour)
-                    self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
-                if self.Bode:
-                    self.canvas.ax1.grid(c='orange',ls='--')
-                    self.canvas.ax.spines['right'].set_color(self.TextColour)
-                    self.canvas.ax1.spines['right'].set_color(self.TextColour)
-                self.canvas.draw()
-            except AF.common_exceptions:
-                returnTuple = (1, AF.ExceptionOutput(sys.exc_info()))
-        except AF.common_exceptions:
-            returnTuple = (1, AF.ExceptionOutput(sys.exc_info()))
+            #Colour everything and draw it
+            CreturnTuple = self.SetColour()
+            if CreturnTuple != (0,0):
+                if returnTuple == (0,0):
+                    returnTuple = CreturnTuple
+                else:
+                    returnTuple = (1," "+returnTuple[1])
+                    returnTuple = (1,CreturnTuple[1]+returnTuple[1])
+        except common_exceptions:
+            returnTuple = (1, ExceptionOutput(sys.exc_info()))
         self.UseTeX(False)
         return returnTuple
 
@@ -765,7 +844,7 @@ class ATextEdit(QtWidgets.QTextEdit):
         try:
             Text = MIMEData.text()
             self.textCursor().insertText(Text)
-        except AF.common_exceptions:
+        except common_exceptions:
             pass
 
     def CursorPositionChanged(self):
@@ -795,8 +874,8 @@ class ATextEdit(QtWidgets.QTextEdit):
         try:
             cursor.setPosition(curPos-found)
             self.setTextCursor(cursor)
-        except AF.common_exceptions:
-            AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
 
 class TextEdit(ATextEdit):
     def __init__(self, parent=None):
@@ -863,8 +942,8 @@ class LineEdit(ATextEdit):
         try:
             cursor.setPosition(curPos-found)
             self.setTextCursor(cursor)
-        except AF.common_exceptions:
-            AF.ExceptionOutput(sys.exc_info())
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
         super(LineEdit, self).validateCharacters()
 
 
@@ -928,7 +1007,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                 try:
                     Pair = AF.Counterpart(Element, ListOfLists=ART.LIST_l_normal_pairs, Both=True)
                 except Exception:
-                    AF.ExceptionOutput(sys.exc_info())#break
+                    ExceptionOutput(sys.exc_info())#break
                 if Pair[0] == Element:
                     Pair = Pair.FirstResult
                     a,b = AF.FindPair(text,Pair,i[0])
@@ -957,7 +1036,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                         try:
                             Pair2 = AF.Counterpart(Element2, ListOfLists=ART.LIST_l_normal_pairs, Both=True)
                         except Exception:
-                            AF.ExceptionOutput(sys.exc_info())#break
+                            ExceptionOutput(sys.exc_info())#break
                         k=0
                         while k < len(Pair2):
                             a,b = AF.FindPair(text,Pair2.List[k],j[0])
