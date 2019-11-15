@@ -102,7 +102,7 @@ def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
     if end == 0:
         end = len(string)
     val = start - 1
-    for i in range(0, n): 
+    for i in range(0, n):  # pylint: disable=unused-variable
         val = string.find(tofind, val + 1, end)
         if val == -1:
             return val
@@ -448,10 +448,10 @@ def Replace(string,List,a=0,b=1):
     return string
 
 def number_shaver(ch,
-                  regx = re.compile('(?<![\d.])0*(?:'
-                                    '(\d+)\.?|\.(0)'
-                                    '|(\.\d+?)|(\d+\.\d+?)'
-                                    ')0*(?![\d.])')  ,
+                  regx = re.compile('(?<![\d.])0*(?:'               # pylint: disable=anomalous-backslash-in-string
+                                    '(\d+)\.?|\.(0)'                # pylint: disable=anomalous-backslash-in-string
+                                    '|(\.\d+?)|(\d+\.\d+?)'         # pylint: disable=anomalous-backslash-in-string
+                                    ')0*(?![\d.])')  ,              # pylint: disable=anomalous-backslash-in-string
                   repl = lambda mat: mat.group(mat.lastindex)
                                      if mat.lastindex!=3
                                      else '0' + mat.group(3) ):

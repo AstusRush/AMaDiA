@@ -19,6 +19,8 @@ import os
 import sympy
 import re
 
+from PyQt5 import QtCore
+
 from sympy.parsing.latex import parse_latex
 from sympy.parsing.sympy_parser import parse_expr
 
@@ -59,6 +61,7 @@ class AMaS: # Astus' Mathematical Structure
         self.Input = string
         self.TimeStamp = AF.cTimeSStr()
         self.TimeStampFull = AF.cTimeFullStr()
+        self.mutex = QtCore.QMutex()
         self.Name = "No Name Given"
         self.init_bools()
         self.init_Flags()
@@ -220,7 +223,7 @@ class AMaS: # Astus' Mathematical Structure
             if self.f_eval:
                 expr = expr.evalf()
         except common_exceptions :
-            ExceptionOutput(sys.exc_info())
+            pass#ExceptionOutput(sys.exc_info())
         try:
             if self.f_powsimp:
                 if type(expr) == sympy.Equality:
@@ -296,7 +299,7 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_L = self.cstr
             self.LaTeX_N = self.cstr
         else:
-            self.LaTeX_L = "$\displaystyle"
+            self.LaTeX_L = r"$\displaystyle"
             self.LaTeX_N = "$"
             self.LaTeX_L += self.LaTeX
             self.LaTeX_N += self.LaTeX
@@ -350,7 +353,7 @@ class AMaS: # Astus' Mathematical Structure
                 LineText += "$"
                 if n > 0:
                     LineText += "\n"
-                self.LaTeX_L += "$\displaystyle"
+                self.LaTeX_L += r"$\displaystyle"
                 self.LaTeX_N += "$"
                 self.LaTeX_L += LineText
                 self.LaTeX_N += LineText
@@ -391,7 +394,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.LaTeX_E_L += self.LaTeX_E
                     self.LaTeX_E_N += self.LaTeX_E
                     return Error
-            self.LaTeX_E_L = "$\displaystyle"
+            self.LaTeX_E_L = r"$\displaystyle"
             self.LaTeX_E_N = "$"
             self.LaTeX_E_L += self.LaTeX_E
             self.LaTeX_E_N += self.LaTeX_E
@@ -689,7 +692,7 @@ class AMaS: # Astus' Mathematical Structure
         
         if True : #self.plottable: #TODO: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
             x = sympy.symbols('x')
-            n = sympy.symbols('n')
+            n = sympy.symbols('n') # pylint: disable=unused-variable
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables)
             except common_exceptions: #as inst:
@@ -711,9 +714,9 @@ class AMaS: # Astus' Mathematical Structure
                 steps = (self.plot_xmax - self.plot_xmin)/self.plot_steps
                 
             self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
+
             try:
-                #e = sympy.numbers.E
-                evalfunc = sympy.lambdify(x, Function, modules='sympy') # Can not handle exp(x) and cos(),etc ... Maybe try the loop to go through every value...
+                evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy']) # TODO: This should make everything below superfluous
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
                 
                 

@@ -175,3 +175,13 @@ v0.14.1: Housecleaning
 ++ Fixing this might take a while...
 + Streamlined folder-detection
 
+v0.14.2: Super Plotter
++ The 2D Plot can now plot much much more reliable
+++ x*exp(x) and ∫sin(x)+√(x)dx*sin'(x) are no longer a problem!
++ The SymPy Plotter will (probably) remain dead as it is not worth to fix it.
+++ When the sympy plotter plots it also tries to plot all other pyplot plots
++++ This means that it makes it impossible for me to use pyplot anywhere else...
+++ The sympy Plotter was never designed to be used in a GUI application anyways and the AMaDiA plotter looks better anyways.
+++ Instead of trying to work around the badly implemented sympy plotter I will instead use the time to improve the AMaDiA plotter.
++ Added some comments to let VSCodes errordetection know that my code is correct and does not need to glow red and yellow...
+

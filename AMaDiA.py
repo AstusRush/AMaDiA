@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.1"
+Version = "0.14.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -34,6 +34,7 @@ import importlib
 import re
 
 # import Math modules
+import matplotlib
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import numpy as np
@@ -42,7 +43,6 @@ from matplotlib import colors
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import matplotlib
 
 # Import AMaDiA Core Modules
 # To Convert ui to py: (Commands for Anaconda Prompt)
@@ -194,7 +194,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.MainApp = MainApp
         self.setupUi(self)
 
-        self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter
+        self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
 
         # TODO: Do something with the Statusbar 
 
@@ -231,7 +231,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Initialize Thread Related Things:
         self.ThreadList = []
         self.threadpool = QtCore.QThreadPool()
-        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        #self.threadpool.setMaxThreadCount(8)
+        print("Multithreading with maximum %d threads (when in Threadpool mode)" % self.threadpool.maxThreadCount())
         # Thread Mode
         self.Threading = "POOL"
         #self.Threading = "LIST"
@@ -509,7 +510,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Error Handling ----------------------------------
     def init_Notification_Flash(self):
-        self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'ERROR_colour')
+        self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'FLASH_colour')
         self.Notification_Flash_Red.setDuration(1000)
         self.Notification_Flash_Red.setLoopCount(1)
         self.Notification_Flash_Red.setStartValue(self.Palette.color(QtGui.QPalette.Window))
@@ -517,7 +518,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Notification_Flash_Red.setKeyValueAt(0.5, QtGui.QColor(255, 0, 0))
         self.Notification_Flash_Red.finished.connect(self.Notification_Flash_Finished)
         
-        self.Notification_Flash_Yellow = QtCore.QPropertyAnimation(self,b'ERROR_colour')
+        self.Notification_Flash_Yellow = QtCore.QPropertyAnimation(self,b'FLASH_colour')
         self.Notification_Flash_Yellow.setDuration(1000)
         self.Notification_Flash_Yellow.setLoopCount(1)
         self.Notification_Flash_Yellow.setStartValue(self.Palette.color(QtGui.QPalette.Window))
@@ -525,7 +526,15 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Notification_Flash_Yellow.setKeyValueAt(0.5, QtGui.QColor(255, 255, 0))
         self.Notification_Flash_Yellow.finished.connect(self.Notification_Flash_Finished)
 
-        self.Notification_Flash_Blue = QtCore.QPropertyAnimation(self,b'ERROR_colour')
+        self.Notification_Flash_Green = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.Notification_Flash_Green.setDuration(1000)
+        self.Notification_Flash_Green.setLoopCount(1)
+        self.Notification_Flash_Green.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Green.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Green.setKeyValueAt(0.5, QtGui.QColor(0, 255, 0))
+        self.Notification_Flash_Green.finished.connect(self.Notification_Flash_Finished)
+
+        self.Notification_Flash_Blue = QtCore.QPropertyAnimation(self,b'FLASH_colour')
         self.Notification_Flash_Blue.setDuration(1000)
         self.Notification_Flash_Blue.setLoopCount(1)
         self.Notification_Flash_Blue.setStartValue(self.Palette.color(QtGui.QPalette.Window))
@@ -533,11 +542,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Notification_Flash_Blue.setKeyValueAt(0.5, QtGui.QColor(0, 0, 255))
         self.Notification_Flash_Blue.finished.connect(self.Notification_Flash_Finished)
 
-    def _set_ERROR_colour(self, col): # Handles chnges to the Property ERROR_colour
+    def _set_FLASH_colour(self, col): # Handles chnges to the Property FLASH_colour
         palette = self.Palette
         palette.setColor(QtGui.QPalette.Window, col)
         self.setPalette(palette)
-    ERROR_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_ERROR_colour) # Defines the Property ERROR_colour
+    FLASH_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_FLASH_colour) # Defines the Property FLASH_colour
 
     def NotifyUser(self,Type,Text="Not Given",Time=None):
         """0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification"""
@@ -1443,13 +1452,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_1_History.item(i).setForeground(brush)
             self.Tab_3_1_History.item(i).data(100).current_ax = None
             
-    def Tab_3_1_F_Sympy_Plot_Button(self):
+    def Tab_3_1_F_Sympy_Plot_Button(self): # TODO: DELETE
         #self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot,ID))
         self.TC("NEW",self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot)
         
-    def Tab_3_1_F_Sympy_Plot(self , AMaS_Object):
+    def Tab_3_1_F_Sympy_Plot(self , AMaS_Object): # TODO: DELETE
         try:
-            x,y,z = sympy.symbols('x y z')
+            #self.__SPFIG = plt.figure(num="SP")
+            x,y,z = sympy.symbols('x y z')  # pylint: disable=unused-variable
             
             temp = AMaS_Object.cstr
             if AMaS_Object.cstr.count("=") == 1 :
@@ -1474,7 +1484,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             elif self.Tab_3_1_YLim_Check.isChecked():
                 sympy.plot(temp , ylim = ylims)
             else:
-                sympy.plot(temp)
+                sympy.plot(temp)#, num="SP",backend=matplotlib.backends.backend_qt5.FigureCanvasBase)
         except common_exceptions: # TODO: plot_implicit uses other syntax for limits
             Error = ExceptionOutput(sys.exc_info())
             try:
@@ -1544,7 +1554,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             ValueList = Matrix.tolist()
         else:
             ValueList = [[Matrix]]
-        for i,a in enumerate(ValueList):
+        for i,a in enumerate(ValueList): # pylint: disable=unused-variable
             for j,b in enumerate(ValueList[i]):
                 item = Qt.QTableWidgetItem()
                 item.setText(str(b))

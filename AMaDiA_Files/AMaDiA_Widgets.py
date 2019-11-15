@@ -12,7 +12,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use('Qt5Agg')
+#matplotlib.use('Qt5Agg')
 from mpl_toolkits.axes_grid1 import Divider, Size
 from mpl_toolkits.axes_grid1.mpl_axes import Axes
 import numpy as np
@@ -40,7 +40,7 @@ def ReloadModules():
 
 # Use MplWidget for things that have a matplot output
 # Ensure using PyQt5 backend
-matplotlib.use('QT5Agg')
+#matplotlib.use('QT5Agg')
 
 # Matplotlib canvas class to create figure
 
@@ -58,7 +58,7 @@ class MplWidget(QtWidgets.QWidget):
         try:
             self.canvas.draw()
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
+            ExceptionOutput(sys.exc_info())
 
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -228,7 +228,7 @@ class MplWidget_LaTeX(MplWidget):
             self.UseTeX(True)
         else:
             self.UseTeX(False)
-            Text_N = Text_N.replace("\limits","")
+            Text_N = Text_N.replace("\limits","") # pylint: disable=anomalous-backslash-in-string
             self.Text = Text_N
         #-----------IMPORTANT-----------
         self.w=9
@@ -312,7 +312,7 @@ class MplWidget_LaTeX(MplWidget):
                 ExceptionOutput(sys.exc_info())
                 print("Trying to output without LaTeX")
                 returnTuple = (2,"Could not display with LaTeX")
-                self.Text = Text_N.replace("\limits","")
+                self.Text = Text_N.replace("\limits","") # pylint: disable=anomalous-backslash-in-string
                 self.UseTeX(False)
                 self.canvas.ax.clear()
                 self.canvas.ax.set_title(self.Text,
@@ -373,7 +373,7 @@ class MplCanvas_CONTROL(Canvas):
                         'Nyquist Plot','Nichols Plot','Pole-Zero-Plot',
                         'Root-Locus-Plot','LaTeX-Display']
     def __init__(self):
-        #plt.style.use('dark_background')
+        #self.fig = Figure()
         self.fig = plt.figure(num="CONTROL",constrained_layout =True)
         self.fig.set_facecolor(AF.background_Colour)
 
@@ -478,7 +478,7 @@ class MplWidget_CONTROL(MplWidget):
         try:
             self.canvas.draw()
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
+            ExceptionOutput(sys.exc_info())
         
         #if self.LastCall != False:
         #    self.Display(self.LastCall[0],self.LastCall[1],self.LastCall[2],self.LastCall[3])
@@ -561,7 +561,7 @@ class MplWidget_CONTROL(MplWidget):
 
             # 2
             try:
-                oT,y, xout = control.forced_response(sys1, T=T, X0 = X0, U=U)
+                oT,y, xout = control.forced_response(sys1, T=T, X0 = X0, U=U) # pylint: disable=unused-variable
                 self.canvas.p_forced_response.plot(oT,y)
             except common_exceptions:
                 returnTuple = (3, ExceptionOutput(sys.exc_info()))
@@ -603,6 +603,7 @@ class MplWidget_CONTROL(MplWidget):
 
 class MplCanvas_EmptyPlot(Canvas):
     def __init__(self):
+        #self.fig = Figure()
         self.fig = plt.figure(constrained_layout =True)
         self.fig.set_facecolor(AF.background_Colour)
         
@@ -730,7 +731,7 @@ class MplWidget_EmptyPlot(MplWidget):
         returnTuple = (0,0)
         self.FuncLabel = ""
         Titles = MplCanvas_CONTROL.Titles
-        (sys1, T, X0 , U, Ufunc, Curr_Sys_LaTeX) = system
+        (sys1, T, X0 , U, Ufunc, Curr_Sys_LaTeX) = system # pylint: disable=unused-variable
         if T == None:
             syst = control.timeresp._get_ss_simo(sys1)
             T = scipy.signal.ltisys._default_response_times(syst.A, 5000)
@@ -765,7 +766,7 @@ class MplWidget_EmptyPlot(MplWidget):
                         Ufunc = "u(x)=0"
                 
                 self.FuncLabel = Ufunc
-                oT,y,xout = control.forced_response(sys1, T=T, X0 = X0, U=U)
+                oT,y,xout = control.forced_response(sys1, T=T, X0 = X0, U=U) # pylint: disable=unused-variable
                 self.canvas.ax.plot(oT,y,label="Response")
                 self.canvas.ax.plot(T,U,label="Input Function: "+Ufunc)
             elif PlotName == Titles[3] or PlotName == Titles[4] or PlotName == "  ":
@@ -960,7 +961,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
 
     def init_Styles(self):
         # init Lists
-        self.braces = ['\{', '\}', '\(', '\)', '\[', '\]']
+        self.braces = ['\{', '\}', '\(', '\)', '\[', '\]'] # pylint: disable=anomalous-backslash-in-string
 
         # Init Formats
         self.RedFormat = QtGui.QTextCharFormat()
