@@ -54,7 +54,7 @@ class MplWidget(QtWidgets.QWidget):
             self.canvas.fig.set_edgecolor(self.background_Colour)
             self.canvas.ax.set_facecolor(self.background_Colour)
         except common_exceptions:
-            pass
+            ExceptionOutput(sys.exc_info())
         try:
             self.canvas.draw()
         except common_exceptions:

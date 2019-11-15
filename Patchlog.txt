@@ -185,3 +185,8 @@ v0.14.2: Super Plotter
 ++ Instead of trying to work around the badly implemented sympy plotter I will instead use the time to improve the AMaDiA plotter.
 + Added some comments to let VSCodes errordetection know that my code is correct and does not need to glow red and yellow...
 
+v0.14.2.1: WIP Cleanup
++ Disabled the input tab in the control tab and removed the WIP tab in the Plot tab.
+++ They should not be interactable to not confuse the user as they are currently blank
+++ These were added to make future development easier as UI reworks can be a lot of work
+

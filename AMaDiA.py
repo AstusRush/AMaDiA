@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.2"
+Version = "0.14.2.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -196,6 +196,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
 
+        self.Tab_3_tabWidget.removeTab(1)# TODO
+        self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO
+        self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon")
+
         # TODO: Do something with the Statusbar 
 
         # Create Folders if not already existing
@@ -203,8 +207,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         # Set UI variables
         #Set starting tabs
+        self.Tab_3_tabWidget.setCurrentIndex(0)
         self.Tab_3_1_TabWidget.setCurrentIndex(0)
         self.Tab_4_tabWidget.setCurrentIndex(0)
+        self.Tab_5_tabWidget.setCurrentIndex(3)# TODO: 0
         self.tabWidget.setCurrentIndex(0)
         
         #Set Splitter Start Values
