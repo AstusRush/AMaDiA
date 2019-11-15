@@ -8,6 +8,7 @@ Current features:<br/>
    * Solve Differential Equations (including particular solutions)<br/>
    * Test for equality of two terms<br/>
    * Use mathematic Unicode symbols to type faster!<br/>
+   * For more detailed Useage check out Help/Examples and copy/paste the examples to the according tab input fields<br/>
  * Tab 2 : Convert input to LaTeX and display it<br/>
  * Tab 3 : Plot 2D Graphs (3D and complex Graphs are WIP)<br/>
  * Tab 4 : Equations with matrices and vectors as well as systems of linear equations<br/>
