@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.2.1"
+Version = "0.14.2.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -32,6 +32,7 @@ import os
 import pathlib
 import importlib
 import re
+import getpass
 
 # import Math modules
 import matplotlib
@@ -59,6 +60,7 @@ from AMaDiA_Files import AMaDiA_Threads as AT
 from AMaDiA_Files import AstusChat_Client
 from AMaDiA_Files import AstusChat_Server
 from AMaDiA_Files.Test_Input import Test_Input
+
 
 
 # To limit the length of output (Currently used to reduce the length of the y vector when an error in the plotter occurs)
@@ -323,6 +325,13 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             msg += "If you are using Linux you need to run as root to enable Keyboard Remapping"
         if msg != "":
             self.NotifyUser(3,msg)
+        else:
+            try:
+                msg = "Welcome " + getpass.getuser()
+                #msg += ". How can I be of service?"
+                self.NotifyUser(10,msg)
+            except common_exceptions:
+                ExceptionOutput(sys.exc_info())
 
         
 # ---------------------------------- Init and Maintanance ----------------------------------
@@ -570,6 +579,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         elif Type == 4:
             if self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
                 self.NotifyUser_Notification(Text,Time)
+        elif Type == 10:
+            self.NotifyUser_Direct(Text,Time)
         else:
             nText = "Notification of type "+str(Type)
             nText += " (Type unknown):\n"
@@ -585,7 +596,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
-
         self.Notification_Flash_Red.start()
 
     def NotifyUser_Warning(self,Error_Text,Time=None):
@@ -596,8 +606,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TopBar_Error_Label.setToolTip(Error_Text)
 
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
-
         self.Notification_Flash_Yellow.start()
 
     def NotifyUser_Notification(self,Error_Text,Time=None):
@@ -608,9 +616,16 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TopBar_Error_Label.setToolTip(Error_Text)
 
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
-
         self.Notification_Flash_Blue.start()
+
+    def NotifyUser_Direct(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        self.TopBar_Error_Label.setText(Error_Text)
+        self.TopBar_Error_Label.setToolTip("Start at "+Time)
+
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.Notification_Flash_Blue.start()
 
     def Notification_Flash_Finished(self):
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)

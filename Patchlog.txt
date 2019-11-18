@@ -3,7 +3,7 @@ TODO: Include Patchnotes before 0.10.2
 v0.10.2: Simple Differential Equation Support
 + The Calculator now supports differential equations (only general solution)
 ++ (Differential Equations will get their own tab for more complex tasks like particular solution)
-+ The startupmessage is now displayed before the modules load to give a feedback to the user that the program is loading.
++ The startupmessage is now displayed before the modules load to give feedback to the user that the program is loading.
 + You can now copy the x and y values for a plot with the contextmenu in the history if the advanced mode is enabled
 + Added a Patchlog.txt
 
@@ -189,4 +189,7 @@ v0.14.2.1: WIP Cleanup
 + Disabled the input tab in the control tab and removed the WIP tab in the Plot tab.
 ++ They should not be interactable to not confuse the user as they are currently blank
 ++ These were added to make future development easier as UI reworks can be a lot of work
+
+v0.14.2.2: Welcome
++ When no message needs to be displayed on start the program now welcomes the user by username
 
