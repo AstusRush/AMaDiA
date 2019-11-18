@@ -193,3 +193,7 @@ v0.14.2.1: WIP Cleanup
 v0.14.2.2: Welcome
 + When no message needs to be displayed on start the program now welcomes the user by username
 
+v0.14.2.3: List Solve Fix
++ Lists are no longer processed with sympy.solve (as solving a list returns an empty list)
+++ This means that "solve(a*x^2+b*x+c*1,x)" (which creates a list) no longer needs "Eval Functions" to be turned off!
+

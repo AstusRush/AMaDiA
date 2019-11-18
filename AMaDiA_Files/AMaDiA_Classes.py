@@ -545,7 +545,12 @@ class AMaS: # Astus' Mathematical Structure
                                 ans = ans.evalf()
                             except common_exceptions:
                                 try:
-                                    ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                                    ans_S = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                                    try:
+                                        if not (type(ans_S)==list and len(ans_S)==0):
+                                            ans = ans_S
+                                    except common_exceptions:
+                                        ans = ans_S
                                 except common_exceptions:
                                     pass
                         ansF = self.ExecuteFlags(ans)
