@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.2.3"
+Version = "0.14.2.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -224,9 +224,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #print(self.Tab_2_LowerSplitter.sizes())
         #print(self.Tab_3_1_splitter.sizes())
         
-        #Set Tab 4 Matrix Input Column Width
-        for i in range(self.Tab_4_1_Matrix_Input.columnCount()):
-            self.Tab_4_1_Matrix_Input.setColumnWidth(i,75)
         
         # Initialize important variables and lists
         self.ans = "1"
@@ -293,6 +290,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_Currently_Displayed_Solution = ""
 
         # Other things:
+        self.Tab_5_1_System_Set_Order()
         
         #Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
         self.Tab_3_1_F_Clear()
@@ -377,6 +375,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_2_New_Equation_Name_Input.returnPressed.connect(self.Tab_4_F_New_Equation)
         self.Tab_4_2_Load_Selected_Button.clicked.connect(self.Tab_4_F_Load_Selected_Equation)
 
+        self.Tab_5_1_SystemOrder_Confrim.clicked.connect(self.Tab_5_1_System_Set_Order)
+        self.Tab_5_1_SaveButton.clicked.connect(self.Tab_5_1_System_Save)
+        self.Tab_5_1_SavePlotButton.clicked.connect(self.Tab_5_1_System_Plot_and_Save)
         self.Tab_5_4_Dirty_Input.returnCrtlPressed.connect(self.Tab_5_4_Dirty_Display)
     
     def Colour_Font_Init(self):
@@ -633,19 +634,21 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
     def ReloadModules(self):
-        AC.ReloadModules()
-        AF.ReloadModules()
-        AC.ReloadModules()
-        AT.ReloadModules()
-        AW.ReloadModules()
-        importlib.reload(AW)
-        importlib.reload(AF)
-        importlib.reload(AC)
-        importlib.reload(ART)
-        importlib.reload(AT)
-        importlib.reload(AMaDiA_Colour)
-        
-        self.ColourMain()
+        #AC.ReloadModules()
+        #AF.ReloadModules()
+        #AC.ReloadModules()
+        #AT.ReloadModules()
+        #AW.ReloadModules()
+        #importlib.reload(AW)
+        #importlib.reload(AF)
+        #importlib.reload(AC)
+        #importlib.reload(ART)
+        #importlib.reload(AT)
+        #importlib.reload(AMaDiA_Colour)
+        #
+        #self.ColourMain()
+
+        self.Tab_5_tabWidget.setTabEnabled(0,True)# TODO
 
     def ToggleSyntaxHighlighter(self):
         state = self.TopBar_Syntax_Highlighter_checkBox.isChecked()
@@ -1700,6 +1703,102 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 
 # ---------------------------------- Tab_5_ (Mind-)Control ----------------------------------
+    def Tab_5_1_System_Set_Order(self,Order=None):
+        if type(Order) != int:
+            Order = self.Tab_5_1_SystemOrder_Spinbox.value()
+        
+        # TODO: SHIFT THE ELEMENTS WHEN CHANGING THE ORDER TO KEEP EVERYTHING ALIGNED
+        self.Tab_5_1_System_1TF_tableWidget.setColumnCount(Order+1)
+
+        HeaderLabel = []
+        i=Order
+        while i >=0:
+            s="s{}".format(i)
+            HeaderLabel.append(u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in s))
+            i-=1
+        self.Tab_5_1_System_1TF_tableWidget.setHorizontalHeaderLabels(HeaderLabel)
+
+    def Tab_5_1_System_Save(self):
+        Tab = self.Tab_5_1_Input_tabWidget.currentIndex()
+        try:
+            NameInvalid=False
+            Name = AF.AstusParse(self.Tab_5_1_NameInput.text()).strip()
+            if Name == "" or " " in Name: #TODO: Better checks!!!
+                NameInvalid=True
+
+            if NameInvalid:
+                self.NotifyUser(1,"System Name Invalid")
+                return False
+
+
+
+            if Tab == 0: #Transfer
+                Ys = []
+                Xs = []
+                MError = ""
+                for j in range(self.Tab_5_1_System_1TF_tableWidget.columnCount()):
+                    try:
+                        if self.Tab_5_1_System_1TF_tableWidget.item(0,j).text().strip() != "":
+                            Ys.append(float(parse_expr(AF.AstusParse(self.Tab_5_1_System_1TF_tableWidget.item(0,j).text(),True)).doit().evalf()))
+                        else:
+                            Ys.append(0)
+                    except common_exceptions:
+                        MError += "Could not add item to System at ({},{}). Inserting a Zero instead. ".format(1,j+1)
+                        #MError += ExceptionOutput(sys.exc_info())
+                        MError += "\n"
+                        Ys.append(0)
+                for j in range(self.Tab_5_1_System_1TF_tableWidget.columnCount()):
+                    try:
+                        if self.Tab_5_1_System_1TF_tableWidget.item(1,j).text().strip() != "":
+                            Xs.append(float(parse_expr(AF.AstusParse(self.Tab_5_1_System_1TF_tableWidget.item(1,j).text(),True)).doit().evalf()))
+                        else:
+                            Xs.append(0)
+                    except common_exceptions:
+                        MError += "Could not add item to System at ({},{}). Inserting a Zero instead. ".format(2,j+1)
+                        #MError += ExceptionOutput(sys.exc_info())
+                        MError += "\n"
+                        Xs.append(0)
+                if MError != "":
+                    self.NotifyUser(2,MError)
+                # Remove epmty leading entries
+                for i,y in enumerate(Ys):
+                    if y == 0:
+                        Ys.pop(i)
+                    else:
+                        break
+                for i,y in enumerate(Xs):
+                    if y == 0:
+                        Xs.pop(i)
+                    else:
+                        break
+                print(Ys,r"/",Xs)
+                sys1 = control.tf(Ys,Xs)
+            elif Tab == 1: #State System
+                pass
+            elif Tab == 2: #ODE
+                pass
+            else: # Can not occur...
+                raise Exception("Tab {} in Control->Input Tab is unknown".format(Tab))
+            # TODO: Save
+            print(sys1)
+            return sys1
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            self.NotifyUser(1,Error)
+
+    def Tab_5_1_System_Plot_and_Save(self):
+        self.Tab_5_1_System_Plot(self.Tab_5_1_System_Save())
+
+    def Tab_5_1_System_Plot(self,sys1):
+        try:
+            self.NotifyUser(self.Tab_5_2_Display.Display(sys1))
+            self.Tab_5_tabWidget.setFocus()
+            self.Tab_5_3_SingleDisplay.clear()
+            self.Tab_5_tabWidget.setCurrentIndex(1)
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            self.NotifyUser(1,Error)
+
     def Tab_5_4_Dirty_Display(self):
         if not self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
             self.NotifyUser(3,"This is the danger zone!\nPlease activate Advanced Mode to confirm that you know what you are doing!")

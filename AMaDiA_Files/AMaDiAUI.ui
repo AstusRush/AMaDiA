@@ -89,7 +89,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -699,6 +699,9 @@ p, li { white-space: pre-wrap; }
                 <property name="columnCount">
                  <number>3</number>
                 </property>
+                <attribute name="horizontalHeaderDefaultSectionSize">
+                 <number>75</number>
+                </attribute>
                 <row/>
                 <row/>
                 <row/>
@@ -817,7 +820,251 @@ p, li { white-space: pre-wrap; }
            <attribute name="title">
             <string>Input</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_15"/>
+           <layout class="QGridLayout" name="gridLayout_15">
+            <item row="0" column="0">
+             <widget class="QSplitter" name="Tab_5_1_Splitter_M">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <widget class="QSplitter" name="Tab_5_1_Splitter_L">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <widget class="QTabWidget" name="Tab_5_1_System_tabWidget">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="Tab_5_1_System_1TF">
+                 <attribute name="title">
+                  <string>Transfer</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_25">
+                  <item row="0" column="0">
+                   <widget class="QTableWidget" name="Tab_5_1_System_1TF_tableWidget">
+                    <property name="rowCount">
+                     <number>2</number>
+                    </property>
+                    <property name="columnCount">
+                     <number>5</number>
+                    </property>
+                    <attribute name="horizontalHeaderDefaultSectionSize">
+                     <number>50</number>
+                    </attribute>
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <row/>
+                    <row/>
+                    <column/>
+                    <column/>
+                    <column/>
+                    <column/>
+                    <column/>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Tab_5_1_System_2SS">
+                 <attribute name="title">
+                  <string>State Space</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_19">
+                  <item row="0" column="0">
+                   <widget class="QTabWidget" name="Tab_5_1_System_2SS_tabWidget">
+                    <property name="currentIndex">
+                     <number>0</number>
+                    </property>
+                    <widget class="QWidget" name="Tab_5_1_System_2SS_A">
+                     <attribute name="title">
+                      <string>A: State Matrix</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_21">
+                      <item row="0" column="0">
+                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_A_tableWidget">
+                        <property name="rowCount">
+                         <number>3</number>
+                        </property>
+                        <property name="columnCount">
+                         <number>3</number>
+                        </property>
+                        <attribute name="horizontalHeaderDefaultSectionSize">
+                         <number>50</number>
+                        </attribute>
+                        <row/>
+                        <row/>
+                        <row/>
+                        <column/>
+                        <column/>
+                        <column/>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="Tab_5_1_System_2SS_B">
+                     <attribute name="title">
+                      <string>B: Input Vector</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_22">
+                      <item row="0" column="0">
+                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_B_tableWidget">
+                        <property name="rowCount">
+                         <number>3</number>
+                        </property>
+                        <property name="columnCount">
+                         <number>1</number>
+                        </property>
+                        <row/>
+                        <row/>
+                        <row/>
+                        <column/>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="Tab_5_1_System_2SS_C">
+                     <attribute name="title">
+                      <string>C: Output Vector</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_23">
+                      <item row="0" column="0">
+                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_C_tableWidget">
+                        <property name="rowCount">
+                         <number>1</number>
+                        </property>
+                        <property name="columnCount">
+                         <number>3</number>
+                        </property>
+                        <attribute name="horizontalHeaderDefaultSectionSize">
+                         <number>50</number>
+                        </attribute>
+                        <row/>
+                        <column/>
+                        <column/>
+                        <column/>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="Tab_5_1_System_2SS_D">
+                     <attribute name="title">
+                      <string>D: Feedthrough Vector</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_24">
+                      <item row="0" column="0">
+                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_D_tableWidget">
+                        <property name="rowCount">
+                         <number>3</number>
+                        </property>
+                        <property name="columnCount">
+                         <number>1</number>
+                        </property>
+                        <row/>
+                        <row/>
+                        <row/>
+                        <column/>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Tab_5_1_System_3DE">
+                 <attribute name="title">
+                  <string>ODE</string>
+                 </attribute>
+                </widget>
+               </widget>
+               <widget class="QWidget" name="gridLayoutWidget">
+                <layout class="QGridLayout" name="gridLayout_20">
+                 <item row="0" column="3">
+                  <widget class="QPushButton" name="Tab_5_1_SaveButton">
+                   <property name="text">
+                    <string>Save</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLineEdit" name="Tab_5_1_NameInput">
+                   <property name="placeholderText">
+                    <string>Name</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="Tab_5_1_SystemOrder_Confrim">
+                   <property name="text">
+                    <string>Set Order</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QSpinBox" name="Tab_5_1_SystemOrder_Spinbox">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="value">
+                    <number>3</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QPushButton" name="Tab_5_1_SavePlotButton">
+                   <property name="text">
+                    <string>Save and Plot</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="5">
+                  <widget class="QListWidget" name="Tab_5_1_SystemList"/>
+                 </item>
+                </layout>
+               </widget>
+              </widget>
+              <widget class="QSplitter" name="Tab_5_1_Splitter_R">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <widget class="QTabWidget" name="Tab_5_1_Output_tabWidget">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="Tab_5_1_Output_1R">
+                 <attribute name="title">
+                  <string>Results</string>
+                 </attribute>
+                </widget>
+                <widget class="QWidget" name="Tab_5_1_Output_2L">
+                 <attribute name="title">
+                  <string>LaTeX</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_18">
+                  <item row="0" column="0">
+                   <widget class="MplWidget_LaTeX" name="Tab_5_1_Output_2L_LaTeXDisplay" native="true"/>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+               <widget class="QTabWidget" name="Tab_5_1_Input_tabWidget">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="Tab_5_1_Input_1I">
+                 <attribute name="title">
+                  <string>Input</string>
+                 </attribute>
+                </widget>
+                <widget class="QWidget" name="Tab_5_1_Input_2P">
+                 <attribute name="title">
+                  <string>Plot Config</string>
+                 </attribute>
+                </widget>
+               </widget>
+              </widget>
+             </widget>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="Tab_5_2">
            <attribute name="title">

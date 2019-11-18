@@ -197,3 +197,7 @@ v0.14.2.3: List Solve Fix
 + Lists are no longer processed with sympy.solve (as solving a list returns an empty list)
 ++ This means that "solve(a*x^2+b*x+c*1,x)" (which creates a list) no longer needs "Eval Functions" to be turned off!
 
+v0.14.2.4: Control Input Development 1
++ UI part of the Input Tab in the Control Tab is now done.
+++ Tab is still disabled since most of the functionality is not implemented yet.
+
