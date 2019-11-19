@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.2.5"
+Version = "0.14.2.6"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -335,7 +335,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 # ---------------------------------- Init and Maintanance ----------------------------------
 
     def ConnectSignals(self):
-        self.Menubar_Main_Options_action_Reload_Modules.triggered.connect(self.ReloadModules)
+        self.Menubar_Main_Options_action_Dev_Function.triggered.connect(self.ReloadModules)
         self.Menubar_Main_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
         self.Menubar_Main_Options_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
 
@@ -1747,7 +1747,51 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 
 
-            if Tab == 0: #Transfer
+            if Tab == 0: #Autoarrange Transfer Function
+                # Parse the input and find out the coefficients of the powers of s
+                s = sympy.symbols("s")
+                try:
+                    Ys_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.Tab_5_1_System_4ATF_Ys.text())).doit().evalf()),s)
+                    #a = list(reversed(Ys_r.collect(s).as_ordered_terms()))
+                    #Ys = [a[p].coeff(s**p) for p in range(len(a)-1,0,-1)] # 0 is not included on purpose
+                    #Ys.append(a[0]) # get the coefficient of s^0
+                    #for i,v in enumerate(Ys): # Make sure that the type is correct
+                    #    val = str(v)
+                    #    if "s" in val: # If coefficient = 1, s is returned.
+                    #        val = "1"  # This is handeled here.
+                    #    Ys[i] = float(val)
+                    terms = Ys_r.all_terms()
+                    Ys = []
+                    for i in terms:
+                        Ys.append(float(i[1]))
+                    print(Ys)
+                except common_exceptions:
+                    Error = "Error in Y(s)"
+                    Error += ExceptionOutput(sys.exc_info())
+                    self.NotifyUser(1,Error)
+                    return False
+                try:
+                    Xs_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.Tab_5_1_System_4ATF_Xs.text())).doit().evalf()),s)
+                    #a = list(reversed(Xs_r.collect(s).as_ordered_terms()))
+                    #Xs = [a[p].coeff(s**p) for p in range(len(a)-1,0,-1)] # 0 is not included on purpose
+                    #Xs.append(a[0]) # get the coefficient of s^0
+                    #for i,v in enumerate(Xs): # Make sure that the type is correct
+                    #    val = str(v)
+                    #    if "s" in val: # If coefficient = 1, s is returned.
+                    #        val = "1"  # This is handeled here.
+                    #    Xs[i] = float(val)
+                    terms = Xs_r.all_terms()
+                    Xs = []
+                    for i in terms:
+                        Xs.append(float(i[1]))
+                    print(Xs)
+                except common_exceptions:
+                    Error = "Error in X(s)"
+                    Error += ExceptionOutput(sys.exc_info())
+                    self.NotifyUser(1,Error)
+                    return False
+                sys1 = control.tf(Ys,Xs)
+            elif Tab == 1: #Transfer
                 Ys = []
                 Xs = []
                 MError = ""
@@ -1787,9 +1831,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         break
                 print(Ys,r"/",Xs)
                 sys1 = control.tf(Ys,Xs)
-            elif Tab == 1: #State System
+            elif Tab == 2: #State System
                 pass
-            elif Tab == 2: #ODE
+            elif Tab == 3: #ODE
                 pass
             else: # Can not occur...
                 raise Exception("Tab {} in Control->Input Tab is unknown".format(Tab))

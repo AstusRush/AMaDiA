@@ -449,32 +449,35 @@ class MplWidget_CONTROL(MplWidget):
         self.Curr_Sys_LaTeX = ""
         
     def SetColour(self,BG=None,FG=None):
-        if BG != None and FG != None:
-            self.background_Colour = BG
-            self.TextColour = FG
-            self.HexcolourText = '#%02x%02x%02x' % (int(self.TextColour[0]*255),int(self.TextColour[1]*255),int(self.TextColour[2]*255))
-        self.canvas.fig.set_facecolor(self.background_Colour)
-        self.canvas.fig.set_edgecolor(self.background_Colour)
-        for i,p in enumerate(self.canvas.p_plot_LIST):
-            p.set_facecolor(self.background_Colour)
-            if self.canvas.Titles[i] == "BODE_PLOT_2":
-                p.set_title("  ",color=self.TextColour)
-            elif self.canvas.Titles[i] != 'LaTeX-Display':
-                p.set_title(self.canvas.Titles[i],color=self.TextColour)
-            if self.canvas.Titles[i] == "BODE_PLOT_2" or self.canvas.Titles[i] == 'Bode Plot':
-                p.spines['right'].set_color(self.TextColour)
-            else:
-                p.yaxis.label.set_color(self.TextColour)
-            p.xaxis.label.set_color(self.TextColour)
-            p.spines['bottom'].set_color(self.TextColour)
-            p.spines['left'].set_color(self.TextColour)
-            p.tick_params(axis='x', colors=self.TextColour)
-            p.tick_params(axis='y', colors=self.TextColour)
-            if self.canvas.Titles[i] == 'LaTeX-Display':
-                p.axis('off')
-        self.canvas.p_LaTeX_Display.text(0.5,0.5,self.Curr_Sys_LaTeX, horizontalalignment='center', verticalalignment='center',color=self.TextColour)#,usetex=True)
-        if self.Curr_Sys[4] != "" and False: # Disabled since the Legend covers the entire axes when Window not fullscreen
-            self.canvas.p_forced_response.legend(["Input Function: "+self.Curr_Sys[4]])#,color=self.TextColour)
+        try:
+            if BG != None and FG != None:
+                self.background_Colour = BG
+                self.TextColour = FG
+                self.HexcolourText = '#%02x%02x%02x' % (int(self.TextColour[0]*255),int(self.TextColour[1]*255),int(self.TextColour[2]*255))
+            self.canvas.fig.set_facecolor(self.background_Colour)
+            self.canvas.fig.set_edgecolor(self.background_Colour)
+            for i,p in enumerate(self.canvas.p_plot_LIST):
+                p.set_facecolor(self.background_Colour)
+                if self.canvas.Titles[i] == "BODE_PLOT_2":
+                    p.set_title("  ",color=self.TextColour)
+                elif self.canvas.Titles[i] != 'LaTeX-Display':
+                    p.set_title(self.canvas.Titles[i],color=self.TextColour)
+                if self.canvas.Titles[i] == "BODE_PLOT_2" or self.canvas.Titles[i] == 'Bode Plot':
+                    p.spines['right'].set_color(self.TextColour)
+                else:
+                    p.yaxis.label.set_color(self.TextColour)
+                p.xaxis.label.set_color(self.TextColour)
+                p.spines['bottom'].set_color(self.TextColour)
+                p.spines['left'].set_color(self.TextColour)
+                p.tick_params(axis='x', colors=self.TextColour)
+                p.tick_params(axis='y', colors=self.TextColour)
+                if self.canvas.Titles[i] == 'LaTeX-Display':
+                    p.axis('off')
+            self.canvas.p_LaTeX_Display.text(0.5,0.5,self.Curr_Sys_LaTeX, horizontalalignment='center', verticalalignment='center',color=self.TextColour)#,usetex=True)
+            if self.Curr_Sys[4] != "" and False: # Disabled since the Legend covers the entire axes when Window not fullscreen
+                self.canvas.p_forced_response.legend(["Input Function: "+self.Curr_Sys[4]])#,color=self.TextColour)
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
         try:
             self.canvas.draw()
         except common_exceptions:
@@ -511,45 +514,50 @@ class MplWidget_CONTROL(MplWidget):
         U = Input array giving input at each time T used for "Forced Response"-plot
         Ufunc = string (Name of the function that created U)
         """
-        
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            for i in self.canvas.p_plot_LIST:
-                i.clear()
-        Torig = T
-        Uorig = U
-        if T == None:
-            syst = control.timeresp._get_ss_simo(sys1)
-            T = scipy.signal.ltisys._default_response_times(syst.A, 500)
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                for i in self.canvas.p_plot_LIST:
+                    i.clear()
+            Torig = T
+            Uorig = U
+            if T == None:
+                syst = control.timeresp._get_ss_simo(sys1)
+                T = scipy.signal.ltisys._default_response_times(syst.A, 500)
 
 
-        # If U not given try to create using Ufunc. If Ufunc not given or creation failed set U and Ufunc to 0
-        if U == 0.0:
-            if Ufunc != "":
-                try:
-                    Function = parse_expr(AF.AstusParse(Ufunc))
-                    x = sympy.symbols('x')
-                    evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy'])
-                    U = evalfunc(T)
-                    U = np.asarray(U)
-                    if type(U) == int or type(U) == float or U.shape == (): #This also catches the case exp(x)
-                        U = np.full_like(T, U)
-                    if U.shape != T.shape:
-                        raise Exception("Dimensions do not match")
-                except common_exceptions:
-                    ExceptionOutput(sys.exc_info())
-                    Ufunc = ""
-            if Ufunc == "":
-                Ufunc = "u(x)=0"
+            # If U not given try to create using Ufunc. If Ufunc not given or creation failed set U and Ufunc to 0
+            if U == 0.0:
+                if Ufunc != "":
+                    try:
+                        Function = parse_expr(AF.AstusParse(Ufunc))
+                        x = sympy.symbols('x')
+                        evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy'])
+                        U = evalfunc(T)
+                        U = np.asarray(U)
+                        if type(U) == int or type(U) == float or U.shape == (): #This also catches the case exp(x)
+                            U = np.full_like(T, U)
+                        if U.shape != T.shape:
+                            raise Exception("Dimensions do not match")
+                    except common_exceptions:
+                        ExceptionOutput(sys.exc_info())
+                        Ufunc = ""
+                if Ufunc == "":
+                    Ufunc = "u(x)=0"
 
 
-        self.Curr_Sys_LaTeX = str(sys1) #TODO: MAKE PROPER LaTeX
-        self.Curr_Sys = (sys1, Torig, X0, Uorig, Ufunc, self.Curr_Sys_LaTeX)
+            self.Curr_Sys_LaTeX = str(sys1) #TODO: MAKE PROPER LaTeX
+            self.Curr_Sys = (sys1, Torig, X0, Uorig, Ufunc, self.Curr_Sys_LaTeX)
 
 
-        self.canvas.p_bode_plot_1.set_label('control-bode-magnitude')
-        self.canvas.p_bode_plot_2.set_label('control-bode-phase')
-        returnTuple = (0,0)
+            self.canvas.p_bode_plot_1.set_label('control-bode-magnitude')
+            self.canvas.p_bode_plot_2.set_label('control-bode-phase')
+            returnTuple = (0,0)
+            
+        except common_exceptions:
+            returnTuple = (1, ExceptionOutput(sys.exc_info()))
+            self.UseTeX(False)
+            return returnTuple
         try:
             # 0
             oT,y = control.step_response(sys1, number_of_samples=500, T=T, X0 = X0)

@@ -834,9 +834,30 @@ p, li { white-space: pre-wrap; }
                 <property name="currentIndex">
                  <number>0</number>
                 </property>
-                <widget class="QWidget" name="Tab_5_1_System_1TF">
+                <widget class="QWidget" name="Tab_5_1_System_4ATF">
                  <attribute name="title">
                   <string>Transfer</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_26">
+                  <item row="0" column="0">
+                   <widget class="LineEdit" name="Tab_5_1_System_4ATF_Ys">
+                    <property name="placeholderText">
+                     <string>Y(s)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="LineEdit" name="Tab_5_1_System_4ATF_Xs">
+                    <property name="placeholderText">
+                     <string>X(s)</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Tab_5_1_System_1TF">
+                 <attribute name="title">
+                  <string>TF Table</string>
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout_25">
                   <item row="0" column="0">
@@ -1130,7 +1151,7 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>O&amp;ptions</string>
     </property>
-    <addaction name="Menubar_Main_Options_action_Reload_Modules"/>
+    <addaction name="Menubar_Main_Options_action_Dev_Function"/>
     <addaction name="Menubar_Main_Options_action_Advanced_Mode"/>
     <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
@@ -1166,9 +1187,9 @@ p, li { white-space: pre-wrap; }
    <addaction name="Menubar_Main_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="Menubar_Main_Options_action_Reload_Modules">
+  <action name="Menubar_Main_Options_action_Dev_Function">
    <property name="text">
-    <string>&amp;Reload Modules (DEBUG)</string>
+    <string>&amp;Dev Function</string>
    </property>
   </action>
   <action name="Menubar_Main_Options_action_Advanced_Mode">

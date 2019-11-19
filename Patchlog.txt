@@ -204,5 +204,10 @@ v0.14.2.4: Control Input Development 1
 
 v0.14.2.5: Control Input Development 2
 + Fixed Error Display when System name is invalid
-+ When changeing the Order the columns for the Transfer Function are now added/removed from left instead of right
++ When changing the Order the columns for the Transfer Function are now added/removed from left instead of right
+
+v0.14.2.6: Control Input Development 3
++ Renamed "Reload Modules" to "Dev Function"
++ More work on the Control input Tab
+++ Added 4th input method that accepts a transfer function in most forms without the need to isolate the coefficients
 
