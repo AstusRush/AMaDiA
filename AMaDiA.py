@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.2.4"
+Version = "0.14.2.5"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -1707,9 +1707,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if type(Order) != int:
             Order = self.Tab_5_1_SystemOrder_Spinbox.value()
         
-        # TODO: SHIFT THE ELEMENTS WHEN CHANGING THE ORDER TO KEEP EVERYTHING ALIGNED
-        self.Tab_5_1_System_1TF_tableWidget.setColumnCount(Order+1)
+        # Transfer
+        ## Add/Remove Columns
+        shift = Order+1-self.Tab_5_1_System_1TF_tableWidget.columnCount()
+        if shift > 0:
+            for i in range(abs(shift)):
+                self.Tab_5_1_System_1TF_tableWidget.insertColumn(0)
+        elif shift < 0:
+            for i in range(abs(shift)):
+                self.Tab_5_1_System_1TF_tableWidget.removeColumn(0)
 
+        ## Set Header Labels
         HeaderLabel = []
         i=Order
         while i >=0:
@@ -1717,6 +1725,13 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             HeaderLabel.append(u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in s))
             i-=1
         self.Tab_5_1_System_1TF_tableWidget.setHorizontalHeaderLabels(HeaderLabel)
+
+        # State System
+        #TODO: Adjust other input methods
+        #TODO: For SS set the HeaderLabels to x₁,x₂,...
+
+        # ODE
+        #TODO: Adjust other input methods
 
     def Tab_5_1_System_Save(self):
         Tab = self.Tab_5_1_Input_tabWidget.currentIndex()
@@ -1747,7 +1762,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         #MError += ExceptionOutput(sys.exc_info())
                         MError += "\n"
                         Ys.append(0)
-                for j in range(self.Tab_5_1_System_1TF_tableWidget.columnCount()):
                     try:
                         if self.Tab_5_1_System_1TF_tableWidget.item(1,j).text().strip() != "":
                             Xs.append(float(parse_expr(AF.AstusParse(self.Tab_5_1_System_1TF_tableWidget.item(1,j).text(),True)).doit().evalf()))
@@ -1787,7 +1801,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.NotifyUser(1,Error)
 
     def Tab_5_1_System_Plot_and_Save(self):
-        self.Tab_5_1_System_Plot(self.Tab_5_1_System_Save())
+        sys1 = self.Tab_5_1_System_Save()
+        if sys1 == False:
+            pass
+        else:
+            self.Tab_5_1_System_Plot(sys1)
 
     def Tab_5_1_System_Plot(self,sys1):
         try:
