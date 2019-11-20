@@ -81,7 +81,7 @@ _bode_defaults = {
 
 def bode_plot(syslist, omega=None,
               Plot=True, omega_limits=None, omega_num=None,
-              margins=None, *args, **kwargs):
+              margins=None,Dense_Phase_Major_Ticks=False, *args, **kwargs):
     """Bode plot for a system
 
     Plots a Bode plot for the system over a (optional) frequency range.
@@ -280,7 +280,7 @@ def bode_plot(syslist, omega=None,
                 ax_phase.semilogx(omega_plot, phase_plot,color='orange', *args, **kwargs)
 
                 # Show the phase and gain margins in the plot
-                if margins:
+                if margins: # TODO: Make more pretty
                     margin = stability_margins(sys)
                     gm, pm, Wcg, Wcp = \
                         margin[0], margin[1], margin[3], margin[4]
@@ -403,16 +403,24 @@ def bode_plot(syslist, omega=None,
                     return np.arange(v1, v2 + 1) * period
                 if deg:
                     ylim = ax_phase.get_ylim()
-                    ax_phase.set_yticks(gen_zero_centered_series(
-                        ylim[0], ylim[1], 45.))
-                    ax_phase.set_yticks(gen_zero_centered_series(
-                        ylim[0], ylim[1], 15.), minor=True)
+                    if Dense_Phase_Major_Ticks:
+                        ax_phase.set_yticks(gen_zero_centered_series(
+                            ylim[0], ylim[1], 15.))
+                    else:
+                        ax_phase.set_yticks(gen_zero_centered_series(
+                            ylim[0], ylim[1], 45.))
+                        ax_phase.set_yticks(gen_zero_centered_series(
+                            ylim[0], ylim[1], 15.), minor=True)
                 else:
                     ylim = ax_phase.get_ylim()
-                    ax_phase.set_yticks(gen_zero_centered_series(
-                        ylim[0], ylim[1], math.pi / 4.))
-                    ax_phase.set_yticks(gen_zero_centered_series(
-                        ylim[0], ylim[1], math.pi / 12.), minor=True)
+                    if Dense_Phase_Major_Ticks:
+                        ax_phase.set_yticks(gen_zero_centered_series(
+                            ylim[0], ylim[1], math.pi / 12.))
+                    else:
+                        ax_phase.set_yticks(gen_zero_centered_series(
+                            ylim[0], ylim[1], math.pi / 4.))
+                        ax_phase.set_yticks(gen_zero_centered_series(
+                            ylim[0], ylim[1], math.pi / 12.), minor=True)
                 #ax_phase.grid(grid and not margins, which='both')
                 # ax_mag.grid(which='minor', alpha=0.3)
                 # ax_mag.grid(which='major', alpha=0.9)

@@ -211,3 +211,6 @@ v0.14.2.6: Control Input Development 3
 + More work on the Control input Tab
 ++ Added 4th input method that accepts a transfer function in most forms without the need to isolate the coefficients
 
+v0.14.2.7: More Bode Phase Lines
++ The big version of the Bode plot has now more major y-ticks for the phase to increase readability
+

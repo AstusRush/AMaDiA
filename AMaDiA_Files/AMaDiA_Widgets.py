@@ -712,19 +712,20 @@ class MplWidget_EmptyPlot(MplWidget):
             if not self.Bode:
                 self.canvas.ax.yaxis.label.set_color(self.TextColour)
             self.canvas.ax.xaxis.label.set_color(self.TextColour)
-            self.canvas.ax.tick_params(axis='x', colors=self.TextColour)
-            self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
+            self.canvas.ax.tick_params(axis='both',which='both', colors=self.TextColour)
+            #self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
             self.canvas.ax.set_title(self.Title, color=self.TextColour)
             if self.Bode:
                 self.canvas.ax1.set_facecolor(self.background_Colour)
                 self.canvas.ax1.spines['bottom'].set_color(self.TextColour)
                 self.canvas.ax1.spines['left'].set_color(self.TextColour)
-                self.canvas.ax1.tick_params(axis='x', colors=self.TextColour)
-                self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
+                self.canvas.ax1.tick_params(axis='both',which='both', colors=self.TextColour)
+                #self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
             if self.Bode:
                 self.canvas.ax1.grid(c='orange',ls='--')
                 self.canvas.ax.spines['right'].set_color(self.TextColour)
                 self.canvas.ax1.spines['right'].set_color(self.TextColour)
+                # TODO: Colour Margins better
         except common_exceptions:
             pass
         try:
@@ -783,7 +784,7 @@ class MplWidget_EmptyPlot(MplWidget):
                 self.canvas.ax.set_label('control-bode-magnitude')
                 self.canvas.ax1.set_label('control-bode-phase')
                 plt.figure(self.canvas.fig.number)
-                control.bode_plot(sys1, dB=True, omega_num=5000)
+                control.bode_plot(sys1, dB=True, omega_num=5000,Dense_Phase_Major_Ticks=True)#, margins=True) # TODO:Margins not pretty yet
             elif PlotName == Titles[5]:
                 plt.sca(self.canvas.ax)
                 control.nyquist_plot(sys1, number_of_samples=5000)

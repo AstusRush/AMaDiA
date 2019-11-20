@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.2.6"
+Version = "0.14.2.7"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
