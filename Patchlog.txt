@@ -226,3 +226,7 @@ v0.14.3.1: Synchronous Appearance
 + The Colour of all open sub-windows now changes when the colour of the main window is changed
 + The font size of all open sub-windows (except chat server and client) now changes when the font size of the main window is changed
 
+v0.14.3.2: Error Button
++ After questioning some testers it seems that the Error label was not intuitive thus it is now a button
+++ To make it even more intuitive the button now as a corresponding icon
+

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.3.1"
+Version = "0.14.3.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -432,6 +432,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             #       to not accidentially erase the plots of the user as this would be really bad...
 
         self.Tab_1_InputField.setFocus()
+
         
         msg = ""
         if not AF.LaTeX_dvipng_Installed:
@@ -482,6 +483,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
         self.TopBar_MathRemap_checkBox.toggled.connect(self.ToggleRemapper)
+        self.TopBar_Error_Label.clicked.connect(self.Show_Notification_Window)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
@@ -742,8 +744,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Text = "Error at " + Time
         self.TopBar_Error_Label.setText(Text)
         self.TopBar_Error_Label.setToolTip(Error_Text)
+        self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
 
-        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
         self.Notification_Flash_Red.start()
 
@@ -758,8 +761,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Text = "Warning at " + Time
         self.TopBar_Error_Label.setText(Text)
         self.TopBar_Error_Label.setToolTip(Error_Text)
+        self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
 
-        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Yellow.start()
 
         Text += "\n"
@@ -773,8 +777,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         Text = "Notification at " + Time
         self.TopBar_Error_Label.setText(Text)
         self.TopBar_Error_Label.setToolTip(Error_Text)
+        self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
 
-        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Blue.start()
 
         Text += "\n"
@@ -798,7 +803,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.S_New_Notification.emit(Text)
 
     def Notification_Flash_Finished(self):
-        self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
+        pass#self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
 
     def TopBar_Error_Label_Tooltip(self, index):
         if index.isValid():
@@ -1090,10 +1095,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #                    return True
      # ---------------------------------- Other Events ----------------------------------
         elif source is self.TopBar_Error_Label:
-            if event.type() == 2 or event.type() == 4: # Open Notification History on Doubleclick on the Top Bar Label
-                #QApplication.clipboard().setText(self.LastNotification)
-                self.Show_Notification_Window()
-            elif event.type() == 10:
+            #if event.type() == 2 or event.type() == 4: # Open Notification History on Doubleclick on the Top Bar Label
+            #    #QApplication.clipboard().setText(self.LastNotification)
+            #    self.Show_Notification_Window()
+            if event.type() == 10:
                 QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.TopBar_Error_Label.toolTip(),self.TopBar_Error_Label)
      # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
         return super(AMaDiA_Main_Window, self).eventFilter(source, event)

@@ -914,7 +914,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         if self.ConnectCheckBox.isChecked():
             if len(msg) >= 2 and msg[0] == "/":
                 if msg[1] == "n" and msg.count('"')>=2:
-                    c , ID , NewUsername = msg.split('"',2)
+                    c , ID , NewUsername = msg.split('"',2) # pylint: disable=unused-variable
                     try:
                         ID = int(ID)
                     except Exception:
