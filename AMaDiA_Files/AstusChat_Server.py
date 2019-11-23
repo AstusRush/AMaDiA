@@ -837,7 +837,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
     global Connections
     global sock
 
-    def __init__(self, ThePalette, TheFontFamily, parent = None):
+    def __init__(self, Palette, TheFontFamily, parent = None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         
@@ -846,7 +846,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         newFont.setFamily(self.FontFamily)
         newFont.setPointSize(9)
         self.setFont(newFont)
-        self.setPalette(ThePalette)
+        (self.Palette , self.BG_Colour , self.TextColour) = Palette
+        self.setPalette(self.Palette)
         
         
         #self.retranslateUi(self)
@@ -884,6 +885,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         else:
             History = "Chat History is disabled by the Server"
         self.print_message(History)
+
+    def SetFont(self,Family = None, PointSize = 0):
+        pass # TODO: How to handle this? who should be in control?
+        #if type(Family) == QtGui.QFont:
+        #    self.setFont(Family)
+        #else:
+        #    if Family == None:
+        #        Family = self.font().family()
+        #    if type(PointSize) == str:
+        #        PointSize = int(PointSize)
+        #    if PointSize <= 5:
+        #        PointSize = self.font().pointSize()
+        #    
+        #    font = QtGui.QFont()
+        #    font.setFamily(Family)
+        #    font.setPointSize(PointSize)
+        #    self.setFont(font)
+
+    def Recolour(self, palette, BG_Colour, TextColour):
+        self.Palette , self.BG_Colour , self.TextColour = palette, BG_Colour, TextColour
+        self.setPalette(self.Palette)
         
 
     def on_sendButtonClicked(self):

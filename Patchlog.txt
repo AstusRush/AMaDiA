@@ -222,3 +222,7 @@ v0.14.3: Notification History and Better Keyboard Remapper
 + First implementation of superscript (^1 now prints ¹ when you are quick)
 + Improved the layout of the Dark Theme class in AMaDiA_Colour.py
 
+v0.14.3.1: Synchronous Appearance
++ The Colour of all open sub-windows now changes when the colour of the main window is changed
++ The font size of all open sub-windows (except chat server and client) now changes when the font size of the main window is changed
+
