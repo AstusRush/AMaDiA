@@ -722,6 +722,7 @@ class AMaS: # Astus' Mathematical Structure
 
             try:
                 evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy']) # TODO: This should make everything below superfluous
+                print(self.plot_x_vals,type(self.plot_x_vals))
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
                 
                 
@@ -744,7 +745,7 @@ class AMaS: # Astus' Mathematical Structure
                 # This is a weird bug #TODO: Investigate this bug...
                 
                 try:
-                    if self.cstr.count("Integral") != 1:
+                    if self.cstr.count("Integral") == 0:
                         evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
                         self.plot_y_vals = evalfunc(self.plot_x_vals)
                         self.plot_y_vals = np.asarray(self.plot_y_vals)
@@ -754,9 +755,10 @@ class AMaS: # Astus' Mathematical Structure
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             print(self.plot_y_vals.shape)
                             raise Exception("Dimensions do not match")
-                    else:
+                    elif self.cstr.count("Integral") == 1 and( ( re.fullmatch(r"Integral\((.(?<!Integral))+,x\)",self.cstr) and self.cstr.count(",x)") == 1 ) or ( re.fullmatch(r"Integral\((.(?<!Integral))+\)",self.cstr) and self.cstr.count(",x)") == 0 )):
                         temp_Text = self.cstr
                         temp_Text = temp_Text.replace("Integral","")
+                        temp_Text = re.sub(r",x\)$",")",temp_Text)
                         evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
                         
                         def F(X):
@@ -773,6 +775,8 @@ class AMaS: # Astus' Mathematical Structure
                             self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             raise Exception("Dimensions do not match")
+                    else:
+                        raise Exception("Can not calculate plot data")
                 except common_exceptions: #as inst:
                     Error = ExceptionOutput(sys.exc_info())
                     np.seterrcall(oldErrCall)

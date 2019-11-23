@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.2.7"
+Version = "0.14.3"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -98,10 +98,28 @@ GroupSwitchModifier = QtCore.Qt.GroupSwitchModifier
 ShiftModifier = QtCore.Qt.ShiftModifier
 #endregion
 
-class AMaDiA_File_Display(QtWidgets.QMainWindow):
+def AltGr_Shortcut(Symbol,shift_Symbol):
+    if keyboard.is_pressed("shift"):
+        AltGr_Shift_Shortcut(shift_Symbol)
+    else:
+        keyboard.write(Symbol)
+        keyboard.release("alt")
+        keyboard.release("control")
+def AltGr_Shift_Shortcut(Symbol):
+    keyboard.write(Symbol)
+    keyboard.release("alt")
+    keyboard.release("control")
+    keyboard.press("shift")
+def Superscript_Shortcut(Symbol):
+    #keyboard.write("\x08")
+    keyboard.write(Symbol)
+    keyboard.write(" ")
+    keyboard.write("\x08")
+
+class AMaDiA_Internal_File_Display_Window(QtWidgets.QMainWindow):
     def __init__(self,FileName,Palette,Font,parent = None):
         try:
-            super(AMaDiA_File_Display, self).__init__(parent)
+            super(AMaDiA_Internal_File_Display_Window, self).__init__(parent)
             self.setWindowTitle(FileName)
             self.resize(900, 500)
             self.setAutoFillBackground(True)
@@ -135,10 +153,10 @@ class AMaDiA_File_Display(QtWidgets.QMainWindow):
     def Scroll_To_End(self):
         self.TextBrowser.verticalScrollBar().setValue(self.TextBrowser.verticalScrollBar().maximum())
 
-class AMaDiA_About_Display(QtWidgets.QMainWindow):
+class AMaDiA_About_Window(QtWidgets.QMainWindow):
     def __init__(self,Palette,Font,parent = None):
         try:
-            super(AMaDiA_About_Display, self).__init__(parent)
+            super(AMaDiA_About_Window, self).__init__(parent)
             self.setWindowTitle("About AMaDiA")
             self.resize(400, 600)
             self.setAutoFillBackground(True)
@@ -165,6 +183,50 @@ class AMaDiA_About_Display(QtWidgets.QMainWindow):
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
+class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
+    def __init__(self,Notifications,Palette,Font,parent = None):
+        try:
+            super(AMaDiA_Notification_Window, self).__init__(parent)
+            self.setWindowTitle("Notifications")
+            self.resize(900, 500)
+            self.setAutoFillBackground(True)
+            self.setPalette(Palette)
+            self.setFont(Font)
+
+            self.centralwidget = QtWidgets.QWidget(self)
+            self.centralwidget.setAutoFillBackground(True)
+            self.centralwidget.setObjectName("centralwidget")
+            self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+            self.gridLayout.setObjectName("gridLayout")
+            
+            self.TheList = QtWidgets.QListWidget(self)
+            self.TheList.setObjectName("TopBar_Error_Label")
+            self.TheList.setAlternatingRowColors(True)
+            self.gridLayout.addWidget(self.TheList, 0, 0, 0, 0)
+            self.setCentralWidget(self.centralwidget)
+
+            for i in Notifications:
+                self.AddNotification(i)
+            
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+
+    def AddNotification(self,Notification):
+        try:
+            item = QtWidgets.QListWidgetItem()
+            item.setText(Notification)
+            
+            self.TheList.addItem(item)
+            self.TheList.scrollToBottom()
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            text = "Could not add notification: "+Error
+            item = QtWidgets.QListWidgetItem()
+            item.setText(text)
+            
+            self.TheList.addItem(item)
+            self.TheList.scrollToBottom()
+
 class MainApp(QtWidgets.QApplication):
     def __init__(self, args):
         super(MainApp, self).__init__(args)
@@ -190,6 +252,7 @@ class MainApp(QtWidgets.QApplication):
 
 
 class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
+    New_Notification = QtCore.pyqtSignal(str)
     def __init__(self,MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
@@ -230,6 +293,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.LastNotification = ""
         self.LastOpenState = self.showNormal
         self.Bool_PreloadLaTeX = True
+        self.Notification_List = []
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
 
@@ -497,22 +561,30 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     ExceptionOutput(sys.exc_info())
                     self.pathOK = False
 
+# ---------------------------------- Key Remapper ----------------------------------
     def ToggleRemapper(self):
         try:
             if self.TopBar_MathRemap_checkBox.isChecked():
                 altgr = "altgr+"
                 altgrshift = "altgr+shift+"
+                #keyboard.on_press(print)
                 #keyboard.add_hotkey("shift",keyboard.release, args=("altgr"),trigger_on_release=True)
                 #keyboard.block_key("AltGr")
-                #keyboard.add_hotkey("control+alt+altgr",keyboard.release, args=("altgr"), suppress=True)
+                #keyboard.add_hotkey("altgr",keyboard.release, args=("alt+control"), suppress=True)
                 #keyboard.add_hotkey("control+alt+altgr+shift",keyboard.release, args=("altgr+shift"), suppress=True)
                 for i in ART.KR_Map:
                     if i[2] != " ":
                         Key = altgr + i[0]
-                        keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
+                        keyboard.add_hotkey(Key, AltGr_Shortcut, args=(i[2],i[3]), suppress=True, trigger_on_release=True)
+                        #keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
                     if i[3] != " ":
                         Key = altgrshift + i[0]
-                        keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
+                        keyboard.add_hotkey(Key, AltGr_Shift_Shortcut, args=(i[3]), suppress=True, trigger_on_release=True)
+                        #keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
+                    if i[4] != " ":
+                        Key = "^+"+i[0]
+                        keyboard.add_hotkey(Key, Superscript_Shortcut, args=(i[4]), suppress=True, trigger_on_release=True)
+                        #keyboard.add_hotkey(Key, keyboard.write, args=(i[4]), suppress=True, trigger_on_release=True)
             else:
                 keyboard.clear_all_hotkeys()
         except common_exceptions :
@@ -587,6 +659,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             nText += " (Type unknown):\n"
             nText += Text
             self.NotifyUser_Warning(nText,Time)
+        # TODO: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
 
     def NotifyUser_Error(self,Error_Text,Time=None):
         if Time==None:
@@ -599,6 +672,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
         self.Notification_Flash_Red.start()
 
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.New_Notification.emit(Text)
+
     def NotifyUser_Warning(self,Error_Text,Time=None):
         if Time==None:
             Time = AF.cTimeSStr()
@@ -608,6 +686,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Yellow.start()
+
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.New_Notification.emit(Text)
 
     def NotifyUser_Notification(self,Error_Text,Time=None):
         if Time==None:
@@ -619,6 +702,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Blue.start()
 
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.New_Notification.emit(Text)
+
     def NotifyUser_Direct(self,Error_Text,Time=None):
         if Time==None:
             Time = AF.cTimeSStr()
@@ -628,8 +716,23 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         #self.Notification_Flash_Blue.start()
 
+        Text = "Direct Notification at "+Time
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.New_Notification.emit(Text)
+
     def Notification_Flash_Finished(self):
         self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
+
+    def TopBar_Error_Label_Tooltip(self, index):
+        if index.isValid():
+            QtGui.QToolTip.showText(
+                QtGui.QCursor.pos(),
+                index.data(),
+                self.TopBar_Error_Label.viewport(),
+                self.TopBar_Error_Label.visualRect(index)
+                )
 
 
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
@@ -680,7 +783,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Threading = "LIST"
 
     def Show_AMaDiA_Text_File(self,FileName):
-        self.AMaDiA_Text_File_Window = AMaDiA_File_Display(FileName,self.Palette,self.font())
+        self.AMaDiA_Text_File_Window = AMaDiA_Internal_File_Display_Window(FileName,self.Palette,self.font())
         self.AMaDiA_Text_File_Window.show()
         if FileName == "Patchlog.txt":
             worker = AT.Timer(0.1) # pylint: disable=no-value-for-parameter
@@ -691,8 +794,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.AMaDiA_Text_File_Window.Scroll_To_End()
 
     def Show_About(self):
-        self.AMaDiA_About_Display_Window = AMaDiA_About_Display(self.Palette,self.font())
-        self.AMaDiA_About_Display_Window.show()
+        self.AMaDiA_About_Window_Window = AMaDiA_About_Window(self.Palette,self.font())
+        self.AMaDiA_About_Window_Window.show()
 
 # ---------------------------------- Chat Toolbar Funtions ----------------------------------
 
@@ -896,12 +999,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #                    self.MainApp.sendEvent(source,event)
         #                    return True
      # ---------------------------------- Other Events ----------------------------------
-        elif (event.type() == 4 and source is self.TopBar_Error_Label): # Copy last Notification on Doubleclick on the Top Bar Label
-              QApplication.clipboard().setText(self.LastNotification)
+        elif source is self.TopBar_Error_Label:
+            if event.type() == 2 or event.type() == 4: # Open Notification History on Doubleclick on the Top Bar Label
+                #QApplication.clipboard().setText(self.LastNotification)
+                self.AMaDiA_Notification_Window = AMaDiA_Notification_Window(self.Notification_List,self.Palette,self.font())
+                self.New_Notification.connect(self.AMaDiA_Notification_Window.AddNotification)
+                self.AMaDiA_Notification_Window.show()
+            elif event.type() == 10:
+                QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.TopBar_Error_Label.toolTip(),self.TopBar_Error_Label)
      # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
         return super(AMaDiA_Main_Window, self).eventFilter(source, event)
   
-
 # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
  # ----------------
          
