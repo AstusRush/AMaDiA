@@ -10,6 +10,421 @@
     <height>634</height>
    </rect>
   </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Light">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>81</red>
+        <green>85</green>
+        <blue>94</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Midlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>67</red>
+        <green>71</green>
+        <blue>78</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>27</red>
+        <green>28</green>
+        <blue>31</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Mid">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>38</green>
+        <blue>42</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>215</red>
+        <green>213</green>
+        <blue>201</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>252</green>
+        <blue>218</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>220</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Light">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>81</red>
+        <green>85</green>
+        <blue>94</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Midlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>67</red>
+        <green>71</green>
+        <blue>78</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>27</red>
+        <green>28</green>
+        <blue>31</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Mid">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>38</green>
+        <blue>42</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>215</red>
+        <green>213</green>
+        <blue>201</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>252</green>
+        <blue>218</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>220</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>27</red>
+        <green>28</green>
+        <blue>31</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Light">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>81</red>
+        <green>85</green>
+        <blue>94</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Midlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>67</red>
+        <green>71</green>
+        <blue>78</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>27</red>
+        <green>28</green>
+        <blue>31</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Mid">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>38</green>
+        <blue>42</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>27</red>
+        <green>28</green>
+        <blue>31</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>252</green>
+        <blue>218</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>27</red>
+        <green>28</green>
+        <blue>31</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>220</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
+  </property>
   <property name="windowTitle">
    <string>AMaDiA</string>
   </property>
@@ -76,7 +491,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -679,7 +1094,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="0" column="0" colspan="4">
-               <widget class="QTableWidget" name="Tab_4_1_Matrix_Input">
+               <widget class="TableWidget" name="Tab_4_1_Matrix_Input">
                 <property name="rowCount">
                  <number>3</number>
                 </property>
@@ -807,7 +1222,7 @@ p, li { white-space: pre-wrap; }
            <attribute name="title">
             <string>Input</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_15">
+           <layout class="QGridLayout" name="gridLayout_26">
             <item row="0" column="0">
              <widget class="QSplitter" name="Tab_5_1_Splitter_M">
               <property name="orientation">
@@ -817,197 +1232,188 @@ p, li { white-space: pre-wrap; }
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
-               <widget class="QTabWidget" name="Tab_5_1_System_tabWidget">
-                <property name="currentIndex">
-                 <number>0</number>
-                </property>
-                <widget class="QWidget" name="Tab_5_1_System_4ATF">
-                 <attribute name="title">
-                  <string>Transfer</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_26">
-                  <item row="0" column="0">
-                   <widget class="LineEdit" name="Tab_5_1_System_4ATF_Ys">
-                    <property name="placeholderText">
-                     <string>Y(s)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="LineEdit" name="Tab_5_1_System_4ATF_Xs">
-                    <property name="placeholderText">
-                     <string>X(s)</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="Tab_5_1_System_1TF">
-                 <attribute name="title">
-                  <string>TF Table</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_25">
-                  <item row="0" column="0">
-                   <widget class="QTableWidget" name="Tab_5_1_System_1TF_tableWidget">
-                    <property name="rowCount">
-                     <number>2</number>
-                    </property>
-                    <property name="columnCount">
-                     <number>5</number>
-                    </property>
-                    <attribute name="horizontalHeaderDefaultSectionSize">
-                     <number>50</number>
+               <widget class="QWidget" name="layoutWidget">
+                <layout class="QGridLayout" name="gridLayout_15">
+                 <item row="0" column="0" colspan="5">
+                  <widget class="QTabWidget" name="Tab_5_1_System_tabWidget">
+                   <property name="currentIndex">
+                    <number>0</number>
+                   </property>
+                   <widget class="QWidget" name="Tab_5_1_System_4ATF">
+                    <attribute name="title">
+                     <string>Transfer</string>
                     </attribute>
-                    <attribute name="verticalHeaderVisible">
-                     <bool>false</bool>
+                    <widget class="LineEdit" name="Tab_5_1_System_4ATF_Ys">
+                     <property name="geometry">
+                      <rect>
+                       <x>9</x>
+                       <y>9</y>
+                       <width>616</width>
+                       <height>124</height>
+                      </rect>
+                     </property>
+                     <property name="placeholderText">
+                      <string>Y(s)</string>
+                     </property>
+                    </widget>
+                    <widget class="LineEdit" name="Tab_5_1_System_4ATF_Xs">
+                     <property name="geometry">
+                      <rect>
+                       <x>9</x>
+                       <y>139</y>
+                       <width>616</width>
+                       <height>124</height>
+                      </rect>
+                     </property>
+                     <property name="placeholderText">
+                      <string>X(s)</string>
+                     </property>
+                    </widget>
+                   </widget>
+                   <widget class="QWidget" name="Tab_5_1_System_1TF">
+                    <attribute name="title">
+                     <string>TF Table</string>
                     </attribute>
-                    <row/>
-                    <row/>
-                    <column/>
-                    <column/>
-                    <column/>
-                    <column/>
-                    <column/>
+                    <layout class="QGridLayout" name="gridLayout_25">
+                     <item row="0" column="0">
+                      <widget class="TableWidget" name="Tab_5_1_System_1TF_tableWidget">
+                       <property name="rowCount">
+                        <number>2</number>
+                       </property>
+                       <property name="columnCount">
+                        <number>5</number>
+                       </property>
+                       <attribute name="horizontalHeaderDefaultSectionSize">
+                        <number>50</number>
+                       </attribute>
+                       <attribute name="verticalHeaderVisible">
+                        <bool>false</bool>
+                       </attribute>
+                       <row/>
+                       <row/>
+                       <column/>
+                       <column/>
+                       <column/>
+                       <column/>
+                       <column/>
+                      </widget>
+                     </item>
+                    </layout>
                    </widget>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="Tab_5_1_System_2SS">
-                 <attribute name="title">
-                  <string>State Space</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_19">
-                  <item row="0" column="0">
-                   <widget class="QTabWidget" name="Tab_5_1_System_2SS_tabWidget">
-                    <property name="currentIndex">
-                     <number>0</number>
-                    </property>
-                    <widget class="QWidget" name="Tab_5_1_System_2SS_A">
-                     <attribute name="title">
-                      <string>A: State Matrix</string>
-                     </attribute>
-                     <layout class="QGridLayout" name="gridLayout_21">
-                      <item row="0" column="0">
-                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_A_tableWidget">
-                        <property name="rowCount">
-                         <number>3</number>
-                        </property>
-                        <property name="columnCount">
-                         <number>3</number>
-                        </property>
-                        <attribute name="horizontalHeaderDefaultSectionSize">
-                         <number>50</number>
+                   <widget class="QWidget" name="Tab_5_1_System_2SS">
+                    <attribute name="title">
+                     <string>State Space</string>
+                    </attribute>
+                    <layout class="QGridLayout" name="gridLayout_19">
+                     <item row="0" column="0">
+                      <widget class="QTabWidget" name="Tab_5_1_System_2SS_tabWidget">
+                       <property name="currentIndex">
+                        <number>0</number>
+                       </property>
+                       <widget class="QWidget" name="Tab_5_1_System_2SS_A">
+                        <attribute name="title">
+                         <string>A: State Matrix</string>
                         </attribute>
-                        <row/>
-                        <row/>
-                        <row/>
-                        <column/>
-                        <column/>
-                        <column/>
+                        <layout class="QGridLayout" name="gridLayout_21">
+                         <item row="0" column="0">
+                          <widget class="TableWidget" name="Tab_5_1_System_2SS_A_tableWidget">
+                           <property name="rowCount">
+                            <number>3</number>
+                           </property>
+                           <property name="columnCount">
+                            <number>3</number>
+                           </property>
+                           <attribute name="horizontalHeaderDefaultSectionSize">
+                            <number>50</number>
+                           </attribute>
+                           <row/>
+                           <row/>
+                           <row/>
+                           <column/>
+                           <column/>
+                           <column/>
+                          </widget>
+                         </item>
+                        </layout>
                        </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                    <widget class="QWidget" name="Tab_5_1_System_2SS_B">
-                     <attribute name="title">
-                      <string>B: Input Vector</string>
-                     </attribute>
-                     <layout class="QGridLayout" name="gridLayout_22">
-                      <item row="0" column="0">
-                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_B_tableWidget">
-                        <property name="rowCount">
-                         <number>3</number>
-                        </property>
-                        <property name="columnCount">
-                         <number>1</number>
-                        </property>
-                        <row/>
-                        <row/>
-                        <row/>
-                        <column/>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                    <widget class="QWidget" name="Tab_5_1_System_2SS_C">
-                     <attribute name="title">
-                      <string>C: Output Vector</string>
-                     </attribute>
-                     <layout class="QGridLayout" name="gridLayout_23">
-                      <item row="0" column="0">
-                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_C_tableWidget">
-                        <property name="rowCount">
-                         <number>1</number>
-                        </property>
-                        <property name="columnCount">
-                         <number>3</number>
-                        </property>
-                        <attribute name="horizontalHeaderDefaultSectionSize">
-                         <number>50</number>
+                       <widget class="QWidget" name="Tab_5_1_System_2SS_B">
+                        <attribute name="title">
+                         <string>B: Input Vector</string>
                         </attribute>
-                        <row/>
-                        <column/>
-                        <column/>
-                        <column/>
+                        <layout class="QGridLayout" name="gridLayout_22">
+                         <item row="0" column="0">
+                          <widget class="TableWidget" name="Tab_5_1_System_2SS_B_tableWidget">
+                           <property name="rowCount">
+                            <number>3</number>
+                           </property>
+                           <property name="columnCount">
+                            <number>1</number>
+                           </property>
+                           <row/>
+                           <row/>
+                           <row/>
+                           <column/>
+                          </widget>
+                         </item>
+                        </layout>
                        </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                    <widget class="QWidget" name="Tab_5_1_System_2SS_D">
-                     <attribute name="title">
-                      <string>D: Feedthrough Vector</string>
-                     </attribute>
-                     <layout class="QGridLayout" name="gridLayout_24">
-                      <item row="0" column="0">
-                       <widget class="QTableWidget" name="Tab_5_1_System_2SS_D_tableWidget">
-                        <property name="rowCount">
-                         <number>3</number>
-                        </property>
-                        <property name="columnCount">
-                         <number>1</number>
-                        </property>
-                        <row/>
-                        <row/>
-                        <row/>
-                        <column/>
+                       <widget class="QWidget" name="Tab_5_1_System_2SS_C">
+                        <attribute name="title">
+                         <string>C: Output Vector</string>
+                        </attribute>
+                        <layout class="QGridLayout" name="gridLayout_23">
+                         <item row="0" column="0">
+                          <widget class="TableWidget" name="Tab_5_1_System_2SS_C_tableWidget">
+                           <property name="rowCount">
+                            <number>1</number>
+                           </property>
+                           <property name="columnCount">
+                            <number>3</number>
+                           </property>
+                           <attribute name="horizontalHeaderDefaultSectionSize">
+                            <number>50</number>
+                           </attribute>
+                           <row/>
+                           <column/>
+                           <column/>
+                           <column/>
+                          </widget>
+                         </item>
+                        </layout>
                        </widget>
-                      </item>
-                     </layout>
-                    </widget>
+                       <widget class="QWidget" name="Tab_5_1_System_2SS_D">
+                        <attribute name="title">
+                         <string>D: Feedthrough Vector</string>
+                        </attribute>
+                        <layout class="QGridLayout" name="gridLayout_24">
+                         <item row="0" column="0">
+                          <widget class="TableWidget" name="Tab_5_1_System_2SS_D_tableWidget">
+                           <property name="rowCount">
+                            <number>3</number>
+                           </property>
+                           <property name="columnCount">
+                            <number>1</number>
+                           </property>
+                           <row/>
+                           <row/>
+                           <row/>
+                           <column/>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </widget>
+                     </item>
+                    </layout>
                    </widget>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="Tab_5_1_System_3DE">
-                 <attribute name="title">
-                  <string>ODE</string>
-                 </attribute>
-                </widget>
-               </widget>
-               <widget class="QWidget" name="gridLayoutWidget">
-                <layout class="QGridLayout" name="gridLayout_20">
-                 <item row="0" column="3">
-                  <widget class="QPushButton" name="Tab_5_1_SaveButton">
-                   <property name="text">
-                    <string>Save</string>
-                   </property>
+                   <widget class="QWidget" name="Tab_5_1_System_3DE">
+                    <attribute name="title">
+                     <string>ODE</string>
+                    </attribute>
+                   </widget>
                   </widget>
                  </item>
-                 <item row="0" column="2">
-                  <widget class="QLineEdit" name="Tab_5_1_NameInput">
-                   <property name="placeholderText">
-                    <string>Name</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QPushButton" name="Tab_5_1_SystemOrder_Confrim">
-                   <property name="text">
-                    <string>Set Order</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
+                 <item row="1" column="0">
                   <widget class="QSpinBox" name="Tab_5_1_SystemOrder_Spinbox">
                    <property name="minimum">
                     <number>1</number>
@@ -1017,14 +1423,42 @@ p, li { white-space: pre-wrap; }
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="4">
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="Tab_5_1_SystemOrder_Confrim">
+                   <property name="toolTip">
+                    <string>Not necessary for Transfer-Tab</string>
+                   </property>
+                   <property name="text">
+                    <string>Set Order</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLineEdit" name="Tab_5_1_NameInput">
+                   <property name="placeholderText">
+                    <string>Name</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QPushButton" name="Tab_5_1_SaveButton">
+                   <property name="text">
+                    <string>Save</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="4">
                   <widget class="QPushButton" name="Tab_5_1_SavePlotButton">
                    <property name="text">
                     <string>Save and Plot</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0" colspan="5">
+                </layout>
+               </widget>
+               <widget class="QWidget" name="gridLayoutWidget">
+                <layout class="QGridLayout" name="gridLayout_20">
+                 <item row="0" column="0">
                   <widget class="QListWidget" name="Tab_5_1_SystemList"/>
                  </item>
                 </layout>
@@ -1359,6 +1793,11 @@ p, li { white-space: pre-wrap; }
    <extends>QWidget</extends>
    <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TableWidget</class>
+   <extends>QTableWidget</extends>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
   </customwidget>
  </customwidgets>
  <tabstops>

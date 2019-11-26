@@ -458,6 +458,11 @@ class MplWidget_CONTROL(MplWidget):
             self.canvas.fig.set_edgecolor(self.background_Colour)
             for i,p in enumerate(self.canvas.p_plot_LIST):
                 p.set_facecolor(self.background_Colour)
+                if p.get_title() == "N/A":
+                    p.axis('off')
+                    p.text(0.5,0.5,"N/A", horizontalalignment='center', verticalalignment='center',color=self.TextColour)
+                    p.set_title(self.canvas.Titles[i],color=self.TextColour)
+                    continue
                 if self.canvas.Titles[i] == "BODE_PLOT_2":
                     p.set_title("  ",color=self.TextColour)
                 elif self.canvas.Titles[i] != 'LaTeX-Display':
@@ -514,6 +519,7 @@ class MplWidget_CONTROL(MplWidget):
         U = Input array giving input at each time T used for "Forced Response"-plot
         Ufunc = string (Name of the function that created U)
         """
+        returnTuple = (0,"")
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -521,9 +527,12 @@ class MplWidget_CONTROL(MplWidget):
                     i.clear()
             Torig = T
             Uorig = U
-            if T == None:
-                syst = control.timeresp._get_ss_simo(sys1)
-                T = scipy.signal.ltisys._default_response_times(syst.A, 500)
+            try:
+                if T == None:
+                    syst = control.timeresp._get_ss_simo(sys1)
+                    T = scipy.signal.ltisys._default_response_times(syst.A, 500)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
 
 
             # If U not given try to create using Ufunc. If Ufunc not given or creation failed set U and Ufunc to 0
@@ -552,53 +561,73 @@ class MplWidget_CONTROL(MplWidget):
 
             self.canvas.p_bode_plot_1.set_label('control-bode-magnitude')
             self.canvas.p_bode_plot_2.set_label('control-bode-phase')
-            returnTuple = (0,0)
             
         except common_exceptions:
             returnTuple = (1, ExceptionOutput(sys.exc_info()))
             self.UseTeX(False)
             return returnTuple
         try:
-            # 0
-            oT,y = control.step_response(sys1, number_of_samples=500, T=T, X0 = X0)
-            self.canvas.p_step_response.plot(oT,y)
+            try: # 0
+                oT,y = control.step_response(sys1, number_of_samples=500, T=T, X0 = X0)
+                self.canvas.p_step_response.plot(oT,y)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_step_response.set_title("N/A")
 
-            # 1
-            oT,y = control.impulse_response(sys1, number_of_samples=500, T=T, X0 = X0)
-            self.canvas.p_impulse_response.plot(oT,y)
+            try: # 1
+                oT,y = control.impulse_response(sys1, number_of_samples=500, T=T, X0 = X0)
+                self.canvas.p_impulse_response.plot(oT,y)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_impulse_response.set_title("N/A")
 
-            # 2
-            try:
+            try: # 2
                 oT,y, xout = control.forced_response(sys1, T=T, X0 = X0, U=U) # pylint: disable=unused-variable
                 self.canvas.p_forced_response.plot(oT,y)
             except common_exceptions:
-                returnTuple = (3, ExceptionOutput(sys.exc_info()))
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_forced_response.set_title("N/A")
 
-            # 3+4
-            plt.figure(self.canvas.fig.number) # set figure to current that .gfc() in control.bode_plot can find it
-            control.bode_plot(sys1, dB=True, omega_num=500)
+            try: # 3+4
+                plt.figure(self.canvas.fig.number) # set figure to current that .gfc() in control.bode_plot can find it
+                control.bode_plot(sys1, dB=True, omega_num=500)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_bode_plot_1.set_title("N/A")
 
-            # 5
-            plt.sca(self.canvas.p_nyquist_plot)
-            control.nyquist_plot(sys1,number_of_samples=500)
+            try: # 5
+                plt.sca(self.canvas.p_nyquist_plot)
+                control.nyquist_plot(sys1,number_of_samples=500)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_nyquist_plot.set_title("N/A")
 
-            # 6
-            plt.sca(self.canvas.p_nichols_plot)
-            control.nichols_plot(sys1, number_of_samples=500)
+            try: # 6
+                plt.sca(self.canvas.p_nichols_plot)
+                control.nichols_plot(sys1, number_of_samples=500)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_nichols_plot.set_title("N/A")
 
-            # 7
-            poles,zeros = control.pzmap(sys1,Plot=False)
-            if len(poles) > 0:
-                self.canvas.p_pzmap.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c="red")
-            if len(zeros) > 0:
-                self.canvas.p_pzmap.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c="orange")
-            self.canvas.p_pzmap.grid(True)
+            try: # 7
+                poles,zeros = control.pzmap(sys1,Plot=False)
+                if len(poles) > 0:
+                    self.canvas.p_pzmap.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c="red")
+                if len(zeros) > 0:
+                    self.canvas.p_pzmap.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c="orange")
+                self.canvas.p_pzmap.grid(True)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_pzmap.set_title("N/A")
 
-            # 8
-            #plt.sca(self.canvas.p_root_locus)
-            #control.rlocus(sys1)
-            control.root_locus_AMaDiA(sys1,self.canvas.p_root_locus)
-            self.canvas.p_root_locus.grid(True)
+            try: # 8
+                #plt.sca(self.canvas.p_root_locus)
+                #control.rlocus(sys1)
+                control.root_locus_AMaDiA(sys1,self.canvas.p_root_locus)
+                self.canvas.p_root_locus.grid(True)
+            except common_exceptions:
+                returnTuple = (3, returnTuple[1]+"\n"+ExceptionOutput(sys.exc_info()))
+                self.canvas.p_root_locus.set_title("N/A")
 
             # 9 + Plot
             self.SetColour() # Set Colour, Titles, etc... and the Display
@@ -737,13 +766,16 @@ class MplWidget_EmptyPlot(MplWidget):
         """
         Retrun Value compatible with NotifyUser.
         """
-        returnTuple = (0,0)
+        returnTuple = (0,"")
         self.FuncLabel = ""
         Titles = MplCanvas_CONTROL.Titles
         (sys1, T, X0 , U, Ufunc, Curr_Sys_LaTeX) = system # pylint: disable=unused-variable
-        if T == None:
-            syst = control.timeresp._get_ss_simo(sys1)
-            T = scipy.signal.ltisys._default_response_times(syst.A, 5000)
+        try:
+            if T == None:
+                syst = control.timeresp._get_ss_simo(sys1)
+                T = scipy.signal.ltisys._default_response_times(syst.A, 5000)
+        except common_exceptions:
+            pass
         self.clear()
 
         # Plot the Plot
@@ -828,7 +860,7 @@ class MplWidget_EmptyPlot(MplWidget):
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class ATextEdit(QtWidgets.QTextEdit):
+class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
     returnPressed = QtCore.pyqtSignal()
     returnCrtlPressed = QtCore.pyqtSignal()
     def __init__(self, parent=None):
@@ -837,6 +869,7 @@ class ATextEdit(QtWidgets.QTextEdit):
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
         self.textChanged.connect(self.validateCharacters)
         self.installEventFilter(self)
+        self.setTabChangesFocus(True)
         
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
@@ -861,6 +894,12 @@ class ATextEdit(QtWidgets.QTextEdit):
         cursor = self.textCursor()
         curPos = cursor.position()
         self.document().contentsChange.emit(curPos,0,0)
+        #theformat = QtGui.QTextBlockFormat()
+        #theformat.setForeground(QtGui.QColor('green'))
+        #for i in range(0,self.document().blockCount()):
+        #    cursor2 = QtGui.QTextCursor(self.document().findBlockByNumber(i))
+        #    cursor2.setBlockFormat(theformat)
+        #self.document().contentsChange.emit(curPos,0,0)
 
     def validateCharacters(self):
         #vorbiddenChars = []
@@ -889,7 +928,7 @@ class ATextEdit(QtWidgets.QTextEdit):
 
 class TextEdit(ATextEdit):
     def __init__(self, parent=None):
-        ATextEdit.__init__(self, parent)
+        super(TextEdit, self).__init__(parent)
         self.installEventFilter(self)
         
     def eventFilter(self, source, event):
@@ -901,7 +940,7 @@ class TextEdit(ATextEdit):
 
 class LineEdit(ATextEdit):
     def __init__(self, parent=None):
-        ATextEdit.__init__(self, parent)
+        super(LineEdit, self).__init__(parent)
 
         QTextEditFontMetrics =  QtGui.QFontMetrics(self.font())
         self.QTextEditRowHeight = QTextEditFontMetrics.lineSpacing()
@@ -988,11 +1027,12 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
         self.STYLES = {'brace': self.RedFormat,'pair': self.RedFormat}
 
     def highlightBlock(self, text):
+        # TODO: Unhighlight all other blocks
         if not self.enabled:
             self.setCurrentBlockState(0)
             return
         cursor = self.Widget.textCursor()
-        curPos = cursor.position()
+        curPos = cursor.positionInBlock()
         pattern = ""
         TheList = []
         for i in ART.LIST_l_normal_pairs:
@@ -1062,4 +1102,66 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                 break
         
         self.setCurrentBlockState(0)
+
+
+class TableWidget(QtWidgets.QTableWidget):
+    def __init__(self, parent=None):
+        super(TableWidget, self).__init__(parent)
+        #print(type(self.itemDelegate()))
+        self.TheDelegate = TableWidget_Delegate(self)
+        self.setItemDelegate(self.TheDelegate)
+        self.installEventFilter(self)
+        
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.KeyPress and source in self.window().findChildren(QtWidgets.QTableWidget) and source.isEnabled() and source.tabKeyNavigation()):
+            index = source.currentIndex()
+            if event.key() == QtCore.Qt.Key_Backtab:
+                if index.row() == index.column() == 0:
+                    source.setCurrentCell(0,0)
+                    source.clearSelection()
+                    QtWidgets.QAbstractScrollArea.focusNextPrevChild(source, False)
+                    return True
+            elif event.key() == QtCore.Qt.Key_Tab:
+                model = source.model()
+                if (index.row() == model.rowCount() - 1 and index.column() == model.columnCount() - 1):
+                    source.setCurrentCell(0,0)
+                    source.clearSelection()
+                    QtWidgets.QAbstractScrollArea.focusNextPrevChild(source, True)
+                    return True
+        return super(TableWidget, self).eventFilter(source, event)
+
+class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super(TableWidget_Delegate, self).__init__(parent)
+        self.installEventFilter(self)
+
+    def createEditor(self, parent, options, index):
+        return LineEdit(parent)
+
+    def setEditorData(self, editor, index):
+        editor.setText(index.data())
+
+    def setModelData(self, editor, model, index):
+        model.setData(index, editor.toPlainText())
+
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Tab or event.key() == QtCore.Qt.Key_Backtab)):
+            # Commit Editing, end Editing mode and re-send Tab/Backtab
+            self.commitData.emit(source)
+            self.closeEditor.emit(source, QtWidgets.QAbstractItemDelegate.NoHint)
+            event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers())
+            self.parent().window().MainApp.sendEvent(self.parent(),event)
+            return True
+        elif (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
+            # Commit Editing and end Editing mode
+            self.commitData.emit(source)
+            self.closeEditor.emit(source, QtWidgets.QAbstractItemDelegate.NoHint)
+            event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers())
+            self.parent().window().MainApp.sendEvent(self.parent(),event)
+            return True
+        return super(TableWidget_Delegate, self).eventFilter(source, event)
+
+
+
+
 

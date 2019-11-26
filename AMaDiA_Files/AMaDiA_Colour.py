@@ -36,7 +36,7 @@ def Dark():
 
     brush = QtGui.QBrush(QtGui.QColor(81, 85, 94))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, tbrush) #?
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush) # Found Examples: Center of Lines
     #brush = QtGui.QBrush(QtGui.QColor(81, 85, 94))
     #brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
@@ -56,7 +56,7 @@ def Dark():
 
     brush = QtGui.QBrush(QtGui.QColor(27, 28, 31))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, tbrush) #?
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush) # Found Examples: Edge of Lines
     #brush = QtGui.QBrush(QtGui.QColor(27, 28, 31))
     #brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)

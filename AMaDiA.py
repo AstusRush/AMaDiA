@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.3.2"
+Version = "0.14.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -328,7 +328,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.Tab_3_tabWidget.removeTab(1)# TODO
         self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO
-        self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon")
+        self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon. To test current features use \"Dev Function\" in Options")
 
         # TODO: Do something with the Statusbar 
 
@@ -393,8 +393,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         for i in self.findChildren(QtWidgets.QTextEdit):
             i.installEventFilter(self)
         for i in self.findChildren(QtWidgets.QLineEdit):
-            i.installEventFilter(self)
-        for i in self.findChildren(QtWidgets.QTableWidget):
             i.installEventFilter(self)
         self.TopBar_Error_Label.installEventFilter(self)
         
@@ -509,6 +507,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_1_SystemOrder_Confrim.clicked.connect(self.Tab_5_1_System_Set_Order)
         self.Tab_5_1_SaveButton.clicked.connect(self.Tab_5_1_System_Save)
         self.Tab_5_1_SavePlotButton.clicked.connect(self.Tab_5_1_System_Plot_and_Save)
+        
+        self.Tab_5_1_System_4ATF_Ys.returnPressed.connect(lambda: self.Tab_5_1_SetFocus_on(self.Tab_5_1_System_4ATF_Xs))
+        self.Tab_5_1_System_4ATF_Xs.returnPressed.connect(lambda: self.Tab_5_1_SetFocus_on(self.Tab_5_1_NameInput))
+        self.Tab_5_1_NameInput.returnPressed.connect(self.Tab_5_1_System_Plot_and_Save)
+
         self.Tab_5_4_Dirty_Input.returnCrtlPressed.connect(self.Tab_5_4_Dirty_Display)
     
     def Colour_Font_Init(self):
@@ -1080,7 +1083,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #                return True
 
 
-        #if self.TopBar_MathRemap_checkBox.isChecked():    #DOES NOT WORK WITH QTableWidget
+        #if self.TopBar_MathRemap_checkBox.isChecked():    #DOES NOT WORK WITH QTableWidget (But can be cahnged to work)
         #    if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
         #        print(0,event.key())
         #        if event.key() == QtCore.Qt.Key_3:
@@ -1256,6 +1259,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         QApplication.clipboard().setText(str(item.data(101)))
     
     def action_tab_5_M_Delete(self,source,event):
+        # TODO: If only one item was deleted save it in a temporary List item (The same as the duplicate item from the save function)
         listItems=source.selectedItems()
         if not listItems: return        
         for item in listItems:
@@ -1846,6 +1850,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             SearchFor = Name+" "
 
             #Remove Duplicats
+            # TODO: Ensure that this works correctly in all cases!
+            # TODO: Save the first duplicate in a temporary List item!
             FoundItems = self.Tab_4_Matrix_List.findItems(SearchFor,QtCore.Qt.MatchStartsWith)
             if len(FoundItems) > 0:
                 for i in FoundItems:
@@ -1933,6 +1939,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         # ODE
         #TODO: Adjust other input methods
+
+    def Tab_5_1_SetFocus_on(self,item):
+        if item == self.Tab_5_1_System_4ATF_Xs:
+            self.Tab_5_1_System_4ATF_Xs.setFocus()
+            self.Tab_5_1_System_4ATF_Xs.selectAll()
+        elif item == self.Tab_5_1_NameInput:
+            self.Tab_5_1_NameInput.setFocus()
+            self.Tab_5_1_NameInput.selectAll()
 
     def Tab_5_1_System_Save(self):
         Tab = self.Tab_5_1_Input_tabWidget.currentIndex()
@@ -2038,7 +2052,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 pass
             else: # Can not occur...
                 raise Exception("Tab {} in Control->Input Tab is unknown".format(Tab))
-            # TODO: Save
+            # TODO: Save in the list
+            # TODO: Save duplicate in other list item to prevent accidetial overwirtes
+            # TODO: Save delted items in other list item to prevent accidetial deletions
             print(sys1)
             return sys1
         except common_exceptions:
