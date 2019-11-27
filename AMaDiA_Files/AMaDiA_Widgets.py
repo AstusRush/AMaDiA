@@ -1162,6 +1162,7 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
         return super(TableWidget_Delegate, self).eventFilter(source, event)
 
 
+# -----------------------------------------------------------------------------------------------------------------
 
 
 

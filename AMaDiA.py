@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.4.1"
+Version = "0.14.4.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -307,7 +307,7 @@ class MainApp(QtWidgets.QApplication):
     #        print("Caught: ",obj,event)
     #        return False
     
-    def eventFilter(self, source, event): #DOES NOT INTERCEPT ENOUGH to nagate all AltGr Stuff
+    def eventFilter(self, source, event): #DOES NOT INTERCEPT ENOUGH to nagate all AltGr StuffAlt = QtCore.Qt.AltModifier
         #try:
         #    pass#print(event.key())
         #except common_exceptions:
@@ -332,6 +332,42 @@ class MainApp(QtWidgets.QApplication):
                 elif event.key() == QtCore.Qt.Key_5:
                     window.tabWidget.setCurrentIndex(4)
                     return True
+        try:
+            if self.MainWindow.TopBar_MathRemap_checkBox.isChecked():
+                if event.type() == QtCore.QEvent.KeyPress:
+                    modifiers = QtWidgets.QApplication.keyboardModifiers() # instead of event.modifiers()
+                    if modifiers == (GroupSwitchModifier | ShiftModifier) or modifiers == (ControlModifier | AltModifier | ShiftModifier):
+                        for i in ART.KR_Map:
+                            if event.key() == i[5] and i[3]!=" ":
+                                try:
+                                    if type(source) == QtWidgets.QLineEdit:
+                                        source.insert(i[3])
+                                        return True
+                                except:
+                                    pass
+                                try:
+                                    cursor = source.textCursor()
+                                    cursor.insertText(i[3])
+                                    return True
+                                except:
+                                    break
+                    elif modifiers == GroupSwitchModifier or modifiers == (ControlModifier | AltModifier):
+                        for i in ART.KR_Map:
+                            if event.key() == i[5] and i[2]!=" ":
+                                try:
+                                    if type(source) == QtWidgets.QLineEdit:
+                                        source.insert(i[2])
+                                        return True
+                                except:
+                                    pass
+                                try:
+                                    cursor = source.textCursor()
+                                    cursor.insertText(i[2])
+                                    return True
+                                except:
+                                    break
+        except AttributeError:
+            pass
         return super(MainApp, self).eventFilter(source, event)
 
 
@@ -488,6 +524,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Menubar_Main_Options_action_Dev_Function.triggered.connect(self.ReloadModules)
         self.Menubar_Main_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
         self.Menubar_Main_Options_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
+        self.Menubar_Main_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
 
         self.Menubar_Main_Chat_action_Open_Client.triggered.connect(self.OpenClient)
         self.Menubar_Main_Chat_action_Open_Server.triggered.connect(self.OpenServer)
@@ -502,7 +539,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
-        self.TopBar_MathRemap_checkBox.toggled.connect(self.ToggleRemapper)
         self.TopBar_Error_Label.clicked.connect(self.Show_Notification_Window)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
@@ -666,7 +702,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 # ---------------------------------- Key Remapper ----------------------------------
     def ToggleRemapper(self):
         try:
-            if self.TopBar_MathRemap_checkBox.isChecked():
+            if self.Menubar_Main_Options_action_Use_Global_Keyboard_Remapper.isChecked():
+                self.TopBar_MathRemap_checkBox.setChecked(False)
+                self.TopBar_MathRemap_checkBox.setDisabled(True)
                 altgr = "altgr+"
                 altgrshift = "altgr+shift+"
                 #keyboard.on_press(print)
@@ -675,20 +713,23 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 #keyboard.add_hotkey("altgr",keyboard.release, args=("alt+control"), suppress=True)
                 #keyboard.add_hotkey("control+alt+altgr+shift",keyboard.release, args=("altgr+shift"), suppress=True)
                 for i in ART.KR_Map:
-                    if i[2] != " ":
-                        Key = altgr + i[0]
-                        keyboard.add_hotkey(Key, AltGr_Shortcut, args=(i[2],i[3]), suppress=True, trigger_on_release=True)
-                        #keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
-                    if i[3] != " ":
-                        Key = altgrshift + i[0]
-                        keyboard.add_hotkey(Key, AltGr_Shift_Shortcut, args=(i[3]), suppress=True, trigger_on_release=True)
-                        #keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
-                    if i[4] != " ":
-                        Key = "^+"+i[0]
-                        keyboard.add_hotkey(Key, Superscript_Shortcut, args=(i[4]), suppress=True, trigger_on_release=True)
-                        #keyboard.add_hotkey(Key, keyboard.write, args=(i[4]), suppress=True, trigger_on_release=True)
+                    if i[0]!=" ":
+                        if i[2] != " ":
+                            Key = altgr + i[0]
+                            keyboard.add_hotkey(Key, AltGr_Shortcut, args=(i[2],i[3]), suppress=True, trigger_on_release=True)
+                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
+                        if i[3] != " ":
+                            Key = altgrshift + i[0]
+                            keyboard.add_hotkey(Key, AltGr_Shift_Shortcut, args=(i[3]), suppress=True, trigger_on_release=True)
+                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
+                        if i[4] != " ":
+                            Key = "^+"+i[0]
+                            keyboard.add_hotkey(Key, Superscript_Shortcut, args=(i[4]), suppress=True, trigger_on_release=True)
+                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[4]), suppress=True, trigger_on_release=True)
             else:
                 keyboard.clear_all_hotkeys()
+                self.TopBar_MathRemap_checkBox.setEnabled(True)
+                self.TopBar_MathRemap_checkBox.setChecked(True)
         except common_exceptions :
             Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(1,Error)

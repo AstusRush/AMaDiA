@@ -244,3 +244,11 @@ v0.14.4.1: Tab Hotkey
 + crtl+NUMBER now changes between the main tabs
 + The Chat no longer crashes everything when no Networkconnection can be established
 
+v0.14.4.2: Local Keyboard Remapper
++ The old Keyboard Remapper is working on all applications and is getting more and more stable but has its quirks
+++ It is now located in the Options
++ A new local ( = only works in AMaDiA ) Remapper has taken the Top Bar Checkbox
+++ This Remapper is much more stable, activated per default and works in all AMaDiA Windows
+++ This Remapper does not need to be executed as root on Linux
+++ The intention is not to remove the global Remapper but to supplement it
+

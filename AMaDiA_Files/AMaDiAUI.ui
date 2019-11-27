@@ -1560,10 +1560,13 @@ p, li { white-space: pre-wrap; }
     <item row="0" column="0">
      <widget class="QCheckBox" name="TopBar_MathRemap_checkBox">
       <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;This works for all inputs including those in other applications!&lt;br/&gt;(This might cause problems with anti cheat systems in games. Use with care.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;For a Remapping that works on all aplications use the Global Remapper in the Options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>MathKeyboard</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -1588,6 +1591,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
     <addaction name="Menubar_Main_Options_action_WindowStaysOnTop"/>
     <addaction name="Menubar_Main_Options_action_Use_Threadpool"/>
+    <addaction name="Menubar_Main_Options_action_Use_Global_Keyboard_Remapper"/>
    </widget>
    <widget class="QMenu" name="Menubar_Main_Chat">
     <property name="title">
@@ -1755,6 +1759,17 @@ p, li { white-space: pre-wrap; }
   <action name="Menubar_Main_Help_action_Patchlog">
    <property name="text">
     <string>Patchlog</string>
+   </property>
+  </action>
+  <action name="Menubar_Main_Options_action_Use_Global_Keyboard_Remapper">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Global Keyboard Remapper</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;This works for all inputs including those in other applications!&lt;br/&gt;(This might cause problems with anti cheat systems in games. Use with care.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
  </widget>
