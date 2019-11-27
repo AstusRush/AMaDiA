@@ -240,3 +240,7 @@ v0.14.4: QoL
 + Control/Input: The save buttons are now part of the upper splitter (as this makes immensely more sense)
 + Identified two colours (Light and Dark) and fixed the colour of the lines in Plotter/2D/Config
 
+v0.14.4.1: Tab Hotkey
++ crtl+NUMBER now changes between the main tabs
++ The Chat no longer crashes everything when no Networkconnection can be established
+

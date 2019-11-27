@@ -102,18 +102,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
         self.RequestChatHistoryBox.setToolTip("Request Chat History on Login")
         self.OnlineList.setPlainText("No Server Connected")
         
+        try:
+            self.PortField.setText("32005")
+            myIP = str(socket.gethostbyname(socket.gethostname()))
         
-        self.PortField.setText("32005")
-        myIP = str(socket.gethostbyname(socket.gethostname()))
-        
-        if platform.system() == 'Linux':
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            myIP =  str(s.getsockname()[0])
-            del s
-            
-        if platform.system() == 'Linux':
-            self.IPField.setText(myIP)
+            if platform.system() == 'Linux':
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                myIP =  str(s.getsockname()[0])
+                del s
+                
+            if platform.system() == 'Linux':
+                self.IPField.setText(myIP)
+        except:
+            pass
             
         #sockclient.bind((myIP,0))
         self.ConnectCheckBox.clicked.connect(self.on_ConnectBoxChanged) 

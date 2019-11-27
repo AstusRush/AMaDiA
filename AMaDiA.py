@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.4"
+Version = "0.14.4.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -293,8 +293,12 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
 class MainApp(QtWidgets.QApplication):
     def __init__(self, args):
         super(MainApp, self).__init__(args)
-    #    self.installEventFilter(self)
-    #
+        self.installEventFilter(self)
+        self.MainWindow = None
+
+    def setMainWindow(self, TheWindow):
+        self.MainWindow = TheWindow
+    
     #def notify(self, obj, event): # Reimplementation of notify that does nothing other than redirecting to normal implementation for now...
     #    try:
     #        return super().notify(obj, event)
@@ -302,16 +306,33 @@ class MainApp(QtWidgets.QApplication):
     #        ExceptionOutput(sys.exc_info())
     #        print("Caught: ",obj,event)
     #        return False
-    #
-    #def eventFilter(self, source, event): #DOES NOT INTERCEPT ENOUGH to nagate all AltGr Stuff
-    #    try:
-    #        pass#print(event.key())
-    #    except common_exceptions:
-    #        pass
-    #    if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
-    #        #print("AltGr")
-    #        return True
-    #    return super(MainApp, self).eventFilter(source, event)
+    
+    def eventFilter(self, source, event): #DOES NOT INTERCEPT ENOUGH to nagate all AltGr Stuff
+        #try:
+        #    pass#print(event.key())
+        #except common_exceptions:
+        #    pass
+        #if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
+        #    #print("AltGr")
+        #    return True
+        if source == self.MainWindow:
+            if event.type() == QtCore.QEvent.KeyPress and event.modifiers() == ControlModifier:
+                if event.key() == QtCore.Qt.Key_1:
+                    window.tabWidget.setCurrentIndex(0)
+                    return True
+                elif event.key() == QtCore.Qt.Key_2:
+                    window.tabWidget.setCurrentIndex(1)
+                    return True
+                elif event.key() == QtCore.Qt.Key_3:
+                    window.tabWidget.setCurrentIndex(2)
+                    return True
+                elif event.key() == QtCore.Qt.Key_4:
+                    window.tabWidget.setCurrentIndex(3)
+                    return True
+                elif event.key() == QtCore.Qt.Key_5:
+                    window.tabWidget.setCurrentIndex(4)
+                    return True
+        return super(MainApp, self).eventFilter(source, event)
 
 
 class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
@@ -322,6 +343,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         super(AMaDiA_Main_Window, self).__init__(parent)
         sympy.init_printing() # doctest: +SKIP
         self.MainApp = MainApp
+        self.MainApp.setMainWindow(self)
         self.setupUi(self)
 
         self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...

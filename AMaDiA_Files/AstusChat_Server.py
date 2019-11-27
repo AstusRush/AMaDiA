@@ -856,13 +856,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         
         
         self.PortField.setText("32005")
-        myIP = str(socket.gethostbyname(socket.gethostname()))
-        
-        if platform.system() == 'Linux':
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            myIP =  str(s.getsockname()[0])
-            del s
+        try:
+            myIP = str(socket.gethostbyname(socket.gethostname()))
+            
+            if platform.system() == 'Linux':
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                myIP =  str(s.getsockname()[0])
+                del s
+        except:
+            pass
             
         #if platform.system() == 'Linux':
         self.IPField.setText(myIP)
