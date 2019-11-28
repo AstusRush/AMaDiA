@@ -5,7 +5,7 @@
 
 import sys
 sys.path.append('..')
-from PyQt5 import QtWidgets,QtCore,QtGui
+from PyQt5 import QtWidgets,QtCore,QtGui,Qt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas #TODO: Delete this line?
@@ -1161,6 +1161,117 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
             return True
         return super(TableWidget_Delegate, self).eventFilter(source, event)
 
+
+class TopBar_Widget(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super(TopBar_Widget, self).__init__(parent)
+        self.moving = False
+        #TODO: Add the 3 Buttons to the right side and implement their function here to be able to use this as the top bar for all windows
+        #TODO: Make the hover-colour of the close-button RED
+
+    def init(self):
+        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.setObjectName("TopBar")
+        if self.layout() == None:
+            self.gridLayout = QtWidgets.QGridLayout(self)
+            self.gridLayout.setContentsMargins(12, 0, 0, -1)
+            self.gridLayout.setSpacing(0)
+            self.gridLayout.setObjectName("gridLayout")
+
+        self.CloseButton = QtWidgets.QToolButton(self)
+        self.CloseButton.setObjectName("CloseButton")
+        self.layout().addWidget(self.CloseButton, 0, 103, 1, 1,QtCore.Qt.AlignRight)
+        self.CloseButton.setText("🗙")
+        self.RedHighlichtPalette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        self.RedHighlichtPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        self.RedHighlichtPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.ButtonText, brush)
+        self.CloseButton.installEventFilter(self)
+
+        self.MaximizeButton = QtWidgets.QToolButton(self)
+        self.MaximizeButton.setObjectName("MaximizeButton")
+        self.layout().addWidget(self.MaximizeButton, 0, 102, 1, 1,QtCore.Qt.AlignRight)
+        self.MaximizeButton.setText("🗖")
+
+        self.MinimizeButton = QtWidgets.QToolButton(self)
+        self.MinimizeButton.setObjectName("MinimizeButton")
+        self.layout().addWidget(self.MinimizeButton, 0, 101, 1, 1,QtCore.Qt.AlignRight)
+        self.MinimizeButton.setText("🗕")
+
+        self.MoveMe = QtWidgets.QLabel(self)
+        self.MoveMe.setObjectName("MoveMe")
+        self.layout().addWidget(self.MoveMe, 0, 100, 1, 1,QtCore.Qt.AlignRight)
+        self.MoveMe.setText("  🖐  ")#▨
+        self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
+
+        self.CloseButton.clicked.connect(self.Exit)
+        self.MinimizeButton.clicked.connect(self.Minimize)
+        self.MaximizeButton.clicked.connect(self.ToggleMinMax)
+        
+
+    def Minimize(self):
+        self.window().showMinimized()
+
+    def ToggleMinMax(self):
+        if not self.window().isFullScreen():
+            if self.window().isMaximized():
+                self.window().showNormal()
+                self.MaximizeButton.setText("🗖")
+            else:
+                #self.
+                self.window().setGeometry(
+                    Qt.QStyle.alignedRect(
+                        QtCore.Qt.LeftToRight,
+                        QtCore.Qt.AlignCenter,
+                        self.window().size(),
+                        QtWidgets.QApplication.instance().desktop().availableGeometry(self.window())))
+                self.window().showMaximized()
+                self.MaximizeButton.setText("🗗")
+        else:
+            if self.window().LastOpenState == self.window().showMaximized:
+                self.MaximizeButton.setText("🗗")
+            else:
+                self.MaximizeButton.setText("🗖")
+            self.window().LastOpenState()
+
+    def Exit(self):
+        self.window().close()
+
+    #def paintEvent(self,event):
+    #    self.CloseButton.setStyleSheet
+    #    super(TopBar_Widget, self).paintEvent(event)
+    #    self.CloseButton.setStyleSheet("QToolButton:hover { background-color: red }")
+    def eventFilter(self, source, event):
+        if source == self.CloseButton:
+            if event.type() == QtCore.QEvent.HoverMove:
+                self.CloseButton.setPalette(self.RedHighlichtPalette)
+            elif event.type() == QtCore.QEvent.HoverLeave:
+                self.CloseButton.setPalette(self.palette())
+        return super(TopBar_Widget, self).eventFilter(source, event)
+
+    def mousePressEvent(self,event):
+        if event.button() == QtCore.Qt.LeftButton:
+            self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
+            self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
+            self.MaximizeButton.setText("🗖")
+            self.moving = True; self.offset = event.globalPos()-self.window().geometry().topLeft()
+
+    def mouseReleaseEvent(self,event):
+        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
+        if event.button() == QtCore.Qt.LeftButton:
+            pos = self.window().pos()
+            #if (pos.x() < 0):
+            #    pos.setX(0)
+            if (pos.y() < 0):
+                pos.setY(0)
+                self.window().move(pos)
+
+    def mouseMoveEvent(self,event):
+        if self.moving: self.window().move(event.globalPos()-self.offset)
 
 # -----------------------------------------------------------------------------------------------------------------
 

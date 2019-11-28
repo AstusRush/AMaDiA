@@ -252,3 +252,9 @@ v0.14.4.2: Local Keyboard Remapper
 ++ This Remapper does not need to be executed as root on Linux
 ++ The intention is not to remove the global Remapper but to supplement it
 
+v0.15.0: Custom Window Frame
++ Added all functionality from the standard window frame into the main window
+++ The main window makes a requests to the OS to not have a frame but the OS may deny this request
++ All elements from the main window are now more compact
++ Updated the AMaDiA.bat to close the console properly when Anaconda is installed in the User Folder
+

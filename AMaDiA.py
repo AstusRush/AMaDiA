@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.14.4.2"
+Version = "0.15.0"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -96,6 +96,7 @@ AltModifier = QtCore.Qt.AltModifier
 ControlModifier = QtCore.Qt.ControlModifier
 GroupSwitchModifier = QtCore.Qt.GroupSwitchModifier
 ShiftModifier = QtCore.Qt.ShiftModifier
+MetaModifier = QtCore.Qt.MetaModifier
 #endregion
 
 def AltGr_Shortcut(Symbol,shift_Symbol):
@@ -291,10 +292,18 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
         self.setPalette(self.Palette)
 
 class MainApp(QtWidgets.QApplication):
+    # See:
+    # https://doc.qt.io/qt-5/qapplication.html
+    # https://doc.qt.io/qt-5/qguiapplication.html
+    # https://doc.qt.io/qt-5/qcoreapplication.html
     def __init__(self, args):
         super(MainApp, self).__init__(args)
         self.installEventFilter(self)
         self.MainWindow = None
+        self.setApplicationName("AMaDiA")
+        self.setApplicationVersion(Version)
+        self.setOrganizationName("Robin Albers")
+        self.setOrganizationDomain("https://github.com/AstusRush")
 
     def setMainWindow(self, TheWindow):
         self.MainWindow = TheWindow
@@ -316,22 +325,49 @@ class MainApp(QtWidgets.QApplication):
         #    #print("AltGr")
         #    return True
         if source == self.MainWindow:
-            if event.type() == QtCore.QEvent.KeyPress and event.modifiers() == ControlModifier:
-                if event.key() == QtCore.Qt.Key_1:
-                    window.tabWidget.setCurrentIndex(0)
-                    return True
-                elif event.key() == QtCore.Qt.Key_2:
-                    window.tabWidget.setCurrentIndex(1)
-                    return True
-                elif event.key() == QtCore.Qt.Key_3:
-                    window.tabWidget.setCurrentIndex(2)
-                    return True
-                elif event.key() == QtCore.Qt.Key_4:
-                    window.tabWidget.setCurrentIndex(3)
-                    return True
-                elif event.key() == QtCore.Qt.Key_5:
-                    window.tabWidget.setCurrentIndex(4)
-                    return True
+            if event.type() == QtCore.QEvent.KeyPress:
+                if event.modifiers() == ControlModifier:
+                    if event.key() == QtCore.Qt.Key_1:
+                        window.tabWidget.setCurrentIndex(0)
+                        return True
+                    elif event.key() == QtCore.Qt.Key_2:
+                        window.tabWidget.setCurrentIndex(1)
+                        return True
+                    elif event.key() == QtCore.Qt.Key_3:
+                        window.tabWidget.setCurrentIndex(2)
+                        return True
+                    elif event.key() == QtCore.Qt.Key_4:
+                        window.tabWidget.setCurrentIndex(3)
+                        return True
+                    elif event.key() == QtCore.Qt.Key_5:
+                        window.tabWidget.setCurrentIndex(4)
+                        return True
+                #elif event.modifiers() == MetaModifier:
+                #    keys = QtWidgets.QApplication.key
+                #    if event.key() == QtCore.Qt.Key_Left:
+                #        window.tabWidget.setCurrentIndex(0)
+                #        return True
+                #    elif event.key() == QtCore.Qt.Key_Up:
+                #        window.tabWidget.setCurrentIndex(1)
+                #        return True
+                #    elif event.key() == QtCore.Qt.Key_Right:
+                #        window.tabWidget.setCurrentIndex(2)
+                #        return True
+                #    elif event.key() == QtCore.Qt.Key_Down:
+                #        window.tabWidget.setCurrentIndex(3)
+                #        return True
+                #    elif event.key() == QtCore.Qt.Key_1:
+                #        window.tabWidget.setCurrentIndex(0)
+                #        return True
+                #    elif event.key() == QtCore.Qt.Key_2:
+                #        window.tabWidget.setCurrentIndex(1)
+                #        return True
+                #    elif event.key() == QtCore.Qt.Key_3:
+                #        window.tabWidget.setCurrentIndex(2)
+                #        return True
+                #    elif event.key() == QtCore.Qt.Key_4:
+                #        window.tabWidget.setCurrentIndex(3)
+                #        return True
         try:
             if self.MainWindow.TopBar_MathRemap_checkBox.isChecked():
                 if event.type() == QtCore.QEvent.KeyPress:
@@ -370,6 +406,11 @@ class MainApp(QtWidgets.QApplication):
             pass
         return super(MainApp, self).eventFilter(source, event)
 
+    def ReColour(self, PaletteName):
+        pass
+        #TODO: Use this to Change the Colour Theme
+        # self.setPalette()
+
 
 class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     S_New_Notification = QtCore.pyqtSignal(str)
@@ -381,12 +422,21 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.MainApp = MainApp
         self.MainApp.setMainWindow(self)
         self.setupUi(self)
+        self.Menubar_Main.setCornerWidget(self.TopBar)
+        self.TopBar.init()
+        #self.tabWidget.setCornerWidget #TODO: You can Put a widget in the corner! Use this! It is awesome!
+
+        # Disable Title Bar:
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+        # Alternative: This keeps the border to resize but has other drawbacks
+        #self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
 
         self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
 
         self.Tab_3_tabWidget.removeTab(1)# TODO
         self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO
         self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon. To test current features use \"Dev Function\" in Options")
+
 
         # TODO: Do something with the Statusbar 
 
@@ -416,6 +466,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.LastNotification = ""
         self.LastOpenState = self.showNormal
         self.Bool_PreloadLaTeX = True
+        self.firstrelease = False
+        self.keylist = []
         self.Notification_List = []
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
@@ -906,13 +958,26 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def ToggleWindowStaysOnTop(self):
         if self.Menubar_Main_Options_action_WindowStaysOnTop.isChecked():
-            print("OnTop")
-            self.setWindowFlags(QtCore.Qt.X11BypassWindowManagerHint | QtCore.Qt.BypassWindowManagerHint | QtCore.Qt.WindowStaysOnTopHint)
-            self.show()
+            print("Try OnTop")
+            #self.setWindowFlag(QtCore.Qt.FramelessWindowHint,False)
+            #self.show()
+            worker = AT.Timer(0.1) # pylint: disable=no-value-for-parameter
+            worker.signals.finished.connect(self.OnTop)
+            self.threadpool.start(worker)
         else:
-            print("Normal")
-            self.setWindowFlags(QtCore.Qt.WindowFlags())
+            print("No longer OnTop")
+            #self.setWindowFlags(QtCore.Qt.WindowFlags())
+            #self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+            self.setWindowFlag(QtCore.Qt.X11BypassWindowManagerHint,False)
+            self.setWindowFlag(QtCore.Qt.BypassWindowManagerHint,False)
+            self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint,False)
             self.show()
+    def OnTop(self):
+        #self.setWindowFlags(QtCore.Qt.X11BypassWindowManagerHint | QtCore.Qt.BypassWindowManagerHint | QtCore.Qt.WindowStaysOnTopHint)
+        self.setWindowFlag(QtCore.Qt.X11BypassWindowManagerHint,True)
+        self.setWindowFlag(QtCore.Qt.BypassWindowManagerHint,True)
+        self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint,True)
+        self.show()
 
     def RUNTEST(self):
         for i in Test_Input:
@@ -953,6 +1018,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.S_Colour_Changed.connect(self.AMaDiA_Notification_Window.Recolour)
         self.S_New_Notification.connect(self.AMaDiA_Notification_Window.AddNotification)
         self.AMaDiA_Notification_Window.show()
+
+# ---------------------------------- TopBar Funtions ----------------------------------
+        
 
 # ---------------------------------- Chat Toolbar Funtions ----------------------------------
 
@@ -1019,13 +1087,23 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     
 
 # ---------------------------------- Event Filter ----------------------------------
+
     def eventFilter(self, source, event): # TODO: Add more
         #print(event.type())
         if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_F11 and source is self: # F11 to toggle Fullscreen
             if not self.isFullScreen():
-                self.LastOpenState = self.showMaximized if self.isMaximized() else self.showNormal
+                if self.isMaximized():
+                    self.LastOpenState = self.showMaximized
+                    self.TopBar.MaximizeButton.setText("🗖")
+                else:
+                    self.LastOpenState = self.showNormal
+                    self.TopBar.MaximizeButton.setText("🗗")
                 self.showFullScreen()
             else:
+                if self.LastOpenState == self.showMaximized:
+                    self.TopBar.MaximizeButton.setText("🗗")
+                else:
+                    self.TopBar.MaximizeButton.setText("🗖")
                 self.LastOpenState()
      # ---------------------------------- History Context Menu ----------------------------------
         elif (event.type() == QtCore.QEvent.ContextMenu and
