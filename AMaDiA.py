@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.0.1"
+Version = "0.15.0.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -415,8 +415,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO
         self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon. To test current features use \"Dev Function\" in Options")
 
-
-        # TODO: Do something with the Statusbar 
+        # TODO: Find place to display WindowTitle
+        # TODO: Do something with the Statusbar
+        self.statusbar.showMessage(WindowTitle) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
 
         # Create Folders if not already existing
         self.CreateFolders()

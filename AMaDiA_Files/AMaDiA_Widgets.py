@@ -1184,7 +1184,7 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.CloseButton.setText("🗙")
 
         self.RedHighlightPalette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(155, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         self.RedHighlightPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -1236,11 +1236,15 @@ class TopBar_Widget(QtWidgets.QWidget):
                 self.window().showMaximized()
                 self.MaximizeButton.setText("🗗")
         else:
-            if self.window().LastOpenState == self.window().showMaximized:
+            try:
+                if self.window().LastOpenState == self.window().showMaximized:
+                    self.MaximizeButton.setText("🗗")
+                else:
+                    self.MaximizeButton.setText("🗖")
+                self.window().LastOpenState()
+            except AttributeError:
                 self.MaximizeButton.setText("🗗")
-            else:
-                self.MaximizeButton.setText("🗖")
-            self.window().LastOpenState()
+                self.window().showMaximized()
 
     def Exit(self):
         self.window().close()

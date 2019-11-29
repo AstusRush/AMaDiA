@@ -261,3 +261,8 @@ v0.15.0: Custom Window Frame
 v0.15.0.1: Smoother Corner Buttons
 + The buttons to minimize/maximize/close are now visually integrated
 
+v0.15.0.2: Deep Red
++ The Close button now shines in a deeper red
++ The Statusbar now displays the Window title on startup
++ The TopBar_Widget is now independent of the Main Window class and can thus be used for all windows
+
