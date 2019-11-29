@@ -5,7 +5,9 @@
 
 import sys
 sys.path.append('..')
-from PyQt5 import QtWidgets,QtCore,QtGui,Qt
+from PyQt5 import QtWidgets,QtCore,QtGui,Qt#,QtQuick
+#QtQuick.
+#from PyQt5.QtQuick import Controls as QtControls
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas #TODO: Delete this line?
@@ -1166,8 +1168,6 @@ class TopBar_Widget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(TopBar_Widget, self).__init__(parent)
         self.moving = False
-        #TODO: Add the 3 Buttons to the right side and implement their function here to be able to use this as the top bar for all windows
-        #TODO: Make the hover-colour of the close-button RED
 
     def init(self):
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -1182,24 +1182,30 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.CloseButton.setObjectName("CloseButton")
         self.layout().addWidget(self.CloseButton, 0, 103, 1, 1,QtCore.Qt.AlignRight)
         self.CloseButton.setText("🗙")
-        self.RedHighlichtPalette = QtGui.QPalette()
+
+        self.RedHighlightPalette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
-        self.RedHighlichtPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.Button, brush)
+        self.RedHighlightPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
-        self.RedHighlichtPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.ButtonText, brush)
+        self.RedHighlightPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.ButtonText, brush)
         self.CloseButton.installEventFilter(self)
+        self.CloseButton.setAutoRaise(True)
 
         self.MaximizeButton = QtWidgets.QToolButton(self)
         self.MaximizeButton.setObjectName("MaximizeButton")
         self.layout().addWidget(self.MaximizeButton, 0, 102, 1, 1,QtCore.Qt.AlignRight)
         self.MaximizeButton.setText("🗖")
+        self.MaximizeButton.installEventFilter(self)
+        self.MaximizeButton.setAutoRaise(True)
 
         self.MinimizeButton = QtWidgets.QToolButton(self)
         self.MinimizeButton.setObjectName("MinimizeButton")
         self.layout().addWidget(self.MinimizeButton, 0, 101, 1, 1,QtCore.Qt.AlignRight)
         self.MinimizeButton.setText("🗕")
+        self.MinimizeButton.installEventFilter(self)
+        self.MinimizeButton.setAutoRaise(True)
 
         self.MoveMe = QtWidgets.QLabel(self)
         self.MoveMe.setObjectName("MoveMe")
@@ -1208,9 +1214,8 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
 
         self.CloseButton.clicked.connect(self.Exit)
-        self.MinimizeButton.clicked.connect(self.Minimize)
         self.MaximizeButton.clicked.connect(self.ToggleMinMax)
-        
+        self.MinimizeButton.clicked.connect(self.Minimize)
 
     def Minimize(self):
         self.window().showMinimized()
@@ -1240,16 +1245,23 @@ class TopBar_Widget(QtWidgets.QWidget):
     def Exit(self):
         self.window().close()
 
-    #def paintEvent(self,event):
-    #    self.CloseButton.setStyleSheet
-    #    super(TopBar_Widget, self).paintEvent(event)
-    #    self.CloseButton.setStyleSheet("QToolButton:hover { background-color: red }")
+
     def eventFilter(self, source, event):
         if source == self.CloseButton:
             if event.type() == QtCore.QEvent.HoverMove:
-                self.CloseButton.setPalette(self.RedHighlichtPalette)
+                self.CloseButton.setPalette(self.RedHighlightPalette)
             elif event.type() == QtCore.QEvent.HoverLeave:
                 self.CloseButton.setPalette(self.palette())
+        elif source == self.MaximizeButton:
+            if event.type() == QtCore.QEvent.HoverMove:
+                self.MaximizeButton.setAutoRaise(False)
+            elif event.type() == QtCore.QEvent.HoverLeave:
+                self.MaximizeButton.setAutoRaise(True)
+        elif source == self.MinimizeButton:
+            if event.type() == QtCore.QEvent.HoverMove:
+                self.MinimizeButton.setAutoRaise(False)
+            elif event.type() == QtCore.QEvent.HoverLeave:
+                self.MinimizeButton.setAutoRaise(True)
         return super(TopBar_Widget, self).eventFilter(source, event)
 
     def mousePressEvent(self,event):
@@ -1266,6 +1278,7 @@ class TopBar_Widget(QtWidgets.QWidget):
             pos = self.window().pos()
             #if (pos.x() < 0):
             #    pos.setX(0)
+            #    self.window().move(pos)
             if (pos.y() < 0):
                 pos.setY(0)
                 self.window().move(pos)

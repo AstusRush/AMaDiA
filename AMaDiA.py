@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.0"
+Version = "0.15.0.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -328,46 +328,24 @@ class MainApp(QtWidgets.QApplication):
             if event.type() == QtCore.QEvent.KeyPress:
                 if event.modifiers() == ControlModifier:
                     if event.key() == QtCore.Qt.Key_1:
-                        window.tabWidget.setCurrentIndex(0)
+                        self.MainWindow.tabWidget.setCurrentIndex(0)
+                        self.MainWindow.Tab_1_InputField.setFocus()
                         return True
                     elif event.key() == QtCore.Qt.Key_2:
-                        window.tabWidget.setCurrentIndex(1)
+                        self.MainWindow.tabWidget.setCurrentIndex(1)
+                        self.MainWindow.Tab_2_InputField.setFocus()
                         return True
                     elif event.key() == QtCore.Qt.Key_3:
-                        window.tabWidget.setCurrentIndex(2)
+                        self.MainWindow.tabWidget.setCurrentIndex(2)
+                        if self.MainWindow.Tab_3_tabWidget.currentIndex() == 0:
+                            self.MainWindow.Tab_3_1_Formula_Field.setFocus()
                         return True
                     elif event.key() == QtCore.Qt.Key_4:
-                        window.tabWidget.setCurrentIndex(3)
+                        self.MainWindow.tabWidget.setCurrentIndex(3)
                         return True
                     elif event.key() == QtCore.Qt.Key_5:
-                        window.tabWidget.setCurrentIndex(4)
+                        self.MainWindow.tabWidget.setCurrentIndex(4)
                         return True
-                #elif event.modifiers() == MetaModifier:
-                #    keys = QtWidgets.QApplication.key
-                #    if event.key() == QtCore.Qt.Key_Left:
-                #        window.tabWidget.setCurrentIndex(0)
-                #        return True
-                #    elif event.key() == QtCore.Qt.Key_Up:
-                #        window.tabWidget.setCurrentIndex(1)
-                #        return True
-                #    elif event.key() == QtCore.Qt.Key_Right:
-                #        window.tabWidget.setCurrentIndex(2)
-                #        return True
-                #    elif event.key() == QtCore.Qt.Key_Down:
-                #        window.tabWidget.setCurrentIndex(3)
-                #        return True
-                #    elif event.key() == QtCore.Qt.Key_1:
-                #        window.tabWidget.setCurrentIndex(0)
-                #        return True
-                #    elif event.key() == QtCore.Qt.Key_2:
-                #        window.tabWidget.setCurrentIndex(1)
-                #        return True
-                #    elif event.key() == QtCore.Qt.Key_3:
-                #        window.tabWidget.setCurrentIndex(2)
-                #        return True
-                #    elif event.key() == QtCore.Qt.Key_4:
-                #        window.tabWidget.setCurrentIndex(3)
-                #        return True
         try:
             if self.MainWindow.TopBar_MathRemap_checkBox.isChecked():
                 if event.type() == QtCore.QEvent.KeyPress:

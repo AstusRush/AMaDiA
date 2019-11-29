@@ -699,7 +699,6 @@ class Ui_AMaDiA_Main_Window(object):
         self.tabWidget.addTab(self.Tab_5, "")
         self.gridLayout.addWidget(self.tabWidget, 2, 0, 1, 9)
         self.TopBar = TopBar_Widget(self.centralwidget)
-        self.TopBar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.TopBar.setObjectName("TopBar")
         self.gridLayout_27 = QtWidgets.QGridLayout(self.TopBar)
         self.gridLayout_27.setContentsMargins(12, 0, 0, -1)

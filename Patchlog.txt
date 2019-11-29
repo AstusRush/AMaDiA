@@ -258,3 +258,6 @@ v0.15.0: Custom Window Frame
 + All elements from the main window are now more compact
 + Updated the AMaDiA.bat to close the console properly when Anaconda is installed in the User Folder
 
+v0.15.0.1: Smoother Corner Buttons
++ The buttons to minimize/maximize/close are now visually integrated
+
