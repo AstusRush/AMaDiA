@@ -1168,6 +1168,7 @@ class TopBar_Widget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(TopBar_Widget, self).__init__(parent)
         self.moving = False
+        self.offset = 0
 
     def init(self):
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -1217,6 +1218,11 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.MaximizeButton.clicked.connect(self.ToggleMinMax)
         self.MinimizeButton.clicked.connect(self.Minimize)
 
+        try:
+            self.window().menuBar().installEventFilter(self)
+        except common_exceptions:
+            pass
+
     def Minimize(self):
         self.window().showMinimized()
 
@@ -1226,7 +1232,6 @@ class TopBar_Widget(QtWidgets.QWidget):
                 self.window().showNormal()
                 self.MaximizeButton.setText("🗖")
             else:
-                #self.
                 self.window().setGeometry(
                     Qt.QStyle.alignedRect(
                         QtCore.Qt.LeftToRight,
@@ -1251,21 +1256,42 @@ class TopBar_Widget(QtWidgets.QWidget):
 
 
     def eventFilter(self, source, event):
-        if source == self.CloseButton:
-            if event.type() == QtCore.QEvent.HoverMove:
-                self.CloseButton.setPalette(self.RedHighlightPalette)
-            elif event.type() == QtCore.QEvent.HoverLeave:
-                self.CloseButton.setPalette(self.palette())
-        elif source == self.MaximizeButton:
-            if event.type() == QtCore.QEvent.HoverMove:
-                self.MaximizeButton.setAutoRaise(False)
-            elif event.type() == QtCore.QEvent.HoverLeave:
-                self.MaximizeButton.setAutoRaise(True)
-        elif source == self.MinimizeButton:
-            if event.type() == QtCore.QEvent.HoverMove:
-                self.MinimizeButton.setAutoRaise(False)
-            elif event.type() == QtCore.QEvent.HoverLeave:
-                self.MinimizeButton.setAutoRaise(True)
+        #if event.type() == 5: # QtCore.QEvent.MouseMove
+        #    if self.moving: self.window().move(event.globalPos()-self.offset)
+        #elif event.type() == 2: # QtCore.QEvent.MouseButtonPress
+        #    if event.button() == QtCore.Qt.LeftButton:
+        #        self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
+        #        self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
+        #        self.MaximizeButton.setText("🗖")
+        #        self.moving = True; self.offset = event.globalPos()-self.window().geometry().topLeft()
+        #elif event.type() == 3: # QtCore.QEvent.MouseButtonRelease
+        #    self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        #    self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
+        #    self.moving = False
+        #    if event.button() == QtCore.Qt.LeftButton:
+        #        pos = self.window().pos()
+        #        #if (pos.x() < 0):
+        #        #    pos.setX(0)
+        #        #    self.window().move(pos)
+        #        if (pos.y() < 0):
+        #            pos.setY(0)
+        #            self.window().move(pos)
+        if event.type() == 10 or event.type() == 11:# QtCore.QEvent.Enter or QtCore.QEvent.Leave
+            if source == self.CloseButton:
+                if event.type() == QtCore.QEvent.Enter:#HoverMove
+                    self.CloseButton.setPalette(self.RedHighlightPalette)
+                elif event.type() == QtCore.QEvent.Leave:#HoverLeave
+                    self.CloseButton.setPalette(self.palette())
+            elif source == self.MaximizeButton:
+                if event.type() == QtCore.QEvent.Enter:
+                    self.MaximizeButton.setAutoRaise(False)
+                elif event.type() == QtCore.QEvent.Leave:
+                    self.MaximizeButton.setAutoRaise(True)
+            elif source == self.MinimizeButton:
+                if event.type() == QtCore.QEvent.Enter:
+                    self.MinimizeButton.setAutoRaise(False)
+                elif event.type() == QtCore.QEvent.Leave:
+                    self.MinimizeButton.setAutoRaise(True)
         return super(TopBar_Widget, self).eventFilter(source, event)
 
     def mousePressEvent(self,event):

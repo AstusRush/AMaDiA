@@ -266,3 +266,8 @@ v0.15.0.2: Deep Red
 + The Statusbar now displays the Window title on startup
 + The TopBar_Widget is now independent of the Main Window class and can thus be used for all windows
 
+v0.15.0.3: Performance
++ Sped up the checks in the event filters to increase performance
++ Laid implemented new window frame for all subwindows except the chat
+++ The new window frame on the subwindows is currently turned off as a differently coloured window border seems necessary
+

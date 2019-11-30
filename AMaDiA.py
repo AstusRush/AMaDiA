@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.0.2"
+Version = "0.15.0.3"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -121,15 +121,24 @@ class AMaDiA_Internal_File_Display_Window(QtWidgets.QMainWindow):
     def __init__(self,FileName,Palette,Font,parent = None):
         try:
             super(AMaDiA_Internal_File_Display_Window, self).__init__(parent)
+            QtWidgets.QFrame.__init__(self,parent)
             self.setWindowTitle(FileName)
             self.resize(900, 500)
-            self.setAutoFillBackground(True)
-            (self.Palette , self.BG_Colour , self.TextColour) = Palette
-            self.setPalette(self.Palette)
-            self.setFont(Font)
-
-            self.centralwidget = QtWidgets.QWidget(self)
+            
+            if QtWidgets.QApplication.instance().AllUseCustomFrame:
+                self.TopBar = AW.TopBar_Widget(self)
+                self.TopBar.init()
+                self.Menubar = QtWidgets.QMenuBar(self)
+                self.setMenuBar(self.Menubar)
+                self.Menubar.setCornerWidget(self.TopBar)
+                self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                self.statusbar = QtWidgets.QStatusBar(self)
+                self.statusbar.setObjectName("statusbar")
+                self.setStatusBar(self.statusbar)
+                
+            self.centralwidget = QtWidgets.QWidget(self) # QtWidgets.QFrame(self)
             self.centralwidget.setAutoFillBackground(True)
+            #self.centralwidget.setFrameShape(self.centralwidget.Box)
             self.centralwidget.setObjectName("centralwidget")
             self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
             self.gridLayout.setObjectName("gridLayout")
@@ -149,6 +158,11 @@ class AMaDiA_Internal_File_Display_Window(QtWidgets.QMainWindow):
             
             #self.TextBrowser.setPlainText(Text)
             self.TextBrowser.setText(Text)
+            
+            self.setAutoFillBackground(True)
+            (self.Palette , self.BG_Colour , self.TextColour) = Palette
+            self.setPalette(self.Palette)
+            self.setFont(Font)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
@@ -181,10 +195,6 @@ class AMaDiA_About_Window(QtWidgets.QMainWindow):
             super(AMaDiA_About_Window, self).__init__(parent)
             self.setWindowTitle("About AMaDiA")
             self.resize(400, 600)
-            self.setAutoFillBackground(True)
-            (self.Palette , self.BG_Colour , self.TextColour) = Palette
-            self.setPalette(self.Palette)
-            self.setFont(Font)
 
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
@@ -194,6 +204,18 @@ class AMaDiA_About_Window(QtWidgets.QMainWindow):
             
             self.TextBrowser = QtWidgets.QTextBrowser(self)
             self.TextBrowser.setObjectName("TopBar_Error_Label")
+
+            if QtWidgets.QApplication.instance().AllUseCustomFrame:
+                self.TopBar = AW.TopBar_Widget(self)
+                self.TopBar.init()
+                self.Menubar = QtWidgets.QMenuBar(self)
+                self.setMenuBar(self.Menubar)
+                self.Menubar.setCornerWidget(self.TopBar)
+                self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                self.statusbar = QtWidgets.QStatusBar(self)
+                self.statusbar.setObjectName("statusbar")
+                self.setStatusBar(self.statusbar)
+
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
             #self.layout = QtWidgets.QVBoxLayout()
             #self.layout.addWidget(self.TextBrowser)
@@ -203,6 +225,12 @@ class AMaDiA_About_Window(QtWidgets.QMainWindow):
             Text = WindowTitle+"\nWIP: More coming soon"
             
             self.TextBrowser.setText(Text)
+
+            
+            self.setAutoFillBackground(True)
+            (self.Palette , self.BG_Colour , self.TextColour) = Palette
+            self.setPalette(self.Palette)
+            self.setFont(Font)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
@@ -232,10 +260,17 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
             super(AMaDiA_Notification_Window, self).__init__(parent)
             self.setWindowTitle("Notifications")
             self.resize(900, 500)
-            self.setAutoFillBackground(True)
-            (self.Palette , self.BG_Colour , self.TextColour) = Palette
-            self.setPalette(self.Palette)
-            self.setFont(Font)
+
+            if QtWidgets.QApplication.instance().AllUseCustomFrame:
+                self.TopBar = AW.TopBar_Widget(self)
+                self.TopBar.init()
+                self.Menubar = QtWidgets.QMenuBar(self)
+                self.setMenuBar(self.Menubar)
+                self.Menubar.setCornerWidget(self.TopBar)
+                self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                self.statusbar = QtWidgets.QStatusBar(self)
+                self.statusbar.setObjectName("statusbar")
+                self.setStatusBar(self.statusbar)
 
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
@@ -252,6 +287,10 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
             for i in Notifications:
                 self.AddNotification(i)
             
+            self.setAutoFillBackground(True)
+            (self.Palette , self.BG_Colour , self.TextColour) = Palette
+            self.setPalette(self.Palette)
+            self.setFont(Font)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
@@ -304,6 +343,7 @@ class MainApp(QtWidgets.QApplication):
         self.setApplicationVersion(Version)
         self.setOrganizationName("Robin Albers")
         self.setOrganizationDomain("https://github.com/AstusRush")
+        self.AllUseCustomFrame = False
 
     def setMainWindow(self, TheWindow):
         self.MainWindow = TheWindow
@@ -316,16 +356,9 @@ class MainApp(QtWidgets.QApplication):
     #        print("Caught: ",obj,event)
     #        return False
     
-    def eventFilter(self, source, event): #DOES NOT INTERCEPT ENOUGH to nagate all AltGr StuffAlt = QtCore.Qt.AltModifier
-        #try:
-        #    pass#print(event.key())
-        #except common_exceptions:
-        #    pass
-        #if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
-        #    #print("AltGr")
-        #    return True
-        if source == self.MainWindow:
-            if event.type() == QtCore.QEvent.KeyPress:
+    def eventFilter(self, source, event):
+        if event.type() == 6: # QtCore.QEvent.KeyPress
+            if source == self.MainWindow:
                 if event.modifiers() == ControlModifier:
                     if event.key() == QtCore.Qt.Key_1:
                         self.MainWindow.tabWidget.setCurrentIndex(0)
@@ -346,10 +379,9 @@ class MainApp(QtWidgets.QApplication):
                     elif event.key() == QtCore.Qt.Key_5:
                         self.MainWindow.tabWidget.setCurrentIndex(4)
                         return True
-        try:
-            if self.MainWindow.TopBar_MathRemap_checkBox.isChecked():
-                if event.type() == QtCore.QEvent.KeyPress:
-                    modifiers = QtWidgets.QApplication.keyboardModifiers() # instead of event.modifiers()
+            try:
+                if self.MainWindow.TopBar_MathRemap_checkBox.isChecked():
+                    modifiers = QtWidgets.QApplication.keyboardModifiers() # instead of event.modifiers() to be more reliable
                     if modifiers == (GroupSwitchModifier | ShiftModifier) or modifiers == (ControlModifier | AltModifier | ShiftModifier):
                         for i in ART.KR_Map:
                             if event.key() == i[5] and i[3]!=" ":
@@ -380,8 +412,8 @@ class MainApp(QtWidgets.QApplication):
                                     return True
                                 except:
                                     break
-        except AttributeError:
-            pass
+            except AttributeError:
+                pass
         return super(MainApp, self).eventFilter(source, event)
 
     def ReColour(self, PaletteName):
@@ -402,6 +434,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.setupUi(self)
         self.Menubar_Main.setCornerWidget(self.TopBar)
         self.TopBar.init()
+        self.Menubar_Main.setContentsMargins(0,0,0,0)
+        #self.Menubar_Main.installEventFilter(self.TopBar)
         #self.tabWidget.setCornerWidget #TODO: You can Put a widget in the corner! Use this! It is awesome!
 
         # Disable Title Bar:
@@ -1069,162 +1103,90 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def eventFilter(self, source, event): # TODO: Add more
         #print(event.type())
-        if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_F11 and source is self: # F11 to toggle Fullscreen
-            if not self.isFullScreen():
-                if self.isMaximized():
-                    self.LastOpenState = self.showMaximized
-                    self.TopBar.MaximizeButton.setText("🗖")
+        if event.type() == 6: # QtCore.QEvent.KeyPress
+         # ---------------------------------- Full Screen ----------------------------------
+            if event.key() == QtCore.Qt.Key_F11 and source is self: # F11 to toggle Fullscreen
+                if not self.isFullScreen():
+                    if self.isMaximized():
+                        self.LastOpenState = self.showMaximized
+                        self.TopBar.MaximizeButton.setText("🗖")
+                    else:
+                        self.LastOpenState = self.showNormal
+                        self.TopBar.MaximizeButton.setText("🗗")
+                    self.showFullScreen()
                 else:
-                    self.LastOpenState = self.showNormal
-                    self.TopBar.MaximizeButton.setText("🗗")
-                self.showFullScreen()
-            else:
-                if self.LastOpenState == self.showMaximized:
-                    self.TopBar.MaximizeButton.setText("🗗")
-                else:
-                    self.TopBar.MaximizeButton.setText("🗖")
-                self.LastOpenState()
-     # ---------------------------------- History Context Menu ----------------------------------
-        elif (event.type() == QtCore.QEvent.ContextMenu and
-            (source is self.Tab_1_History 
-                or source is self.Tab_2_History 
-                or source is self.Tab_3_1_History 
-                or source is self.Tab_4_History #TODO: This is temporary. Implement this context menu properly
-                )and source.itemAt(event.pos())):
-            menu = QtWidgets.QMenu()
-            action = menu.addAction('Copy Text')
-            action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
-            action = menu.addAction('Copy LaTeX')
-            action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
-            if self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
-                action = menu.addAction('+ Copy Input')
-                action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
-                action = menu.addAction('+ Copy cString')
-                action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
-            if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
-                action = menu.addAction('Copy Solution')
-                action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
-            menu.addSeparator()
-            # TODO: Maybe? Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
-            # It currently is handy to have it always because of the EvalF thing...
-            action = menu.addAction('Calculate')
-            action.triggered.connect(lambda: self.action_H_Calculate(source,event))
-            action = menu.addAction('Display LaTeX')
-            action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
-            if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
-                action = menu.addAction('Display LaTeX Solution')
-                action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
-            menu.addSeparator()
-            if source.itemAt(event.pos()).data(100).plot_data_exists :
-                action = menu.addAction('Load Plot')
-                action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
-            if source.itemAt(event.pos()).data(100).plottable :
-                action = menu.addAction('New Plot')
-                action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-            elif self.Menubar_Main_Options_action_Advanced_Mode.isChecked() :
-                action = menu.addAction('+ New Plot')
-                action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-            if source.itemAt(event.pos()).data(100).plot_data_exists and self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+                    if self.LastOpenState == self.showMaximized:
+                        self.TopBar.MaximizeButton.setText("🗗")
+                    else:
+                        self.TopBar.MaximizeButton.setText("🗖")
+                    self.LastOpenState()
+        elif event.type() == 82: # QtCore.QEvent.ContextMenu
+         # ---------------------------------- History Context Menu ----------------------------------
+            if (source is self.Tab_1_History 
+                    or source is self.Tab_2_History 
+                    or source is self.Tab_3_1_History 
+                    or source is self.Tab_4_History #TODO: This is temporary. Implement this context menu properly
+                    )and source.itemAt(event.pos()):
+                menu = QtWidgets.QMenu()
+                action = menu.addAction('Copy Text')
+                action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
+                action = menu.addAction('Copy LaTeX')
+                action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+                if self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+                    action = menu.addAction('+ Copy Input')
+                    action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
+                    action = menu.addAction('+ Copy cString')
+                    action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
+                if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
+                    action = menu.addAction('Copy Solution')
+                    action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
                 menu.addSeparator()
-                action = menu.addAction('+ Copy x Values')
-                action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
-                action = menu.addAction('+ Copy y Values')
-                action.triggered.connect(lambda: self.action_H_Copy_y_Values(source,event))
-            menu.addSeparator()
-            action = menu.addAction('Delete')
-            action.triggered.connect(lambda: self.action_H_Delete(source,event))
-            menu.exec_(event.globalPos())
-            return True
-     # ---------------------------------- Tab_4 Matrix List Context Menu ----------------------------------
-        elif (event.type() == QtCore.QEvent.ContextMenu and
-            (source is self.Tab_4_Matrix_List)and source.itemAt(event.pos())):
-            menu = QtWidgets.QMenu()
-            action = menu.addAction('Load to Editor')
-            action.triggered.connect(lambda: self.action_tab_5_M_Load_into_Editor(source,event))
-            action = menu.addAction('Display')
-            action.triggered.connect(lambda: self.action_tab_5_M_Display(source,event))
-            action = menu.addAction('Copy as String')
-            action.triggered.connect(lambda: self.action_tab_5_M_Copy_string(source,event))
-            action = menu.addAction('Delete')
-            action.triggered.connect(lambda: self.action_tab_5_M_Delete(source,event))
-            menu.exec_(event.globalPos())
-            return True
-     # ---------------------------------- LineEdit Events ---------------------------------- #TODO:DELETE THIS (Already implemented in the class)
-        #elif type(source) == AW.LineEdit:
-        #    if (event.type() == QtCore.QEvent.FontChange): # Rescale if font size changes
-        #        QTextEdFontMetrics =  QtGui.QFontMetrics(source.font())
-        #        source.QTextEdRowHeight = QTextEdFontMetrics.lineSpacing()+9
-        #        source.setFixedHeight(source.QTextEdRowHeight)
-        #    if (event.type() == QtCore.QEvent.KeyPress # Connects to returnPressed
-        #    and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
-        #        source.returnPressed.emit()
-        #        return True
-        #    if (event.type() == QtCore.QEvent.KeyPress # Move to beginning if up key pressed
-        #    and event.key() == QtCore.Qt.Key_Up):
-        #        cursor = source.textCursor()
-        #        cursor.movePosition(cursor.Start)
-        #        source.setTextCursor(cursor)
-        #        return True
-        #    if (event.type() == QtCore.QEvent.KeyPress # Move to end if down key pressed
-        #    and event.key() == QtCore.Qt.Key_Down):
-        #        cursor = source.textCursor()
-        #        cursor.movePosition(cursor.End)
-        #        source.setTextCursor(cursor)
-        #        return True
-     # ---------------------------------- Tab_2_InputField ---------------------------------- #TODO:DELETE THIS (Already implemented in the class)
-        #elif (event.type() == QtCore.QEvent.KeyPress  # Tab_2_InputField: use crtl+return to convert
-        #      and source is self.Tab_2_InputField
-        #      and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
-        #      and event.modifiers() == QtCore.Qt.ControlModifier):
-        #    self.Tab_2_F_Convert()
-        #    return True
-     # ---------------------------------- Remap Keys to allow for Math Unicode Symbol input ---------------------------------- #TODO:DELETE THIS
-        
-        #if event.type() == QtCore.QEvent.KeyPress : print(event.key())
-        #if event.type() == QtCore.QEvent.KeyPress and event.key() == 16777251:#event.modifiers() == (ControlModifier | AltModifier): #DOES NOT INTERCEPT ENOUGH
-        #    print("AltGr")
-        #    return True
-        #if self.TopBar_MathRemap_checkBox.isChecked():    #DOES NOT WORK WITH QTableWidget
-        #    if event.type() == QtCore.QEvent.KeyPress and event.modifiers() == (ControlModifier | AltModifier):
-        #        print("AltGr")
-        #        return True
-        #    if event.type() == QtCore.QEvent.KeyPress : print(source)
-        #    if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
-        #        print(event.key(), event.text())
-        #        if event.key() == QtCore.Qt.Key_1 and event.text() in ["1","!"]:
-        #            if event.modifiers() == GroupSwitchModifier or event.modifiers() == (ControlModifier | AltModifier):
-        #                #event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="∫")
-        #                event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers(),text="2")#∫")
-        #                self.MainApp.sendEvent(source,event)
-        #                return True
-        #            elif event.modifiers() == (GroupSwitchModifier | ShiftModifier) or event.modifiers() == (ControlModifier | AltModifier | ShiftModifier):
-        #                event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="₁")
-        #                self.MainApp.sendEvent(source,event)
-        #                return True
-
-
-        #if self.TopBar_MathRemap_checkBox.isChecked():    #DOES NOT WORK WITH QTableWidget (But can be cahnged to work)
-        #    if event.type() == QtCore.QEvent.KeyPress and issubclass(type(source), (QtWidgets.QTextEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget)):
-        #        print(0,event.key())
-        #        if event.key() == QtCore.Qt.Key_3:
-        #            print("1",event.key())
-        #            if event.text() in ["3","\"","₃"]:
-        #                print("2",event.key())
-        #                if event.modifiers() == (GroupSwitchModifier | ShiftModifier) or event.modifiers() == (ControlModifier | AltModifier | ShiftModifier):
-        #                    #event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,8747,event.modifiers(),text="∫")
-        #                    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,event.key(),event.modifiers(),text="2")#∫")
-        #                    print("3",event.key())
-        #                    self.MainApp.sendEvent(source,event)
-        #                    return True
-     # ---------------------------------- Other Events ----------------------------------
-        elif source is self.TopBar_Error_Label:
-            #if event.type() == 2 or event.type() == 4: # Open Notification History on Doubleclick on the Top Bar Label
-            #    #QApplication.clipboard().setText(self.LastNotification)
-            #    self.Show_Notification_Window()
-            if event.type() == 10:
-                QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.TopBar_Error_Label.toolTip(),self.TopBar_Error_Label)
-     # ---------------------------------- let the normal eventFilter handle the event ----------------------------------
-        return super(AMaDiA_Main_Window, self).eventFilter(source, event)
+                # TODO: Maybe? Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
+                # It currently is handy to have it always because of the EvalF thing...
+                action = menu.addAction('Calculate')
+                action.triggered.connect(lambda: self.action_H_Calculate(source,event))
+                action = menu.addAction('Display LaTeX')
+                action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
+                if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
+                    action = menu.addAction('Display LaTeX Solution')
+                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
+                menu.addSeparator()
+                if source.itemAt(event.pos()).data(100).plot_data_exists :
+                    action = menu.addAction('Load Plot')
+                    action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
+                if source.itemAt(event.pos()).data(100).plottable :
+                    action = menu.addAction('New Plot')
+                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+                elif self.Menubar_Main_Options_action_Advanced_Mode.isChecked() :
+                    action = menu.addAction('+ New Plot')
+                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+                if source.itemAt(event.pos()).data(100).plot_data_exists and self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+                    menu.addSeparator()
+                    action = menu.addAction('+ Copy x Values')
+                    action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
+                    action = menu.addAction('+ Copy y Values')
+                    action.triggered.connect(lambda: self.action_H_Copy_y_Values(source,event))
+                menu.addSeparator()
+                action = menu.addAction('Delete')
+                action.triggered.connect(lambda: self.action_H_Delete(source,event))
+                menu.exec_(event.globalPos())
+                return True
+         # ---------------------------------- Tab_4 Matrix List Context Menu ----------------------------------
+            elif (source is self.Tab_4_Matrix_List) and source.itemAt(event.pos()):
+                menu = QtWidgets.QMenu()
+                action = menu.addAction('Load to Editor')
+                action.triggered.connect(lambda: self.action_tab_5_M_Load_into_Editor(source,event))
+                action = menu.addAction('Display')
+                action.triggered.connect(lambda: self.action_tab_5_M_Display(source,event))
+                action = menu.addAction('Copy as String')
+                action.triggered.connect(lambda: self.action_tab_5_M_Copy_string(source,event))
+                action = menu.addAction('Delete')
+                action.triggered.connect(lambda: self.action_tab_5_M_Delete(source,event))
+                menu.exec_(event.globalPos())
+                return True
+        elif source is self.TopBar_Error_Label and event.type() == QtCore.QEvent.Enter: #==10
+            QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.TopBar_Error_Label.toolTip(),self.TopBar_Error_Label)
+        return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
   
 # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
  # ----------------
