@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.0.3"
+Version = "0.15.0.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -433,14 +433,19 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.MainApp.setMainWindow(self)
         self.setupUi(self)
         self.Menubar_Main.setCornerWidget(self.TopBar)
+        #self.tabWidget.setCornerWidget(self.TopBar) # TODO: This would be ever prettier
         self.TopBar.init()
         self.Menubar_Main.setContentsMargins(0,0,0,0)
-        #self.Menubar_Main.installEventFilter(self.TopBar)
-        #self.tabWidget.setCornerWidget #TODO: You can Put a widget in the corner! Use this! It is awesome!
+        #self.tabWidget.setContentsMargins(0,0,0,0)
+        #self.tabWidget.tabBar(). # Access the TabBar of the TabWidget
+        #self.tabWidget.tabBar().setUsesScrollButtons(True)
+        #self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
+        ##    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
+        #self.tabWidget.tabBar().installEventFilter(self.TopBar)
 
-        # Disable Title Bar:
+        # Decline the OS' standard window frame:
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-        # Alternative: This keeps the border to resize but has other drawbacks
+        # Alternative: This keeps the frame to (only removes Title Bar) resize but has other drawbacks
         #self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
 
         self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
@@ -2178,6 +2183,41 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 Error = ExceptionOutput(sys.exc_info())
                 self.Tab_5_tabWidget.setCurrentIndex(3)
                 self.NotifyUser(1,Error)
+
+    def Tab_5_3_F_RedrawPlot(self):
+        pass # TODO: add everything to zoom into the single plot view
+        # TODO: Remember that the Bode Plot consists of two plots!
+        #xmin , xmax = self.Tab_3_1_XLim_min.value(), self.Tab_3_1_XLim_max.value()
+        #if xmax < xmin:
+        #    xmax , xmin = xmin , xmax
+        #xlims = (xmin , xmax)
+        #ymin , ymax = self.Tab_3_1_YLim_min.value(), self.Tab_3_1_YLim_max.value()
+        #if ymax < ymin:
+        #    ymax , ymin = ymin , ymax
+        #ylims = (ymin , ymax)
+        #if self.Tab_3_1_Draw_Grid_Checkbox.isChecked():
+        #    self.Tab_3_1_Display.canvas.ax.grid(True)
+        #else:
+        #    self.Tab_3_1_Display.canvas.ax.grid(False)
+        #if self.Tab_3_1_Axis_ratio_Checkbox.isChecked():
+        #    self.Tab_3_1_Display.canvas.ax.set_aspect('equal')
+        #else:
+        #    self.Tab_3_1_Display.canvas.ax.set_aspect('auto')
+        #
+        #self.Tab_3_1_Display.canvas.ax.relim()
+        #self.Tab_3_1_Display.canvas.ax.autoscale()
+        #if self.Tab_3_1_XLim_Check.isChecked():
+        #    self.Tab_3_1_Display.canvas.ax.set_xlim(xlims)
+        #if self.Tab_3_1_YLim_Check.isChecked():
+        #    self.Tab_3_1_Display.canvas.ax.set_ylim(ylims)
+        #
+        #try:
+        #    self.Tab_3_1_Display.canvas.draw()
+        #except RuntimeError:
+        #    ExceptionOutput(sys.exc_info(),False)
+        #    print("Trying to output without LaTeX")
+        #    self.Tab_3_1_Display.UseTeX(False)
+        #    self.Tab_3_1_Display.canvas.draw()
 
 # ---------------------------------- Tab_6_ ??? ----------------------------------
 

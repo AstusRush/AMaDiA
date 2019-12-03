@@ -271,3 +271,7 @@ v0.15.0.3: Performance
 + Laid implemented new window frame for all subwindows except the chat
 ++ The new window frame on the subwindows is currently turned off as a differently coloured window border seems necessary
 
+v0.15.0.4: Placeholder Functions
++ Added a placeholder function to zoom into the Single-Plot-view in the Control Tab
++ Prepared the removal of the Menubar and moving all its current function to the TabWidget's TabBar
+
