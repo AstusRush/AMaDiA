@@ -882,6 +882,15 @@ class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
             source.returnPressed.emit()
         return super(ATextEdit, self).eventFilter(source, event)
 
+    def contextMenuEvent(self, event):
+        #super(ATextEdit, self).contextMenuEvent(event)
+        menu = self.createStandardContextMenu(event.pos())
+        menu.setFont(self.font())
+        menu.setPalette(self.palette()) # TODO: createStandardContextMenu apparently uses a StyleSheet and thus breaks palette and font
+        #                                           either implement it yourself or make a stylesheet 
+        #menu.setStyleSheet("QMenu::item:selected { background-color: green; }")
+        menu.exec_(event.globalPos())
+
     def text(self):
         return self.toPlainText()
 
@@ -1181,7 +1190,7 @@ class TopBar_Widget(QtWidgets.QWidget):
 
         self.CloseButton = QtWidgets.QToolButton(self)
         self.CloseButton.setObjectName("CloseButton")
-        self.layout().addWidget(self.CloseButton, 0, 103, 1, 1,QtCore.Qt.AlignRight)
+        self.layout().addWidget(self.CloseButton, 0, 104, 1, 1,QtCore.Qt.AlignRight)
         self.CloseButton.setText("🗙")
 
         self.RedHighlightPalette = QtGui.QPalette()
@@ -1196,21 +1205,21 @@ class TopBar_Widget(QtWidgets.QWidget):
 
         self.MaximizeButton = QtWidgets.QToolButton(self)
         self.MaximizeButton.setObjectName("MaximizeButton")
-        self.layout().addWidget(self.MaximizeButton, 0, 102, 1, 1,QtCore.Qt.AlignRight)
+        self.layout().addWidget(self.MaximizeButton, 0, 103, 1, 1,QtCore.Qt.AlignRight)
         self.MaximizeButton.setText("🗖")
         self.MaximizeButton.installEventFilter(self)
         self.MaximizeButton.setAutoRaise(True)
 
         self.MinimizeButton = QtWidgets.QToolButton(self)
         self.MinimizeButton.setObjectName("MinimizeButton")
-        self.layout().addWidget(self.MinimizeButton, 0, 101, 1, 1,QtCore.Qt.AlignRight)
+        self.layout().addWidget(self.MinimizeButton, 0, 102, 1, 1,QtCore.Qt.AlignRight)
         self.MinimizeButton.setText("🗕")
         self.MinimizeButton.installEventFilter(self)
         self.MinimizeButton.setAutoRaise(True)
 
         self.MoveMe = QtWidgets.QLabel(self)
         self.MoveMe.setObjectName("MoveMe")
-        self.layout().addWidget(self.MoveMe, 0, 100, 1, 1,QtCore.Qt.AlignRight)
+        self.layout().addWidget(self.MoveMe, 0, 101, 1, 1,QtCore.Qt.AlignRight)
         self.MoveMe.setText("  🖐  ")#▨
         self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
 
@@ -1219,9 +1228,17 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.MinimizeButton.clicked.connect(self.Minimize)
 
         try:
-            self.window().menuBar().installEventFilter(self)
+            #self.window().menuBar().installEventFilter(self)
+            if self.window().CompactMenu:
+                self.Menu = QtWidgets.QToolButton(self)
+                self.Menu.setObjectName("Menu")
+                self.layout().addWidget(self.Menu, 0, 100, 1, 1,QtCore.Qt.AlignRight)
+                self.Menu.setText("\u2630")#☰ #("≡")
+                self.Menu.setAutoRaise(True)
+                self.Menu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+                self.Menu.setMenu(self.window().Menu)
         except common_exceptions:
-            pass
+            pass #ExceptionOutput(sys.exc_info())
 
     def Minimize(self):
         self.window().showMinimized()

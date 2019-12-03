@@ -1036,7 +1036,7 @@ p, li { white-space: pre-wrap; }
                     <x>0</x>
                     <y>0</y>
                     <width>610</width>
-                    <height>331</height>
+                    <height>341</height>
                    </rect>
                   </property>
                   <property name="sizePolicy">
@@ -1618,7 +1618,14 @@ p, li { white-space: pre-wrap; }
        <property name="spacing">
         <number>0</number>
        </property>
-       <item row="0" column="6">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="TopBar_Error_Label">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
         <widget class="QSpinBox" name="TopBar_Font_Size_spinBox">
          <property name="toolTip">
           <string>Font Size</string>
@@ -1634,289 +1641,12 @@ p, li { white-space: pre-wrap; }
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="TopBar_MathRemap_checkBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;For a Remapping that works on all aplications use the Global Remapper in the Options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>MathKeyboard</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="2">
-        <widget class="QCheckBox" name="TopBar_Syntax_Highlighter_checkBox">
-         <property name="toolTip">
-          <string>Syntax Highlighter for Brackets</string>
-         </property>
-         <property name="text">
-          <string>Highlighter</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <spacer name="TopBar_horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="3">
-        <spacer name="TopBar_horizontalSpacer_1">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="TopBar_Error_Label">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="Menubar_Main">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>906</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="Menubar_Main_Options">
-    <property name="title">
-     <string>O&amp;ptions</string>
-    </property>
-    <addaction name="Menubar_Main_Options_action_Dev_Function"/>
-    <addaction name="Menubar_Main_Options_action_Advanced_Mode"/>
-    <addaction name="Menubar_Main_Options_action_Eval_Functions"/>
-    <addaction name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display"/>
-    <addaction name="Menubar_Main_Options_action_WindowStaysOnTop"/>
-    <addaction name="Menubar_Main_Options_action_Use_Threadpool"/>
-    <addaction name="Menubar_Main_Options_action_Use_Global_Keyboard_Remapper"/>
-   </widget>
-   <widget class="QMenu" name="Menubar_Main_Chat">
-    <property name="title">
-     <string>Chat</string>
-    </property>
-    <addaction name="Menubar_Main_Chat_action_Open_Client"/>
-    <addaction name="Menubar_Main_Chat_action_Open_Server"/>
-   </widget>
-   <widget class="QMenu" name="Menubar_Main_Colour">
-    <property name="title">
-     <string>Colour</string>
-    </property>
-    <addaction name="Menubar_Main_Colour_action_Dark"/>
-    <addaction name="Menubar_Main_Colour_action_Bright"/>
-   </widget>
-   <widget class="QMenu" name="Menubar_Main_Help">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="Menubar_Main_Help_action_Examples"/>
-    <addaction name="Menubar_Main_Help_action_Helpful_Commands"/>
-    <addaction name="Menubar_Main_Help_action_Patchlog"/>
-    <addaction name="Menubar_Main_Help_action_About"/>
-   </widget>
-   <addaction name="Menubar_Main_Options"/>
-   <addaction name="Menubar_Main_Colour"/>
-   <addaction name="Menubar_Main_Chat"/>
-   <addaction name="Menubar_Main_Help"/>
-  </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="Menubar_Main_Options_action_Dev_Function">
-   <property name="text">
-    <string>&amp;Dev Function</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+D</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_Advanced_Mode">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Advanced Mode</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+A</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_Eval_Functions">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Eval Functions</string>
-   </property>
-   <property name="toolTip">
-    <string>If unchecked functions that would return a float are not evaluated to ensure readability</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+E</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_Use_Pretty_LaTeX_Display">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Use Pretty &amp;LaTeX Display</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+L</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_Syntax_Highlighter">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Syntax Highlighter</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_WindowStaysOnTop">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Try: Always on &amp;Top</string>
-   </property>
-   <property name="toolTip">
-    <string>Try to keep this window always in foreground</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+T</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_MathRemap">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Use Mathematical Keyboard</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Chat_action_Open_Client">
-   <property name="text">
-    <string>Open Client</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Chat_action_Open_Server">
-   <property name="text">
-    <string>Open Server</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Colour_action_Dark">
-   <property name="text">
-    <string>Dark</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Colour_action_Bright">
-   <property name="text">
-    <string>Bright</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Help_action_Examples">
-   <property name="text">
-    <string>Examples</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Help_action_Helpful_Commands">
-   <property name="text">
-    <string>Helpful Commands</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Help_action_License">
-   <property name="text">
-    <string>License</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Help_action_About">
-   <property name="text">
-    <string>About</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_Use_Threadpool">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Use Threadpool</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Help_action_Patchlog">
-   <property name="text">
-    <string>Patchlog</string>
-   </property>
-  </action>
-  <action name="Menubar_Main_Options_action_Use_Global_Keyboard_Remapper">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Global Keyboard Remapper</string>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;This works for all inputs including those in other applications!&lt;br/&gt;(This might cause problems with anti cheat systems in games. Use with care.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>

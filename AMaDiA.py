@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.0.4"
+Version = "0.15.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -380,7 +380,7 @@ class MainApp(QtWidgets.QApplication):
                         self.MainWindow.tabWidget.setCurrentIndex(4)
                         return True
             try:
-                if self.MainWindow.TopBar_MathRemap_checkBox.isChecked():
+                if self.MainWindow.Menu_Options_action_Use_Local_Keyboard_Remapper.isChecked():
                     modifiers = QtWidgets.QApplication.keyboardModifiers() # instead of event.modifiers() to be more reliable
                     if modifiers == (GroupSwitchModifier | ShiftModifier) or modifiers == (ControlModifier | AltModifier | ShiftModifier):
                         for i in ART.KR_Map:
@@ -428,20 +428,40 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     S_Colour_Changed = QtCore.pyqtSignal(QtGui.QPalette,tuple,tuple)
     def __init__(self,MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent)
+        # Create Folders if not already existing
+        self.CreateFolders()
+        # Read all config files:
+        # TODO: Implement config files
+        self.CompactMenu = True
+
         sympy.init_printing() # doctest: +SKIP
         self.MainApp = MainApp
         self.MainApp.setMainWindow(self)
+
+       # Build the UI
+        self.init_Menu()
+        self.Menu_Options_action_ToggleCompactMenu.setDisabled(True) # TODO: DOES NOT WORK YET
         self.setupUi(self)
-        self.Menubar_Main.setCornerWidget(self.TopBar)
-        #self.tabWidget.setCornerWidget(self.TopBar) # TODO: This would be ever prettier
-        self.TopBar.init()
-        self.Menubar_Main.setContentsMargins(0,0,0,0)
-        #self.tabWidget.setContentsMargins(0,0,0,0)
+
+
+        self.tabWidget.setContentsMargins(0,0,0,0)
         #self.tabWidget.tabBar(). # Access the TabBar of the TabWidget
-        #self.tabWidget.tabBar().setUsesScrollButtons(True)
-        #self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
-        ##    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
-        #self.tabWidget.tabBar().installEventFilter(self.TopBar)
+        self.tabWidget.tabBar().setUsesScrollButtons(True)
+        self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
+        #    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
+        self.tabWidget.tabBar().installEventFilter(self.TopBar)
+
+        
+        self.TopBar.init()
+        self.MenuBar.setContentsMargins(0,0,0,0)
+
+        if self.CompactMenu:
+            self.tabWidget.setCornerWidget(self.TopBar)
+            self.Menu_Options_action_ToggleCompactMenu.setChecked(True)
+        else:
+            self.setMenuBar(self.MenuBar)
+            self.MenuBar.setCornerWidget(self.TopBar)
+            self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
 
         # Decline the OS' standard window frame:
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
@@ -458,10 +478,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # TODO: Do something with the Statusbar
         self.statusbar.showMessage(WindowTitle) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
 
-        # Create Folders if not already existing
-        self.CreateFolders()
         
-        # Set UI variables
+       # Set UI variables
         #Set starting tabs
         self.Tab_3_tabWidget.setCurrentIndex(0)
         self.Tab_3_1_TabWidget.setCurrentIndex(0)
@@ -479,7 +497,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #print(self.Tab_3_1_splitter.sizes())
         
         
-        # Initialize important variables and lists
+       # Initialize important variables and lists
         self.ans = "1"
         self.LastNotification = ""
         self.LastOpenState = self.showNormal
@@ -490,7 +508,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
 
-        # Initialize Thread Related Things:
+       # Initialize Thread Related Things:
         self.ThreadList = []
         self.threadpool = QtCore.QThreadPool()
         #self.threadpool.setMaxThreadCount(8)
@@ -499,7 +517,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Threading = "POOL"
         #self.Threading = "LIST"
         
-        
+       # Set the Text
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("AMaDiA" , WindowTitle))
 
@@ -512,7 +530,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_4_Dirty_Input.setPlaceholderText(Tab_5_4_Dirty_Input_Text)
         self.Tab_5_4_Dirty_Input.setText(Tab_5_4_Dirty_Input_Text)
         
-        
+       # EventFilter
         self.installEventFilter(self)
         # Set up context menus for the histories
         for i in self.findChildren(QtWidgets.QListWidget):
@@ -526,17 +544,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
-            self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setEnabled(True)
-            self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.setChecked(True)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display.setEnabled(True)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display.setChecked(True)
         
-        # Run other init methods
+       # Run other init methods
         self.ConnectSignals()
         self.Colour_Font_Init()
         self.OtherContextMenuSetup()
         self.InstallSyntaxHighlighter()
         self.INIT_Animation()
 
-        # Initialize the first equation in Tab 4
+       # Initialize the first equation in Tab 4
         self.Tab_4_2_New_Equation_Name_Input.setText("Equation 1")
         self.Tab_4_F_New_Equation()
         self.Tab_4_2_New_Equation_Name_Input.clear()
@@ -544,7 +562,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_Currently_Displayed = ""
         self.Tab_4_Currently_Displayed_Solution = ""
 
-        # Other things:
+       # Other things:
         self.Tab_5_1_System_Set_Order()
         
         #Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
@@ -559,7 +577,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.Tab_1_InputField.setFocus()
 
-        
+       # Welcome Message
         msg = ""
         if not AF.LaTeX_dvipng_Installed:
             msg += "Please install LaTeX and dvipng to enable the LaTeX output mode"
@@ -591,24 +609,25 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 # ---------------------------------- Init and Maintanance ----------------------------------
 
     def ConnectSignals(self):
-        self.Menubar_Main_Options_action_Dev_Function.triggered.connect(self.ReloadModules)
-        self.Menubar_Main_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
-        self.Menubar_Main_Options_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
-        self.Menubar_Main_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
+        self.Menu_Options_action_Dev_Function.triggered.connect(self.ReloadModules)
+        self.Menu_Options_action_ToggleCompactMenu.changed.connect(self.ToggleCompactMenu)
+        self.Menu_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
+        self.Menu_Options_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
+        self.Menu_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
 
-        self.Menubar_Main_Chat_action_Open_Client.triggered.connect(self.OpenClient)
-        self.Menubar_Main_Chat_action_Open_Server.triggered.connect(self.OpenServer)
+        self.Menu_Chat_action_Open_Client.triggered.connect(self.OpenClient)
+        self.Menu_Chat_action_Open_Server.triggered.connect(self.OpenServer)
         
-        self.Menubar_Main_Colour_action_Dark.triggered.connect(lambda: self.Recolour("Dark"))
-        self.Menubar_Main_Colour_action_Bright.triggered.connect(lambda: self.Recolour("Bright"))
+        self.Menu_Colour_action_Dark.triggered.connect(lambda: self.Recolour("Dark"))
+        self.Menu_Colour_action_Bright.triggered.connect(lambda: self.Recolour("Bright"))
 
-        self.Menubar_Main_Help_action_Examples.triggered.connect(lambda: self.Show_AMaDiA_Text_File("InputExamples.txt"))
-        self.Menubar_Main_Help_action_Helpful_Commands.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Helpful_Useable_Syntax.txt"))
-        self.Menubar_Main_Help_action_Patchlog.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Patchlog.txt"))
-        self.Menubar_Main_Help_action_About.triggered.connect(self.Show_About)
+        self.Menu_Help_action_Examples.triggered.connect(lambda: self.Show_AMaDiA_Text_File("InputExamples.txt"))
+        self.Menu_Help_action_Helpful_Commands.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Helpful_Useable_Syntax.txt"))
+        self.Menu_Help_action_Patchlog.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Patchlog.txt"))
+        self.Menu_Help_action_About.triggered.connect(self.Show_About)
 
         self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
-        self.TopBar_Syntax_Highlighter_checkBox.toggled.connect(self.ToggleSyntaxHighlighter)
+        self.Menu_Options_action_Highlighter.toggled.connect(self.ToggleSyntaxHighlighter)
         self.TopBar_Error_Label.clicked.connect(self.Show_Notification_Window)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
@@ -642,6 +661,155 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.Tab_5_4_Dirty_Input.returnCrtlPressed.connect(self.Tab_5_4_Dirty_Display)
     
+    def init_Menu(self,FirstTime=True):
+        if FirstTime:
+            self.Menu = QtWidgets.QMenu(self)
+            self.Menu.setObjectName("Menu")
+        self.MenuBar = QtWidgets.QMenuBar(self)
+        self.MenuBar.setObjectName("MenuBar")
+       # Create submenus
+        if FirstTime:
+            self.Menu_Options = QtWidgets.QMenu(self.Menu)
+            self.Menu_Options.setObjectName("Menu_Options")
+            self.Menu_Chat = QtWidgets.QMenu(self.Menu)
+            self.Menu_Chat.setObjectName("Menu_Chat")
+            self.Menu_Colour = QtWidgets.QMenu(self.Menu)
+            self.Menu_Colour.setObjectName("Menu_Colour")
+            self.Menu_Help = QtWidgets.QMenu(self.Menu)
+            self.Menu_Help.setObjectName("Menu_Help")
+            self.Menu_Options_MathRemap = QtWidgets.QMenu(self.Menu_Options)
+            self.Menu_Options_MathRemap.setObjectName("Menu_Options_MathRemap")
+       # Create Actions
+        if FirstTime:
+            self.Menu_Options_action_Dev_Function = QtWidgets.QAction(self)
+            self.Menu_Options_action_Dev_Function.setObjectName("Menu_Options_action_Dev_Function")
+            self.Menu_Options_action_ToggleCompactMenu = QtWidgets.QAction(self)
+            self.Menu_Options_action_ToggleCompactMenu.setCheckable(True)
+            self.Menu_Options_action_ToggleCompactMenu.setObjectName("Menu_Options_action_ToggleCompactMenu")
+            self.Menu_Options_action_Advanced_Mode = QtWidgets.QAction(self)
+            self.Menu_Options_action_Advanced_Mode.setCheckable(True)
+            self.Menu_Options_action_Advanced_Mode.setObjectName("Menu_Options_action_Advanced_Mode")
+            self.Menu_Options_action_Eval_Functions = QtWidgets.QAction(self)
+            self.Menu_Options_action_Eval_Functions.setCheckable(True)
+            self.Menu_Options_action_Eval_Functions.setChecked(True)
+            self.Menu_Options_action_Eval_Functions.setObjectName("Menu_Options_action_Eval_Functions")
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display = QtWidgets.QAction(self)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display.setCheckable(True)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display.setEnabled(False)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display.setObjectName("Menu_Options_action_Use_Pretty_LaTeX_Display")
+            self.Menu_Options_action_Syntax_Highlighter = QtWidgets.QAction(self)
+            self.Menu_Options_action_Syntax_Highlighter.setCheckable(True)
+            self.Menu_Options_action_Syntax_Highlighter.setChecked(True)
+            self.Menu_Options_action_Syntax_Highlighter.setObjectName("Menu_Options_action_Syntax_Highlighter")
+            self.Menu_Options_action_WindowStaysOnTop = QtWidgets.QAction(self)
+            self.Menu_Options_action_WindowStaysOnTop.setCheckable(True)
+            self.Menu_Options_action_WindowStaysOnTop.setObjectName("Menu_Options_action_WindowStaysOnTop")
+            self.Menu_Chat_action_Open_Client = QtWidgets.QAction(self)
+            self.Menu_Chat_action_Open_Client.setObjectName("Menu_Chat_action_Open_Client")
+            self.Menu_Chat_action_Open_Server = QtWidgets.QAction(self)
+            self.Menu_Chat_action_Open_Server.setObjectName("Menu_Chat_action_Open_Server")
+            self.Menu_Colour_action_Dark = QtWidgets.QAction(self)
+            self.Menu_Colour_action_Dark.setObjectName("Menu_Colour_action_Dark")
+            self.Menu_Colour_action_Bright = QtWidgets.QAction(self)
+            self.Menu_Colour_action_Bright.setObjectName("Menu_Colour_action_Bright")
+            self.Menu_Help_action_Examples = QtWidgets.QAction(self)
+            self.Menu_Help_action_Examples.setObjectName("Menu_Help_action_Examples")
+            self.Menu_Help_action_Helpful_Commands = QtWidgets.QAction(self)
+            self.Menu_Help_action_Helpful_Commands.setObjectName("Menu_Help_action_Helpful_Commands")
+            self.Menu_Help_action_License = QtWidgets.QAction(self)
+            self.Menu_Help_action_License.setObjectName("Menu_Help_action_License")
+            self.Menu_Help_action_About = QtWidgets.QAction(self)
+            self.Menu_Help_action_About.setObjectName("Menu_Help_action_About")
+            self.Menu_Options_action_Use_Threadpool = QtWidgets.QAction(self)
+            self.Menu_Options_action_Use_Threadpool.setCheckable(True)
+            self.Menu_Options_action_Use_Threadpool.setChecked(True)
+            self.Menu_Options_action_Use_Threadpool.setObjectName("Menu_Options_action_Use_Threadpool")
+            self.Menu_Help_action_Patchlog = QtWidgets.QAction(self)
+            self.Menu_Help_action_Patchlog.setObjectName("Menu_Help_action_Patchlog")
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper = QtWidgets.QAction(self)
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setCheckable(True)
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Local_Keyboard_Remapper")
+            self.Menu_Options_action_Use_Global_Keyboard_Remapper = QtWidgets.QAction(self)
+            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setCheckable(True)
+            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Global_Keyboard_Remapper")
+            self.Menu_Options_action_Highlighter = QtWidgets.QAction(self)
+            self.Menu_Options_action_Highlighter.setCheckable(True)
+            self.Menu_Options_action_Highlighter.setChecked(True)
+            self.Menu_Options_action_Highlighter.setObjectName("Menu_Options_action_Highlighter")
+       # Add the Actions to the Submenus
+        if FirstTime:
+            self.Menu_Options.addAction(self.Menu_Options_action_Dev_Function)
+            self.Menu_Options.addAction(self.Menu_Options_action_ToggleCompactMenu)
+            self.Menu_Options.addAction(self.Menu_Options_action_Advanced_Mode)
+            self.Menu_Options.addAction(self.Menu_Options_action_Eval_Functions)
+            self.Menu_Options.addAction(self.Menu_Options_action_Use_Pretty_LaTeX_Display)
+            self.Menu_Options.addAction(self.Menu_Options_action_WindowStaysOnTop)
+            self.Menu_Options.addAction(self.Menu_Options_action_Use_Threadpool)
+            self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Local_Keyboard_Remapper)
+            self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Global_Keyboard_Remapper)
+            self.Menu_Options.addAction(self.Menu_Options_MathRemap.menuAction())
+            self.Menu_Options.addAction(self.Menu_Options_action_Highlighter)
+            self.Menu_Chat.addAction(self.Menu_Chat_action_Open_Client)
+            self.Menu_Chat.addAction(self.Menu_Chat_action_Open_Server)
+            self.Menu_Colour.addAction(self.Menu_Colour_action_Dark)
+            self.Menu_Colour.addAction(self.Menu_Colour_action_Bright)
+            self.Menu_Help.addAction(self.Menu_Help_action_Examples)
+            self.Menu_Help.addAction(self.Menu_Help_action_Helpful_Commands)
+            self.Menu_Help.addAction(self.Menu_Help_action_Patchlog)
+            self.Menu_Help.addAction(self.Menu_Help_action_About)
+       # Add submenus to Menu
+        self.Menu.addAction(self.Menu_Options.menuAction())
+        self.MenuBar.addAction(self.Menu_Options.menuAction())
+        self.Menu.addAction(self.Menu_Colour.menuAction())
+        self.MenuBar.addAction(self.Menu_Colour.menuAction())
+        self.Menu.addAction(self.Menu_Chat.menuAction())
+        self.MenuBar.addAction(self.Menu_Chat.menuAction())
+        self.Menu.addAction(self.Menu_Help.menuAction())
+        self.MenuBar.addAction(self.Menu_Help.menuAction())
+
+       # Set the text of the menus
+        if FirstTime:
+            _translate = QtCore.QCoreApplication.translate
+            self.Menu_Options.setTitle(_translate("AMaDiA_Main_Window", "O&ptions"))
+            self.Menu_Chat.setTitle(_translate("AMaDiA_Main_Window", "Chat"))
+            self.Menu_Colour.setTitle(_translate("AMaDiA_Main_Window", "Colour"))
+            self.Menu_Help.setTitle(_translate("AMaDiA_Main_Window", "Help"))
+            self.Menu_Options_action_Dev_Function.setText(_translate("AMaDiA_Main_Window", "&Dev Function"))
+            self.Menu_Options_action_Dev_Function.setShortcut(_translate("AMaDiA_Main_Window", "Alt+D"))
+            self.Menu_Options_action_ToggleCompactMenu.setText(_translate("AMaDiA_Main_Window", "&Compact Menu"))
+            self.Menu_Options_action_ToggleCompactMenu.setShortcut(_translate("AMaDiA_Main_Window", "Alt+C"))
+            self.Menu_Options_action_Advanced_Mode.setText(_translate("AMaDiA_Main_Window", "&Advanced Mode"))
+            self.Menu_Options_action_Advanced_Mode.setShortcut(_translate("AMaDiA_Main_Window", "Alt+A"))
+            self.Menu_Options_action_Eval_Functions.setText(_translate("AMaDiA_Main_Window", "&Eval Functions"))
+            self.Menu_Options_action_Eval_Functions.setToolTip(_translate("AMaDiA_Main_Window", "If unchecked functions that would return a float are not evaluated to ensure readability"))
+            self.Menu_Options_action_Eval_Functions.setShortcut(_translate("AMaDiA_Main_Window", "Alt+E"))
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display.setText(_translate("AMaDiA_Main_Window", "Use Pretty &LaTeX Display"))
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display.setShortcut(_translate("AMaDiA_Main_Window", "Alt+L"))
+            self.Menu_Options_action_Syntax_Highlighter.setText(_translate("AMaDiA_Main_Window", "Syntax Highlighter"))
+            self.Menu_Options_action_WindowStaysOnTop.setText(_translate("AMaDiA_Main_Window", "Try: Always on &Top"))
+            self.Menu_Options_action_WindowStaysOnTop.setToolTip(_translate("AMaDiA_Main_Window", "Try to keep this window always in foreground"))
+            self.Menu_Options_action_WindowStaysOnTop.setShortcut(_translate("AMaDiA_Main_Window", "Alt+T"))
+            self.Menu_Options_action_Highlighter.setToolTip(_translate("AMaDiA_Main_Window", "Syntax Highlighter for Brackets"))
+            self.Menu_Options_action_Highlighter.setText(_translate("AMaDiA_Main_Window", "Highlighter"))
+
+            self.Menu_Options_MathRemap.setTitle(_translate("AMaDiA_Main_Window", "MathKeyboard"))
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>For a Remapping that works on all aplications use the Global Remapper in the Options.</p></body></html>"))
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Local Keyboard Remapper"))
+            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Global Keyboard Remapper"))
+            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>This works for all inputs including those in other applications!<br/>(This might cause problems with anti cheat systems in games. Use with care.)</p></body></html>"))
+
+            self.Menu_Chat_action_Open_Client.setText(_translate("AMaDiA_Main_Window", "Open Client"))
+            self.Menu_Chat_action_Open_Server.setText(_translate("AMaDiA_Main_Window", "Open Server"))
+            self.Menu_Colour_action_Dark.setText(_translate("AMaDiA_Main_Window", "Dark"))
+            self.Menu_Colour_action_Bright.setText(_translate("AMaDiA_Main_Window", "Bright"))
+            self.Menu_Help_action_Examples.setText(_translate("AMaDiA_Main_Window", "Examples"))
+            self.Menu_Help_action_Helpful_Commands.setText(_translate("AMaDiA_Main_Window", "Helpful Commands"))
+            self.Menu_Help_action_License.setText(_translate("AMaDiA_Main_Window", "License"))
+            self.Menu_Help_action_About.setText(_translate("AMaDiA_Main_Window", "About"))
+            self.Menu_Options_action_Use_Threadpool.setText(_translate("AMaDiA_Main_Window", "Use Threadpool"))
+            self.Menu_Help_action_Patchlog.setText(_translate("AMaDiA_Main_Window", "Patchlog"))
+
     def Colour_Font_Init(self):
         self.FontFamily = "Arial"
         self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
@@ -651,6 +819,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         font.setPointSize(9)
         self.setFont(font)
         self.setPalette(self.Palette)
+        for i in self.findChildren(QtWidgets.QMenu):
+            i.setPalette(self.Palette)
         for i in self.findChildren(AW.MplWidget):
             i.SetColour(self.BG_Colour, self.TextColour)
 
@@ -704,6 +874,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Bright()
         self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
         self.setPalette(self.Palette)
+        for i in self.findChildren(QtWidgets.QMenu):
+            i.setPalette(self.Palette)
         #self.Palette = palette
         #self.BG_Colour = BG
         #self.TextColour = FG
@@ -724,11 +896,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         newFont.setPointSize(Size)
         self.setFont(newFont)
         self.centralwidget.setFont(newFont)
-        self.Menubar_Main.setFont(newFont)
-        self.Menubar_Main_Options.setFont(newFont)
-        self.Menubar_Main_Colour.setFont(newFont)
-        self.Menubar_Main_Chat.setFont(newFont)
-        self.Menubar_Main_Help.setFont(newFont)
+        self.MenuBar.setFont(newFont)
+        for i in self.findChildren(QtWidgets.QMenu):
+            i.setFont(newFont)
 
         self.S_Font_Changed.emit(newFont)
 
@@ -772,9 +942,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 # ---------------------------------- Key Remapper ----------------------------------
     def ToggleRemapper(self):
         try:
-            if self.Menubar_Main_Options_action_Use_Global_Keyboard_Remapper.isChecked():
-                self.TopBar_MathRemap_checkBox.setChecked(False)
-                self.TopBar_MathRemap_checkBox.setDisabled(True)
+            if self.Menu_Options_action_Use_Global_Keyboard_Remapper.isChecked():
+                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(False)
+                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setDisabled(True)
                 altgr = "altgr+"
                 altgrshift = "altgr+shift+"
                 #keyboard.on_press(print)
@@ -798,8 +968,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                             #keyboard.add_hotkey(Key, keyboard.write, args=(i[4]), suppress=True, trigger_on_release=True)
             else:
                 keyboard.clear_all_hotkeys()
-                self.TopBar_MathRemap_checkBox.setEnabled(True)
-                self.TopBar_MathRemap_checkBox.setChecked(True)
+                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setEnabled(True)
+                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
         except common_exceptions :
             Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(1,Error)
@@ -863,7 +1033,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         elif Type == 3:
             self.NotifyUser_Notification(Text,Time)
         elif Type == 4:
-            if self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+            if self.Menu_Options_action_Advanced_Mode.isChecked():
                 self.NotifyUser_Notification(Text,Time)
         elif Type == 10:
             self.NotifyUser_Direct(Text,Time)
@@ -969,13 +1139,32 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         self.Tab_5_tabWidget.setTabEnabled(0,True)# TODO
 
+    def ToggleCompactMenu(self):
+        self.init_Menu(False)
+        if self.Menu_Options_action_ToggleCompactMenu.isChecked():
+            self.setMenuBar(None)
+            self.MenuBar.setCornerWidget(None)
+            self.TopBar.init()
+            self.tabWidget.setCornerWidget(self.TopBar)
+            #self.tabWidget.setContentsMargins(0,0,0,0)
+            self.tabWidget.tabBar().setUsesScrollButtons(True)
+            #self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
+            #    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
+            #self.tabWidget.tabBar().installEventFilter(self.TopBar)
+        else:
+            self.setMenuBar(self.MenuBar)
+            self.tabWidget.setCornerWidget(None)
+            self.TopBar.init()
+            self.MenuBar.setCornerWidget(self.TopBar)
+            #self.MenuBar.setContentsMargins(0,0,0,0)
+
     def ToggleSyntaxHighlighter(self):
-        state = self.TopBar_Syntax_Highlighter_checkBox.isChecked()
+        state = self.Menu_Options_action_Highlighter.isChecked()
         for i in self.findChildren(AW.ATextEdit):
             i.Highlighter.enabled = state
 
     def ToggleWindowStaysOnTop(self):
-        if self.Menubar_Main_Options_action_WindowStaysOnTop.isChecked():
+        if self.Menu_Options_action_WindowStaysOnTop.isChecked():
             print("Try OnTop")
             #self.setWindowFlag(QtCore.Qt.FramelessWindowHint,False)
             #self.show()
@@ -1006,7 +1195,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_1_InputField.setText(Text)
 
     def ToggleThreadMode(self):
-        if self.Menubar_Main_Options_action_Use_Threadpool.isChecked():
+        if self.Menu_Options_action_Use_Threadpool.isChecked():
             self.Threading = "POOL"
         else:
             self.Threading = "LIST"
@@ -1072,6 +1261,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action = menu.addAction('Save Plot')
             action.triggered.connect(self.action_tab_3_tab_1_Display_SavePlt)
             cursor = QtGui.QCursor()
+            menu.setPalette(self.Palette)
+            menu.setFont(self.font())
             menu.exec_(cursor.pos())
             
  # ---------------------------------- Multi-Dim Display Context Menu ---------------------------------- 
@@ -1086,6 +1277,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action = menu.addAction('Copy Solution')
             action.triggered.connect(self.action_tab_5_Display_Copy_Displayed_Solution)
             cursor = QtGui.QCursor()
+            menu.setPalette(self.Palette)
+            menu.setFont(self.font())
             menu.exec_(cursor.pos())
 
  # ---------------------------------- Control Plot Interaction ---------------------------------- 
@@ -1137,7 +1330,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
                 action = menu.addAction('Copy LaTeX')
                 action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
-                if self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+                if self.Menu_Options_action_Advanced_Mode.isChecked():
                     action = menu.addAction('+ Copy Input')
                     action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
                     action = menu.addAction('+ Copy cString')
@@ -1162,10 +1355,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 if source.itemAt(event.pos()).data(100).plottable :
                     action = menu.addAction('New Plot')
                     action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                elif self.Menubar_Main_Options_action_Advanced_Mode.isChecked() :
+                elif self.Menu_Options_action_Advanced_Mode.isChecked() :
                     action = menu.addAction('+ New Plot')
                     action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                if source.itemAt(event.pos()).data(100).plot_data_exists and self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+                if source.itemAt(event.pos()).data(100).plot_data_exists and self.Menu_Options_action_Advanced_Mode.isChecked():
                     menu.addSeparator()
                     action = menu.addAction('+ Copy x Values')
                     action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
@@ -1174,6 +1367,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 menu.addSeparator()
                 action = menu.addAction('Delete')
                 action.triggered.connect(lambda: self.action_H_Delete(source,event))
+                menu.setPalette(self.Palette)
+                menu.setFont(self.font())
                 menu.exec_(event.globalPos())
                 return True
          # ---------------------------------- Tab_4 Matrix List Context Menu ----------------------------------
@@ -1187,6 +1382,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_tab_5_M_Copy_string(source,event))
                 action = menu.addAction('Delete')
                 action.triggered.connect(lambda: self.action_tab_5_M_Delete(source,event))
+                menu.setPalette(self.Palette)
+                menu.setFont(self.font())
                 menu.exec_(event.globalPos())
                 return True
         elif source is self.TopBar_Error_Label and event.type() == QtCore.QEvent.Enter: #==10
@@ -1467,7 +1664,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             elif Eval == 1 : Eval = False
             else: Eval = None
             if Eval == None:
-                Eval=self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+                Eval=self.Menu_Options_action_Eval_Functions.isChecked()
             self.Function(AMaS_Object,Eval)
         else:
             self.Function(AMaS_Object)
@@ -1544,7 +1741,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
         if f_eval == None:
-            f_eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+            f_eval = self.Menu_Options_action_Eval_Functions.isChecked()
 
         #Temporary:
         if f_powsimp == None:
@@ -1560,7 +1757,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if modifiers == QtCore.Qt.ControlModifier:
             Eval = False
         else:
-            Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+            Eval = self.Menu_Options_action_Eval_Functions.isChecked()
         # Input.EvaluateLaTeX() # Could be used to evaluate LaTeX but: left( and right) brakes it...
         TheInput = self.Tab_1_InputField.text()
         if TheInput == "RUNTEST":
@@ -1576,7 +1773,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
     def Tab_1_F_Calculate(self,AMaS_Object,Eval = None):
         if Eval == None:
-            Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+            Eval = self.Menu_Options_action_Eval_Functions.isChecked()
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
         #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
         self.TC("WORK", AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display)
@@ -1603,7 +1800,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
                                             ,self.TopBar_Font_Size_spinBox.value()
-                                            ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                            ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         elif part == "Evaluation":
             if AMaS_Object.LaTeX_E == "Not converted yet":
@@ -1611,7 +1808,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                             ,self.TopBar_Font_Size_spinBox.value()
-                                            ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                            ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         self.NotifyUser(returnTuple)#[0],returnTuple[1])
         
@@ -1656,7 +1853,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
     def Tab_3_1_F_Plot(self , AMaS_Object):
         #TODO: MAYBE Add an extra option for this in the config tab... and change everything else accordingly
-        #if self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked():
+        #if self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked():
         #    self.Tab_3_1_Display.UseTeX(True)
         #else:
         #    self.Tab_3_1_Display.UseTeX(False)
@@ -1958,7 +2155,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if modifiers == QtCore.Qt.ControlModifier:
             Eval = False
         else:
-            Eval = self.Menubar_Main_Options_action_Eval_Functions.isChecked()
+            Eval = self.Menu_Options_action_Eval_Functions.isChecked()
         Text = self.Tab_4_FormulaInput.text()
         AMaS_Object = self.Tab_4_Active_Equation
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
@@ -1970,7 +2167,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_Currently_Displayed_Solution = AMaS_Object.Evaluation
         returnTuple = self.Tab_4_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                         ,self.TopBar_Font_Size_spinBox.value()
-                                        ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                        ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
             self.NotifyUser(returnTuple[0],returnTuple[1])
@@ -1990,7 +2187,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_Currently_Displayed_Solution = str(Matrix)
         returnTuple = self.Tab_4_Display.Display(Text1,Text2
                                         ,self.TopBar_Font_Size_spinBox.value()
-                                        ,self.Menubar_Main_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                        ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
             self.NotifyUser(returnTuple[0],returnTuple[1])
@@ -2166,7 +2363,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.NotifyUser(1,Error)
 
     def Tab_5_4_Dirty_Display(self):
-        if not self.Menubar_Main_Options_action_Advanced_Mode.isChecked():
+        if not self.Menu_Options_action_Advanced_Mode.isChecked():
             self.NotifyUser(3,"This is the danger zone!\nPlease activate Advanced Mode to confirm that you know what you are doing!")
         else:
             self.Tab_5_tabWidget.setCurrentIndex(1)

@@ -195,7 +195,7 @@ class AMaS: # Astus' Mathematical Structure
         self.Name = Name
         return True
 
-# ---------------------------------- Flags ----------------------------------
+ # ---------------------------------- Flags ----------------------------------
     def init_Flags(self):
         self.f_eval = True         # converted to floating-point approximations (decimal numbers)
         self.f_eval_LaTeX = 1      # If 0 prohibits all evaluation when converting to LaTeX
@@ -362,6 +362,7 @@ class AMaS: # Astus' Mathematical Structure
     def Convert_Evaluation_to_LaTeX(self, expr=None):
         """expr must be a Sympy Expression (NOT A STRING!)\n
         If not given or not convertable try to convert self.Evaluation"""
+        # TODO: Add support for dicts inside dicts
         try:
             if expr != None:
                 try:
@@ -391,8 +392,8 @@ class AMaS: # Astus' Mathematical Structure
                 except common_exceptions:
                     Error = ExceptionOutput(sys.exc_info())
                     self.LaTeX_E = "Could not convert"
-                    self.LaTeX_E_L += self.LaTeX_E
-                    self.LaTeX_E_N += self.LaTeX_E
+                    self.LaTeX_E_L = self.Evaluation
+                    self.LaTeX_E_N = self.Evaluation
                     return Error
             self.LaTeX_E_L = r"$\displaystyle"
             self.LaTeX_E_N = "$"
@@ -810,4 +811,4 @@ class AMaS: # Astus' Mathematical Structure
         return True
 
 
-# ---------------------------------- ... ----------------------------------
+ # ---------------------------------- ... ----------------------------------

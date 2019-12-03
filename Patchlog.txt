@@ -275,3 +275,9 @@ v0.15.0.4: Placeholder Functions
 + Added a placeholder function to zoom into the Single-Plot-view in the Control Tab
 + Prepared the removal of the Menubar and moving all its current function to the TabWidget's TabBar
 
+v0.15.1: Even More Compact
++ The MenuBar is now compressed into one Button and the TopBar is now on the side of the TabBar
+++ The old design with easy menu access is still implemented and will be toggleable in the future (current attempts failed)
++ Most context menus are now coloured and use the correct font
++ The MultiDim output now always displays something, even if it can't convert the solution to LaTeX
+
