@@ -1180,7 +1180,7 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.moving = False
         self.offset = 0
 
-    def init(self):
+    def init(self,IncludeMenu = False):
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setObjectName("TopBar")
         if self.layout() == None:
@@ -1230,7 +1230,7 @@ class TopBar_Widget(QtWidgets.QWidget):
 
         try:
             #self.window().menuBar().installEventFilter(self)
-            if self.window().CompactMenu:
+            if IncludeMenu:#self.window().CompactMenu:
                 self.Menu = QtWidgets.QToolButton(self)
                 self.Menu.setObjectName("Menu")
                 self.layout().addWidget(self.Menu, 0, 100, 1, 1,QtCore.Qt.AlignRight)

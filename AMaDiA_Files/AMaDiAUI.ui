@@ -451,7 +451,7 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <item row="2" column="0" colspan="9">
+    <item row="2" column="0" colspan="7">
      <widget class="QTabWidget" name="tabWidget">
       <property name="autoFillBackground">
        <bool>true</bool>
@@ -740,8 +740,8 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>234</width>
-                           <height>310</height>
+                           <width>224</width>
+                           <height>348</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_11">
@@ -1035,8 +1035,8 @@ p, li { white-space: pre-wrap; }
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>610</width>
-                    <height>341</height>
+                    <width>605</width>
+                    <height>315</height>
                    </rect>
                   </property>
                   <property name="sizePolicy">
@@ -1603,9 +1603,9 @@ p, li { white-space: pre-wrap; }
       </widget>
      </widget>
     </item>
-    <item row="1" column="0" colspan="9">
+    <item row="0" column="0" colspan="7">
      <widget class="TopBar_Widget" name="TopBar" native="true">
-      <layout class="QGridLayout" name="gridLayout_27">
+      <layout class="QGridLayout" name="gridLayout_33">
        <property name="leftMargin">
         <number>12</number>
        </property>
@@ -1627,6 +1627,47 @@ p, li { white-space: pre-wrap; }
        </item>
        <item row="0" column="1">
         <widget class="QSpinBox" name="TopBar_Font_Size_spinBox">
+         <property name="toolTip">
+          <string>Font Size</string>
+         </property>
+         <property name="minimum">
+          <number>5</number>
+         </property>
+         <property name="maximum">
+          <number>25</number>
+         </property>
+         <property name="value">
+          <number>9</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="7">
+     <widget class="TopBar_Widget" name="TopBar_2" native="true">
+      <layout class="QGridLayout" name="gridLayout_27">
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="TopBar_Error_Label_2">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="TopBar_Font_Size_spinBox_2">
          <property name="toolTip">
           <string>Font Size</string>
          </property>

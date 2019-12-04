@@ -284,3 +284,6 @@ v0.15.1: Even More Compact
 v0.15.1.1: Nyquist Distinction
 + The Nyquistplot now distinguishes between the primary and the mirror plot
 
+v0.15.1.2: Further steps to toggle Compact Menu
++ Compact Menu will soon be toggleable
+

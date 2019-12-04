@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.1.1"
+Version = "0.15.1.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -47,7 +47,8 @@ from matplotlib.figure import Figure
 
 # Import AMaDiA Core Modules
 # To Convert ui to py: (Commands for Anaconda Prompt)
-# cd C:"\Users\Robin\Desktop\Projects\AMaDiA"
+# cd C:"\Users\Robin\Desktop\Projects\AMaDiA\AMaDiA_Files"
+# cd /home/robin/Projects/AMaDiA/AMaDiA_Files/
 # pyuic5 AMaDiAUI.ui -o AMaDiAUI.py
 from AMaDiA_Files.AMaDiAUI import Ui_AMaDiA_Main_Window
 from AMaDiA_Files import AMaDiA_Widgets as AW
@@ -449,19 +450,23 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.tabBar().setUsesScrollButtons(True)
         self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
         #    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
-        self.tabWidget.tabBar().installEventFilter(self.TopBar)
+        self.tabWidget.tabBar().installEventFilter(self.TopBar_2)
 
         
         self.TopBar.init()
+        self.TopBar_2.init(True)
         self.MenuBar.setContentsMargins(0,0,0,0)
 
+        self.tabWidget.setCornerWidget(self.TopBar_2)
+        self.setMenuBar(self.MenuBar)
+        self.MenuBar.setCornerWidget(self.TopBar)
+
         if self.CompactMenu:
-            self.tabWidget.setCornerWidget(self.TopBar)
             self.Menu_Options_action_ToggleCompactMenu.setChecked(True)
+            self.MenuBar.setVisible(False)
         else:
-            self.setMenuBar(self.MenuBar)
-            self.MenuBar.setCornerWidget(self.TopBar)
             self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
+            self.TopBar_2.setVisible(False)
 
         # Decline the OS' standard window frame:
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
@@ -541,6 +546,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         for i in self.findChildren(QtWidgets.QLineEdit):
             i.installEventFilter(self)
         self.TopBar_Error_Label.installEventFilter(self)
+        self.TopBar_Error_Label_2.installEventFilter(self)
         
         # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
@@ -627,8 +633,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Menu_Help_action_About.triggered.connect(self.Show_About)
 
         self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
+        self.TopBar_Font_Size_spinBox_2.valueChanged.connect(self.ChangeFontSize_2)
         self.Menu_Options_action_Highlighter.toggled.connect(self.ToggleSyntaxHighlighter)
         self.TopBar_Error_Label.clicked.connect(self.Show_Notification_Window)
+        self.TopBar_Error_Label_2.clicked.connect(self.Show_Notification_Window)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
@@ -850,8 +858,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # If the new Value is the same it is NOT emited.
             # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
             self.TopBar_Font_Size_spinBox.blockSignals(True)
+            self.TopBar_Font_Size_spinBox_2.blockSignals(True)
             self.TopBar_Font_Size_spinBox.setValue(PointSize)
+            self.TopBar_Font_Size_spinBox_2.setValue(PointSize)
             self.TopBar_Font_Size_spinBox.blockSignals(False)
+            self.TopBar_Font_Size_spinBox_2.blockSignals(False)
         
         #font = QtGui.QFont()
         #font.setFamily(Family)
@@ -889,8 +900,18 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.S_Colour_Changed.emit(self.Palette , self.BG_Colour , self.TextColour)
         
         
+    def ChangeFontSize_2(self):
+        Size = self.TopBar_Font_Size_spinBox_2.value()
+        self.TopBar_Font_Size_spinBox.blockSignals(True)
+        self.TopBar_Font_Size_spinBox.setValue(Size)
+        self.TopBar_Font_Size_spinBox.blockSignals(False)
+        self.ChangeFontSize()
+
     def ChangeFontSize(self):
         Size = self.TopBar_Font_Size_spinBox.value()
+        self.TopBar_Font_Size_spinBox_2.blockSignals(True)
+        self.TopBar_Font_Size_spinBox_2.setValue(Size)
+        self.TopBar_Font_Size_spinBox_2.blockSignals(False)
         newFont = QtGui.QFont()
         newFont.setFamily(self.FontFamily)
         newFont.setPointSize(Size)
@@ -1052,6 +1073,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TopBar_Error_Label.setToolTip(Error_Text)
         self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
 
+        self.TopBar_Error_Label_2.setText(Text)
+        self.TopBar_Error_Label_2.setToolTip(Error_Text)
+        self.TopBar_Error_Label_2.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
+
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
         self.Notification_Flash_Red.start()
@@ -1069,6 +1094,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TopBar_Error_Label.setToolTip(Error_Text)
         self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
 
+        self.TopBar_Error_Label_2.setText(Text)
+        self.TopBar_Error_Label_2.setToolTip(Error_Text)
+        self.TopBar_Error_Label_2.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Yellow.start()
 
@@ -1085,6 +1114,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TopBar_Error_Label.setToolTip(Error_Text)
         self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
 
+        self.TopBar_Error_Label_2.setText(Text)
+        self.TopBar_Error_Label_2.setToolTip(Error_Text)
+        self.TopBar_Error_Label_2.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
+
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Blue.start()
 
@@ -1098,6 +1131,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Time = AF.cTimeSStr()
         self.TopBar_Error_Label.setText(Error_Text)
         self.TopBar_Error_Label.setToolTip("Start at "+Time)
+
+        self.TopBar_Error_Label_2.setText(Error_Text)
+        self.TopBar_Error_Label_2.setToolTip("Start at "+Time)
 
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         #self.Notification_Flash_Blue.start()
@@ -1118,6 +1154,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 index.data(),
                 self.TopBar_Error_Label.viewport(),
                 self.TopBar_Error_Label.visualRect(index)
+                )
+    def TopBar_Error_Label_Tooltip_2(self, index):
+        if index.isValid():
+            QtGui.QToolTip.showText(
+                QtGui.QCursor.pos(),
+                index.data(),
+                self.TopBar_Error_Label_2.viewport(),
+                self.TopBar_Error_Label_2.visualRect(index)
                 )
 
 
@@ -1142,21 +1186,27 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def ToggleCompactMenu(self):
         self.init_Menu(False)
         if self.Menu_Options_action_ToggleCompactMenu.isChecked():
-            self.setMenuBar(None)
-            self.MenuBar.setCornerWidget(None)
-            self.TopBar.init()
-            self.tabWidget.setCornerWidget(self.TopBar)
-            #self.tabWidget.setContentsMargins(0,0,0,0)
-            self.tabWidget.tabBar().setUsesScrollButtons(True)
-            #self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
-            #    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
-            #self.tabWidget.tabBar().installEventFilter(self.TopBar)
+            #self.Menu_Options_action_ToggleCompactMenu.setChecked(True)
+            self.TopBar_2.setVisible(True)
+            self.MenuBar.setVisible(False)
+            #self.setMenuBar(None)
+            #self.MenuBar.setCornerWidget(None)
+            #self.TopBar.init()
+            #self.tabWidget.setCornerWidget(self.TopBar)
+            ##self.tabWidget.setContentsMargins(0,0,0,0)
+            #self.tabWidget.tabBar().setUsesScrollButtons(True)
+            ##self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
+            ##    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
+            ##self.tabWidget.tabBar().installEventFilter(self.TopBar)
         else:
-            self.setMenuBar(self.MenuBar)
-            self.tabWidget.setCornerWidget(None)
-            self.TopBar.init()
-            self.MenuBar.setCornerWidget(self.TopBar)
-            #self.MenuBar.setContentsMargins(0,0,0,0)
+            #self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
+            self.MenuBar.setVisible(True)
+            self.TopBar_2.setVisible(False)
+            #self.setMenuBar(self.MenuBar)
+            #self.tabWidget.setCornerWidget(None)
+            #self.TopBar.init()
+            #self.MenuBar.setCornerWidget(self.TopBar)
+            ##self.MenuBar.setContentsMargins(0,0,0,0)
 
     def ToggleSyntaxHighlighter(self):
         state = self.Menu_Options_action_Highlighter.isChecked()
@@ -1388,6 +1438,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 return True
         elif source is self.TopBar_Error_Label and event.type() == QtCore.QEvent.Enter: #==10
             QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.TopBar_Error_Label.toolTip(),self.TopBar_Error_Label)
+        elif source is self.TopBar_Error_Label_2 and event.type() == QtCore.QEvent.Enter: #==10
+            QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.TopBar_Error_Label_2.toolTip(),self.TopBar_Error_Label_2)
+        
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
   
 # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
