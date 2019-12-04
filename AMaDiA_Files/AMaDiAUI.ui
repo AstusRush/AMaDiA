@@ -451,7 +451,7 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <item row="2" column="0" colspan="7">
+    <item row="1" column="0" colspan="2">
      <widget class="QTabWidget" name="tabWidget">
       <property name="autoFillBackground">
        <bool>true</bool>
@@ -471,22 +471,19 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <property name="leftMargin">
-         <number>5</number>
+         <number>4</number>
         </property>
         <property name="topMargin">
-         <number>5</number>
+         <number>4</number>
         </property>
         <property name="rightMargin">
-         <number>5</number>
+         <number>4</number>
         </property>
         <property name="bottomMargin">
-         <number>5</number>
-        </property>
-        <property name="horizontalSpacing">
-         <number>0</number>
-        </property>
-        <property name="verticalSpacing">
          <number>4</number>
+        </property>
+        <property name="spacing">
+         <number>3</number>
         </property>
         <item row="0" column="0">
          <widget class="QListWidget" name="Tab_1_History">
@@ -512,6 +509,21 @@
         <string>LaTeX</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
+        <property name="leftMargin">
+         <number>4</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="rightMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>4</number>
+        </property>
+        <property name="spacing">
+         <number>3</number>
+        </property>
         <item row="0" column="0" colspan="3">
          <widget class="QSplitter" name="Tab_2_LowerSplitter">
           <property name="orientation">
@@ -540,6 +552,21 @@
            </widget>
            <widget class="QWidget" name="layoutWidget">
             <layout class="QVBoxLayout" name="Tab_2_verticalLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
               <widget class="MplWidget_LaTeX" name="Tab_2_Viewer" native="true"/>
              </item>
@@ -654,6 +681,21 @@
             </property>
             <item row="0" column="0">
              <layout class="QGridLayout" name="Tab_3_1_gridLayout">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
+              <property name="spacing">
+               <number>3</number>
+              </property>
               <item row="1" column="1">
                <widget class="QPushButton" name="Tab_3_1_Button_Clear">
                 <property name="sizePolicy">
@@ -710,6 +752,21 @@
                       <string>History</string>
                      </attribute>
                      <layout class="QGridLayout" name="gridLayout_5">
+                      <property name="leftMargin">
+                       <number>3</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>3</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>3</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>3</number>
+                      </property>
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
                       <item row="0" column="0">
                        <widget class="QListWidget" name="Tab_3_1_History">
                         <property name="sizePolicy">
@@ -730,6 +787,21 @@
                       <string>Config</string>
                      </attribute>
                      <layout class="QGridLayout" name="gridLayout_8">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
                       <item row="12" column="0">
                        <widget class="QScrollArea" name="Tab_3_1_tab_2_Config_scrollArea">
                         <property name="widgetResizable">
@@ -740,11 +812,26 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>224</width>
-                           <height>348</height>
+                           <width>272</width>
+                           <height>308</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_11">
+                          <property name="leftMargin">
+                           <number>4</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>4</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>4</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>4</number>
+                          </property>
+                          <property name="spacing">
+                           <number>3</number>
+                          </property>
                           <item row="8" column="0">
                            <widget class="QCheckBox" name="Tab_3_1_YLim_Check">
                             <property name="toolTip">
@@ -1035,8 +1122,8 @@ p, li { white-space: pre-wrap; }
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>605</width>
-                    <height>315</height>
+                    <width>606</width>
+                    <height>337</height>
                    </rect>
                   </property>
                   <property name="sizePolicy">
@@ -1046,6 +1133,21 @@ p, li { white-space: pre-wrap; }
                    </sizepolicy>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_6">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
                    <item row="0" column="0">
                     <widget class="MplWidget_2D_Plot" name="Tab_3_1_Display" native="true">
                      <property name="sizePolicy">
@@ -1112,6 +1214,21 @@ p, li { white-space: pre-wrap; }
               <string>Matrix Input</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout_9">
+              <property name="leftMargin">
+               <number>4</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>4</number>
+              </property>
+              <property name="spacing">
+               <number>3</number>
+              </property>
               <item row="1" column="0">
                <widget class="QLineEdit" name="Tab_4_1_Dimension_Input">
                 <property name="inputMask">
@@ -1169,6 +1286,21 @@ p, li { white-space: pre-wrap; }
               <string>History</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout_4">
+              <property name="leftMargin">
+               <number>4</number>
+              </property>
+              <property name="topMargin">
+               <number>4</number>
+              </property>
+              <property name="rightMargin">
+               <number>4</number>
+              </property>
+              <property name="bottomMargin">
+               <number>4</number>
+              </property>
+              <property name="spacing">
+               <number>3</number>
+              </property>
               <item row="1" column="3">
                <widget class="QPushButton" name="Tab_4_2_New_Equation_Button">
                 <property name="text">
@@ -1215,6 +1347,9 @@ p, li { white-space: pre-wrap; }
            </property>
            <widget class="QWidget" name="layoutWidget">
             <layout class="QGridLayout" name="Tab_4_Display_gridLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
              <item row="0" column="0">
               <widget class="MplWidget_LaTeX" name="Tab_4_Display" native="true"/>
              </item>
@@ -1293,6 +1428,9 @@ p, li { white-space: pre-wrap; }
                </property>
                <widget class="QWidget" name="layoutWidget">
                 <layout class="QGridLayout" name="gridLayout_15">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
                  <item row="0" column="0" colspan="5">
                   <widget class="QTabWidget" name="Tab_5_1_System_tabWidget">
                    <property name="currentIndex">
@@ -1302,38 +1440,60 @@ p, li { white-space: pre-wrap; }
                     <attribute name="title">
                      <string>Transfer</string>
                     </attribute>
-                    <widget class="LineEdit" name="Tab_5_1_System_4ATF_Ys">
-                     <property name="geometry">
-                      <rect>
-                       <x>9</x>
-                       <y>9</y>
-                       <width>616</width>
-                       <height>124</height>
-                      </rect>
-                     </property>
-                     <property name="placeholderText">
-                      <string>Y(s)</string>
-                     </property>
-                    </widget>
-                    <widget class="LineEdit" name="Tab_5_1_System_4ATF_Xs">
-                     <property name="geometry">
-                      <rect>
-                       <x>9</x>
-                       <y>139</y>
-                       <width>616</width>
-                       <height>124</height>
-                      </rect>
-                     </property>
-                     <property name="placeholderText">
-                      <string>X(s)</string>
-                     </property>
-                    </widget>
+                    <layout class="QGridLayout" name="gridLayout_28">
+                     <item row="0" column="0">
+                      <layout class="QGridLayout" name="gridLayout_27">
+                       <item row="0" column="0">
+                        <widget class="LineEdit" name="Tab_5_1_System_4ATF_Ys">
+                         <property name="placeholderText">
+                          <string>Y(s)</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="Line" name="line_3">
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <property name="lineWidth">
+                          <number>4</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="LineEdit" name="Tab_5_1_System_4ATF_Xs">
+                         <property name="placeholderText">
+                          <string>X(s)</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
                    </widget>
                    <widget class="QWidget" name="Tab_5_1_System_1TF">
                     <attribute name="title">
                      <string>TF Table</string>
                     </attribute>
                     <layout class="QGridLayout" name="gridLayout_25">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
                      <item row="0" column="0">
                       <widget class="TableWidget" name="Tab_5_1_System_1TF_tableWidget">
                        <property name="rowCount">
@@ -1364,6 +1524,21 @@ p, li { white-space: pre-wrap; }
                      <string>State Space</string>
                     </attribute>
                     <layout class="QGridLayout" name="gridLayout_19">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
                      <item row="0" column="0">
                       <widget class="QTabWidget" name="Tab_5_1_System_2SS_tabWidget">
                        <property name="currentIndex">
@@ -1374,6 +1549,21 @@ p, li { white-space: pre-wrap; }
                          <string>A: State Matrix</string>
                         </attribute>
                         <layout class="QGridLayout" name="gridLayout_21">
+                         <property name="leftMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="spacing">
+                          <number>0</number>
+                         </property>
                          <item row="0" column="0">
                           <widget class="TableWidget" name="Tab_5_1_System_2SS_A_tableWidget">
                            <property name="rowCount">
@@ -1400,6 +1590,21 @@ p, li { white-space: pre-wrap; }
                          <string>B: Input Vector</string>
                         </attribute>
                         <layout class="QGridLayout" name="gridLayout_22">
+                         <property name="leftMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="spacing">
+                          <number>0</number>
+                         </property>
                          <item row="0" column="0">
                           <widget class="TableWidget" name="Tab_5_1_System_2SS_B_tableWidget">
                            <property name="rowCount">
@@ -1421,6 +1626,21 @@ p, li { white-space: pre-wrap; }
                          <string>C: Output Vector</string>
                         </attribute>
                         <layout class="QGridLayout" name="gridLayout_23">
+                         <property name="leftMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="spacing">
+                          <number>0</number>
+                         </property>
                          <item row="0" column="0">
                           <widget class="TableWidget" name="Tab_5_1_System_2SS_C_tableWidget">
                            <property name="rowCount">
@@ -1445,6 +1665,21 @@ p, li { white-space: pre-wrap; }
                          <string>D: Feedthrough Vector</string>
                         </attribute>
                         <layout class="QGridLayout" name="gridLayout_24">
+                         <property name="leftMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="spacing">
+                          <number>0</number>
+                         </property>
                          <item row="0" column="0">
                           <widget class="TableWidget" name="Tab_5_1_System_2SS_D_tableWidget">
                            <property name="rowCount">
@@ -1541,6 +1776,21 @@ p, li { white-space: pre-wrap; }
                   <string>LaTeX</string>
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout_18">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
                   <item row="0" column="0">
                    <widget class="MplWidget_LaTeX" name="Tab_5_1_Output_2L_LaTeXDisplay" native="true"/>
                   </item>
@@ -1572,6 +1822,21 @@ p, li { white-space: pre-wrap; }
             <string>Plots</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_14">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <item row="0" column="0">
              <widget class="MplWidget_CONTROL" name="Tab_5_2_Display" native="true"/>
             </item>
@@ -1582,6 +1847,21 @@ p, li { white-space: pre-wrap; }
             <string>Single Plot</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_17">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <item row="0" column="0">
              <widget class="MplWidget_EmptyPlot" name="Tab_5_3_SingleDisplay" native="true"/>
             </item>
@@ -1603,16 +1883,19 @@ p, li { white-space: pre-wrap; }
       </widget>
      </widget>
     </item>
-    <item row="0" column="0" colspan="7">
+    <item row="0" column="0" colspan="2">
      <widget class="TopBar_Widget" name="TopBar" native="true">
       <layout class="QGridLayout" name="gridLayout_33">
        <property name="leftMargin">
-        <number>12</number>
+        <number>0</number>
        </property>
        <property name="topMargin">
         <number>0</number>
        </property>
        <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <property name="spacing">
@@ -1627,47 +1910,6 @@ p, li { white-space: pre-wrap; }
        </item>
        <item row="0" column="1">
         <widget class="QSpinBox" name="TopBar_Font_Size_spinBox">
-         <property name="toolTip">
-          <string>Font Size</string>
-         </property>
-         <property name="minimum">
-          <number>5</number>
-         </property>
-         <property name="maximum">
-          <number>25</number>
-         </property>
-         <property name="value">
-          <number>9</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="7">
-     <widget class="TopBar_Widget" name="TopBar_2" native="true">
-      <layout class="QGridLayout" name="gridLayout_27">
-       <property name="leftMargin">
-        <number>12</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="TopBar_Error_Label_2">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QSpinBox" name="TopBar_Font_Size_spinBox_2">
          <property name="toolTip">
           <string>Font Size</string>
          </property>

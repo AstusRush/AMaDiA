@@ -88,6 +88,7 @@ class MplWidget_2D_Plot(MplWidget):
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
+        self.layout().setContentsMargins(0,0,0,0)
         
     def SetColour(self,BG,FG):
         super(MplWidget_2D_Plot, self).SetColour(BG,FG)
@@ -154,6 +155,7 @@ class MplWidget_LaTeX(MplWidget):
         #self.Tab_2_LaTeX_LaTeXOutput.nav = NavigationToolbar(self.Tab_2_LaTeX_LaTeXOutput.canvas, self.Tab_2_LaTeX_LaTeXOutput)
         #self.Tab_2_LaTeX_LaTeXOutput.layout().addWidget(self.Tab_2_LaTeX_LaTeXOutput.nav)
         self.layout().addWidget(self.scroll)
+        self.layout().setContentsMargins(0,0,0,0)
 
         self.LastCall = False
         
@@ -440,6 +442,7 @@ class MplWidget_CONTROL(MplWidget):
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
+        self.layout().setContentsMargins(0,0,0,0)
         
         
         #self.setLayout(QtWidgets.QVBoxLayout())
@@ -662,6 +665,7 @@ class MplWidget_EmptyPlot(MplWidget):
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
+        self.layout().setContentsMargins(0,0,0,0)
         self.Bode = False
         self.FuncLabel = ""
         self.Title = "Doubleclick on a control plot to display it here"
@@ -1189,6 +1193,8 @@ class TopBar_Widget(QtWidgets.QWidget):
             self.gridLayout.setSpacing(0)
             self.gridLayout.setObjectName("gridLayout")
 
+        self.ButtonSizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
         self.CloseButton = QtWidgets.QToolButton(self)
         self.CloseButton.setObjectName("CloseButton")
         self.layout().addWidget(self.CloseButton, 0, 104, 1, 1,QtCore.Qt.AlignRight)
@@ -1203,6 +1209,7 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.RedHighlightPalette.setBrush(QtGui.QPalette.All, QtGui.QPalette.ButtonText, brush)
         self.CloseButton.installEventFilter(self)
         self.CloseButton.setAutoRaise(True)
+        self.CloseButton.setSizePolicy(self.ButtonSizePolicy)
 
         self.MaximizeButton = QtWidgets.QToolButton(self)
         self.MaximizeButton.setObjectName("MaximizeButton")
@@ -1210,6 +1217,7 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.MaximizeButton.setText("🗖")
         self.MaximizeButton.installEventFilter(self)
         self.MaximizeButton.setAutoRaise(True)
+        self.MaximizeButton.setSizePolicy(self.ButtonSizePolicy)
 
         self.MinimizeButton = QtWidgets.QToolButton(self)
         self.MinimizeButton.setObjectName("MinimizeButton")
@@ -1217,6 +1225,7 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.MinimizeButton.setText("🗕")
         self.MinimizeButton.installEventFilter(self)
         self.MinimizeButton.setAutoRaise(True)
+        self.MinimizeButton.setSizePolicy(self.ButtonSizePolicy)
 
         self.MoveMe = QtWidgets.QLabel(self)
         self.MoveMe.setObjectName("MoveMe")
@@ -1230,7 +1239,7 @@ class TopBar_Widget(QtWidgets.QWidget):
 
         try:
             #self.window().menuBar().installEventFilter(self)
-            if IncludeMenu:#self.window().CompactMenu:
+            if IncludeMenu:
                 self.Menu = QtWidgets.QToolButton(self)
                 self.Menu.setObjectName("Menu")
                 self.layout().addWidget(self.Menu, 0, 100, 1, 1,QtCore.Qt.AlignRight)
@@ -1238,6 +1247,7 @@ class TopBar_Widget(QtWidgets.QWidget):
                 self.Menu.setAutoRaise(True)
                 self.Menu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
                 self.Menu.setMenu(self.window().Menu)
+                self.Menu.setSizePolicy(self.ButtonSizePolicy)
         except common_exceptions:
             pass #ExceptionOutput(sys.exc_info())
 
