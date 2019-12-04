@@ -281,3 +281,6 @@ v0.15.1: Even More Compact
 + Most context menus are now coloured and use the correct font
 + The MultiDim output now always displays something, even if it can't convert the solution to LaTeX
 
+v0.15.1.1: Nyquist Distinction
++ The Nyquistplot now distinguishes between the primary and the mirror plot
+

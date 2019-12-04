@@ -822,6 +822,7 @@ class MplWidget_EmptyPlot(MplWidget):
             elif PlotName == Titles[5]:
                 plt.sca(self.canvas.ax)
                 control.nyquist_plot(sys1, number_of_samples=5000)
+                self.FuncLabel = "Nyquist"
             elif PlotName == Titles[6]:
                 plt.sca(self.canvas.ax)
                 control.nichols_plot(sys1, number_of_samples=5000)

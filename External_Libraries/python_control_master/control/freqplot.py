@@ -511,14 +511,15 @@ def nyquist_plot(syslist, omega=None, Plot=True, color=None,
 
             if Plot:
                 # Plot the primary curve and mirror image
-                p = plt.plot(x, y, '-', color=color, *args, **kwargs)
+                p = plt.plot(x, y, '-',label="Primary" , *args, **kwargs)# color="blue",
                 c = p[0].get_color()
                 ax = plt.gca()
                 # Plot arrow to indicate Nyquist encirclement orientation
                 ax.arrow(x[0], y[0], (x[1]-x[0])/2, (y[1]-y[0])/2, fc=c, ec=c,
                          head_width=0.2, head_length=0.2)
 
-                plt.plot(x, -y, '-', color=c, *args, **kwargs)
+                p2 = plt.plot(x, -y, '-', color="orange",label="Mirror", *args, **kwargs)
+                c = p2[0].get_color()
                 ax.arrow(
                     x[-1], -y[-1], (x[-1]-x[-2])/2, (y[-1]-y[-2])/2,
                     fc=c, ec=c, head_width=0.2, head_length=0.2)
