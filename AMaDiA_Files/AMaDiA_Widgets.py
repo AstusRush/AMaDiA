@@ -10,7 +10,7 @@ from PyQt5 import QtWidgets,QtCore,QtGui,Qt#,QtQuick
 #from PyQt5.QtQuick import Controls as QtControls
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas #TODO: Delete this line?
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas #CLEANUP: Delete this line?
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib
 import matplotlib.pyplot as plt
@@ -47,6 +47,8 @@ def ReloadModules():
 # Matplotlib canvas class to create figure
 
 class MplWidget(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super(MplWidget, self).__init__(parent)
     def SetColour(self,BG,FG):
         self.background_Colour = BG
         self.TextColour = FG
@@ -82,7 +84,7 @@ class MplCanvas_2D_Plot(Canvas):
 class MplWidget_2D_Plot(MplWidget):
     # Inspired by https://stackoverflow.com/questions/43947318/plotting-matplotlib-figure-inside-qwidget-using-qt-designer-form-and-pyqt5?noredirect=1&lq=1 from 10.07.2019
     def __init__(self, parent=None):
-        #super(MplWidget, self).__init__(parent)
+        super(MplWidget_2D_Plot, self).__init__(parent)
         QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
         self.canvas = MplCanvas_2D_Plot()                  # Create canvas object
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
@@ -141,7 +143,7 @@ class MplCanvas_LaTeX(Canvas):
 
 class MplWidget_LaTeX(MplWidget):
     def __init__(self, parent=None):
-        #super(MplWidget, self).__init__(parent)
+        super(MplWidget_LaTeX, self).__init__(parent)
         QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
         self.canvas = MplCanvas_LaTeX(100,100)                  # Create canvas object
         #self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
@@ -217,7 +219,7 @@ class MplWidget_LaTeX(MplWidget):
         """
         self.LastCall = [Text_L, Text_N, Font_Size, Use_LaTeX]
 
-        #TODO: https://matplotlib.org/3.1.1/_modules/matplotlib/text.html#Text _get_rendered_text_width and similar
+        #SIMPLIFY: https://matplotlib.org/3.1.1/_modules/matplotlib/text.html#Text _get_rendered_text_width and similar
         # Use this to adjust the size of the "plot" to the Text?
 
         # You can set Usetex for each individual text object. Example:
@@ -436,7 +438,7 @@ class MplCanvas_CONTROL(Canvas):
 
 class MplWidget_CONTROL(MplWidget):
     def __init__(self, parent=None):
-        #super(MplWidget, self).__init__(parent)
+        super(MplWidget_CONTROL, self).__init__(parent)
         QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
         self.canvas = MplCanvas_CONTROL()                  # Create canvas object
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
@@ -643,7 +645,7 @@ class MplWidget_CONTROL(MplWidget):
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class MplCanvas_EmptyPlot(Canvas):
+class MplCanvas_CONTROL_single_plot(Canvas):
     def __init__(self):
         #self.fig = Figure()
         self.fig = plt.figure(constrained_layout =True)
@@ -657,23 +659,110 @@ class MplCanvas_EmptyPlot(Canvas):
         Canvas.setSizePolicy(self, QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         Canvas.updateGeometry(self)
 
-class MplWidget_EmptyPlot(MplWidget):
+class MplWidget_CONTROL_single_plot(MplWidget): # FEATURE: Add the controls to zoom into the plot here and implement them
     def __init__(self, parent=None):
-        #super(MplWidget, self).__init__(parent)
-        QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
-        self.canvas = MplCanvas_EmptyPlot()                  # Create canvas object
-        self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
-        self.vbl.addWidget(self.canvas)
-        self.setLayout(self.vbl)
-        self.layout().setContentsMargins(0,0,0,0)
+        super(MplWidget_CONTROL_single_plot, self).__init__(parent)
+        QtWidgets.QWidget.__init__(self)
         self.Bode = False
         self.FuncLabel = ""
         self.Title = "Doubleclick on a control plot to display it here"
+
+        #self.vbl = QtWidgets.QVBoxLayout()
+        #self.vbl.addWidget(self.canvas)
+
+        self.Grid = QtWidgets.QGridLayout(self)
+        self.Grid.setContentsMargins(0, 0, 0, 0)
+        self.Grid.setSpacing(0)
+        self.Grid.setObjectName("Grid")
+
+        self.canvas = MplCanvas_CONTROL_single_plot()
+        self.x_from_input = QtWidgets.QDoubleSpinBox(self)
+        self.x_to_input = QtWidgets.QDoubleSpinBox(self)
+        self.x_checkbox = QtWidgets.QCheckBox(self)
+        self.y_from_input = QtWidgets.QDoubleSpinBox(self)
+        self.y_to_input = QtWidgets.QDoubleSpinBox(self)
+        self.y_checkbox = QtWidgets.QCheckBox(self)
+        self.apply_zoom_button = QtWidgets.QPushButton(self)
+
+        self.x_from_input.setDecimals(5)
+        self.x_from_input.setMinimum(-1000000.0)
+        self.x_from_input.setMaximum(1000000.0)
+        self.x_from_input.setProperty("value", -10.0)
+        self.x_to_input.setDecimals(5)
+        self.x_to_input.setMinimum(-1000000.0)
+        self.x_to_input.setMaximum(1000000.0)
+        self.x_to_input.setProperty("value", 10.0)
+        self.x_checkbox.setText("Limit x")
+        self.y_from_input.setDecimals(5)
+        self.y_from_input.setMinimum(-1000000.0)
+        self.y_from_input.setMaximum(1000000.0)
+        self.y_from_input.setProperty("value", 0.0)
+        self.y_to_input.setDecimals(5)
+        self.y_to_input.setMinimum(-1000000.0)
+        self.y_to_input.setMaximum(1000000.0)
+        self.y_to_input.setProperty("value", 5.0)
+        self.y_checkbox.setText("Limit y")
+        self.apply_zoom_button.setText("Apply Limits")
+
+        self.Grid.addWidget(self.canvas,1,0,1,7)
+        self.Grid.addWidget(self.x_from_input,2,0)
+        self.Grid.addWidget(self.x_to_input,2,1)
+        self.Grid.addWidget(self.x_checkbox,2,2)
+        self.Grid.addWidget(self.y_from_input,2,3)
+        self.Grid.addWidget(self.y_to_input,2,4)
+        self.Grid.addWidget(self.y_checkbox,2,5)
+        self.Grid.addWidget(self.apply_zoom_button,2,6)
+        
+        self.setLayout(self.Grid)
+        
+        self.apply_zoom_button.clicked.connect(self.ApplyZoom)
+        
+    def ApplyZoom(self): # FEATURE: add everything to zoom into the single plot view
+        # REMINDER: Remember that the Bode Plot consists of two plots!
+        try:
+            xmin , xmax = self.x_from_input.value(), self.x_to_input.value()
+            if xmax < xmin:
+                xmax , xmin = xmin , xmax
+            xlims = (xmin , xmax)
+            ymin , ymax = self.y_from_input.value(), self.y_to_input.value()
+            if ymax < ymin:
+                ymax , ymin = ymin , ymax
+            ylims = (ymin , ymax)
+            #if self.Tab_3_1_Draw_Grid_Checkbox.isChecked():
+            #    self.canvas.ax.grid(True)
+            #else:
+            #    self.canvas.ax.grid(False)
+            #if self.Tab_3_1_Axis_ratio_Checkbox.isChecked():
+            #    self.canvas.ax.set_aspect('equal')
+            #else:
+            #    self.canvas.ax.set_aspect('auto')
+            
+            self.canvas.ax.relim()
+            self.canvas.ax1.relim()
+            self.canvas.ax.autoscale()
+            self.canvas.ax1.autoscale()
+            if self.x_checkbox.isChecked():
+                self.canvas.ax.set_xlim(xlims)
+                self.canvas.ax1.set_xlim(xlims)
+            if self.y_checkbox.isChecked():
+                self.canvas.ax.set_ylim(ylims)
+                self.canvas.ax1.set_ylim(ylims)
+            
+            try:
+                self.canvas.draw()
+            except RuntimeError:
+                ExceptionOutput(sys.exc_info(),False)
+                print("Trying to output without LaTeX")
+                self.UseTeX(False)
+                self.canvas.draw()
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            self.window().NotifyUser(1,Error)
         
     def SetColour(self,BG=None,FG=None):
         returnTuple = (0,0)
         if BG != None and FG != None:
-            super(MplWidget_EmptyPlot, self).SetColour(BG,FG)
+            super(MplWidget_CONTROL_single_plot, self).SetColour(BG,FG)
         try:
             self.canvas.ax.set_facecolor(self.background_Colour)
             self.canvas.ax.spines['bottom'].set_color(self.TextColour)
@@ -690,10 +779,11 @@ class MplWidget_EmptyPlot(MplWidget):
                 self.canvas.ax1.spines['left'].set_color(self.TextColour)
                 self.canvas.ax1.tick_params(axis='x', colors=self.TextColour)
                 self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
-            if self.Bode:
+            #if self.Bode:
                 self.canvas.ax1.grid(c='orange',ls='--')
                 self.canvas.ax.spines['right'].set_color(self.TextColour)
                 self.canvas.ax1.spines['right'].set_color(self.TextColour)
+                # TODO: Colour the Margins better
             if self.FuncLabel != "":
                 self.canvas.ax.legend()#,color=self.TextColour)
         except common_exceptions:
@@ -740,27 +830,26 @@ class MplWidget_EmptyPlot(MplWidget):
         except common_exceptions:
             pass
         self.Bode = False
-        try: # TODO: CHANDE FOR ax1 and ax2
+        try: # CLEANUP: Clean up clear function
             self.canvas.ax.set_facecolor(self.background_Colour)
             self.canvas.ax.spines['bottom'].set_color(self.TextColour)
             self.canvas.ax.spines['left'].set_color(self.TextColour)
-            if not self.Bode:
-                self.canvas.ax.yaxis.label.set_color(self.TextColour)
+            #if not self.Bode:
+            self.canvas.ax.yaxis.label.set_color(self.TextColour)
             self.canvas.ax.xaxis.label.set_color(self.TextColour)
             self.canvas.ax.tick_params(axis='both',which='both', colors=self.TextColour)
             #self.canvas.ax.tick_params(axis='y', colors=self.TextColour)
             self.canvas.ax.set_title(self.Title, color=self.TextColour)
-            if self.Bode:
-                self.canvas.ax1.set_facecolor(self.background_Colour)
-                self.canvas.ax1.spines['bottom'].set_color(self.TextColour)
-                self.canvas.ax1.spines['left'].set_color(self.TextColour)
-                self.canvas.ax1.tick_params(axis='both',which='both', colors=self.TextColour)
-                #self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
-            if self.Bode:
-                self.canvas.ax1.grid(c='orange',ls='--')
-                self.canvas.ax.spines['right'].set_color(self.TextColour)
-                self.canvas.ax1.spines['right'].set_color(self.TextColour)
-                # TODO: Colour Margins better
+            #if self.Bode:
+            #    self.canvas.ax1.set_facecolor(self.background_Colour)
+            #    self.canvas.ax1.spines['bottom'].set_color(self.TextColour)
+            #    self.canvas.ax1.spines['left'].set_color(self.TextColour)
+            #    self.canvas.ax1.tick_params(axis='both',which='both', colors=self.TextColour)
+            #    #self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
+            #if self.Bode:
+            #    self.canvas.ax1.grid(c='orange',ls='--')
+            #    self.canvas.ax.spines['right'].set_color(self.TextColour)
+            #    self.canvas.ax1.spines['right'].set_color(self.TextColour)
         except common_exceptions:
             pass
         try:
@@ -867,7 +956,7 @@ class MplWidget_EmptyPlot(MplWidget):
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
+class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo, add custom context menu
     returnPressed = QtCore.pyqtSignal()
     returnCrtlPressed = QtCore.pyqtSignal()
     def __init__(self, parent=None):
@@ -1012,7 +1101,7 @@ class LineEdit(ATextEdit):
         super(LineEdit, self).validateCharacters()
 
 
-class LineEditHighlighter(QtGui.QSyntaxHighlighter):
+class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, performance, Fix FindPair
     def __init__(self, document, Widget):
         QtGui.QSyntaxHighlighter.__init__(self, document)
         self.Widget = Widget
@@ -1079,10 +1168,10 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter):
                     a,b = AF.FindPair(text,Pair,i[0])
                     self.setFormat(b, len(Pair[1]), self.STYLES['pair'])
                 else:
-                    # TODO: Improve this
+                    # IMPROVE: Opening pair finder
 
                     #---------method1----------
-                    # TODO: Does not work!!!!!!!!!!!!!! NEEDS FIX OF AF.FindPair ???
+                    # FIXME: Does not work!!!!!!!!!!!!!! NEEDS FIX OF AF.FindPair ???
                         #k=0
                         #found = False
                         #while k < len(Pair):
@@ -1178,7 +1267,7 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
         return super(TableWidget_Delegate, self).eventFilter(source, event)
 
 
-class TopBar_Widget(QtWidgets.QWidget):
+class TopBar_Widget(QtWidgets.QWidget): # TODO: Add a handle to resize the window
     def __init__(self, parent=None):
         super(TopBar_Widget, self).__init__(parent)
         self.moving = False

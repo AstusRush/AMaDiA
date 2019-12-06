@@ -116,7 +116,7 @@ def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs):
     \n
     DOES NOT WORK YET IF AT LEAST 2 OPENING TOO MANY
     """
-    # TODO: DOES NOT WORK IF AT LEAST 2 OPENING TOO MANY
+    # FIXME: DOES NOT WORK IF AT LEAST 2 OPENING TOO MANY
     if end == 0:
         end = len(string)+1
     if start >= end-1 or start<0 or end > len(string)+1 or start<0 or start >= end:
@@ -222,7 +222,7 @@ class Counterpart_Result_List:
     def __str__(self):
         return str(self.FirstResult)
 
-    def __contains__(self,keyword): # TODO: Does not work as it opens all internal lists as well...
+    def __contains__(self,keyword): # FIXME: Does not work as it opens all internal lists as well...
         return keyword in self.List
 
     def HalfList(self,Column):
@@ -274,7 +274,7 @@ def LaTeX(expr,local_dict=None,evalf=1):
                     Path += r"\NoEvalParse.py"
                 elif platform.system() == 'Linux':
                     Path += r"/NoEvalParse.py"
-                rtnexpr = subprocess.check_output([sys.executable, Path, expr])#, local_dict]) # TODO: Make local_dict work
+                rtnexpr = subprocess.check_output([sys.executable, Path, expr])#, local_dict]) # IMPROVE: Make local_dict work
                 rtnexpr = rtnexpr.decode("utf8")
             except common_exceptions:
                 ExceptionOutput(sys.exc_info())
@@ -307,7 +307,7 @@ def Matrix_Encaser(string):
     # https://docs.python.org/3.4/library/string.html
 
 def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = None):
-    # TODO:
+    # FEATURE: MultiDim support
     # If Iam_Multi_Dim replace everything except multiplication signs
     # Then search with re for the LocalVars
     # Then Parse the multiplication signs in accordance to the position of the LocalVars
@@ -370,7 +370,7 @@ def IntegralParser_Astus(string):
     return string
     
 def IntegralParser(string):
-    #TODO: Make this work for user-defined Syntax
+    #FEATURE: Make IntegralParser work for user-defined Syntax
     return string
 
 def Derivative_and_IndefiniteIntegral_Parser(string):

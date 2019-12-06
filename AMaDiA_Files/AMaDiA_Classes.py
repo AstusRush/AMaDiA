@@ -117,7 +117,7 @@ class AMaS: # Astus' Mathematical Structure
         self.init_2D_plot()
 
     def INIT_ODE(self,string):
-        #TODO
+        #FEATURE: INIT_ODE
         # https://docs.sympy.org/latest/modules/solvers/ode.html
         print("Iam_ODE IS NOT IMPLEMENTED YET!")
         self.INIT_Normal(string)
@@ -149,7 +149,7 @@ class AMaS: # Astus' Mathematical Structure
         
 
     def Am_I_Plottable(self):
-        # TODO: Improve the criteria for "plottable"
+        # IMPROVE: Improve the criteria for "plottable"
         if "x" in self.cstr and not "=" in self.cstr:
             self.plottable = True
         else:
@@ -201,7 +201,7 @@ class AMaS: # Astus' Mathematical Structure
         self.f_eval_LaTeX = 1      # If 0 prohibits all evaluation when converting to LaTeX
                                    # If 2 Allows most Evaluation
 
-        # TODO : FOLLOWING NEED IMPLEMENTATION:
+        # REMINDER : FOLLOWING NEED IMPLEMENTATION:
 
         # Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
         self.f_simplify = True      # Simplifies
@@ -343,7 +343,7 @@ class AMaS: # Astus' Mathematical Structure
                     LineText = AF.LaTeX(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)#sympy.latex(expr)
             except common_exceptions: #as inst:
                 ExceptionOutput(sys.exc_info())
-                # LineText += AF.AstusParseInverse(e) #TODO: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
+                # LineText += AF.AstusParseInverse(e) #MAYBE: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
                 LineText += e
                 if n > 0:
                     LineText += "\n"
@@ -409,8 +409,8 @@ class AMaS: # Astus' Mathematical Structure
         return True
         
     
-    def Analyse(self): #TODO: Make it work or delete it
-        #TODO: keep parse_expr() in mind!!!
+    def Analyse(self): #CLEANUP: Make it useful or delete it
+        #REMINDER: keep parse_expr() in mind!!!
         # https://docs.sympy.org/latest/modules/parsing.html
         i_first = -1
         for i in ART.l_beginning_symbols:
@@ -434,7 +434,7 @@ class AMaS: # Astus' Mathematical Structure
 
 
     def Evaluate_SymPy(self):
-        #TODO:CALCULATE MORE STUFF
+        #TODO: CALCULATE EVEN MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
 
@@ -487,7 +487,7 @@ class AMaS: # Astus' Mathematical Structure
                         if not type(i) == dict:
                             i = self.ExecuteFlags(i)
                         i_temp = str(i)
-                        i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #TODO: make this work for complex numbers. Use re
+                        #i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #CLEANUP: Delete this, Already implemented
                         self.Evaluation += i_temp
                         self.Evaluation += " , "
                     self.Evaluation = self.Evaluation[:-3]
@@ -496,7 +496,7 @@ class AMaS: # Astus' Mathematical Structure
                     else:
                         ans = parse_expr(temp,local_dict=self.Variables)
                         ans = ans.doit()
-                        try: # TODO Maybe get rid of this evalf()
+                        try: # MAYBE: get rid of this evalf()
                             if self.f_eval: ans = ans.evalf()
                         except common_exceptions:
                             ExceptionOutput(sys.exc_info())
@@ -557,7 +557,7 @@ class AMaS: # Astus' Mathematical Structure
                         ansF = self.ExecuteFlags(ans)
                         self.Evaluation = str(ansF)
                         self.Convert_Evaluation_to_LaTeX(ansF)
-                    #self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation # Already implemented with AF.number_shaver
+                    #self.Evaluation = self.Evaluation.rstrip('0').rstrip('.') if '.' in self.Evaluation else self.Evaluation #CLEANUP: Delete this, Already implemented
             except common_exceptions: #as inst:
                 Error = ExceptionOutput(sys.exc_info())
                 #print(inst.args)
@@ -587,7 +587,7 @@ class AMaS: # Astus' Mathematical Structure
         temp = temp + ")"
         return True
         
-    def EvaluateEquation_2(self): #TODO: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
+    def EvaluateEquation_2(self): #IMPROVE: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
         temp = self.cstr
         temp1 , temp2 = self.cstr.split("=",1)
         temp = "Eq("+temp1
@@ -666,7 +666,7 @@ class AMaS: # Astus' Mathematical Structure
             return True
             
     def Solve_PDE_Version_1(self):
-        #TODO: Add support for Partial Differential Equations
+        #FEATURE: Add support for Partial Differential Equations
         # https://docs.sympy.org/latest/modules/solvers/pde.html
         # PDEs are currently solveable with:
         # pdsolve(1 + (2*(d(u(x,y))/dx)) + (3*(d(u(x,y))/dy)))
@@ -696,7 +696,7 @@ class AMaS: # Astus' Mathematical Structure
                 pass
         
         
-        if True : #self.plottable: #TODO: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
+        if True : #self.plottable: #IMPROVE: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
             x = sympy.symbols('x')
             n = sympy.symbols('n') # pylint: disable=unused-variable
             try:
@@ -722,7 +722,7 @@ class AMaS: # Astus' Mathematical Structure
             self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
 
             try:
-                evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy']) # TODO: This should make everything below superfluous
+                evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy'])
                 print(self.plot_x_vals,type(self.plot_x_vals))
                 self.plot_y_vals = evalfunc(self.plot_x_vals)
                 
@@ -740,11 +740,6 @@ class AMaS: # Astus' Mathematical Structure
                 # To Catch AttributeError 'ImmutableDenseNDimArray' object has no attribute 'could_extract_minus_sign'
                 # This occures, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
                 # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
-                
-                # To Catch ValueError Invalid limits given
-                # This occures, for example, when trying to plot integrate(x**2)
-                # This is a weird bug #TODO: Investigate this bug...
-                
                 try:
                     if self.cstr.count("Integral") == 0:
                         evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')

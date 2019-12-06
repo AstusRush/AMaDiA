@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.1.3"
+Version = "0.15.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -380,7 +380,7 @@ class MainApp(QtWidgets.QApplication):
                     elif event.key() == QtCore.Qt.Key_5:
                         self.MainWindow.tabWidget.setCurrentIndex(4)
                         return True
-            try:
+            try: # FEATURE: Add superscript Macros
                 if self.MainWindow.Menu_Options_action_Use_Local_Keyboard_Remapper.isChecked():
                     modifiers = QtWidgets.QApplication.keyboardModifiers() # instead of event.modifiers() to be more reliable
                     if modifiers == (GroupSwitchModifier | ShiftModifier) or modifiers == (ControlModifier | AltModifier | ShiftModifier):
@@ -419,7 +419,7 @@ class MainApp(QtWidgets.QApplication):
 
     def ReColour(self, PaletteName):
         pass
-        #TODO: Use this to Change the Colour Theme
+        #SIMPLIFY: Use this to Change the Colour Theme
         # self.setPalette()
 
 
@@ -432,23 +432,24 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Create Folders if not already existing
         self.CreateFolders()
         # Read all config files:
-        # TODO: Implement config files
+        # FEATURE: Implement config files
 
         sympy.init_printing() # doctest: +SKIP
         self.MainApp = MainApp
         self.MainApp.setMainWindow(self)
 
+       #FEATURE: Add a hotkey to center ther window on the Primary screen and reset its geometry to allow the user to save the window if it gets lost off screen
+       #FEATURE: Add Statistic Tab to easily compare numbers and check impact of variables etc
+
        # Build the UI
         self.init_Menu()
-        #self.Menu_Options_action_ToggleCompactMenu.setDisabled(True) # TODO: DOES NOT WORK YET
         self.setupUi(self)
 
 
         self.tabWidget.setContentsMargins(0,0,0,0)
         #self.tabWidget.tabBar(). # Access the TabBar of the TabWidget
         self.tabWidget.tabBar().setUsesScrollButtons(True)
-        self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # TODO: This does not help
-        #    The problem is that the height of the TabBar is barely enough for the TopBar Widget...
+        self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # CLEANUP: Is this necccccesssssary?
         self.tabWidget.tabBar().installEventFilter(self.TopBar)
 
         
@@ -465,14 +466,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         # Alternative: This keeps the frame to (only removes Title Bar) resize but has other drawbacks
         #self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
 
-        self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # TODO: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
+        self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # CLEANUP: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
 
-        self.Tab_3_tabWidget.removeTab(1)# TODO
-        self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO
+        self.Tab_3_tabWidget.removeTab(1)# FEATURE: Add Complex plotter
+        self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO: Fully implement the CONTROL input tab
         self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon. To test current features use \"Dev Function\" in Options")
 
-        # TODO: Find place to display WindowTitle
-        # TODO: Do something with the Statusbar
+        # TODO: Find place to display WindowTitle. Maybe with a TextLabel in the statusbar?
+        # MAYBE: Do something with the Statusbar
         self.statusbar.showMessage(WindowTitle) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
 
         
@@ -481,7 +482,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_3_tabWidget.setCurrentIndex(0)
         self.Tab_3_1_TabWidget.setCurrentIndex(0)
         self.Tab_4_tabWidget.setCurrentIndex(0)
-        self.Tab_5_tabWidget.setCurrentIndex(3)# TODO: 0
+        self.Tab_5_tabWidget.setCurrentIndex(3)# REMINDER: 0 # Fully implement the CONTROL input tab and set this to 0
         self.tabWidget.setCurrentIndex(0)
         
         #Set Splitter Start Values
@@ -1044,7 +1045,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.NotifyUser_Warning(nText,Time)
         # Allow the button to adjust to the new text:
         self.TopBar.parentWidget().adjustSize()
-        # TODO: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
+        # REMINDER: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
 
     def NotifyUser_Error(self,Error_Text,Time=None):
         if Time==None:
@@ -1139,7 +1140,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #
         #self.ColourMain()
 
-        self.Tab_5_tabWidget.setTabEnabled(0,True)# TODO
+        self.Tab_5_tabWidget.setTabEnabled(0,True)# TODO: Fully implement the CONTROL input tab
 
     def ToggleCompactMenu(self):
         self.init_Menu(False)
@@ -1318,7 +1319,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
 # ---------------------------------- Event Filter ----------------------------------
 
-    def eventFilter(self, source, event): # TODO: Add more
+    def eventFilter(self, source, event):
         #print(event.type())
         if event.type() == 6: # QtCore.QEvent.KeyPress
          # ---------------------------------- Full Screen ----------------------------------
@@ -1342,7 +1343,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             if (source is self.Tab_1_History 
                     or source is self.Tab_2_History 
                     or source is self.Tab_3_1_History 
-                    or source is self.Tab_4_History #TODO: This is temporary. Implement this context menu properly
+                    or source is self.Tab_4_History #IMPROVE: This is temporary. Implement this context menu properly
                     )and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
                 action = menu.addAction('Copy Text')
@@ -1358,7 +1359,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     action = menu.addAction('Copy Solution')
                     action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
                 menu.addSeparator()
-                # TODO: Maybe? Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
+                # MAYBE: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
                 # It currently is handy to have it always because of the EvalF thing...
                 action = menu.addAction('Calculate')
                 action.triggered.connect(lambda: self.action_H_Calculate(source,event))
@@ -1563,7 +1564,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         QApplication.clipboard().setText(str(item.data(101)))
     
     def action_tab_5_M_Delete(self,source,event):
-        # TODO: If only one item was deleted save it in a temporary List item (The same as the duplicate item from the save function)
+        # FEATURE: Paperbin for matrices: If only one item was deleted save it in a temporary List item (The same as the duplicate item from the save function)
         listItems=source.selectedItems()
         if not listItems: return        
         for item in listItems:
@@ -1699,7 +1700,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 elif Kind == "WORK":
                     Thread = AT.AMaS_Thread(self,*args,ID=ID) # pylint: disable=no-value-for-parameter
                 
-                self.ThreadList.append(Thread)
+                self.ThreadList.append(Thread) # INVESTIGATE: Check size of memory leak
 
                 self.ThreadList[ID].Return.connect(self.TR)
                 self.ThreadList[ID].ReturnError.connect(self.Error_Redirect)
@@ -1718,10 +1719,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(1,Error)
         
-    def TC_old(self,Thread): # Thread Creator: All new threads are created here
+    def TC_old(self,Thread): # Thread Creator: All new threads are created here # CLEANUP: TC_old
         ID = -1
 
-        # TODO: This causes a creash due to garbagecollector deleting thrads before they are properly done cleaning themselves up
+        # INVESTIGATE: This causes a creash due to garbagecollector deleting thrads before they are properly done cleaning themselves up
         #       but after they have claimed to be done cleaning up
         #for i,e in enumerate(self.ThreadList):
         #    # This is not 100% clean but only Threats that have reported back should
@@ -1746,7 +1747,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #    ID = len(self.ThreadList)
         #    self.ThreadList.append(Thread(ID))
 
-        # TODO: This causes a memory leak but is better than random crashes
+        # INVESTIGATE: This causes a memory leak but is better than random crashes
         ID = len(self.ThreadList)
         self.ThreadList.append(Thread(ID))
 
@@ -1756,7 +1757,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.ThreadList[ID].start()
 
     def Error_Redirect(self, AMaS_Object , ErrorType , Error_Text , ReturnFunction , ID=-1):
-        #TODO:Improve
+        #IMPROVE: Improve the Error_Redirect
         self.NotifyUser(ErrorType,Error_Text)
 
     def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
@@ -1839,7 +1840,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.TC("NEW",self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Plot_init, Iam=AC.Iam_2D_plot)
         
         
-    def Tab_3_1_F_Plot_init(self , AMaS_Object): #TODO: Maybe get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
+    def Tab_3_1_F_Plot_init(self , AMaS_Object): # MAYBE: get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
         if not AMaS_Object.Plot_is_initialized: AMaS_Object.init_2D_plot()
         AMaS_Object.plot_ratio = self.Tab_3_1_Axis_ratio_Checkbox.isChecked()
         AMaS_Object.plot_grid = self.Tab_3_1_Draw_Grid_Checkbox.isChecked()
@@ -1872,7 +1873,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         
     def Tab_3_1_F_Plot(self , AMaS_Object):
-        #TODO: MAYBE Add an extra option for this in the config tab... and change everything else accordingly
+        # MAYBE: Add an extra option for this in the config tab... and change everything else accordingly
         #if self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked():
         #    self.Tab_3_1_Display.UseTeX(True)
         #else:
@@ -1985,11 +1986,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_1_History.item(i).setForeground(brush)
             self.Tab_3_1_History.item(i).data(100).current_ax = None
             
-    def Tab_3_1_F_Sympy_Plot_Button(self): # TODO: DELETE
+    def Tab_3_1_F_Sympy_Plot_Button(self): # CLEANUP: DELETE SymPy Plotter
         #self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot,ID))
         self.TC("NEW",self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot)
         
-    def Tab_3_1_F_Sympy_Plot(self , AMaS_Object): # TODO: DELETE
+    def Tab_3_1_F_Sympy_Plot(self , AMaS_Object): # CLEANUP: DELETE SymPy Plotter
         try:
             #self.__SPFIG = plt.figure(num="SP")
             x,y,z = sympy.symbols('x y z')  # pylint: disable=unused-variable
@@ -2018,7 +2019,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 sympy.plot(temp , ylim = ylims)
             else:
                 sympy.plot(temp)#, num="SP",backend=matplotlib.backends.backend_qt5.FigureCanvasBase)
-        except common_exceptions: # TODO: plot_implicit uses other syntax for limits
+        except common_exceptions: # MAYBE: plot_implicit uses other syntax for limits. Maybe make this work
             Error = ExceptionOutput(sys.exc_info())
             try:
                 sympy.plot_implicit(temp)
@@ -2112,7 +2113,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         try:
             NameInvalid=False
             Name = AF.AstusParse(self.Tab_4_1_Name_Input.text()).strip()
-            if Name == "" or " " in Name: #TODO: Better checks!!!
+            if Name == "" or " " in Name: #IMPROVE: Better checks for Matrix Names!!!
                 NameInvalid=True
 
             if NameInvalid:
@@ -2154,8 +2155,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             SearchFor = Name+" "
 
             #Remove Duplicats
-            # TODO: Ensure that this works correctly in all cases!
-            # TODO: Save the first duplicate in a temporary List item!
+            # VALIDATE: Ensure that this works correctly in all cases!
+            # FEATURE: Save the first duplicate in a temporary List item!
             FoundItems = self.Tab_4_Matrix_List.findItems(SearchFor,QtCore.Qt.MatchStartsWith)
             if len(FoundItems) > 0:
                 for i in FoundItems:
@@ -2257,7 +2258,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         try:
             NameInvalid=False
             Name = AF.AstusParse(self.Tab_5_1_NameInput.text()).strip()
-            if Name == "" or " " in Name: #TODO: Better checks!!!
+            if Name == "" or " " in Name: #IMPROVE: Better checks for System Name!!!
                 NameInvalid=True
 
             if NameInvalid:
@@ -2356,9 +2357,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 pass
             else: # Can not occur...
                 raise Exception("Tab {} in Control->Input Tab is unknown".format(Tab))
-            # TODO: Save in the list
-            # TODO: Save duplicate in other list item to prevent accidetial overwirtes
-            # TODO: Save delted items in other list item to prevent accidetial deletions
+            # FEATURE: Save Systems in list
+            # REMINDER: Save duplicate in other list item to prevent accidetial overwirtes
+            # REMINDER: Save delted items in other list item to prevent accidetial deletions
             print(sys1)
             return sys1
         except common_exceptions:
@@ -2401,40 +2402,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.Tab_5_tabWidget.setCurrentIndex(3)
                 self.NotifyUser(1,Error)
 
-    def Tab_5_3_F_RedrawPlot(self):
-        pass # TODO: add everything to zoom into the single plot view
-        # TODO: Remember that the Bode Plot consists of two plots!
-        #xmin , xmax = self.Tab_3_1_XLim_min.value(), self.Tab_3_1_XLim_max.value()
-        #if xmax < xmin:
-        #    xmax , xmin = xmin , xmax
-        #xlims = (xmin , xmax)
-        #ymin , ymax = self.Tab_3_1_YLim_min.value(), self.Tab_3_1_YLim_max.value()
-        #if ymax < ymin:
-        #    ymax , ymin = ymin , ymax
-        #ylims = (ymin , ymax)
-        #if self.Tab_3_1_Draw_Grid_Checkbox.isChecked():
-        #    self.Tab_3_1_Display.canvas.ax.grid(True)
-        #else:
-        #    self.Tab_3_1_Display.canvas.ax.grid(False)
-        #if self.Tab_3_1_Axis_ratio_Checkbox.isChecked():
-        #    self.Tab_3_1_Display.canvas.ax.set_aspect('equal')
-        #else:
-        #    self.Tab_3_1_Display.canvas.ax.set_aspect('auto')
-        #
-        #self.Tab_3_1_Display.canvas.ax.relim()
-        #self.Tab_3_1_Display.canvas.ax.autoscale()
-        #if self.Tab_3_1_XLim_Check.isChecked():
-        #    self.Tab_3_1_Display.canvas.ax.set_xlim(xlims)
-        #if self.Tab_3_1_YLim_Check.isChecked():
-        #    self.Tab_3_1_Display.canvas.ax.set_ylim(ylims)
-        #
-        #try:
-        #    self.Tab_3_1_Display.canvas.draw()
-        #except RuntimeError:
-        #    ExceptionOutput(sys.exc_info(),False)
-        #    print("Trying to output without LaTeX")
-        #    self.Tab_3_1_Display.UseTeX(False)
-        #    self.Tab_3_1_Display.canvas.draw()
 
 # ---------------------------------- Tab_6_ ??? ----------------------------------
 
@@ -2454,5 +2421,6 @@ if __name__ == "__main__":
     window = AMaDiA_Main_Window(app)
     print(datetime.datetime.now().strftime('%H:%M:%S:'),"AMaDiA Started\n")
     window.LastOpenState()
+    window.Tab_1_InputField.setFocus()
     sys.exit(app.exec_())
 

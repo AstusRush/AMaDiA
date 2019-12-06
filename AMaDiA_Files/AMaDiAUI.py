@@ -729,7 +729,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.gridLayout_17.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_17.setSpacing(0)
         self.gridLayout_17.setObjectName("gridLayout_17")
-        self.Tab_5_3_SingleDisplay = MplWidget_EmptyPlot(self.Tab_5_3)
+        self.Tab_5_3_SingleDisplay = MplWidget_CONTROL_single_plot(self.Tab_5_3)
         self.Tab_5_3_SingleDisplay.setObjectName("Tab_5_3_SingleDisplay")
         self.gridLayout_17.addWidget(self.Tab_5_3_SingleDisplay, 0, 0, 1, 1)
         self.Tab_5_tabWidget.addTab(self.Tab_5_3, "")
@@ -899,4 +899,4 @@ class Ui_AMaDiA_Main_Window(object):
         self.TopBar_Error_Label.setText(_translate("AMaDiA_Main_Window", "PushButton"))
         self.TopBar_Font_Size_spinBox.setToolTip(_translate("AMaDiA_Main_Window", "Font Size"))
 
-from AMaDiA_Files.AMaDiA_Widgets import LineEdit, MplWidget_2D_Plot, MplWidget_CONTROL, MplWidget_EmptyPlot, MplWidget_LaTeX, TableWidget, TextEdit, TopBar_Widget
+from AMaDiA_Files.AMaDiA_Widgets import LineEdit, MplWidget_2D_Plot, MplWidget_CONTROL, MplWidget_CONTROL_single_plot, MplWidget_LaTeX, TableWidget, TextEdit, TopBar_Widget

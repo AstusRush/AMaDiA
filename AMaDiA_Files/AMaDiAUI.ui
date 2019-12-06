@@ -1863,7 +1863,7 @@ p, li { white-space: pre-wrap; }
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="MplWidget_EmptyPlot" name="Tab_5_3_SingleDisplay" native="true"/>
+             <widget class="MplWidget_CONTROL_single_plot" name="Tab_5_3_SingleDisplay" native="true"/>
             </item>
            </layout>
           </widget>
@@ -1962,7 +1962,7 @@ p, li { white-space: pre-wrap; }
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>MplWidget_EmptyPlot</class>
+   <class>MplWidget_CONTROL_single_plot</class>
    <extends>QWidget</extends>
    <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
