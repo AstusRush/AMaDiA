@@ -49,6 +49,7 @@ def ReloadModules():
 class MplWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(MplWidget, self).__init__(parent)
+
     def SetColour(self,BG,FG):
         self.background_Colour = BG
         self.TextColour = FG
@@ -63,6 +64,14 @@ class MplWidget(QtWidgets.QWidget):
             self.canvas.draw()
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
+
+    #def eventFilter(self, source, event):
+    #    if event.type() == QtCore.QEvent.PaletteChange:
+    #        try:
+    #            source.SetColour(QtWidgets.QApplication.instance().BG_Colour , QtWidgets.QApplication.instance().TextColour)
+    #        except common_exceptions:
+    #            ExceptionOutput(sys.exc_info())
+    #    return super(MplWidget, self).eventFilter(source, event)
 
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -659,30 +668,42 @@ class MplCanvas_CONTROL_single_plot(Canvas):
         Canvas.setSizePolicy(self, QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         Canvas.updateGeometry(self)
 
-class MplWidget_CONTROL_single_plot(MplWidget): # FEATURE: Add the controls to zoom into the plot here and implement them
+class MplWidget_CONTROL_single_plot(MplWidget):
     def __init__(self, parent=None):
         super(MplWidget_CONTROL_single_plot, self).__init__(parent)
-        QtWidgets.QWidget.__init__(self)
         self.Bode = False
         self.FuncLabel = ""
         self.Title = "Doubleclick on a control plot to display it here"
-
-        #self.vbl = QtWidgets.QVBoxLayout()
-        #self.vbl.addWidget(self.canvas)
 
         self.Grid = QtWidgets.QGridLayout(self)
         self.Grid.setContentsMargins(0, 0, 0, 0)
         self.Grid.setSpacing(0)
         self.Grid.setObjectName("Grid")
 
+        #self.ScrollWidgetC = QtWidgets.QWidget(self)
+        #self.ScrollWidgetCGrid = QtWidgets.QGridLayout(self.ScrollWidgetC)
+        #self.ScrollWidgetCGrid.setContentsMargins(0, 0, 0, 0)
+        #self.ScrollWidgetCGrid.setSpacing(0)
+        #self.ScrollWidgetCGrid.setObjectName("ScrollWidgetCGrid")
+        self.ScrollWidget = QtWidgets.QScrollArea(self)#.ScrollWidgetC)
+        self.ScrollWidget.setWidgetResizable(True)
+        self.ScrollWidget.setObjectName("ScrollWidget")
+        self.ScrollWidgetContents = QtWidgets.QWidget()
+        #self.ScrollWidgetContents.setGeometry(QtCore.QRect(0, 0, 221, 264))
+        self.ScrollWidgetContents.setObjectName("ScrollWidgetContents")
+        self.ScrollGrid = QtWidgets.QGridLayout(self.ScrollWidgetContents)
+        self.ScrollGrid.setContentsMargins(0, 0, 0, 0)
+        self.ScrollGrid.setSpacing(0)
+        self.ScrollGrid.setObjectName("ScrollGrid")
+
         self.canvas = MplCanvas_CONTROL_single_plot()
-        self.x_from_input = QtWidgets.QDoubleSpinBox(self)
-        self.x_to_input = QtWidgets.QDoubleSpinBox(self)
-        self.x_checkbox = QtWidgets.QCheckBox(self)
-        self.y_from_input = QtWidgets.QDoubleSpinBox(self)
-        self.y_to_input = QtWidgets.QDoubleSpinBox(self)
-        self.y_checkbox = QtWidgets.QCheckBox(self)
-        self.apply_zoom_button = QtWidgets.QPushButton(self)
+        self.x_from_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
+        self.x_to_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
+        self.x_checkbox = QtWidgets.QCheckBox(self.ScrollWidgetContents)
+        self.y_from_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
+        self.y_to_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
+        self.y_checkbox = QtWidgets.QCheckBox(self.ScrollWidgetContents)
+        self.apply_zoom_button = QtWidgets.QPushButton(self.ScrollWidgetContents)
 
         self.x_from_input.setDecimals(5)
         self.x_from_input.setMinimum(-1000000.0)
@@ -703,22 +724,31 @@ class MplWidget_CONTROL_single_plot(MplWidget): # FEATURE: Add the controls to z
         self.y_to_input.setProperty("value", 5.0)
         self.y_checkbox.setText("Limit y")
         self.apply_zoom_button.setText("Apply Limits")
+        
+        self.ScrollWidget.setWidget(self.ScrollWidgetContents)
 
-        self.Grid.addWidget(self.canvas,1,0,1,7)
-        self.Grid.addWidget(self.x_from_input,2,0)
-        self.Grid.addWidget(self.x_to_input,2,1)
-        self.Grid.addWidget(self.x_checkbox,2,2)
-        self.Grid.addWidget(self.y_from_input,2,3)
-        self.Grid.addWidget(self.y_to_input,2,4)
-        self.Grid.addWidget(self.y_checkbox,2,5)
-        self.Grid.addWidget(self.apply_zoom_button,2,6)
+        self.ScrollGrid.addWidget(self.x_from_input,1,0)
+        self.ScrollGrid.addWidget(self.x_to_input,1,1)
+        self.ScrollGrid.addWidget(self.x_checkbox,1,2)
+        self.ScrollGrid.addWidget(self.y_from_input,1,3)
+        self.ScrollGrid.addWidget(self.y_to_input,1,4)
+        self.ScrollGrid.addWidget(self.y_checkbox,1,5)
+        self.ScrollGrid.addWidget(self.apply_zoom_button,1,6)
+
+        #self.ScrollWidgetCGrid.addWidget(self.ScrollWidget,1,0)
+
+        self.Grid.addWidget(self.canvas,0,0)
+        self.Grid.addWidget(self.ScrollWidget,1,0)#C
         
         self.setLayout(self.Grid)
+
+        # TODO: Reimplement these to let them fit the heigth to the contents automaticall
+        self.ScrollWidgetContents.setMaximumHeight(50)
+        self.ScrollWidget.setMaximumHeight(70)
         
         self.apply_zoom_button.clicked.connect(self.ApplyZoom)
         
-    def ApplyZoom(self): # FEATURE: add everything to zoom into the single plot view
-        # REMINDER: Remember that the Bode Plot consists of two plots!
+    def ApplyZoom(self):
         try:
             xmin , xmax = self.x_from_input.value(), self.x_to_input.value()
             if xmax < xmin:
@@ -728,14 +758,6 @@ class MplWidget_CONTROL_single_plot(MplWidget): # FEATURE: Add the controls to z
             if ymax < ymin:
                 ymax , ymin = ymin , ymax
             ylims = (ymin , ymax)
-            #if self.Tab_3_1_Draw_Grid_Checkbox.isChecked():
-            #    self.canvas.ax.grid(True)
-            #else:
-            #    self.canvas.ax.grid(False)
-            #if self.Tab_3_1_Axis_ratio_Checkbox.isChecked():
-            #    self.canvas.ax.set_aspect('equal')
-            #else:
-            #    self.canvas.ax.set_aspect('auto')
             
             self.canvas.ax.relim()
             self.canvas.ax1.relim()
@@ -750,7 +772,7 @@ class MplWidget_CONTROL_single_plot(MplWidget): # FEATURE: Add the controls to z
             
             try:
                 self.canvas.draw()
-            except RuntimeError:
+            except RuntimeError: #This is only a failsave
                 ExceptionOutput(sys.exc_info(),False)
                 print("Trying to output without LaTeX")
                 self.UseTeX(False)
@@ -956,7 +978,7 @@ class MplWidget_CONTROL_single_plot(MplWidget): # FEATURE: Add the controls to z
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo, add custom context menu
+class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
     returnPressed = QtCore.pyqtSignal()
     returnCrtlPressed = QtCore.pyqtSignal()
     def __init__(self, parent=None):
@@ -976,14 +998,10 @@ class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo, add custom context 
             source.returnPressed.emit()
         return super(ATextEdit, self).eventFilter(source, event)
 
-    def contextMenuEvent(self, event):
-        #super(ATextEdit, self).contextMenuEvent(event)
-        menu = self.createStandardContextMenu(event.pos())
-        menu.setFont(self.font())
-        menu.setPalette(self.palette()) # TODO: createStandardContextMenu apparently uses a StyleSheet and thus breaks palette and font
-        #                                           either implement it yourself or make a stylesheet 
-        #menu.setStyleSheet("QMenu::item:selected { background-color: green; }")
-        menu.exec_(event.globalPos())
+    #def contextMenuEvent(self, event): # Template in case the context menu needs to be modified
+        ##super(ATextEdit, self).contextMenuEvent(event)
+        #menu = self.createStandardContextMenu(event.pos())
+        #menu.exec_(event.globalPos())
 
     def text(self):
         return self.toPlainText()
@@ -1267,20 +1285,25 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
         return super(TableWidget_Delegate, self).eventFilter(source, event)
 
 
-class TopBar_Widget(QtWidgets.QWidget): # TODO: Add a handle to resize the window
+class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
     def __init__(self, parent=None):
         super(TopBar_Widget, self).__init__(parent)
         self.moving = False
         self.offset = 0
 
-    def init(self,IncludeMenu = False):
+    def init(self, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False):
+        # TODO: Add a handle to resize the window
+        # TODO: Add the font size spinbox here and handle it here
+        # TODO: Add the ErrorButton here and handle it here
+        self.IncludeMenu, self.IncludeFontSpinBox, self.IncludeErrorButton = IncludeMenu, IncludeFontSpinBox, IncludeErrorButton
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setObjectName("TopBar")
         if self.layout() == None:
             self.gridLayout = QtWidgets.QGridLayout(self)
-            self.gridLayout.setContentsMargins(12, 0, 0, -1)
+            self.gridLayout.setContentsMargins(0, 0, 0, 0)
             self.gridLayout.setSpacing(0)
             self.gridLayout.setObjectName("gridLayout")
+            self.setLayout(self.gridLayout)
 
         self.ButtonSizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
@@ -1340,6 +1363,22 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: Add a handle to resize the windo
         except common_exceptions:
             pass #ExceptionOutput(sys.exc_info())
 
+        if IncludeFontSpinBox:
+            self.Font_Size_spinBox = QtWidgets.QSpinBox(self)
+            self.Font_Size_spinBox.setMinimum(5)
+            self.Font_Size_spinBox.setMaximum(25)
+            self.Font_Size_spinBox.setProperty("value", 9)
+            self.Font_Size_spinBox.setObjectName("Font_Size_spinBox")
+            self.layout().addWidget(self.Font_Size_spinBox, 0, 99, 1, 1,QtCore.Qt.AlignRight)
+            self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
+
+        if IncludeErrorButton:
+            self.Error_Label = QtWidgets.QPushButton(self)
+            self.Error_Label.setObjectName("Error_Label")
+            self.layout().addWidget(self.Error_Label, 0, 98, 1, 1,QtCore.Qt.AlignRight)
+            self.Error_Label.installEventFilter(self)
+            self.Error_Label.clicked.connect(QtWidgets.QApplication.instance().Show_Notification_Window)
+
     def Minimize(self):
         self.window().showMinimized()
 
@@ -1371,6 +1410,12 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: Add a handle to resize the windo
     def Exit(self):
         self.window().close()
 
+    def ChangeFontSize(self):
+        try:
+            QtWidgets.QApplication.instance().SetFont(PointSize = self.Font_Size_spinBox.value(), source=self.window())
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+        
 
     def eventFilter(self, source, event):
         #if event.type() == 5: # QtCore.QEvent.MouseMove
@@ -1409,6 +1454,8 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: Add a handle to resize the windo
                     self.MinimizeButton.setAutoRaise(False)
                 elif event.type() == QtCore.QEvent.Leave:
                     self.MinimizeButton.setAutoRaise(True)
+        elif source is self.Error_Label and event.type() == QtCore.QEvent.Enter: #==10
+            QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.Error_Label.toolTip(),self.Error_Label)
         return super(TopBar_Widget, self).eventFilter(source, event)
 
     def mousePressEvent(self,event):

@@ -75,17 +75,9 @@ class InputFieldClass(QtWidgets.QLineEdit):
 
 class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface): 
 
-    def __init__(self, Palette, TheFontFamily, parent = None):
+    def __init__(self, parent = None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
-        
-        self.FontFamily = TheFontFamily
-        newFont = QtGui.QFont()
-        newFont.setFamily(self.FontFamily)
-        newFont.setPointSize(9)
-        self.setFont(newFont)
-        (self.Palette , self.BG_Colour , self.TextColour) = Palette
-        self.setPalette(self.Palette)
 
         self.InputField = InputFieldClass(self.centralwidget)
         self.InputField.setAutoFillBackground(True)
@@ -121,28 +113,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
         self.ConnectCheckBox.clicked.connect(self.on_ConnectBoxChanged) 
         self.SendButton.clicked.connect(self.on_sendButtonClicked)
         self.InputField.returnPressed.connect(self.on_sendButtonClicked)
-        self.FontSizeBox.valueChanged.connect(self.ChangeFontSize)
-
-    def SetFont(self,Family = None, PointSize = 0):
-        pass # TODO: How to handle this? who should be in control?
-        #if type(Family) == QtGui.QFont:
-        #    self.setFont(Family)
-        #else:
-        #    if Family == None:
-        #        Family = self.font().family()
-        #    if type(PointSize) == str:
-        #        PointSize = int(PointSize)
-        #    if PointSize <= 5:
-        #        PointSize = self.font().pointSize()
-        #    
-        #    font = QtGui.QFont()
-        #    font.setFamily(Family)
-        #    font.setPointSize(PointSize)
-        #    self.setFont(font)
-
-    def Recolour(self, palette, BG_Colour, TextColour):
-        self.Palette , self.BG_Colour , self.TextColour = palette, BG_Colour, TextColour
-        self.setPalette(self.Palette)
+        #self.FontSizeBox.valueChanged.connect(self.ChangeFontSize) #TODO
+        self.FontSizeBox.setVisible(False)
+        self.FontText.setVisible(False)
         
 
     def on_sendButtonClicked(self):
@@ -230,25 +203,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
     def UpdateUserList(self, msg):
         self.OnlineList.setPlainText(msg)
         
-    def ChangeFontSize(self):
-        Size = self.FontSizeBox.value()
-        newFont = QtGui.QFont()
-        newFont.setFamily(self.FontFamily)
-        newFont.setPointSize(Size)
-        self.setFont(newFont)
-        self.centralwidget.setFont(newFont)
+    #def ChangeFontSize(self): #TODO
+    #    Size = self.FontSizeBox.value()
+    #    newFont = QtGui.QFont()
+    #    newFont.setFamily(self.FontFamily)
+    #    newFont.setPointSize(Size)
+    #    self.setFont(newFont)
+    #    self.centralwidget.setFont(newFont)
         
-    def wheelEvent(self, QWheelEvent):
-        modifiers = QtGui.QGuiApplication.keyboardModifiers()
-        numDegrees = QWheelEvent.angleDelta().y() / 8
-        numSteps = numDegrees / 15
-        #self.print_message(str(numSteps))
-        if modifiers == QtCore.Qt.ControlModifier:
-            #self.print_message(str(modifiers))
-            if self.FontSizeBox.value() + numSteps <= self.FontSizeBox.maximum() and self.FontSizeBox.value() + numSteps >= self.FontSizeBox.minimum() :
-                self.FontSizeBox.setValue(self.FontSizeBox.value() + numSteps)
-                self.ChangeFontSize()
-                #self.print_message(str(self.FontSizeBox.value() + numSteps))
+    #def wheelEvent(self, QWheelEvent):
+    #    modifiers = QtGui.QGuiApplication.keyboardModifiers()
+    #    numDegrees = QWheelEvent.angleDelta().y() / 8
+    #    numSteps = numDegrees / 15
+    #    #self.print_message(str(numSteps))
+    #    if modifiers == QtCore.Qt.ControlModifier:
+    #        #self.print_message(str(modifiers))
+    #        if self.FontSizeBox.value() + numSteps <= self.FontSizeBox.maximum() and self.FontSizeBox.value() + numSteps >= self.FontSizeBox.minimum() :
+    #            self.FontSizeBox.setValue(self.FontSizeBox.value() + numSteps)
+    #            self.ChangeFontSize()
+    #            #self.print_message(str(self.FontSizeBox.value() + numSteps))
 
  
 class listener(QtCore.QThread):
@@ -328,13 +301,13 @@ class listener(QtCore.QThread):
             self.UserListUpdater.emit("No Server Connected")
             self.exiting = True
 
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-    app.setStyle("fusion")
-
-    form = MainWindow(AMaDiA_Colour.Dark()[0],"Arial")
-    form.show()
-    sys.exit(app.exec_())
- 
-if __name__=="__main__":
-    main()
+#def main():
+#    app = QtWidgets.QApplication(sys.argv)
+#    app.setStyle("fusion")
+#
+#    form = MainWindow(AMaDiA_Colour.Dark()[0],"Arial")
+#    form.show()
+#    sys.exit(app.exec_())
+# 
+#if __name__=="__main__":
+#    main()

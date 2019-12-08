@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.2"
+Version = "0.15.3"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -119,7 +119,7 @@ def Superscript_Shortcut(Symbol):
     keyboard.write("\x08")
 
 class AMaDiA_Internal_File_Display_Window(QtWidgets.QMainWindow):
-    def __init__(self,FileName,Palette,Font,parent = None):
+    def __init__(self,FileName,parent = None):
         try:
             super(AMaDiA_Internal_File_Display_Window, self).__init__(parent)
             QtWidgets.QFrame.__init__(self,parent)
@@ -161,37 +161,16 @@ class AMaDiA_Internal_File_Display_Window(QtWidgets.QMainWindow):
             self.TextBrowser.setText(Text)
             
             self.setAutoFillBackground(True)
-            (self.Palette , self.BG_Colour , self.TextColour) = Palette
-            self.setPalette(self.Palette)
-            self.setFont(Font)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
     def Scroll_To_End(self):
         self.TextBrowser.verticalScrollBar().setValue(self.TextBrowser.verticalScrollBar().maximum())
 
-    def SetFont(self,Family = None, PointSize = 0):
-        if type(Family) == QtGui.QFont:
-            self.setFont(Family)
-        else:
-            if Family == None:
-                Family = self.font().family()
-            if type(PointSize) == str:
-                PointSize = int(PointSize)
-            if PointSize <= 5:
-                PointSize = self.font().pointSize()
-            
-            font = QtGui.QFont()
-            font.setFamily(Family)
-            font.setPointSize(PointSize)
-            self.setFont(font)
 
-    def Recolour(self, palette, BG_Colour, TextColour):
-        self.Palette , self.BG_Colour , self.TextColour = palette, BG_Colour, TextColour
-        self.setPalette(self.Palette)
 
 class AMaDiA_About_Window(QtWidgets.QMainWindow):
-    def __init__(self,Palette,Font,parent = None):
+    def __init__(self,parent = None):
         try:
             super(AMaDiA_About_Window, self).__init__(parent)
             self.setWindowTitle("About AMaDiA")
@@ -229,34 +208,13 @@ class AMaDiA_About_Window(QtWidgets.QMainWindow):
 
             
             self.setAutoFillBackground(True)
-            (self.Palette , self.BG_Colour , self.TextColour) = Palette
-            self.setPalette(self.Palette)
-            self.setFont(Font)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
-    def SetFont(self,Family = None, PointSize = 0):
-        if type(Family) == QtGui.QFont:
-            self.setFont(Family)
-        else:
-            if Family == None:
-                Family = self.font().family()
-            if type(PointSize) == str:
-                PointSize = int(PointSize)
-            if PointSize <= 5:
-                PointSize = self.font().pointSize()
-            
-            font = QtGui.QFont()
-            font.setFamily(Family)
-            font.setPointSize(PointSize)
-            self.setFont(font)
 
-    def Recolour(self, palette, BG_Colour, TextColour):
-        self.Palette , self.BG_Colour , self.TextColour = palette, BG_Colour, TextColour
-        self.setPalette(self.Palette)
 
 class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
-    def __init__(self,Notifications,Palette,Font,parent = None):
+    def __init__(self,Notifications,parent = None):
         try:
             super(AMaDiA_Notification_Window, self).__init__(parent)
             self.setWindowTitle("Notifications")
@@ -289,9 +247,6 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
                 self.AddNotification(i)
             
             self.setAutoFillBackground(True)
-            (self.Palette , self.BG_Colour , self.TextColour) = Palette
-            self.setPalette(self.Palette)
-            self.setFont(Font)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
@@ -311,33 +266,16 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
             self.TheList.addItem(item)
             self.TheList.scrollToBottom()
 
-    def SetFont(self,Family = None, PointSize = 0):
-        if type(Family) == QtGui.QFont:
-            self.setFont(Family)
-        else:
-            if Family == None:
-                Family = self.font().family()
-            if type(PointSize) == str:
-                PointSize = int(PointSize)
-            if PointSize <= 5:
-                PointSize = self.font().pointSize()
-            
-            font = QtGui.QFont()
-            font.setFamily(Family)
-            font.setPointSize(PointSize)
-            self.setFont(font)
 
-    def Recolour(self, palette, BG_Colour, TextColour):
-        self.Palette , self.BG_Colour , self.TextColour = palette, BG_Colour, TextColour
-        self.setPalette(self.Palette)
 
-class MainApp(QtWidgets.QApplication):
+class AMaDiA_Main_App(QtWidgets.QApplication):
     # See:
     # https://doc.qt.io/qt-5/qapplication.html
     # https://doc.qt.io/qt-5/qguiapplication.html
     # https://doc.qt.io/qt-5/qcoreapplication.html
+    S_New_Notification = QtCore.pyqtSignal(str)
     def __init__(self, args):
-        super(MainApp, self).__init__(args)
+        super(AMaDiA_Main_App, self).__init__(args)
         self.installEventFilter(self)
         self.MainWindow = None
         self.setApplicationName("AMaDiA")
@@ -345,6 +283,13 @@ class MainApp(QtWidgets.QApplication):
         self.setOrganizationName("Robin Albers")
         self.setOrganizationDomain("https://github.com/AstusRush")
         self.AllUseCustomFrame = False
+        self.Notification_List = []
+
+        self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
+        self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
+        self.Colour_Font_Init()
+        self.Recolour()
+        self.init_Notification_Flash()
 
     def setMainWindow(self, TheWindow):
         self.MainWindow = TheWindow
@@ -387,7 +332,7 @@ class MainApp(QtWidgets.QApplication):
                         for i in ART.KR_Map:
                             if event.key() == i[5] and i[3]!=" ":
                                 try:
-                                    if type(source) == QtWidgets.QLineEdit:
+                                    if type(source) == QtWidgets.QLineEdit or type(source) == AstusChat_Client.InputFieldClass:
                                         source.insert(i[3])
                                         return True
                                 except:
@@ -402,7 +347,7 @@ class MainApp(QtWidgets.QApplication):
                         for i in ART.KR_Map:
                             if event.key() == i[5] and i[2]!=" ":
                                 try:
-                                    if type(source) == QtWidgets.QLineEdit:
+                                    if type(source) == QtWidgets.QLineEdit or type(source) == AstusChat_Client.InputFieldClass:
                                         source.insert(i[2])
                                         return True
                                 except:
@@ -415,19 +360,280 @@ class MainApp(QtWidgets.QApplication):
                                     break
             except AttributeError:
                 pass
-        return super(MainApp, self).eventFilter(source, event)
+        return super(AMaDiA_Main_App, self).eventFilter(source, event)
 
-    def ReColour(self, PaletteName):
-        pass
-        #SIMPLIFY: Use this to Change the Colour Theme
-        # self.setPalette()
+# ---------------------------------- Colour and Font ----------------------------------
+    def Recolour(self, Colour = "Dark"):
+        if Colour == "Dark":
+            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
+        elif Colour == "Bright":
+            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Bright()
+        self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
+        self.setPalette(self.Palette)
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.MplWidget):
+                i.SetColour(self.BG_Colour , self.TextColour)
+        if self.MainWindow != None:
+            try:
+                self.MainWindow.init_Animations_With_Colour()
+                brush = self.Palette.text()
+                for i in range(self.MainWindow.Tab_3_1_History.count()):
+                    if self.MainWindow.Tab_3_1_History.item(i).data(100).current_ax == None:
+                        self.MainWindow.Tab_3_1_History.item(i).setForeground(brush)
+            except common_exceptions:
+                ExceptionOutput(sys.exc_info())
+        
+    def Colour_Font_Init(self):
+        self.FontFamily = "Arial"
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(9)
+        self.setFont(font)
+        self.Recolour()
 
+        # Always keep Statusbar Font small
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(9)
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(QtWidgets.QStatusBar):
+                try:
+                    i.setFont(font)
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
+
+    def SetFont(self,Family = None, PointSize = 0, source=None):
+        if type(Family) == QtGui.QFont:
+            PointSize = Family.pointSize()
+            Family = Family.family()
+        elif Family == None:
+            Family = self.FontFamily
+        else:
+            self.FontFamily = Family
+        if type(PointSize) == str:
+            PointSize = int(PointSize)
+        if PointSize < 5:
+            try:
+                PointSize = source.TopBar.Font_Size_spinBox.setValue(PointSize)
+            except common_exceptions:
+                Error = ExceptionOutput(sys.exc_info())
+                self.NotifyUser(1,Error)
+                PointSize = 9
+        if type(PointSize) != int:
+            print(type(PointSize)," is an invalid type for font size (",PointSize,")")
+            PointSize = 9
+                
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.TopBar_Widget):
+                try:
+                    if i.IncludeFontSpinBox:
+                        i.Font_Size_spinBox.blockSignals(True)
+                        i.Font_Size_spinBox.setValue(PointSize)
+                        i.Font_Size_spinBox.blockSignals(False)
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
+        #else: # TODO: Implement this for all windows via the TopBarWidget
+        #    # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
+        #    # If the new Value is the same it is NOT emited.
+        #    # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
+        #    self.TopBar_Font_Size_spinBox.blockSignals(True)
+        #    self.TopBar_Font_Size_spinBox.setValue(PointSize)
+        #    self.TopBar_Font_Size_spinBox.blockSignals(False)
+        
+        font = QtGui.QFont()
+        font.setFamily(Family)
+        font.setPointSize(PointSize)
+        self.setFont(font)
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.TopBar_Widget):
+                try:
+                    if type(i.parentWidget()) == QtWidgets.QMenuBar:
+                        i.setMinimumHeight(i.parentWidget().height())
+                    elif type(i.parentWidget()) == QtWidgets.QTabWidget:
+                        i.setMinimumHeight(i.parentWidget().tabBar().height())
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
+        # Always keep Statusbar Font small
+        font = QtGui.QFont()
+        font.setFamily(Family)
+        font.setPointSize(9)
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(QtWidgets.QStatusBar):
+                try:
+                    i.setFont(font)
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
+
+
+# ---------------------------------- Error Handling ----------------------------------
+
+    def init_Notification_Flash(self):
+        self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.Notification_Flash_Red.setDuration(1000)
+        self.Notification_Flash_Red.setLoopCount(1)
+        self.Notification_Flash_Red.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Red.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Red.setKeyValueAt(0.5, QtGui.QColor(255, 0, 0))
+        self.Notification_Flash_Red.finished.connect(self.Notification_Flash_Finished)
+        
+        self.Notification_Flash_Yellow = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.Notification_Flash_Yellow.setDuration(1000)
+        self.Notification_Flash_Yellow.setLoopCount(1)
+        self.Notification_Flash_Yellow.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Yellow.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Yellow.setKeyValueAt(0.5, QtGui.QColor(255, 255, 0))
+        self.Notification_Flash_Yellow.finished.connect(self.Notification_Flash_Finished)
+
+        self.Notification_Flash_Green = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.Notification_Flash_Green.setDuration(1000)
+        self.Notification_Flash_Green.setLoopCount(1)
+        self.Notification_Flash_Green.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Green.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Green.setKeyValueAt(0.5, QtGui.QColor(0, 255, 0))
+        self.Notification_Flash_Green.finished.connect(self.Notification_Flash_Finished)
+
+        self.Notification_Flash_Blue = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.Notification_Flash_Blue.setDuration(1000)
+        self.Notification_Flash_Blue.setLoopCount(1)
+        self.Notification_Flash_Blue.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Blue.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.Notification_Flash_Blue.setKeyValueAt(0.5, QtGui.QColor(0, 0, 255))
+        self.Notification_Flash_Blue.finished.connect(self.Notification_Flash_Finished)
+
+    def _set_FLASH_colour(self, col): # Handles changes to the Property FLASH_colour
+        palette = self.Palette
+        palette.setColor(QtGui.QPalette.Window, col)
+        self.setPalette(palette)
+        #self.MainApp.setPalette(self.Palette)
+    FLASH_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_FLASH_colour) # Defines the Property FLASH_colour
+    
+    def Notification_Flash_Finished(self):
+        pass#self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
+
+    def NotifyUser(self,Type,Text="Not Given",Time=None):
+        """0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification"""
+        if Text=="Not Given" and type(Type) == tuple:
+            Type, Text = Type[0], Type[1]
+        self.LastNotification = Text
+        if Type == 0:
+            pass
+        elif Type == 1:
+            self.NotifyUser_Error(Text,Time)
+        elif Type == 2:
+            self.NotifyUser_Warning(Text,Time)
+        elif Type == 3:
+            self.NotifyUser_Notification(Text,Time)
+        elif Type == 4:
+            if self.Menu_Options_action_Advanced_Mode.isChecked():
+                self.NotifyUser_Notification(Text,Time)
+        elif Type == 10:
+            self.NotifyUser_Direct(Text,Time)
+        else:
+            nText = "Notification of type "+str(Type)
+            nText += " (Type unknown):\n"
+            nText += Text
+            self.NotifyUser_Warning(nText,Time)
+        # Allow the button to adjust to the new text:
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.TopBar_Widget):
+                if i.IncludeErrorButton:
+                    i.parentWidget().adjustSize()
+        # REMINDER: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
+
+    def NotifyUser_Error(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        Text = "Error at " + Time
+        for i in self.findChildren(AW.TopBar_Widget):
+            if i.IncludeErrorButton:
+                i.Error_Label.setText(Text)
+                i.Error_Label.setToolTip(Error_Text)
+                i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
+
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.Notification_Flash_Red.start()
+
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.S_New_Notification.emit(Text)
+
+    def NotifyUser_Warning(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        Text = "Warning at " + Time
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.TopBar_Widget):
+                if i.IncludeErrorButton:
+                    i.Error_Label.setText(Text)
+                    i.Error_Label.setToolTip(Error_Text)
+                    i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        self.Notification_Flash_Yellow.start()
+
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.S_New_Notification.emit(Text)
+
+    def NotifyUser_Notification(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        Text = "Notification at " + Time
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.TopBar_Widget):
+                if i.IncludeErrorButton:
+                    i.Error_Label.setText(Text)
+                    i.Error_Label.setToolTip(Error_Text)
+                    i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
+
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        self.Notification_Flash_Blue.start()
+
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.S_New_Notification.emit(Text)
+
+    def NotifyUser_Direct(self,Error_Text,Time=None):
+        if Time==None:
+            Time = AF.cTimeSStr()
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.TopBar_Widget):
+                if i.IncludeErrorButton:
+                    i.Error_Label.setText(Error_Text)
+                    i.Error_Label.setToolTip("Start at "+Time)
+                    # TODO: Unset the Icon!
+
+        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
+        #self.Notification_Flash_Blue.start()
+
+        Text = "Direct Notification at "+Time
+        Text += "\n"
+        Text += Error_Text
+        self.Notification_List.append(Text)
+        self.S_New_Notification.emit(Text)
+
+    #def TopBar_Error_Label_Tooltip(self, index): #CLEANUP
+    #    if index.isValid():
+    #        QtGui.QToolTip.showText(
+    #            QtGui.QCursor.pos(),
+    #            index.data(),
+    #            self.TopBar_Error_Label.viewport(),
+    #            self.TopBar_Error_Label.visualRect(index)
+    #            )
+    
+    def Show_Notification_Window(self):
+        self.AMaDiA_Notification_Window = AMaDiA_Notification_Window(self.Notification_List)
+        self.S_New_Notification.connect(self.AMaDiA_Notification_Window.AddNotification)
+        self.AMaDiA_Notification_Window.show()
+
+# ---------------------------------- Other ----------------------------------
 
 class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
-    S_New_Notification = QtCore.pyqtSignal(str)
-    S_Font_Changed = QtCore.pyqtSignal(QtGui.QFont)
-    S_Colour_Changed = QtCore.pyqtSignal(QtGui.QPalette,tuple,tuple)
-    def __init__(self,MainApp, parent = None):
+    def __init__(self, MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent)
         # Create Folders if not already existing
         self.CreateFolders()
@@ -444,6 +650,13 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
        # Build the UI
         self.init_Menu()
         self.setupUi(self)
+        self.TopBar = AW.TopBar_Widget(self)
+        self.TopBar.setObjectName("TopBar")
+        #self.TopBarGridLayout = QtWidgets.QGridLayout(self.TopBar)
+        #self.TopBarGridLayout.setContentsMargins(0, 0, 0, 0)
+        #self.TopBarGridLayout.setSpacing(0)
+        #self.TopBarGridLayout.setObjectName("TopBarGridLayout")
+        #self.TopBar.setLayout(self.TopBarGridLayout)
 
 
         self.tabWidget.setContentsMargins(0,0,0,0)
@@ -453,7 +666,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.tabBar().installEventFilter(self.TopBar)
 
         
-        self.TopBar.init(True)
+        self.TopBar.init(True,True,True)
         self.MenuBar.setContentsMargins(0,0,0,0)
 
         self.setMenuBar(self.MenuBar)
@@ -538,7 +751,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             i.installEventFilter(self)
         for i in self.findChildren(QtWidgets.QLineEdit):
             i.installEventFilter(self)
-        self.TopBar_Error_Label.installEventFilter(self)
         
         # Activate Pretty-LaTeX-Mode if the Computer supports it
         if AF.LaTeX_dvipng_Installed:
@@ -547,7 +759,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
        # Run other init methods
         self.ConnectSignals()
-        self.Colour_Font_Init()
+        #self.Colour_Font_Init()
+        self.MainApp.Recolour()
         self.OtherContextMenuSetup()
         self.InstallSyntaxHighlighter()
         self.INIT_Animation()
@@ -563,14 +776,14 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
        # Other things:
         self.Tab_5_1_System_Set_Order()
         
-        #Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
+        # VALIDATE: Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
         self.Tab_3_1_F_Clear()
         #One Little Bug Fix:
             #If using LaTeX Display in LaTeX Mode before using the Plotter for the first time it can happen that the plotter is not responsive until cleared.
-            #Thus the plotter is now leared on program start to **hopefully** fix this...
+            #Thus the plotter is now cleared on program start to **hopefully** fix this...
             #If it does not fix the problem a more elaborate method is required...
             # A new variable that checks if the plot has already been used and if the LaTeX view has been used.
-            # If the first is False and the seccond True than clear when the plot button is pressed and cjange the variables to ensure that this only happens once
+            # If the first is False and the second True then clear when the plot button is pressed and change the variables to ensure that this only happens once
             #       to not accidentially erase the plots of the user as this would be really bad...
 
         self.Tab_1_InputField.setFocus()
@@ -624,9 +837,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Menu_Help_action_Patchlog.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Patchlog.txt"))
         self.Menu_Help_action_About.triggered.connect(self.Show_About)
 
-        self.TopBar_Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
         self.Menu_Options_action_Highlighter.toggled.connect(self.ToggleSyntaxHighlighter)
-        self.TopBar_Error_Label.clicked.connect(self.Show_Notification_Window)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
@@ -808,100 +1019,84 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Menu_Options_action_Use_Threadpool.setText(_translate("AMaDiA_Main_Window", "Use Threadpool"))
             self.Menu_Help_action_Patchlog.setText(_translate("AMaDiA_Main_Window", "Patchlog"))
 
-    def Colour_Font_Init(self):
-        self.FontFamily = "Arial"
-        self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
-        self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(9)
-        self.setFont(font)
-        self.setPalette(self.Palette)
-        for i in self.findChildren(QtWidgets.QMenu):
-            i.setPalette(self.Palette)
-        for i in self.findChildren(AW.MplWidget):
-            i.SetColour(self.BG_Colour, self.TextColour)
+    #def Colour_Font_Init(self):
+    #    self.FontFamily = "Arial"
+    #    #self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
+    #    #self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
+    #    font = QtGui.QFont()
+    #    font.setFamily("Arial")
+    #    font.setPointSize(9)
+    #    self.MainApp.SetFont(font, 9, self)
+    #    self.MainApp.Recolour()
+    #
+    #    #self.Error_Palette = AMaDiA_Colour.Red_ERROR()[0] # Currently not in use
+    #
+    #    # Always keep Statusbar Font small
+    #    font = QtGui.QFont()
+    #    font.setFamily("Arial")
+    #    font.setPointSize(9)
+    #    #self.statusbar.setFont(font)
 
-
-        #self.Error_Palette = AMaDiA_Colour.Red_ERROR()[0] # Currently not in use
-
-        # Always keep Statusbar Font small
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(9)
-        self.statusbar.setFont(font)
-
-    def SetFont(self,Family = None, PointSize = 0):
+    def SetFont(self,Family = None, PointSize = 0): #FEATURE: Allow to change Font
         if type(Family) == QtGui.QFont:
             PointSize = Family.pointSize()
             Family = Family.family()
         elif Family == None:
-            Family = self.FontFamily
+            try:
+                Family = self.FontFamily # pylint: disable=access-member-before-definition
+            except common_exceptions:
+                self.FontFamily = "Arial"
         else:
             self.FontFamily = Family
         if type(PointSize) == str:
             PointSize = int(PointSize)
-        if PointSize <= 5:
-            PointSize = self.TopBar_Font_Size_spinBox.value()
-        else:
-            # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
-            # If the new Value is the same it is NOT emited.
-            # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
-            self.TopBar_Font_Size_spinBox.blockSignals(True)
-            self.TopBar_Font_Size_spinBox.setValue(PointSize)
-            self.TopBar_Font_Size_spinBox.blockSignals(False)
-        
+        if PointSize < 5:
+            PointSize = self.TopBar.Font_Size_spinBox.value() # TODO: Remove this and let the MainApp draw it from the TopBar of the source
+        self.MainApp.SetFont(Family, PointSize, self)
+        #else: #CLEANUP
+        #    # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
+        #    # If the new Value is the same it is NOT emited.
+        #    # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
+        #    self.TopBar_Font_Size_spinBox.blockSignals(True)
+        #    self.TopBar_Font_Size_spinBox.setValue(PointSize)
+        #    self.TopBar_Font_Size_spinBox.blockSignals(False)
+        #
+        ##font = QtGui.QFont()
+        ##font.setFamily(Family)
+        ##font.setPointSize(PointSize)
+        ##self.setFont(font)
+        ##self.S_Font_Changed.emit(font)
+#
+        #self.ChangeFontSize()
+        ## Always keep Statusbar Font small
         #font = QtGui.QFont()
         #font.setFamily(Family)
-        #font.setPointSize(PointSize)
-        #self.setFont(font)
-        #self.S_Font_Changed.emit(font)
-
-        self.ChangeFontSize()
-        # Always keep Statusbar Font small
-        font = QtGui.QFont()
-        font.setFamily(Family)
-        font.setPointSize(9)
-        self.statusbar.setFont(font)
+        #font.setPointSize(9)
+        #self.statusbar.setFont(font)
 
 
     def Recolour(self, Colour = "Dark"):
-        if Colour == "Dark":
-            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
-        elif Colour == "Bright":
-            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Bright()
-        self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
-        self.setPalette(self.Palette)
-        for i in self.findChildren(QtWidgets.QMenu):
-            i.setPalette(self.Palette)
-        #self.Palette = palette
-        #self.BG_Colour = BG
-        #self.TextColour = FG
-        for i in self.findChildren(AW.MplWidget):
-            i.SetColour(self.BG_Colour, self.TextColour)
-        self.init_Animations_With_Colour()
-        brush = self.Palette.text()
-        for i in range(self.Tab_3_1_History.count()):
-            if self.Tab_3_1_History.item(i).data(100).current_ax == None:
-                self.Tab_3_1_History.item(i).setForeground(brush)
-        self.S_Colour_Changed.emit(self.Palette , self.BG_Colour , self.TextColour)
+        self.MainApp.Recolour(Colour)
         
 
-    def ChangeFontSize(self):
-        Size = self.TopBar_Font_Size_spinBox.value()
-        newFont = QtGui.QFont()
-        newFont.setFamily(self.FontFamily)
-        newFont.setPointSize(Size)
-        self.setFont(newFont)
-        #self.centralwidget.setFont(newFont)
-        for i in self.findChildren(QtWidgets.QMenu):
-            i.setFont(newFont)
-
-        self.S_Font_Changed.emit(newFont)
-        if self.Menu_Options_action_ToggleCompactMenu.isChecked():
-            self.TopBar.CloseButton.setMinimumHeight(self.MenuBar.height())
-        else:
-            self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().height())
+    def ChangeFontSize(self): #TODO
+        try:
+            self.MainApp.SetFont(self.FontFamily, self.TopBar.Font_Size_spinBox.value(), self)
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+        #Size = self.TopBar_Font_Size_spinBox.value()
+        #newFont = QtGui.QFont()
+        #newFont.setFamily(self.FontFamily)
+        #newFont.setPointSize(Size)
+        #self.setFont(newFont)
+        #for i in self.findChildren(QtWidgets.QMenu):
+        #    i.setFont(newFont)
+#
+        #self.S_Font_Changed.emit(newFont)
+        #if self.Menu_Options_action_ToggleCompactMenu.isChecked():
+        #    self.TopBar.CloseButton.setMinimumHeight(self.MenuBar.height())
+        #else:
+        #    self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().height())
 
     def InstallSyntaxHighlighter(self):
         #self.Tab_1_InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1_InputField.document())
@@ -911,7 +1106,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.init_Animations_With_Colour()
 
     def init_Animations_With_Colour(self):
-        self.init_Notification_Flash()
+        pass#self.init_Notification_Flash()
         
     def CreateFolders(self):
         self.pathOK = False
@@ -980,148 +1175,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 pass
 
 
-# ---------------------------------- Error Handling ----------------------------------
-    def init_Notification_Flash(self):
-        self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Red.setDuration(1000)
-        self.Notification_Flash_Red.setLoopCount(1)
-        self.Notification_Flash_Red.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Red.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Red.setKeyValueAt(0.5, QtGui.QColor(255, 0, 0))
-        self.Notification_Flash_Red.finished.connect(self.Notification_Flash_Finished)
-        
-        self.Notification_Flash_Yellow = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Yellow.setDuration(1000)
-        self.Notification_Flash_Yellow.setLoopCount(1)
-        self.Notification_Flash_Yellow.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Yellow.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Yellow.setKeyValueAt(0.5, QtGui.QColor(255, 255, 0))
-        self.Notification_Flash_Yellow.finished.connect(self.Notification_Flash_Finished)
-
-        self.Notification_Flash_Green = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Green.setDuration(1000)
-        self.Notification_Flash_Green.setLoopCount(1)
-        self.Notification_Flash_Green.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Green.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Green.setKeyValueAt(0.5, QtGui.QColor(0, 255, 0))
-        self.Notification_Flash_Green.finished.connect(self.Notification_Flash_Finished)
-
-        self.Notification_Flash_Blue = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Blue.setDuration(1000)
-        self.Notification_Flash_Blue.setLoopCount(1)
-        self.Notification_Flash_Blue.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Blue.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Blue.setKeyValueAt(0.5, QtGui.QColor(0, 0, 255))
-        self.Notification_Flash_Blue.finished.connect(self.Notification_Flash_Finished)
-
-    def _set_FLASH_colour(self, col): # Handles chnges to the Property FLASH_colour
-        palette = self.Palette
-        palette.setColor(QtGui.QPalette.Window, col)
-        self.setPalette(palette)
-    FLASH_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_FLASH_colour) # Defines the Property FLASH_colour
-
-    def NotifyUser(self,Type,Text="Not Given",Time=None):
-        """0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification"""
-        if Text=="Not Given" and type(Type) == tuple:
-            Type, Text = Type[0], Type[1]
-        self.LastNotification = Text
-        if Type == 0:
-            pass
-        elif Type == 1:
-            self.NotifyUser_Error(Text,Time)
-        elif Type == 2:
-            self.NotifyUser_Warning(Text,Time)
-        elif Type == 3:
-            self.NotifyUser_Notification(Text,Time)
-        elif Type == 4:
-            if self.Menu_Options_action_Advanced_Mode.isChecked():
-                self.NotifyUser_Notification(Text,Time)
-        elif Type == 10:
-            self.NotifyUser_Direct(Text,Time)
-        else:
-            nText = "Notification of type "+str(Type)
-            nText += " (Type unknown):\n"
-            nText += Text
-            self.NotifyUser_Warning(nText,Time)
-        # Allow the button to adjust to the new text:
-        self.TopBar.parentWidget().adjustSize()
-        # REMINDER: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
-
-    def NotifyUser_Error(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        Text = "Error at " + Time
-        self.TopBar_Error_Label.setText(Text)
-        self.TopBar_Error_Label.setToolTip(Error_Text)
-        self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
-
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.Notification_Flash_Red.start()
-
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append(Text)
-        self.S_New_Notification.emit(Text)
-
-    def NotifyUser_Warning(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        Text = "Warning at " + Time
-        self.TopBar_Error_Label.setText(Text)
-        self.TopBar_Error_Label.setToolTip(Error_Text)
-        self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
-
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        self.Notification_Flash_Yellow.start()
-
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append(Text)
-        self.S_New_Notification.emit(Text)
-
-    def NotifyUser_Notification(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        Text = "Notification at " + Time
-        self.TopBar_Error_Label.setText(Text)
-        self.TopBar_Error_Label.setToolTip(Error_Text)
-        self.TopBar_Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
-
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        self.Notification_Flash_Blue.start()
-
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append(Text)
-        self.S_New_Notification.emit(Text)
-
-    def NotifyUser_Direct(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        self.TopBar_Error_Label.setText(Error_Text)
-        self.TopBar_Error_Label.setToolTip("Start at "+Time)
-
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        #self.Notification_Flash_Blue.start()
-
-        Text = "Direct Notification at "+Time
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append(Text)
-        self.S_New_Notification.emit(Text)
-
-    def Notification_Flash_Finished(self):
-        pass#self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
-
-    def TopBar_Error_Label_Tooltip(self, index):
-        if index.isValid():
-            QtGui.QToolTip.showText(
-                QtGui.QCursor.pos(),
-                index.data(),
-                self.TopBar_Error_Label.viewport(),
-                self.TopBar_Error_Label.visualRect(index)
-                )
 
 
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
@@ -1157,8 +1210,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             self.MenuBar.setVisible(True)
             self.setMenuBar(self.MenuBar)
-            for i in self.findChildren(QtWidgets.QMenu):
-                i.setPalette(self.Palette)
+            #for i in self.findChildren(QtWidgets.QMenu):
+            #    i.setPalette(self.Palette)
             for i in self.findChildren(QtWidgets.QMenu):
                 i.setFont(self.font())
             self.TopBar.setParent(self)
@@ -1167,8 +1220,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.TopBar.setVisible(True)
             self.tabWidget.tabBar().setUsesScrollButtons(False)
             # Palette and font need to be reset to wake up the MenuBar painter and font-setter
-            self.setPalette(self.style().standardPalette())
-            self.setPalette(self.Palette)
+            ###self.setPalette(self.style().standardPalette())
+            self.MainApp.setPalette(self.style().standardPalette())
+            ###self.setPalette(self.Palette)
+            self.MainApp.setPalette(self.MainApp.Palette)
             org_font = self.font()
             font = QtGui.QFont()
             font.setFamily("unifont")
@@ -1221,9 +1276,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Threading = "LIST"
 
     def Show_AMaDiA_Text_File(self,FileName):
-        self.AMaDiA_Text_File_Window = AMaDiA_Internal_File_Display_Window(FileName,self.colour_Pack,self.font())
-        self.S_Font_Changed.connect(self.AMaDiA_Text_File_Window.SetFont)
-        self.S_Colour_Changed.connect(self.AMaDiA_Text_File_Window.Recolour)
+        self.AMaDiA_Text_File_Window = AMaDiA_Internal_File_Display_Window(FileName)
         self.AMaDiA_Text_File_Window.show()
         if FileName == "Patchlog.txt":
             worker = AT.Timer(0.1) # pylint: disable=no-value-for-parameter
@@ -1234,33 +1287,22 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.AMaDiA_Text_File_Window.Scroll_To_End()
 
     def Show_About(self):
-        self.AMaDiA_About_Window_Window = AMaDiA_About_Window(self.colour_Pack,self.font())
-        self.S_Font_Changed.connect(self.AMaDiA_About_Window_Window.SetFont)
-        self.S_Colour_Changed.connect(self.AMaDiA_About_Window_Window.Recolour)
+        self.AMaDiA_About_Window_Window = AMaDiA_About_Window()
         self.AMaDiA_About_Window_Window.show()
 
-    def Show_Notification_Window(self):
-        self.AMaDiA_Notification_Window = AMaDiA_Notification_Window(self.Notification_List,self.colour_Pack,self.font())
-        self.S_Font_Changed.connect(self.AMaDiA_Notification_Window.SetFont)
-        self.S_Colour_Changed.connect(self.AMaDiA_Notification_Window.Recolour)
-        self.S_New_Notification.connect(self.AMaDiA_Notification_Window.AddNotification)
-        self.AMaDiA_Notification_Window.show()
-
+    def NotifyUser(self,Type,Text="Not Given",Time=None):
+        self.MainApp.NotifyUser(Type,Text,Time)
 # ---------------------------------- TopBar Funtions ----------------------------------
         
 
 # ---------------------------------- Chat Toolbar Funtions ----------------------------------
 
     def OpenClient(self):
-        self.Chat = AstusChat_Client.MainWindow(self.colour_Pack,self.FontFamily)
-        self.S_Font_Changed.connect(self.Chat.SetFont)
-        self.S_Colour_Changed.connect(self.Chat.Recolour)
+        self.Chat = AstusChat_Client.MainWindow()
         self.Chat.show()
 
     def OpenServer(self):
-        self.Sever = AstusChat_Server.MainWindow(self.colour_Pack,self.FontFamily)
-        self.S_Font_Changed.connect(self.Sever.SetFont)
-        self.S_Colour_Changed.connect(self.Sever.Recolour)
+        self.Sever = AstusChat_Server.MainWindow()
         self.Sever.show()
 
 
@@ -1281,7 +1323,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action = menu.addAction('Save Plot')
             action.triggered.connect(self.action_tab_3_tab_1_Display_SavePlt)
             cursor = QtGui.QCursor()
-            menu.setPalette(self.Palette)
+            menu.setPalette(self.palette())
             menu.setFont(self.font())
             menu.exec_(cursor.pos())
             
@@ -1297,7 +1339,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             action = menu.addAction('Copy Solution')
             action.triggered.connect(self.action_tab_5_Display_Copy_Displayed_Solution)
             cursor = QtGui.QCursor()
-            menu.setPalette(self.Palette)
+            menu.setPalette(self.palette())
             menu.setFont(self.font())
             menu.exec_(cursor.pos())
 
@@ -1387,7 +1429,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 menu.addSeparator()
                 action = menu.addAction('Delete')
                 action.triggered.connect(lambda: self.action_H_Delete(source,event))
-                menu.setPalette(self.Palette)
+                menu.setPalette(self.palette())
                 menu.setFont(self.font())
                 menu.exec_(event.globalPos())
                 return True
@@ -1402,13 +1444,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_tab_5_M_Copy_string(source,event))
                 action = menu.addAction('Delete')
                 action.triggered.connect(lambda: self.action_tab_5_M_Delete(source,event))
-                menu.setPalette(self.Palette)
+                menu.setPalette(self.palette())
                 menu.setFont(self.font())
                 menu.exec_(event.globalPos())
                 return True
-        elif source is self.TopBar_Error_Label and event.type() == QtCore.QEvent.Enter: #==10
-            QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.TopBar_Error_Label.toolTip(),self.TopBar_Error_Label)
-        
+        #elif...
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
   
 # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
@@ -1580,7 +1620,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             Filename = os.path.join(self.PlotPath,Filename)
             try:
                 print(Filename)
-                self.Tab_3_1_Display.canvas.fig.savefig(Filename , facecolor=self.BG_Colour , edgecolor=self.BG_Colour )
+                self.Tab_3_1_Display.canvas.fig.savefig(Filename , facecolor=self.MainApp.BG_Colour , edgecolor=self.MainApp.BG_Colour )
             except:
                 Error = "Could not save Plot: "
                 Error += ExceptionOutput(sys.exc_info())
@@ -1820,7 +1860,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if part == "Normal":
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
-                                            ,self.TopBar_Font_Size_spinBox.value()
+                                            ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         elif part == "Evaluation":
@@ -1828,7 +1868,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 AMaS_Object.Convert_Evaluation_to_LaTeX()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                            ,self.TopBar_Font_Size_spinBox.value()
+                                            ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         self.NotifyUser(returnTuple)#[0],returnTuple[1])
@@ -1981,7 +2021,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_1_Display.UseTeX(False)
             self.Tab_3_1_Display.canvas.ax.clear()
             self.Tab_3_1_Display.canvas.draw()
-        brush = self.Palette.text()
+        brush = self.palette().text()
         for i in range(self.Tab_3_1_History.count()):
             self.Tab_3_1_History.item(i).setForeground(brush)
             self.Tab_3_1_History.item(i).data(100).current_ax = None
@@ -2187,7 +2227,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_Currently_Displayed = AMaS_Object.EvaluationEquation
         self.Tab_4_Currently_Displayed_Solution = AMaS_Object.Evaluation
         returnTuple = self.Tab_4_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
-                                        ,self.TopBar_Font_Size_spinBox.value()
+                                        ,self.TopBar.Font_Size_spinBox.value()
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
@@ -2207,7 +2247,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_Currently_Displayed = Text + str(Matrix)
         self.Tab_4_Currently_Displayed_Solution = str(Matrix)
         returnTuple = self.Tab_4_Display.Display(Text1,Text2
-                                        ,self.TopBar_Font_Size_spinBox.value()
+                                        ,self.TopBar.Font_Size_spinBox.value()
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
@@ -2415,7 +2455,7 @@ if __name__ == "__main__":
     elif not latex_installed and dvipng_installed: print("dvipng is installed but latex was not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
     else: print("latex and dvipng were not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
     print("AMaDiA Startup")
-    app = MainApp([])
+    app = AMaDiA_Main_App([])
     #app = QtWidgets.QApplication([])
     app.setStyle("fusion")
     window = AMaDiA_Main_Window(app)

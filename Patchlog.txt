@@ -296,3 +296,9 @@ v0.15.2: Control Single Plot Zoom
 + You can now zoom into the Single Plot View in the Control-Tab
 + Split up the TODOs into 10 subcategories to get more out of the "Todo Tree" extension for VSC
 
+v0.15.3: Palette and Font setting overhaul
++ Redid everything about Font and Palette setting to be based on an application-level (instead of per window)
+++ This means more consistent behaviour and less work in the future
++ Changed the handling of notifications from window to Application level for easier handling
++ Added a scrollbar to Control-SingelPlot-ZoomFunction to allow smaller sizes for the window
+
