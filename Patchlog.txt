@@ -302,3 +302,6 @@ v0.15.3: Palette and Font setting overhaul
 + Changed the handling of notifications from window to Application level for easier handling
 + Added a scrollbar to Control-SingelPlot-ZoomFunction to allow smaller sizes for the window
 
+v0.15.3.1: Fix for Error Notifications
++ Fixed the update of text and tooltip for the TopBarErrorButton when an Error-notification is send.
+

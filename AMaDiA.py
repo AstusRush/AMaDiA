@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.3"
+Version = "0.15.3.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -544,11 +544,12 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         if Time==None:
             Time = AF.cTimeSStr()
         Text = "Error at " + Time
-        for i in self.findChildren(AW.TopBar_Widget):
-            if i.IncludeErrorButton:
-                i.Error_Label.setText(Text)
-                i.Error_Label.setToolTip(Error_Text)
-                i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
+        for w in self.topLevelWidgets():
+            for i in w.findChildren(AW.TopBar_Widget):
+                if i.IncludeErrorButton:
+                    i.Error_Label.setText(Text)
+                    i.Error_Label.setToolTip(Error_Text)
+                    i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
 
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
