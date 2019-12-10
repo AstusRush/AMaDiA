@@ -51,14 +51,14 @@ def ExceptionOutput(exc_info,extraInfo = True):
     try:
         print(cTimeSStr(),":")
         exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        fName = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         if extraInfo:
-            print(exc_type, " in", fname, " line", exc_tb.tb_lineno ,": ", exc_obj)
+            print(exc_type, " in", fName, " line", exc_tb.tb_lineno ,": ", exc_obj)
         else:
-            print(exc_type, " in", fname, " line", exc_tb.tb_lineno)
+            print(exc_type, " in", fName, " line", exc_tb.tb_lineno)
         return str(exc_type)+": "+str(exc_obj)
     except common_exceptions:
-        print("An exception occured while trying to print an exception!")
+        print("An exception occurred while trying to print an exception!")
 
 background_Colour = (54/255, 57/255, 63/255)
 
@@ -82,7 +82,7 @@ def cTimeSStr():
 def cTimeFullStr(seperator = None):
     """
     Returns the date and time as a string\n
-    If given uses `separator` to seperate the values\n
+    If given uses `separator` to separate the values\n
     %Y.%m.%d-%H:%M:%S or seperator.join(['%Y','%m','%d','%H','%M','%S'])
     """
     if seperator == None:
@@ -96,14 +96,14 @@ def takeFirst(elem):
 def takeSecond(elem):
     return elem[1]
 
-def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
-    """Finds nth occurence of tofind in string between start and end\n
+def FindNthOccurrence(string, toFind, n=1, start=0, end=0):
+    """Finds nth occurrence of toFind in string between start and end\n
     returns the index or -1 if not found"""
     if end == 0:
         end = len(string)
     val = start - 1
     for i in range(0, n):  # pylint: disable=unused-variable
-        val = string.find(tofind, val + 1, end)
+        val = string.find(toFind, val + 1, end)
         if val == -1:
             return val
     return val
@@ -111,7 +111,7 @@ def FindNthOccurrence(string, tofind, n=1, start=0, end=0):
 
 def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs):
     """
-    Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B\n
+    Finds the first occurrence of A and the nth occurrence of B with n being the amount of occurrence of A between the A and the nth B\n
     recognizes all pairs so that it returns -1 for "({)}" when searching for ["(",")"]\n
     \n
     DOES NOT WORK YET IF AT LEAST 2 OPENING TOO MANY
@@ -159,15 +159,15 @@ def FindEndOfBlock(string, Target, listlist, start=0, end=0):
                 CurrentPair = o
     if isEnd:
         return start
-    nstart = FindPair(string, CurrentPair, start, end, listlist)[1] + len(CurrentPair[1])
-    if nstart == -1 or nstart <= start:
+    nStart = FindPair(string, CurrentPair, start, end, listlist)[1] + len(CurrentPair[1])
+    if nStart == -1 or nStart <= start:
         return start
     else:
-        return FindEndOfBlock(string, Target, listlist, nstart, end)
+        return FindEndOfBlock(string, Target, listlist, nStart, end)
 
 
 def FindPair_simple(string, AB, start=0, end=0):
-    """Finds the first occurence of A and the nth occurence of B with n being the amount of occurence of A between the A and the nth B"""
+    """Finds the first occurrence of A and the nth occurrence of B with n being the amount of occurrence of A between the A and the nth B"""
     if end == 0:
         end = len(string)+1
     Apos = string.find(AB[0], start, end)
@@ -244,14 +244,14 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
                 result += j[0] if not Both else j
     if len(result)>=1:
         return result
-    ErrMsg = String+" has no couterpart"
+    ErrMsg = String+" has no counterpart"
     raise Exception(ErrMsg)
     
 
 # -----------------------------------------------------------------------------------------------------------------
 
 def LaTeX(expr,local_dict=None,evalf=1):
-    """This function parses a string into a sympy construct withou evaluating anything!"""
+    """This function parses a string into a sympy construct without evaluating anything!"""
     
     try:
         expr = Matrix_Encaser(expr)
@@ -302,7 +302,7 @@ def Matrix_Encaser(string):
 
 # -----------------------------------------------------------------------------------------------------------------
 # Useful links:
-    # https://pypi.org/project/parse/  # New library not in anacona so probably not good to use...
+    # https://pypi.org/project/parse/  # New library not in Anaconda so probably not good to use...
     # https://pyformat.info/
     # https://docs.python.org/3.4/library/string.html
 
@@ -336,15 +336,15 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
     #----
-    #---- Temporary Integral Handling for Astus's Integral Syntax
+    #---- Temporary Integral Handling for Astus' Integral Syntax
     string = IntegralParser_Astus(string)
     #----
     string = IntegralParser(string)
     string = Derivative_and_IndefiniteIntegral_Parser(string) # Do this after all other integral parsers
     
     
-    # Getting rid of not interpreteable brackets
-    # string = NonIterpreteableBracketReplace(string)
+    # Getting rid of not interpretable brackets
+    # string = NonInterpreteableBracketReplace(string)
     
     
     # Add multiplication signs where a human might leave them out
@@ -396,8 +396,8 @@ def Derivative_and_IndefiniteIntegral_Parser(string):
                     break
     return string
 
-def NonIterpreteableBracketReplace(string):
-    for i in ART.l_pairs_brackets_not_interpreteable:
+def NonInterpreteableBracketReplace(string):
+    for i in ART.l_pairs_brackets_not_interpretable:
         string = string.replace(i[0],"(")
         string = string.replace(i[1],")")
     return string
@@ -448,14 +448,14 @@ def Replace(string,List,a=0,b=1):
     return string
 
 def number_shaver(ch,
-                  regx = re.compile('(?<![\d.])0*(?:'               # pylint: disable=anomalous-backslash-in-string
+                  expr = re.compile('(?<![\d.])0*(?:'               # pylint: disable=anomalous-backslash-in-string
                                     '(\d+)\.?|\.(0)'                # pylint: disable=anomalous-backslash-in-string
                                     '|(\.\d+?)|(\d+\.\d+?)'         # pylint: disable=anomalous-backslash-in-string
                                     ')0*(?![\d.])')  ,              # pylint: disable=anomalous-backslash-in-string
                   repl = lambda mat: mat.group(mat.lastindex)
                                      if mat.lastindex!=3
                                      else '0' + mat.group(3) ):
-    return regx.sub(repl,ch)
+    return expr.sub(repl,ch)
 # -----------------------------------------------------------------------------------------------------------------
 
 

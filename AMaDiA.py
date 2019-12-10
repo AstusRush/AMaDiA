@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.3.2"
+Version = "0.15.3.3"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -443,7 +443,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     ExceptionOutput(sys.exc_info())
         #else: # TODO: Implement this for all windows via the TopBarWidget
         #    # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
-        #    # If the new Value is the same it is NOT emited.
+        #    # If the new Value is the same it is NOT emitted.
         #    # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
         #    self.TopBar_Font_Size_spinBox.blockSignals(True)
         #    self.TopBar_Font_Size_spinBox.setValue(PointSize)
@@ -653,8 +653,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         sympy.init_printing() # doctest: +SKIP
         self.MainApp = MainApp
         self.MainApp.setMainWindow(self)
-
-       #FEATURE: Add a hotkey to center ther window on the Primary screen and reset its geometry to allow the user to save the window if it gets lost off screen
+        
        #FEATURE: Add Statistic Tab to easily compare numbers and check impact of variables etc
 
        # Build the UI
@@ -672,7 +671,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.setContentsMargins(0,0,0,0)
         #self.tabWidget.tabBar(). # Access the TabBar of the TabWidget
         self.tabWidget.tabBar().setUsesScrollButtons(True)
-        self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # CLEANUP: Is this necccccesssssary?
+        self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # CLEANUP: Is this necessary?
         self.tabWidget.tabBar().installEventFilter(self.TopBar)
 
         
@@ -712,7 +711,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_2_UpperSplitter.setSizes([163,699])
         self.Tab_2_LowerSplitter.setSizes([391,70])
         self.Tab_3_1_splitter.setSizes([297,565])
-        #To cofigure use:
+        #To configure use:
         #print(self.Tab_2_UpperSplitter.sizes())
         #print(self.Tab_2_LowerSplitter.sizes())
         #print(self.Tab_3_1_splitter.sizes())
@@ -794,7 +793,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             #If it does not fix the problem a more elaborate method is required...
             # A new variable that checks if the plot has already been used and if the LaTeX view has been used.
             # If the first is False and the second True then clear when the plot button is pressed and change the variables to ensure that this only happens once
-            #       to not accidentially erase the plots of the user as this would be really bad...
+            #       to not accidentally erase the plots of the user as this would be really bad...
 
         self.Tab_1_InputField.setFocus()
 
@@ -827,7 +826,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 ExceptionOutput(sys.exc_info())
 
         
-# ---------------------------------- Init and Maintanance ----------------------------------
+# ---------------------------------- Init and Maintenance ----------------------------------
 
     def ConnectSignals(self):
         self.Menu_Options_action_Dev_Function.triggered.connect(self.ReloadModules)
@@ -852,7 +851,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
         self.Tab_2_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
-        self.Tab_2_InputField.returnCrtlPressed.connect(self.Tab_2_F_Convert)
+        self.Tab_2_InputField.returnCtrlPressed.connect(self.Tab_2_F_Convert)
         
         self.Tab_3_1_Button_Plot.clicked.connect(self.Tab_3_1_F_Plot_Button)
         self.Tab_3_1_Formula_Field.returnPressed.connect(self.Tab_3_1_F_Plot_Button)
@@ -878,7 +877,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_1_System_4ATF_Xs.returnPressed.connect(lambda: self.Tab_5_1_SetFocus_on(self.Tab_5_1_NameInput))
         self.Tab_5_1_NameInput.returnPressed.connect(self.Tab_5_1_System_Plot_and_Save)
 
-        self.Tab_5_4_Dirty_Input.returnCrtlPressed.connect(self.Tab_5_4_Dirty_Display)
+        self.Tab_5_4_Dirty_Input.returnCtrlPressed.connect(self.Tab_5_4_Dirty_Display)
     
     def init_Menu(self,FirstTime=True):
         if FirstTime:
@@ -1013,7 +1012,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Menu_Options_action_Highlighter.setText(_translate("AMaDiA_Main_Window", "Highlighter"))
 
             self.Menu_Options_MathRemap.setTitle(_translate("AMaDiA_Main_Window", "MathKeyboard"))
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>For a Remapping that works on all aplications use the Global Remapper in the Options.</p></body></html>"))
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>For a Remapping that works on all applications use the Global Remapper in the Options.</p></body></html>"))
             self.Menu_Options_action_Use_Local_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Local Keyboard Remapper"))
             self.Menu_Options_action_Use_Global_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Global Keyboard Remapper"))
             self.Menu_Options_action_Use_Global_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>This works for all inputs including those in other applications!<br/>(This might cause problems with anti cheat systems in games. Use with care.)</p></body></html>"))
@@ -1065,7 +1064,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.MainApp.SetFont(Family, PointSize, self)
         #else: #CLEANUP
         #    # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
-        #    # If the new Value is the same it is NOT emited.
+        #    # If the new Value is the same it is NOT emitted.
         #    # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
         #    self.TopBar_Font_Size_spinBox.blockSignals(True)
         #    self.TopBar_Font_Size_spinBox.setValue(PointSize)
@@ -1124,9 +1123,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.selfPath = os.path.abspath(__file__)
         self.FolderPath = os.path.dirname(__file__)
         # Check if the path that was returned is correct
-        fpath = os.path.join(self.FolderPath,"AMaDiA.py")
-        fpath = pathlib.Path(fpath)
-        if fpath.is_file():
+        filePath = os.path.join(self.FolderPath,"AMaDiA.py")
+        filePath = pathlib.Path(filePath)
+        if filePath.is_file():
             self.pathOK = True
             # Create Plots folder to save plots
             self.PlotPath = os.path.join(self.FolderPath,"Plots")
@@ -1152,7 +1151,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(False)
                 self.Menu_Options_action_Use_Local_Keyboard_Remapper.setDisabled(True)
                 altgr = "altgr+"
-                altgrshift = "altgr+shift+"
+                altgrShift = "altgr+shift+"
                 #keyboard.on_press(print)
                 #keyboard.add_hotkey("shift",keyboard.release, args=("altgr"),trigger_on_release=True)
                 #keyboard.block_key("AltGr")
@@ -1165,7 +1164,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                             keyboard.add_hotkey(Key, AltGr_Shortcut, args=(i[2],i[3]), suppress=True, trigger_on_release=True)
                             #keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
                         if i[3] != " ":
-                            Key = altgrshift + i[0]
+                            Key = altgrShift + i[0]
                             keyboard.add_hotkey(Key, AltGr_Shift_Shortcut, args=(i[3]), suppress=True, trigger_on_release=True)
                             #keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
                         if i[4] != " ":
@@ -1184,7 +1183,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             except common_exceptions :
                 pass
 
-# ---------------------------------- Option Toolbar Funtions ----------------------------------
+# ---------------------------------- Option Toolbar Functions ----------------------------------
     def ReloadModules(self):
         #AC.ReloadModules()
         #AF.ReloadModules()
@@ -1272,7 +1271,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         for i in Test_Input:
             self.Tab_1_InputField.setText(i)
             self.Tab_1_F_Calculate_Field_Input()
-        Text = "Expected Entries after all calulations: "+str(len(Test_Input))
+        Text = "Expected Entries after all calculations: "+str(len(Test_Input))
         print(Text)
         self.Tab_1_InputField.setText(Text)
 
@@ -1287,10 +1286,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.AMaDiA_Text_File_Window.show()
         if FileName == "Patchlog.txt":
             worker = AT.Timer(0.1) # pylint: disable=no-value-for-parameter
-            worker.signals.finished.connect(self.AMaDiA_Text_File_SCROLLTOEND)
+            worker.signals.finished.connect(self.AMaDiA_Text_File_ScrollToEnd)
             self.threadpool.start(worker)
         
-    def AMaDiA_Text_File_SCROLLTOEND(self):
+    def AMaDiA_Text_File_ScrollToEnd(self):
         self.AMaDiA_Text_File_Window.Scroll_To_End()
 
     def Show_About(self):
@@ -1300,9 +1299,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def NotifyUser(self,Type,Text="Not Given",Time=None):
         self.MainApp.NotifyUser(Type,Text,Time)
 
-# ---------------------------------- TopBar Funtions ----------------------------------
+# ---------------------------------- TopBar Functions ----------------------------------
         
-# ---------------------------------- Chat Toolbar Funtions ----------------------------------
+# ---------------------------------- Chat Toolbar Functions ----------------------------------
 
     def OpenClient(self):
         self.Chat = AstusChat_Client.MainWindow()
@@ -1569,7 +1568,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if not listItems: return        
         for item in listItems:
             source.takeItem(source.row(item))
-            # The cleanup below is apparetnly unnecessary but it is cleaner to do it anyways...
+            # The cleanup below is apparently unnecessary but it is cleaner to do it anyways...
             if source is self.Tab_1_History:
                 item.data(100).tab_1_is = False
                 item.data(100).tab_1_ref = None
@@ -1764,7 +1763,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def TC_old(self,Thread): # Thread Creator: All new threads are created here # CLEANUP: TC_old
         ID = -1
 
-        # INVESTIGATE: This causes a creash due to garbagecollector deleting thrads before they are properly done cleaning themselves up
+        # INVESTIGATE: This causes a crash due to garbagecollector deleting threads before they are properly done cleaning themselves up
         #       but after they have claimed to be done cleaning up
         #for i,e in enumerate(self.ThreadList):
         #    # This is not 100% clean but only Threats that have reported back should
@@ -2187,7 +2186,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
             self.Tab_4_Active_Equation.AddVariable(Name,Matrix)
             
-            # Preapare ListWidgetItem
+            # Prepare ListWidgetItem
             item = QtWidgets.QListWidgetItem()
             h, w = AF.shape2(Matrix)
             Text = Name + " = {}".format(str(Matrix)) if h==1 and w==1 else Name + " : {}x{}".format(h,w)
@@ -2196,7 +2195,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             item.setData(101,Matrix)
             SearchFor = Name+" "
 
-            #Remove Duplicats
+            #Remove Duplicates
             # VALIDATE: Ensure that this works correctly in all cases!
             # FEATURE: Save the first duplicate in a temporary List item!
             FoundItems = self.Tab_4_Matrix_List.findItems(SearchFor,QtCore.Qt.MatchStartsWith)
@@ -2380,7 +2379,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                         Xs.append(0)
                 if MError != "":
                     self.NotifyUser(2,MError)
-                # Remove epmty leading entries
+                # Remove empty leading entries
                 for i,y in enumerate(Ys):
                     if y == 0:
                         Ys.pop(i)
@@ -2400,8 +2399,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             else: # Can not occur...
                 raise Exception("Tab {} in Control->Input Tab is unknown".format(Tab))
             # FEATURE: Save Systems in list
-            # REMINDER: Save duplicate in other list item to prevent accidetial overwirtes
-            # REMINDER: Save delted items in other list item to prevent accidetial deletions
+            # REMINDER: Save duplicate in other list item to prevent accidental overwrites
+            # REMINDER: Save delted items in other list item to prevent accidental deletions
             print(sys1)
             return sys1
         except common_exceptions:

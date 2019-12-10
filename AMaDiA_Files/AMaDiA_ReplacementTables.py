@@ -76,7 +76,7 @@ KR_Map = [
 l_beginning_symbols = ['=','(','{','[']
 l_pairs_brackets = [['(',')'],['[',']'],['{','}']]
 l_pairs_brackets_special = [['<','>']]
-l_pairs_brackets_not_interpreteable = [['{','}'],['[',']']]
+l_pairs_brackets_not_interpretable = [['{','}'],['[',']']]
 l_pairs_quotation = [["\"","\""],["\'","\'"]]
 #CLEANUP: Clean this up...:
 l_pairs_special_I_D = [["Integral","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
@@ -175,7 +175,7 @@ LIST_r_s_scripts = [r_s_superscript_numbers_neg, r_s_superscript_numbers , r_s_s
 
 # ---------------------------------- Replacements Complex to Python r_c_ ----------------------------------
 
-# number refferences number of parts in addition to symbol replacement
+# number references number of parts in addition to symbol replacement
 r_c_operators_1 = [["√",""]]
 r_c_operators_2 = [[]]
 r_c_operators_3 = [["Σ",""],["Π",""]]

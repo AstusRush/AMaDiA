@@ -114,7 +114,7 @@ class MplWidget_2D_Plot(MplWidget):
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
         # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
-        # It could help to seperate the two widgets into two files...
+        # It could help to separate the two widgets into two files...
         # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
         # Maybe test this in a little testprogram to not waste that much time...
         
@@ -183,7 +183,7 @@ class MplWidget_LaTeX(MplWidget):
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
         # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
-        # It could help to seperate the two widgets into two files...
+        # It could help to separate the two widgets into two files...
         # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
         # Maybe test this in a little testprogram to not waste that much time...
         
@@ -515,7 +515,7 @@ class MplWidget_CONTROL(MplWidget):
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
         # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
-        # It could help to seperate the two widgets into two files...
+        # It could help to separate the two widgets into two files...
         # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
         # Maybe test this in a little testprogram to not waste that much time...
         
@@ -742,7 +742,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
         
         self.setLayout(self.Grid)
 
-        # TODO: Reimplement these to let them fit the heigth to the contents automaticall
+        # TODO: Reimplement these to let them fit the height to the contents automaticall
         self.ScrollWidgetContents.setMaximumHeight(50)
         self.ScrollWidget.setMaximumHeight(70)
         
@@ -822,7 +822,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
     def UseTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
         # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
-        # It could help to seperate the two widgets into two files...
+        # It could help to separate the two widgets into two files...
         # ... but it is also possible that this setting is global not only for the file but the program which would make the seperation a massive waste of time...
         # Maybe test this in a little testprogram to not waste that much time...
         
@@ -951,7 +951,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
             elif PlotName == Titles[8]:
                 control.root_locus_AMaDiA(sys1,self.canvas.ax)
                 self.canvas.ax.grid(True)
-            else: # LaTeX Display (Uses Tilte as display string)
+            else: # LaTeX Display (Uses Title as display string)
                 return (4,"This Plot is not implemented yet")
             
 
@@ -963,13 +963,13 @@ class MplWidget_CONTROL_single_plot(MplWidget):
                 self.Title = PlotName
 
             #Colour everything and draw it
-            CreturnTuple = self.SetColour()
-            if CreturnTuple != (0,0):
+            cReturnTuple = self.SetColour()
+            if cReturnTuple != (0,0):
                 if returnTuple == (0,0):
-                    returnTuple = CreturnTuple
+                    returnTuple = cReturnTuple
                 else:
                     returnTuple = (1," "+returnTuple[1])
-                    returnTuple = (1,CreturnTuple[1]+returnTuple[1])
+                    returnTuple = (1,cReturnTuple[1]+returnTuple[1])
         except common_exceptions:
             returnTuple = (1, ExceptionOutput(sys.exc_info()))
         self.UseTeX(False)
@@ -980,7 +980,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
 
 class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
     returnPressed = QtCore.pyqtSignal()
-    returnCrtlPressed = QtCore.pyqtSignal()
+    returnCtrlPressed = QtCore.pyqtSignal()
     def __init__(self, parent=None):
         QtWidgets.QTextEdit.__init__(self, parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
@@ -992,7 +992,7 @@ class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
                 and event.modifiers() == QtCore.Qt.ControlModifier):
-            source.returnCrtlPressed.emit()
+            source.returnCtrlPressed.emit()
         if (event.type() == QtCore.QEvent.KeyPress # Connects to returnPressed
                 and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)):
             source.returnPressed.emit()
@@ -1025,16 +1025,16 @@ class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
         #self.document().contentsChange.emit(curPos,0,0)
 
     def validateCharacters(self):
-        #vorbiddenChars = []
+        #forbiddenChars = []
         cursor = self.textCursor()
         curPos = cursor.position()
         Text = self.toPlainText()
         found = 0
-        #for e in vorbiddenChars:
+        #for e in forbiddenChars:
         #    found += Text.count(e)
         #    Text = Text.replace(e, '')
 
-        # Windows doesn't like to type the combining dot above or double dot. This is a fix for the behaviour that I observe on my PC
+        # Windows doesn't like to type the combining dot above or double dot. This is a fix for the behavior that I observe on my PC
         found += Text.count("\u005C\u0307")
         Text = Text.replace("\u005C\u0307","\u0307")
         found += Text.count("\u00BF\u0308")
@@ -1057,7 +1057,7 @@ class TextEdit(ATextEdit):
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
                 and event.modifiers() == QtCore.Qt.ControlModifier):
-            source.returnCrtlPressed.emit()
+            source.returnCtrlPressed.emit()
             return True
         return super(TextEdit, self).eventFilter(source, event)
 
@@ -1099,12 +1099,12 @@ class LineEdit(ATextEdit):
         return super(LineEdit, self).eventFilter(source, event)
 
     def validateCharacters(self):
-        vorbiddenChars = ['\n']
+        forbiddenChars = ['\n']
         cursor = self.textCursor()
         curPos = cursor.position()
         Text = self.toPlainText()
         found = 0
-        for e in vorbiddenChars:
+        for e in forbiddenChars:
             found += Text.count(e)
             Text = Text.replace(e, '')
         

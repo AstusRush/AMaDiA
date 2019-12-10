@@ -307,7 +307,11 @@ v0.15.3.1: Fix for Error Notifications
 
 v0.15.3.2: Bugfix and Center-Hotkey
 + Fixed a crash that was caused when a notification that is only visible in advanced mode was send
-+ crtl+0 now centers all windows and resizes them
++ crtl+0 now centres all windows and resizes them
 ++ This is useful if the resize or move fields are outside of the screen which would require a restart of the application
 + Added 2 new entries to BUG-INPUT.txt
+
+v0.15.3.3: Beginning of AMaS Rework and typo correction
++ Started to rework AMaS
++ Corrected all typos in the code
 
