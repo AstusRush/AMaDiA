@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.3.1"
+Version = "0.15.3.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -304,7 +304,16 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
     
     def eventFilter(self, source, event):
         if event.type() == 6: # QtCore.QEvent.KeyPress
-            if source == self.MainWindow:
+            if event.modifiers() == ControlModifier and event.key() == QtCore.Qt.Key_0:
+                for w in self.topLevelWidgets():
+                    w.resize(906, 634)
+                    frameGm = w.frameGeometry()
+                    screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+                    centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+                    frameGm.moveCenter(centerPoint)
+                    w.move(frameGm.topLeft())
+                return True
+            if source == self.MainWindow: # THIS IS SPECIFIC TO AMaDiA_Main_Window
                 if event.modifiers() == ControlModifier:
                     if event.key() == QtCore.Qt.Key_1:
                         self.MainWindow.tabWidget.setCurrentIndex(0)
@@ -325,7 +334,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     elif event.key() == QtCore.Qt.Key_5:
                         self.MainWindow.tabWidget.setCurrentIndex(4)
                         return True
-            try: # FEATURE: Add superscript Macros
+            try:  # THIS IS SPECIFIC TO AMaDiA_Main_Window # FEATURE: Add superscript Macros
                 if self.MainWindow.Menu_Options_action_Use_Local_Keyboard_Remapper.isChecked():
                     modifiers = QtWidgets.QApplication.keyboardModifiers() # instead of event.modifiers() to be more reliable
                     if modifiers == (GroupSwitchModifier | ShiftModifier) or modifiers == (ControlModifier | AltModifier | ShiftModifier):
@@ -372,8 +381,8 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.setPalette(self.Palette)
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.MplWidget):
-                i.SetColour(self.BG_Colour , self.TextColour)
-        if self.MainWindow != None:
+                i.SetColour(self.BG_Colour, self.TextColour)
+        if self.MainWindow != None: # THIS IS SPECIFIC TO AMaDiA_Main_Window
             try:
                 self.MainWindow.init_Animations_With_Colour()
                 brush = self.Palette.text()
@@ -402,7 +411,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
 
-    def SetFont(self,Family = None, PointSize = 0, source=None):
+    def SetFont(self, Family=None, PointSize=0, source=None):
         if type(Family) == QtGui.QFont:
             PointSize = Family.pointSize()
             Family = Family.family()
@@ -524,7 +533,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         elif Type == 3:
             self.NotifyUser_Notification(Text,Time)
         elif Type == 4:
-            if self.Menu_Options_action_Advanced_Mode.isChecked():
+            if self.MainWindow.Menu_Options_action_Advanced_Mode.isChecked():
                 self.NotifyUser_Notification(Text,Time)
         elif Type == 10:
             self.NotifyUser_Direct(Text,Time)
@@ -1067,7 +1076,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         ##font.setPointSize(PointSize)
         ##self.setFont(font)
         ##self.S_Font_Changed.emit(font)
-#
+        #
         #self.ChangeFontSize()
         ## Always keep Statusbar Font small
         #font = QtGui.QFont()
@@ -1092,7 +1101,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.setFont(newFont)
         #for i in self.findChildren(QtWidgets.QMenu):
         #    i.setFont(newFont)
-#
+        #
         #self.S_Font_Changed.emit(newFont)
         #if self.Menu_Options_action_ToggleCompactMenu.isChecked():
         #    self.TopBar.CloseButton.setMinimumHeight(self.MenuBar.height())
@@ -1174,9 +1183,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 print(i,Key)
             except common_exceptions :
                 pass
-
-
-
 
 # ---------------------------------- Option Toolbar Funtions ----------------------------------
     def ReloadModules(self):
@@ -1293,9 +1299,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def NotifyUser(self,Type,Text="Not Given",Time=None):
         self.MainApp.NotifyUser(Type,Text,Time)
+
 # ---------------------------------- TopBar Funtions ----------------------------------
         
-
 # ---------------------------------- Chat Toolbar Funtions ----------------------------------
 
     def OpenClient(self):
@@ -1305,7 +1311,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def OpenServer(self):
         self.Sever = AstusChat_Server.MainWindow()
         self.Sever.show()
-
 
 # ---------------------------------- Events and Context Menu ----------------------------------
     def OtherContextMenuSetup(self):
@@ -1359,7 +1364,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_5_tabWidget.setCurrentIndex(1)
         self.Tab_5_tabWidget.setFocus()
     
-
 # ---------------------------------- Event Filter ----------------------------------
 
     def eventFilter(self, source, event):
@@ -1586,7 +1590,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     item.data(100).Tab_4_is = False
                     item.data(100).Tab_4_ref = None
 
-
 # ---------------------------------- Tab_4_Matrix_List Context Menu Actions/Functions ----------------------------------
     def action_tab_5_M_Load_into_Editor(self,source,event):
         item = source.itemAt(event.pos())
@@ -1612,7 +1615,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             a = source.takeItem(source.row(item))
             del self.Tab_4_Active_Equation.Variables[a.data(100)]
         
-
 # ---------------------------------- Tab_3_1_Display_Context_Menu ----------------------------------
     def action_tab_3_tab_1_Display_SavePlt(self):
         if self.pathOK:
@@ -1632,7 +1634,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             print("Could not save Plot: Could not validate save location")
             self.NotifyUser(1,"Could not save Plot: Could not validate save location")
         
-
 # ---------------------------------- Tab_4_Display_Context_Menu ----------------------------------
     def action_tab_5_Display_Copy_Displayed(self):
         QApplication.clipboard().setText(self.Tab_4_Currently_Displayed)

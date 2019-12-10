@@ -305,3 +305,9 @@ v0.15.3: Palette and Font setting overhaul
 v0.15.3.1: Fix for Error Notifications
 + Fixed the update of text and tooltip for the TopBarErrorButton when an Error-notification is send.
 
+v0.15.3.2: Bugfix and Center-Hotkey
++ Fixed a crash that was caused when a notification that is only visible in advanced mode was send
++ crtl+0 now centers all windows and resizes them
+++ This is useful if the resize or move fields are outside of the screen which would require a restart of the application
++ Added 2 new entries to BUG-INPUT.txt
+
