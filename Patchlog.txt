@@ -320,3 +320,7 @@ v0.15.3.4: TopBar init change
 ++ When using TopBar_Widget in QtDesigner one can add a layout and other widgets to the TopBar_Widget
 +++ init() must be called after adding a layout thus the __init__() and init() must be separateable
 
+v0.15.3.5: Folder Creation improvement
++ Thanks to exist_ok=True creating a folder no longer raises an exception which must be ignored
+++ This means that the code can now be simplified
+

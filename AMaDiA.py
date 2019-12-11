@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.3.4"
+Version = "0.15.3.5"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -1128,17 +1128,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # Create Plots folder to save plots
             self.PlotPath = os.path.join(self.FolderPath,"Plots")
             try:
-                os.makedirs(self.PlotPath)
+                os.makedirs(self.PlotPath,exist_ok=True)
             except OSError as e:
-                if e.errno != errno.EEXIST:
+                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnessecary thanks to exist_ok=True
                     ExceptionOutput(sys.exc_info())
                     self.pathOK = False
             # Create Config folder to save configs
             self.ConfigFolderPath = os.path.join(self.FolderPath,"Config")
             try:
-                os.makedirs(self.ConfigFolderPath)
+                os.makedirs(self.ConfigFolderPath,exist_ok=True)
             except OSError as e:
-                if e.errno != errno.EEXIST:
+                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnessecary thanks to exist_ok=True
                     ExceptionOutput(sys.exc_info())
                     self.pathOK = False
 
