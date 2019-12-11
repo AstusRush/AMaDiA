@@ -315,3 +315,8 @@ v0.15.3.3: Beginning of AMaS Rework and typo correction
 + Started to rework AMaS
 + Corrected all typos in the code
 
+v0.15.3.4: TopBar init change
++ The __init__() from TopBar_Widget now takes 4 bools to call its init()
+++ When using TopBar_Widget in QtDesigner one can add a layout and other widgets to the TopBar_Widget
++++ init() must be called after adding a layout thus the __init__() and init() must be separateable
+

@@ -1286,10 +1286,13 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
 
 
 class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, DoInit=False, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False):
         super(TopBar_Widget, self).__init__(parent)
         self.moving = False
         self.offset = 0
+        self.IncludeMenu, self.IncludeFontSpinBox, self.IncludeErrorButton = IncludeMenu, IncludeFontSpinBox, IncludeErrorButton
+        if DoInit:
+            self.init(IncludeMenu, IncludeFontSpinBox, IncludeErrorButton)
 
     def init(self, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False):
         # TODO: Add a handle to resize the window
@@ -1454,7 +1457,7 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
                     self.MinimizeButton.setAutoRaise(False)
                 elif event.type() == QtCore.QEvent.Leave:
                     self.MinimizeButton.setAutoRaise(True)
-        elif source is self.Error_Label and event.type() == QtCore.QEvent.Enter: #==10
+        elif self.IncludeErrorButton and source is self.Error_Label and event.type() == QtCore.QEvent.Enter: #==10
             QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.Error_Label.toolTip(),self.Error_Label)
         return super(TopBar_Widget, self).eventFilter(source, event)
 

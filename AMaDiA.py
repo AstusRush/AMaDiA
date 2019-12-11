@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.3.3"
+Version = "0.15.3.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -659,7 +659,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
        # Build the UI
         self.init_Menu()
         self.setupUi(self)
-        self.TopBar = AW.TopBar_Widget(self)
+        self.TopBar = AW.TopBar_Widget(self,True,True,True,True)
         self.TopBar.setObjectName("TopBar")
         #self.TopBarGridLayout = QtWidgets.QGridLayout(self.TopBar)
         #self.TopBarGridLayout.setContentsMargins(0, 0, 0, 0)
@@ -673,11 +673,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.tabWidget.tabBar().setUsesScrollButtons(True)
         self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # CLEANUP: Is this necessary?
         self.tabWidget.tabBar().installEventFilter(self.TopBar)
-
         
-        self.TopBar.init(True,True,True)
         self.MenuBar.setContentsMargins(0,0,0,0)
-
+        
         self.setMenuBar(self.MenuBar)
         self.MenuBar.setCornerWidget(self.TopBar)
 
