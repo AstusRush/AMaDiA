@@ -25,6 +25,29 @@ from matplotlib import colors
 
 from External_Libraries.python_control_master import control
 
+
+class NotificationEvent(QtCore.QEvent):
+    """
+    Useage: QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEvent(Type, Text="Not Given", Time=None))  \n
+    0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification  \n
+    This is thread save!!!
+    """
+    # Inspired by: http://code.activestate.com/recipes/578299-pyqt-pyside-thread-safe-global-queue-main-loop-int/
+    EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
+    def __init__(self, Type, Text="Not Given", Time=None):
+        QtCore.QEvent.__init__(self, NotificationEvent.EVENT_TYPE)
+        self.Type = Type
+        self.Text = Text
+        self.Time = Time
+
+def sendNotification(Type, Text="Not Given", Time=None):
+    """
+    Type: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification  \n
+    This is thread save!!!
+    """
+    QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEvent(Type, Text, Time))
+
+
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
 import importlib

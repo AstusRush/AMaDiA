@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.3.5"
+Version = "0.15.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -53,7 +53,7 @@ from matplotlib.figure import Figure
 from AMaDiA_Files.AMaDiAUI import Ui_AMaDiA_Main_Window
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NotificationEvent, sendNotification
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 from AMaDiA_Files import AMaDiA_Colour
@@ -369,6 +369,9 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                                     break
             except AttributeError:
                 pass
+        elif event.type() == NotificationEvent.EVENT_TYPE:
+            self.NotifyUser(event.Type,event.Text,event.Time)
+            return True
         return super(AMaDiA_Main_App, self).eventFilter(source, event)
 
 # ---------------------------------- Colour and Font ----------------------------------
@@ -728,7 +731,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
        # Initialize Thread Related Things:
         self.ThreadList = []
-        self.threadpool = QtCore.QThreadPool()
+        self.threadpool = QtCore.QThreadPool()#.globalInstance()
         #self.threadpool.setMaxThreadCount(8)
         print("Multithreading with maximum %d threads (when in Threadpool mode)" % self.threadpool.maxThreadCount())
         # Thread Mode
@@ -1130,7 +1133,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             try:
                 os.makedirs(self.PlotPath,exist_ok=True)
             except OSError as e:
-                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnessecary thanks to exist_ok=True
+                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnecessary thanks to exist_ok=True
                     ExceptionOutput(sys.exc_info())
                     self.pathOK = False
             # Create Config folder to save configs
@@ -1138,7 +1141,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             try:
                 os.makedirs(self.ConfigFolderPath,exist_ok=True)
             except OSError as e:
-                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnessecary thanks to exist_ok=True
+                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnecessary thanks to exist_ok=True
                     ExceptionOutput(sys.exc_info())
                     self.pathOK = False
 

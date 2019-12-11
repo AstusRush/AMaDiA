@@ -318,9 +318,15 @@ v0.15.3.3: Beginning of AMaS Rework and typo correction
 v0.15.3.4: TopBar init change
 + The __init__() from TopBar_Widget now takes 4 bools to call its init()
 ++ When using TopBar_Widget in QtDesigner one can add a layout and other widgets to the TopBar_Widget
-+++ init() must be called after adding a layout thus the __init__() and init() must be separateable
++++ init() must be called after adding a layout thus the __init__() and init() must be separable
 
 v0.15.3.5: Folder Creation improvement
 + Thanks to exist_ok=True creating a folder no longer raises an exception which must be ignored
 ++ This means that the code can now be simplified
+
+v0.15.4: Multithreading save Notifications
++ Added a new function that can send notifications
+++ This new function is multithread save and can be called from anywhere without any concern
++++ This allows me to revolutionize the notifications in future updates as I am no longer limited to sending signals from QThread/QRunnable
++++ The same method can be used to send other data to other windows and widgets and offers great flexibility in the future
 

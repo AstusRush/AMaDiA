@@ -28,7 +28,7 @@ from External_Libraries.python_control_master import control
 #import AMaDiA
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NotificationEvent, sendNotification
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
