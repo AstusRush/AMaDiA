@@ -439,7 +439,8 @@ def NonInterpreteableBracketReplace(string):
     
 """
 
-def AstusParseInverse(string):
+def AstusParseInverse(string, Validate=False):
+    string_i = string
     string = Replace(string,ART.n_operators)
     string = Replace(string,ART.n_standard_integrals)
     string = Replace(string,ART.LIST_r_s_scripts,1,0)
@@ -448,8 +449,11 @@ def AstusParseInverse(string):
     #string = string.replace(" * "," · ")
     
     
-    
-    return string
+    # TODO: Use this check
+    if (not Validate) or string_i == AstusParse(string,False):
+        return string
+    else:
+        return string_i
 
 
 def Replace(string,List,a=0,b=1):

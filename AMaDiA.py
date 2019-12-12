@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.4"
+Version = "0.15.5"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -244,7 +244,7 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
             self.setCentralWidget(self.centralwidget)
 
             for i in Notifications:
-                self.AddNotification(i)
+                self.AddNotification(i[0])
             
             self.setAutoFillBackground(True)
         except common_exceptions:
@@ -477,7 +477,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     ExceptionOutput(sys.exc_info())
 
 
-# ---------------------------------- Error Handling ----------------------------------
+# ---------------------------------- Notifications ----------------------------------
 
     def init_Notification_Flash(self):
         self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'FLASH_colour')
@@ -524,9 +524,13 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 
     def NotifyUser(self,Type,Text="Not Given",Time=None):
         """0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification"""
+        # TODO: Allow a string as type and convert it into the number
         if Text=="Not Given" and type(Type) == tuple:
             Type, Text = Type[0], Type[1]
-        self.LastNotification = Text
+        if type(Text) != str:
+            Text = str(Text)
+        Text = Text.rstrip()
+        
         if Type == 0:
             pass
         elif Type == 1:
@@ -551,16 +555,29 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                 if i.IncludeErrorButton:
                     i.parentWidget().adjustSize()
         # REMINDER: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
+        
+    def ListVeryRecentNotifications(self, Error_Text_TT, level):
+        cTime = time.time()
+        for i in range(len(self.Notification_List)):
+            if i< 10 and cTime - self.Notification_List[-i-1][1] < 2+i and len(Error_Text_TT.splitlines())<40:
+                Error_Text_TT += "\n\n"
+                Error_Text_TT += self.Notification_List[-i-1][0]
+                if level > self.Notification_List[-i-1][2]:
+                    level = self.Notification_List[-i-1][2]
+            else:
+                break
+        return (Error_Text_TT,level)
 
     def NotifyUser_Error(self,Error_Text,Time=None):
         if Time==None:
             Time = AF.cTimeSStr()
         Text = "Error at " + Time
+        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text,1)
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
                     i.Error_Label.setText(Text)
-                    i.Error_Label.setToolTip(Error_Text)
+                    i.Error_Label.setToolTip(Error_Text_TT)
                     i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
 
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
@@ -569,64 +586,83 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 
         Text += "\n"
         Text += Error_Text
-        self.Notification_List.append(Text)
+        self.Notification_List.append((Text,time.time(),1))
         self.S_New_Notification.emit(Text)
 
     def NotifyUser_Warning(self,Error_Text,Time=None):
         if Time==None:
             Time = AF.cTimeSStr()
         Text = "Warning at " + Time
+        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text,2)
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
                     i.Error_Label.setText(Text)
-                    i.Error_Label.setToolTip(Error_Text)
-                    i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+                    i.Error_Label.setToolTip(Error_Text_TT)
+                    if level == 1:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
+                    else:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
 
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Yellow.start()
 
         Text += "\n"
         Text += Error_Text
-        self.Notification_List.append(Text)
+        self.Notification_List.append((Text,time.time(),2))
         self.S_New_Notification.emit(Text)
 
     def NotifyUser_Notification(self,Error_Text,Time=None):
         if Time==None:
             Time = AF.cTimeSStr()
         Text = "Notification at " + Time
+        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text,3)
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
                     i.Error_Label.setText(Text)
-                    i.Error_Label.setToolTip(Error_Text)
-                    i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
+                    i.Error_Label.setToolTip(Error_Text_TT)
+                    if level == 1:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
+                    elif level == 2:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+                    else:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
 
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Blue.start()
 
         Text += "\n"
         Text += Error_Text
-        self.Notification_List.append(Text)
+        self.Notification_List.append((Text,time.time(),3))
         self.S_New_Notification.emit(Text)
 
     def NotifyUser_Direct(self,Error_Text,Time=None):
         if Time==None:
             Time = AF.cTimeSStr()
+        Error_Text_TT = "Direct Notification at " + Time
+        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text_TT,10)
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
                     i.Error_Label.setText(Error_Text)
-                    i.Error_Label.setToolTip("Start at "+Time)
-                    # TODO: Unset the Icon!
-
+                    i.Error_Label.setToolTip(Error_Text_TT)
+                    if level == 1:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
+                    elif level == 2:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+                    elif level == 3:
+                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
+                    else:
+                        i.Error_Label.setIcon(QtGui.QIcon())
+                        
         #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         #self.Notification_Flash_Blue.start()
 
         Text = "Direct Notification at "+Time
         Text += "\n"
         Text += Error_Text
-        self.Notification_List.append(Text)
+        self.Notification_List.append((Text,time.time(),10))
         self.S_New_Notification.emit(Text)
 
     #def TopBar_Error_Label_Tooltip(self, index): #CLEANUP
@@ -648,6 +684,10 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def __init__(self, MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent)
+        #TODO: add the menubar and statusbar to the centralwidget and make a frame around it and reimplement the functions to access these to redirect to the new ones
+            # Then do the same for the other windows (especially adding the frame) and use the topbar for them
+            # see http://redino.net/blog/2014/05/qt-qwidget-add-menu-bar/
+        
         # Create Folders if not already existing
         self.CreateFolders()
         # Read all config files:
@@ -657,7 +697,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.MainApp = MainApp
         self.MainApp.setMainWindow(self)
         
-       #FEATURE: Add Statistic Tab to easily compare numbers and check impact of variables etc
+        #FEATURE: Add Statistic Tab to easily compare numbers and check impact of variables etc
 
        # Build the UI
         self.init_Menu()
@@ -720,12 +760,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
        # Initialize important variables and lists
         self.ans = "1"
-        self.LastNotification = ""
         self.LastOpenState = self.showNormal
         self.Bool_PreloadLaTeX = True
         self.firstrelease = False
         self.keylist = []
-        self.Notification_List = []
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
 

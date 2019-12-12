@@ -330,3 +330,14 @@ v0.15.4: Multithreading save Notifications
 +++ This allows me to revolutionize the notifications in future updates as I am no longer limited to sending signals from QThread/QRunnable
 +++ The same method can be used to send other data to other windows and widgets and offers great flexibility in the future
 
+v0.15.5: More readable Output and recent Notifications
++ The solution part of the output in the calculator is now inverse parsed to make it easier to read
+++ The not-inverse-parsed solution is accessible via the "Copy Solution" option in the context menu
+++ To ensure that the inverse parse makes no mistakes it is only used if parsing it again is equal to the original solution
++ The classifications of ODEs are now displayed as a notification
++ Removing trailing new lines and spaces from all notifications
++ When many notifications are send at the same time they are all displayed in the tooltip
+++ The icon is set for the highest priority notification in the tooltip
+++ The colour of the flash is for the latest notification that managed to start the flash-animation
++++ Note: When the flash-animation is currently running the start of a new flash-animation can fail
+

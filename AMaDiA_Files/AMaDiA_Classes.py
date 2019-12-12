@@ -490,7 +490,9 @@ class AMaS: # Astus' Mathematical Structure
                 try:
                     ans = sympy.dsolve(ans,simplify=self.f_simplify)
                     try:
-                        print("ODE Class:",sympy.classify_ode(ParsedInput))
+                        classification = sympy.classify_ode(ParsedInput)
+                        print("ODE Classification:\n",classification)
+                        sendNotification(3,"ODE Classification:\n"+str.join("\n",classification))
                     except common_exceptions:
                         Error = ExceptionOutput(sys.exc_info())
                     try:
@@ -532,7 +534,7 @@ class AMaS: # Astus' Mathematical Structure
                 #if callable(inst.args):
                 #    print(inst.args())
                 self.Evaluation = "Fail"
-            self.EvaluationEquation = self.Evaluation + "   <==   "
+            self.EvaluationEquation = AF.AstusParseInverse(self.Evaluation, True) + "   <==   "
             self.EvaluationEquation += self.Text
         else:
             try:
@@ -551,7 +553,9 @@ class AMaS: # Astus' Mathematical Structure
                     try:
                         ans = sympy.dsolve(ans,simplify=self.f_simplify)
                         try:
-                            print("ODE Class:",sympy.classify_ode(ParsedInput))
+                            classification = sympy.classify_ode(ParsedInput)
+                            print("ODE Classification:\n",classification)
+                            sendNotification(3,"ODE Classification:\n"+str.join("\n",classification))
                         except common_exceptions:
                             Error = ExceptionOutput(sys.exc_info())
                         ansF = self.ExecuteFlags(ans)
@@ -588,7 +592,7 @@ class AMaS: # Astus' Mathematical Structure
                 #    print(inst.args())
                 self.Evaluation = "Fail"
                 separator = "   <==   "
-            self.EvaluationEquation = self.Evaluation + separator
+            self.EvaluationEquation = AF.AstusParseInverse(self.Evaluation, True) + separator
             self.EvaluationEquation += self.Text
         
         self.init_Flags() # Reset All Flags
@@ -649,7 +653,9 @@ class AMaS: # Astus' Mathematical Structure
             print("Variable:",var)
             var_Parsed = parse_expr(var)
             equation = parse_expr(equation,local_dict=self.Variables)
-            print("ODE Class:",sympy.classify_ode(equation))
+            classification = sympy.classify_ode(equation)
+            print("ODE Classification:\n",classification)
+            sendNotification(3,"ODE Classification:\n"+str.join("\n",classification))
             ics = {}
             for i in Input:
                 f,y=i.split("=")
@@ -680,7 +686,7 @@ class AMaS: # Astus' Mathematical Structure
             Error = ExceptionOutput(sys.exc_info())
             self.Evaluation = "Fail"
         
-        self.EvaluationEquation = self.Evaluation + "   <==   "
+        self.EvaluationEquation = AF.AstusParseInverse(self.Evaluation, True) + "   <==   "
         self.EvaluationEquation += self.Text
             
         if self.Evaluation == "Fail":

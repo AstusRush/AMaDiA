@@ -1053,6 +1053,9 @@ class TextEdit(ATextEdit):
     def __init__(self, parent=None):
         super(TextEdit, self).__init__(parent)
         self.installEventFilter(self)
+
+        # FEATURE: Make subscript and superscript work and add an option to disable it (fro small font)
+        # See https://www.qtcentre.org/threads/38633-(SOLVED)-QTextEdit-subscripted-text for a startingpoint
         
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.KeyPress and (event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter)
