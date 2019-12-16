@@ -16,7 +16,7 @@ def Dark():
     palette = QtGui.QPalette()
     brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
     brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush) # Used for tab-text and for the arrows in spinboxes and scrollbars
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush) # Used for tab-text and for the arrows in spinboxes and scrollbars and QFrame
     #brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
     #brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)

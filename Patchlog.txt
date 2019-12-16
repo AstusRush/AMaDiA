@@ -341,3 +341,18 @@ v0.15.5: More readable Output and recent Notifications
 ++ The colour of the flash is for the latest notification that managed to start the flash-animation
 +++ Note: When the flash-animation is currently running the start of a new flash-animation can fail
 
+v0.15.6: Proper Window Frame
++ This update completes the custom window frame as all standard frame features are now implemented
+++ Note: The size of (and effort that went into) this update would normally make it update 0.16.0
++++ As it completes goals of "v0.15.0: Custom Window Frame" I have decided to keep it as part of v0.15
++ Made custom Window-class that is now used by all windows except for the chat (Chat will be reworked in the future)
+++ Has a proper frame around everything including MenuBar and StatusBar
++++ This frames makes the end of the window visible and allows me to use it for all windows without confusing the user
++++ Dragging the frame resizes the window
++++ Frame hides if window is maximized or in full-screen-mode
+++ All windows (except chat) now have a global font size spin box
++ The MenuBar and the main TabBar now allow to move the window
++ When moving a window that is maximized or in full-screen-mode it first exits this mode
++ When moving a window to a corner/side of the screen it now fills it
++ The 'Copy Solution' context menu action is now at the very top
+

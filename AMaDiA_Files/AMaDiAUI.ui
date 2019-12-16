@@ -37,7 +37,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0" colspan="2">
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="MTabWidget" name="tabWidget">
       <property name="autoFillBackground">
        <bool>true</bool>
       </property>
@@ -80,7 +80,7 @@
         <item row="1" column="0">
          <widget class="LineEdit" name="Tab_1_InputField">
           <property name="placeholderText">
-           <string>Enter something and hit return to calculate. Use crtl+return to not solve divisions, roots, etc.</string>
+           <string>Enter something and hit return to calculate. Use ctrl+return to not solve divisions, roots, etc.</string>
           </property>
          </widget>
         </item>
@@ -173,7 +173,7 @@
             </sizepolicy>
            </property>
            <property name="placeholderText">
-            <string>Add Mathematical Expression to be Converted to LaTeX. Use crtl+return or the Convert button to display. (First use after start can take a few seconds) Please give Feedback if return should convert and shift+return adds a new line instead!</string>
+            <string>Add Mathematical Expression to be Converted to LaTeX. Use ctrl+return or the Convert button to display. (First use after start can take a few seconds) Please give Feedback if return should convert and shift+return adds a new line instead!</string>
            </property>
           </widget>
          </widget>
@@ -181,7 +181,7 @@
         <item row="1" column="2" rowspan="2">
          <widget class="QPushButton" name="Tab_2_ConvertButton">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shortcut: crtl+return while having the Input field selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shortcut: ctrl+return while having the Input field selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Convert</string>
@@ -1512,6 +1512,12 @@ p, li { white-space: pre-wrap; }
    <class>TableWidget</class>
    <extends>QTableWidget</extends>
    <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>MTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>

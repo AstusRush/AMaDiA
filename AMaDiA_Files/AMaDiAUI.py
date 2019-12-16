@@ -20,7 +20,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setSpacing(0)
         self.gridLayout.setObjectName("gridLayout")
-        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget = MTabWidget(self.centralwidget)
         self.tabWidget.setAutoFillBackground(True)
         self.tabWidget.setUsesScrollButtons(False)
         self.tabWidget.setObjectName("tabWidget")
@@ -652,11 +652,11 @@ class Ui_AMaDiA_Main_Window(object):
     def retranslateUi(self, AMaDiA_Main_Window):
         _translate = QtCore.QCoreApplication.translate
         AMaDiA_Main_Window.setWindowTitle(_translate("AMaDiA_Main_Window", "AMaDiA"))
-        self.Tab_1_InputField.setPlaceholderText(_translate("AMaDiA_Main_Window", "Enter something and hit return to calculate. Use crtl+return to not solve divisions, roots, etc."))
+        self.Tab_1_InputField.setPlaceholderText(_translate("AMaDiA_Main_Window", "Enter something and hit return to calculate. Use ctrl+return to not solve divisions, roots, etc."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab_1), _translate("AMaDiA_Main_Window", "Calculator"))
         self.Tab_2_LaTeXOutput.setToolTip(_translate("AMaDiA_Main_Window", "Only First line of Input!"))
-        self.Tab_2_InputField.setPlaceholderText(_translate("AMaDiA_Main_Window", "Add Mathematical Expression to be Converted to LaTeX. Use crtl+return or the Convert button to display. (First use after start can take a few seconds) Please give Feedback if return should convert and shift+return adds a new line instead!"))
-        self.Tab_2_ConvertButton.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Shortcut: crtl+return while having the Input field selected</p></body></html>"))
+        self.Tab_2_InputField.setPlaceholderText(_translate("AMaDiA_Main_Window", "Add Mathematical Expression to be Converted to LaTeX. Use ctrl+return or the Convert button to display. (First use after start can take a few seconds) Please give Feedback if return should convert and shift+return adds a new line instead!"))
+        self.Tab_2_ConvertButton.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Shortcut: ctrl+return while having the Input field selected</p></body></html>"))
         self.Tab_2_ConvertButton.setText(_translate("AMaDiA_Main_Window", "Convert"))
         self.Tab_2_Eval_checkBox.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Evaluate Function:<br/>Controls if functions in the input should be evaluated.<br/>If unchecked some things (like Derivatives) might look weird.<br/>If half-checked only basic functions will be evaluated and only if they return integers<br/>If checked most things will be evaluated</p><p>Example:<br/>Input: sin(pi)<br/>Output if half-checked: 0<br/>Output if unchecked: sin(pi)</p><p>Input: exp(ln(x))<br/>Output if half-checked: x<br/>Output if unchecked: exp(ln(x))</p></body></html>"))
         self.Tab_2_Eval_checkBox.setText(_translate("AMaDiA_Main_Window", "Eval"))
@@ -744,4 +744,4 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_5_tabWidget.setTabText(self.Tab_5_tabWidget.indexOf(self.Tab_5_4), _translate("AMaDiA_Main_Window", "Code Input"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab_5), _translate("AMaDiA_Main_Window", "Control"))
 
-from AMaDiA_Files.AMaDiA_Widgets import LineEdit, MplWidget_2D_Plot, MplWidget_CONTROL, MplWidget_CONTROL_single_plot, MplWidget_LaTeX, TableWidget, TextEdit
+from AMaDiA_Files.AMaDiA_Widgets import LineEdit, MTabWidget, MplWidget_2D_Plot, MplWidget_CONTROL, MplWidget_CONTROL_single_plot, MplWidget_LaTeX, TableWidget, TextEdit

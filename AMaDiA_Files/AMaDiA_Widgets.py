@@ -978,14 +978,14 @@ class MplWidget_CONTROL_single_plot(MplWidget):
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
+class ATextEdit(QtWidgets.QTextEdit):
     returnPressed = QtCore.pyqtSignal()
     returnCtrlPressed = QtCore.pyqtSignal()
     def __init__(self, parent=None):
         QtWidgets.QTextEdit.__init__(self, parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
-        self.textChanged.connect(self.validateCharacters)
+        #self.textChanged.connect(self.validateCharacters) # Turned off to fix Undo/Redo # MAYBE: Try to make both work together
         self.installEventFilter(self)
         self.setTabChangesFocus(True)
         
@@ -1024,30 +1024,30 @@ class ATextEdit(QtWidgets.QTextEdit): # TODO: Fix Undo/Redo
         #    cursor2.setBlockFormat(theformat)
         #self.document().contentsChange.emit(curPos,0,0)
 
-    def validateCharacters(self):
-        #forbiddenChars = []
-        cursor = self.textCursor()
-        curPos = cursor.position()
-        Text = self.toPlainText()
-        found = 0
-        #for e in forbiddenChars:
-        #    found += Text.count(e)
-        #    Text = Text.replace(e, '')
-
-        # Windows doesn't like to type the combining dot above or double dot. This is a fix for the behavior that I observe on my PC
-        found += Text.count("\u005C\u0307")
-        Text = Text.replace("\u005C\u0307","\u0307")
-        found += Text.count("\u00BF\u0308")
-        Text = Text.replace("\u00BF\u0308","\u0308")
-        
-        self.blockSignals(True)
-        self.setText(Text)
-        self.blockSignals(False)
-        try:
-            cursor.setPosition(curPos-found)
-            self.setTextCursor(cursor)
-        except common_exceptions:
-            ExceptionOutput(sys.exc_info())
+    #def validateCharacters(self):
+    #    #forbiddenChars = []
+    #    cursor = self.textCursor()
+    #    curPos = cursor.position()
+    #    Text = self.toPlainText()
+    #    found = 0
+    #    #for e in forbiddenChars:
+    #    #    found += Text.count(e)
+    #    #    Text = Text.replace(e, '')
+    #    
+    #    # Windows doesn't like to type the combining dot above or double dot. This is a fix for the behavior that I observe on my PC
+    #    found += Text.count("\u005C\u0307")
+    #    Text = Text.replace("\u005C\u0307","\u0307")
+    #    found += Text.count("\u00BF\u0308")
+    #    Text = Text.replace("\u00BF\u0308","\u0308")
+    #    
+    #    self.blockSignals(True)
+    #    self.setText(Text)
+    #    self.blockSignals(False)
+    #    try:
+    #        cursor.setPosition(curPos-found)
+    #        self.setTextCursor(cursor)
+    #    except common_exceptions:
+    #        ExceptionOutput(sys.exc_info())
 
 class TextEdit(ATextEdit):
     def __init__(self, parent=None):
@@ -1067,17 +1067,17 @@ class TextEdit(ATextEdit):
 class LineEdit(ATextEdit):
     def __init__(self, parent=None):
         super(LineEdit, self).__init__(parent)
-
+        
         QTextEditFontMetrics =  QtGui.QFontMetrics(self.font())
         self.QTextEditRowHeight = QTextEditFontMetrics.lineSpacing()
         self.setFixedHeight(2 * self.QTextEditRowHeight)
         self.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
+        
         self.installEventFilter(self)
         # Connect Signals
-        self.textChanged.connect(self.validateCharacters)
+        #self.textChanged.connect(self.validateCharacters) # Turned off to fix Undo/Redo # MAYBE: Try to make both work together
 
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.FontChange): # Rescale if font size changes
@@ -1101,25 +1101,32 @@ class LineEdit(ATextEdit):
             return True
         return super(LineEdit, self).eventFilter(source, event)
 
-    def validateCharacters(self):
-        forbiddenChars = ['\n']
-        cursor = self.textCursor()
-        curPos = cursor.position()
-        Text = self.toPlainText()
-        found = 0
-        for e in forbiddenChars:
-            found += Text.count(e)
-            Text = Text.replace(e, '')
-        
-        self.blockSignals(True)
-        self.setText(Text)
-        self.blockSignals(False)
-        try:
-            cursor.setPosition(curPos-found)
-            self.setTextCursor(cursor)
-        except common_exceptions:
-            ExceptionOutput(sys.exc_info())
-        super(LineEdit, self).validateCharacters()
+    #def validateCharacters(self):
+    #    forbiddenChars = ['\n']
+    #    cursor = self.textCursor()
+    #    curPos = cursor.position()
+    #    Text = self.toPlainText()
+    #    found = 0
+    #    for e in forbiddenChars:
+    #        found += Text.count(e)
+    #        Text = Text.replace(e, '')
+    #    
+    #    self.blockSignals(True)
+    #    self.setText(Text)
+    #    self.blockSignals(False)
+    #    try:
+    #        cursor.setPosition(curPos-found)
+    #        self.setTextCursor(cursor)
+    #    except common_exceptions:
+    #        ExceptionOutput(sys.exc_info())
+    #    super(LineEdit, self).validateCharacters()
+
+    def insertFromMimeData(self,Data):
+        if Data.hasText():
+            text = Data.text()
+            text = text.replace('\n', ' + ').replace('\r', '')
+            Data.setText(text)
+            super(LineEdit, self).insertFromMimeData(Data)
 
 
 class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, performance, Fix FindPair
@@ -1288,8 +1295,123 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
         return super(TableWidget_Delegate, self).eventFilter(source, event)
 
 
-class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
-    def __init__(self, parent=None, DoInit=False, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False):
+# -----------------------------------------------------------------------------------------------------------------
+
+
+class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
+    def __init__(self, parent = None):
+        super(AWWF, self).__init__(parent)
+        self.AWWF_CentralWidget = Window_Frame_Widget(self)
+        self.AWWF_CentralWidget_layout =  QtWidgets.QGridLayout(self.AWWF_CentralWidget)
+        self.AWWF_CentralWidget_layout.setContentsMargins(0, 0, 0, 0)
+        self.AWWF_CentralWidget_layout.setSpacing(0)
+        self.AWWF_CentralWidget_layout.setObjectName("gridLayout")
+        self.AWWF_CentralWidget.setLayout(self.AWWF_CentralWidget_layout)
+        super(AWWF, self).setCentralWidget(self.AWWF_CentralWidget)
+        self.AWWF_p_MenuBar = None
+        self.AWWF_p_CentralWidget = None
+        self.AWWF_p_StatusBar = None
+
+        self.installEventFilter(self)
+
+    def setMenuBar(self, MenuBar):
+        if MenuBar == None:
+            try:
+                self.AWWF_CentralWidget_layout.addWidget(QtWidgets.QWidget(self),0,0)
+                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
+            except common_exceptions:
+                pass
+        else:
+            self.AWWF_CentralWidget_layout.addWidget(MenuBar,0,0)
+            MenuBar.setCursor(MenuBar.cursor())
+        self.AWWF_p_MenuBar = MenuBar
+        return True
+
+    def menuBar(self):
+        return self.AWWF_p_MenuBar
+
+    def setCentralWidget(self, CentralWidget):
+        if CentralWidget == None:
+            try:
+                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_CentralWidget)
+            except common_exceptions:
+                pass
+        else:
+            self.AWWF_CentralWidget_layout.addWidget(CentralWidget,1,0)
+            CentralWidget.setCursor(CentralWidget.cursor())
+        self.AWWF_p_CentralWidget = CentralWidget
+        return True
+
+    def centralWidget(self):
+        return self.AWWF_p_CentralWidget
+        
+    def setStatusBar(self, StatusBar):
+        if StatusBar == None:
+            try:
+                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_StatusBar)
+            except common_exceptions:
+                pass
+        else:
+            self.AWWF_CentralWidget_layout.addWidget(StatusBar,2,0)
+            StatusBar.setCursor(StatusBar.cursor())
+        self.AWWF_p_StatusBar = StatusBar
+        return True
+
+    def statusBar(self):
+        return self.AWWF_p_StatusBar
+
+    def showNormal(self):
+        self.AWWF_CentralWidget.showFrame()
+        super(AWWF, self).showNormal()
+    def show(self):
+        self.AWWF_CentralWidget.showFrame()
+        super(AWWF, self).show()
+    def showMaximized(self):
+        self.AWWF_CentralWidget.hideFrame()
+        super(AWWF, self).showMaximized()
+    def showFullScreen(self):
+        self.AWWF_CentralWidget.hideFrame()
+        super(AWWF, self).showFullScreen()
+
+    def eventFilter(self, source, event):
+        #if event.type() == 6: # QtCore.QEvent.KeyPress
+        #    if event.modifiers() == QtCore.Qt.MetaModifier: # Does not work on Windows
+        #        print("win")
+        #        screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+        #        screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)
+        #        Half_X = (screen.bottomRight().x()-screen.topLeft().x())/2+1
+        #        Full_X = (screen.bottomRight().x()-screen.topLeft().x())+1
+        #        Half_Y = (screen.bottomRight().y()-screen.topLeft().y())/2+1
+        #        Full_Y = (screen.bottomRight().y()-screen.topLeft().y())+1
+        #        # Left Side
+        #        if event.key() == QtCore.Qt.Key_Left:
+        #            self.window().resize(Half_X, Full_Y)
+        #            frameGm = self.window().frameGeometry()
+        #            frameGm.moveTopLeft(screen.topLeft())
+        #            self.window().move(frameGm.topLeft())
+        #        # Right Side
+        #        elif event.key() == QtCore.Qt.Key_Right:
+        #            self.window().resize(Half_X, Full_Y)
+        #            frameGm = self.window().frameGeometry()
+        #            frameGm.moveTopRight(screen.topRight())
+        #            self.window().move(frameGm.topLeft())
+        #        # Top Side
+        #        elif event.key() == QtCore.Qt.Key_Up:
+        #            self.window().resize(Full_X, Half_Y)
+        #            frameGm = self.window().frameGeometry()
+        #            frameGm.moveTopRight(screen.topRight())
+        #            self.window().move(frameGm.topLeft())
+        #        # Bottom Side
+        #        elif event.key() == QtCore.Qt.Key_Down:
+        #            self.window().resize(Full_X, Half_Y)
+        #            frameGm = self.window().frameGeometry()
+        #            frameGm.moveBottomLeft(screen.bottomLeft())
+        #            self.window().move(frameGm.topLeft())
+        return super(AWWF, self).eventFilter(source, event) # let the normal eventFilter handle the event
+
+
+class TopBar_Widget(QtWidgets.QWidget):
+    def __init__(self, parent=None, DoInit=False, IncludeMenu = False, IncludeFontSpinBox = True, IncludeErrorButton = False):
         super(TopBar_Widget, self).__init__(parent)
         self.moving = False
         self.offset = 0
@@ -1299,8 +1421,8 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
 
     def init(self, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False):
         # TODO: Add a handle to resize the window
-        # TODO: Add the font size spinbox here and handle it here
-        # TODO: Add the ErrorButton here and handle it here
+        # TODO: restrict the height and add the option to add a QLabel for the WindowName
+        #   and the Option for a QtWidgets.QSpacerItem to make the horizontal spacing work if not corner widget
         self.IncludeMenu, self.IncludeFontSpinBox, self.IncludeErrorButton = IncludeMenu, IncludeFontSpinBox, IncludeErrorButton
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setObjectName("TopBar")
@@ -1309,6 +1431,7 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
             self.gridLayout.setContentsMargins(0, 0, 0, 0)
             self.gridLayout.setSpacing(0)
             self.gridLayout.setObjectName("gridLayout")
+            #self.gridLayout.setSizeConstraint(QtWidgets.QGridLayout.SetNoConstraint)
             self.setLayout(self.gridLayout)
 
         self.ButtonSizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -1468,7 +1591,12 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
         if event.button() == QtCore.Qt.LeftButton:
             self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
             self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
-            self.MaximizeButton.setText("🗖")
+            #if self.window().isMaximized() or self.window().isFullScreen(): # If moving the window while in fullscreen or maximized make it normal first
+            #    corPos = self.window().geometry().topRight()
+            #    self.window().showNormal()
+            #    self.window().AWWF_CentralWidget.showFrame()
+            #    QtWidgets.QApplication.instance().processEvents()
+            #    self.window().move(corPos-self.window().geometry().topRight()+self.window().geometry().topLeft())
             self.moving = True; self.offset = event.globalPos()-self.window().geometry().topLeft()
 
     def mouseReleaseEvent(self,event):
@@ -1482,11 +1610,569 @@ class TopBar_Widget(QtWidgets.QWidget): # TODO: 3 in TopBar_Widget
             if (pos.y() < 0):
                 pos.setY(0)
                 self.window().move(pos)
+            # If the mouse is in a corner or on a side let the window fill this corner or side of the screen
+            try:
+                Tolerance = 5
+                eventPos = event.globalPos()
+                screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+                screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)
+                Half_X = (screen.bottomRight().x()-screen.topLeft().x())/2+1
+                Full_X = (screen.bottomRight().x()-screen.topLeft().x())+1
+                Half_Y = (screen.bottomRight().y()-screen.topLeft().y())/2+1
+                Full_Y = (screen.bottomRight().y()-screen.topLeft().y())+1
+                BottomMax = screen.bottomLeft().y()
+                RightMax = screen.bottomRight().x()
+                TopMax = screen.topLeft().y()
+                LeftMax = screen.topLeft().x()
+                #if (pos.y() > BottomMax): # If Bottom Side gets removed this must be turned on to make it impossible for the window to get lost behind the task bar
+                #    pos.setY(BottomMax-50)
+                #    self.window().move(pos)
+                # Top Left
+                if eventPos.x() <= Tolerance + LeftMax and eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopLeft(screen.topLeft())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Left
+                elif eventPos.x() <= Tolerance + LeftMax and eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomLeft(screen.bottomLeft())
+                    self.window().move(frameGm.topLeft())
+                # Top Right
+                elif eventPos.x() >= RightMax-Tolerance and eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Right
+                elif eventPos.x() >= RightMax-Tolerance and eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomRight(screen.bottomRight())
+                    self.window().move(frameGm.topLeft())
+                # Left Side
+                elif eventPos.x() <= Tolerance + LeftMax:
+                    self.window().resize(Half_X, Full_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopLeft(screen.topLeft())
+                    self.window().move(frameGm.topLeft())
+                # Right Side
+                elif eventPos.x() >= RightMax-Tolerance:
+                    self.window().resize(Half_X, Full_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Top Side
+                elif eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Full_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Side
+                elif eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Full_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomLeft(screen.bottomLeft())
+                    self.window().move(frameGm.topLeft())
+            except common_exceptions:
+                Error = ExceptionOutput(sys.exc_info())
+                sendNotification(1,Error)
 
     def mouseMoveEvent(self,event):
-        if self.moving: self.window().move(event.globalPos()-self.offset)
+        if self.moving:
+            if (self.window().isMaximized() or self.window().isFullScreen()): # If moving the window while in fullscreen or maximized make it normal first
+                # TODO: Make normalizing the window relative to the previous and current window width to keep the cursor on the window regardless wether clicking right or left
+                self.MaximizeButton.setText("🗖")
+                corPos = self.window().geometry().topRight()
+                self.window().showNormal()
+                self.window().AWWF_CentralWidget.showFrame()
+                QtWidgets.QApplication.instance().processEvents()
+                self.window().move(corPos-self.window().geometry().topRight()+self.window().geometry().topLeft())
+                self.offset = event.globalPos()-self.window().geometry().topLeft()
+            self.window().move(event.globalPos()-self.offset)
 
-# -----------------------------------------------------------------------------------------------------------------
+
+class Window_Frame_Widget(QtWidgets.QFrame):
+    def __init__(self, parent = None):
+        super(Window_Frame_Widget, self).__init__(parent)
+        self.FrameEnabled = False
+        self.moving = False
+        self.offset = 0
+        self.mPos = None# For dragging, relative mouse position to upper left
+        self.global_mPos = None # For resizing, global mouse position at mouse click
+        self.rs_mPos = None # for resizing
+        self.storeWidth = 0 # fix window size at mouseclick for resizing
+        self.storeHeight = 0
+        self.setMouseTracking(True)
+    
+    def showFrame(self):
+        self.FrameEnabled = True
+        self.setFrameStyle(self.Box | self.Sunken)
+        self.setLineWidth(2)
+        #self.setMidLineWidth(3)
+
+    def hideFrame(self):
+        self.FrameEnabled = False
+        self.setFrameStyle(self.NoFrame)
+        #self.setLineWidth(1)
+        #self.setMidLineWidth(3)
+
+    def mousePressEvent(self,event):
+        # Modified and translated version of https://stackoverflow.com/questions/37047236/qt-resizable-and-movable-main-window-without-title-bar
+        if (event.button() == QtCore.Qt.LeftButton):
+            # Coordinates have been mapped such that the mouse position is relative to the upper left of the main window
+            self.mPos = event.globalPos() - self.window().frameGeometry().topLeft()
+
+            # At the moment of mouse click, capture global position and lock the size of window for resizing
+            self.global_mPos = event.globalPos()
+            self.storeWidth = self.width()
+            self.storeHeight= self.height()
+
+            event.accept()
+
+    def mouseReleaseEvent(self,event):
+        self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
+    def mouseMoveEvent(self,event): # IMPROVE: Resizing often lags and looses focus... This must be improved...
+        # Modified and translated version of https://stackoverflow.com/questions/37047236/qt-resizable-and-movable-main-window-without-title-bar
+        # TODO: Make the sides resizable as well
+        offset = event.globalPos()-self.window().geometry().topLeft() # event.globalPos()-frameGeometry().topLeft()
+        rs_size = 20
+        # Big if statement checks if the mouse is near the frame and if the frame is enabled
+        if ( ((abs(offset.x()) < rs_size) or
+                (abs(offset.x()) > self.width()-rs_size) or
+                (abs(offset.x()) < rs_size) or
+                (abs(offset.x()) > self.width()-rs_size)or
+                (abs(offset.y()) < rs_size) or
+                (abs(offset.y()) <rs_size) or
+                (abs(offset.y())> self.height()-rs_size) or
+                (abs(offset.y())> self.height()-rs_size))
+                and self.FrameEnabled):
+            # Use 2x2 matrix to adjust how much you are resizing and how much you
+            # are moving. Since the default coordinates are relative to upper left
+            # You cannot just have one way of resizing and moving the window.
+            # It will depend on which corner you are referring to
+            # 
+            # adjXFac and adjYFac are for calculating the difference between your
+            # current mouse position and where your mouse was when you clicked.
+            # With respect to the upper left corner, moving your mouse to the right
+            # is an increase in coordinates, moving mouse to the bottom is increase etc.
+            # However, with other corners this is not so and since I chose to subtract
+            # This difference at the end for resizing, adjXFac and adjYFac should be
+            # 1 or -1 depending on whether moving the mouse in the x or y directions
+            # increases or decreases the coordinates respectively. 
+            # 
+            # transXFac transYFac is to move the window over. Resizing the window does not
+            # automatically pull the window back toward your mouse. This is what
+            # transfac is for (translate window in some direction). It will be either
+            # 0 or 1 depending on whether you need to translate in that direction.
+            #
+            # Initialize Matrix:
+            adjXFac = 0
+            adjYFac = 0
+            transXFac = 0
+            transYFac = 0
+            Direction = "D"
+            # Upper left corner section
+            if ( (abs(offset.x()) < rs_size and abs(offset.y()) < rs_size)):
+                self.setCursor(QtCore.Qt.SizeFDiagCursor)
+                # Upper left. No flipping of axis, no translating window
+                adjXFac=1
+                adjYFac=1
+                transXFac=0
+                transYFac=0
+                Direction = "D"
+            # Upper right corner section
+            elif(abs(offset.x()) > self.width()-rs_size and abs(offset.y()) <rs_size):
+                self.setCursor(QtCore.Qt.SizeBDiagCursor)
+                # upper right. Flip displacements in mouse movement across x axis
+                # and translate window left toward the mouse
+                adjXFac=-1
+                adjYFac=1
+                transXFac=1
+                transYFac=0
+                Direction = "D"
+            # Lower left corner section
+            elif(abs(offset.x()) < rs_size and abs(offset.y())> self.height()-rs_size):
+                self.setCursor(QtCore.Qt.SizeBDiagCursor)
+                # lower left. Flip displacements in mouse movement across y axis
+                # and translate window up toward mouse
+                adjXFac=1
+                adjYFac=-1
+                transXFac=0
+                transYFac=1
+                Direction = "D"
+            # Lower right corner section
+            elif(abs(offset.x()) > self.width()-rs_size and abs(offset.y())> self.height()-rs_size):
+                self.setCursor(QtCore.Qt.SizeFDiagCursor)
+                # lower right. Flip mouse displacements on both axis and
+                # translate in both x and y direction left and up toward mouse.
+                adjXFac=-1
+                adjYFac=-1
+                transXFac=1
+                transYFac=1
+                Direction = "D"
 
 
+            # Upper Side
+            elif abs(offset.y()) < rs_size:
+                self.setCursor(QtCore.Qt.SizeVerCursor)
+                adjXFac=-1#1
+                adjYFac=1
+                transXFac=1#0
+                transYFac=0
+                Direction = "y"
+            # Lower side
+            elif abs(offset.y()) > self.height()-rs_size:
+                self.setCursor(QtCore.Qt.SizeVerCursor)
+                adjXFac=-1
+                adjYFac=-1
+                transXFac=1
+                transYFac=1
+                Direction = "y"
+            # Right Side
+            elif abs(offset.x()) > self.width()-rs_size:
+                self.setCursor(QtCore.Qt.SizeHorCursor)
+                adjXFac=-1
+                adjYFac=-1#1
+                transXFac=1
+                transYFac=1#0
+                Direction = "x"
+            # Left Side
+            elif abs(offset.x()) < rs_size:
+                self.setCursor(QtCore.Qt.SizeHorCursor)
+                adjXFac=1
+                adjYFac=-1
+                transXFac=0
+                transYFac=1
+                Direction = "x"
+                
+            if (event.buttons()==QtCore.Qt.LeftButton ):
+                if Direction == "D":
+                    # Calculation of displacement. adjXFac=1 means normal displacement
+                    # adjXFac=-1 means flip over axis     
+                    adjXDiff = adjXFac*(event.globalPos().x() - self.global_mPos.x())
+                    adjYDiff = adjYFac*(event.globalPos().y() - self.global_mPos.y())
+                    # if transfac is 1 then movepoint of mouse is translated     
+                    movePoint = QtCore.QPoint(self.mPos.x() - transXFac*adjXDiff, self.mPos.y()-transYFac*adjYDiff)
+                    self.window().move(event.globalPos()-movePoint)
+                    self.window().resize(self.storeWidth-adjXDiff, self.storeHeight-adjYDiff)
+                elif Direction == "y": #TODO
+                    # Calculation of displacement. adjXFac=1 means normal displacement
+                    # adjXFac=-1 means flip over axis     
+                    adjXDiff = adjXFac*(event.globalPos().x() - self.global_mPos.x())
+                    adjYDiff = adjYFac*(event.globalPos().y() - self.global_mPos.y())
+                    # if transfac is 1 then movepoint of mouse is translated     
+                    movePoint = QtCore.QPoint(self.mPos.x() - transXFac*adjXDiff, self.mPos.y()-transYFac*adjYDiff)
+                    self.window().move(event.globalPos()-movePoint)
+                    self.window().resize(self.storeWidth, self.storeHeight-adjYDiff)#-adjXDiff
+                elif Direction == "x": #TODO
+                    # Calculation of displacement. adjXFac=1 means normal displacement
+                    # adjXFac=-1 means flip over axis     
+                    adjXDiff = adjXFac*(event.globalPos().x() - self.global_mPos.x())
+                    adjYDiff = adjYFac*(event.globalPos().y() - self.global_mPos.y())
+                    # if transfac is 1 then movepoint of mouse is translated     
+                    movePoint = QtCore.QPoint(self.mPos.x() - transXFac*adjXDiff, self.mPos.y()-transYFac*adjYDiff)
+                    self.window().move(event.globalPos()-movePoint)
+                    self.window().resize(self.storeWidth-adjXDiff, self.storeHeight)#-adjYDiff)
+                event.accept()
+        # In any move event if it is not in a resize region use the default cursor
+        else:
+            self.setCursor(QtCore.Qt.ArrowCursor)
+            #simple move section
+            #if (event.buttons()==QtCore.Qt.LeftButton ):#and resizeZone==False):
+            #    move = QtCore.QPoint(event.globalPos() - self.mPos)
+            #    event.accept()
+    def leaveEvent(self,event):
+        self.setCursor(QtCore.Qt.ArrowCursor)
+
+class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
+    def __init__(self, parent=None):
+        super(MMenuBar, self).__init__(parent)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.moving = False
+        self.offset = 0
+        self.setMouseTracking(True)
+
+    def mousePressEvent(self,event):
+        if event.button() == QtCore.Qt.LeftButton and self.actionAt(event.pos())==None and self.moving == False and self.activeAction()==None:
+            self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
+            self.moving = True
+            self.offset = event.globalPos()-self.window().geometry().topLeft()
+        else:
+            self.moving = False
+        super(MMenuBar, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self,event):
+        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        if event.button() == QtCore.Qt.LeftButton and self.moving:
+            self.moving = False
+            pos = self.window().pos()
+            #if (pos.x() < 0):
+            #    pos.setX(0)
+            #    self.window().move(pos)
+            if (pos.y() < 0):
+                pos.setY(0)
+                self.window().move(pos)
+            # If the mouse is in a corner or on a side let the window fill this corner or side of the screen
+            try:
+                Tolerance = 5
+                eventPos = event.globalPos()
+                screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+                screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)
+                Half_X = (screen.bottomRight().x()-screen.topLeft().x())/2+1
+                Full_X = (screen.bottomRight().x()-screen.topLeft().x())+1
+                Half_Y = (screen.bottomRight().y()-screen.topLeft().y())/2+1
+                Full_Y = (screen.bottomRight().y()-screen.topLeft().y())+1
+                BottomMax = screen.bottomLeft().y()
+                RightMax = screen.bottomRight().x()
+                TopMax = screen.topLeft().y()
+                LeftMax = screen.topLeft().x()
+                #if (pos.y() > BottomMax): # If Bottom Side gets removed this must be turned on to make it impossible for the window to get lost behind the task bar
+                #    pos.setY(BottomMax-50)
+                #    self.window().move(pos)
+                # Top Left
+                if eventPos.x() <= Tolerance + LeftMax and eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopLeft(screen.topLeft())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Left
+                elif eventPos.x() <= Tolerance + LeftMax and eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomLeft(screen.bottomLeft())
+                    self.window().move(frameGm.topLeft())
+                # Top Right
+                elif eventPos.x() >= RightMax-Tolerance and eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Right
+                elif eventPos.x() >= RightMax-Tolerance and eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomRight(screen.bottomRight())
+                    self.window().move(frameGm.topLeft())
+                # Left Side
+                elif eventPos.x() <= Tolerance + LeftMax:
+                    self.window().resize(Half_X, Full_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopLeft(screen.topLeft())
+                    self.window().move(frameGm.topLeft())
+                # Right Side
+                elif eventPos.x() >= RightMax-Tolerance:
+                    self.window().resize(Half_X, Full_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Top Side
+                elif eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Full_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Side
+                elif eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Full_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomLeft(screen.bottomLeft())
+                    self.window().move(frameGm.topLeft())
+            except common_exceptions:
+                Error = ExceptionOutput(sys.exc_info())
+                sendNotification(1,Error)
+        else:
+            self.moving = False
+            super(MMenuBar, self).mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self,event):
+        if self.moving:
+            if (self.window().isMaximized() or self.window().isFullScreen()): # If moving the window while in fullscreen or maximized make it normal first
+                try:
+                    self.window().TopBar.MaximizeButton.setText("🗖")
+                except common_exceptions:
+                    pass
+                corPos = self.window().geometry().topRight()
+                self.window().showNormal()
+                self.window().AWWF_CentralWidget.showFrame()
+                QtWidgets.QApplication.instance().processEvents()
+                self.window().move(corPos-self.window().geometry().topRight()+self.window().geometry().topLeft())
+                self.offset = event.globalPos()-self.window().geometry().topLeft()
+            self.window().move(event.globalPos()-self.offset)
+        else:
+            if self.actionAt(event.pos())!=None:
+                self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+            else:
+                self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            super(MMenuBar, self).mouseMoveEvent(event)
+
+
+
+class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
+    def __init__(self, parent=None):
+        super(MTabWidget, self).__init__(parent)
+        #self.TabBar = MTabBar(self)
+        #self.setTabBar(self.TabBar)
+        ####self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.moving = False
+        self.offset = 0
+        self.setMouseTracking(True)
+
+    def mousePressEvent(self,event):
+        if event.button() == QtCore.Qt.LeftButton and self.moving == False and self.childAt(event.pos())==None:
+            self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
+            self.moving = True
+            self.offset = event.globalPos()-self.window().geometry().topLeft()
+        else:
+            self.moving = False
+        super(MTabWidget, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self,event):
+        self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        if event.button() == QtCore.Qt.LeftButton and self.moving:
+            self.moving = False
+            pos = self.window().pos()
+            #if (pos.x() < 0):
+            #    pos.setX(0)
+            #    self.window().move(pos)
+            if (pos.y() < 0):
+                pos.setY(0)
+                self.window().move(pos)
+            # If the mouse is in a corner or on a side let the window fill this corner or side of the screen
+            try:
+                Tolerance = 5
+                eventPos = event.globalPos()
+                screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+                screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)
+                Half_X = (screen.bottomRight().x()-screen.topLeft().x())/2+1
+                Full_X = (screen.bottomRight().x()-screen.topLeft().x())+1
+                Half_Y = (screen.bottomRight().y()-screen.topLeft().y())/2+1
+                Full_Y = (screen.bottomRight().y()-screen.topLeft().y())+1
+                BottomMax = screen.bottomLeft().y()
+                RightMax = screen.bottomRight().x()
+                TopMax = screen.topLeft().y()
+                LeftMax = screen.topLeft().x()
+                #if (pos.y() > BottomMax): # If Bottom Side gets removed this must be turned on to make it impossible for the window to get lost behind the task bar
+                #    pos.setY(BottomMax-50)
+                #    self.window().move(pos)
+                # Top Left
+                if eventPos.x() <= Tolerance + LeftMax and eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopLeft(screen.topLeft())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Left
+                elif eventPos.x() <= Tolerance + LeftMax and eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomLeft(screen.bottomLeft())
+                    self.window().move(frameGm.topLeft())
+                # Top Right
+                elif eventPos.x() >= RightMax-Tolerance and eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Right
+                elif eventPos.x() >= RightMax-Tolerance and eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Half_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomRight(screen.bottomRight())
+                    self.window().move(frameGm.topLeft())
+                # Left Side
+                elif eventPos.x() <= Tolerance + LeftMax:
+                    self.window().resize(Half_X, Full_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopLeft(screen.topLeft())
+                    self.window().move(frameGm.topLeft())
+                # Right Side
+                elif eventPos.x() >= RightMax-Tolerance:
+                    self.window().resize(Half_X, Full_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Top Side
+                elif eventPos.y() <= Tolerance + TopMax:
+                    self.window().resize(Full_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveTopRight(screen.topRight())
+                    self.window().move(frameGm.topLeft())
+                # Bottom Side
+                elif eventPos.y() >= BottomMax-Tolerance:
+                    self.window().resize(Full_X, Half_Y)
+                    frameGm = self.window().frameGeometry()
+                    frameGm.moveBottomLeft(screen.bottomLeft())
+                    self.window().move(frameGm.topLeft())
+            except common_exceptions:
+                Error = ExceptionOutput(sys.exc_info())
+                sendNotification(1,Error)
+        else:
+            self.moving = False
+            super(MTabWidget, self).mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self,event): # Only registers if mouse is pressed...
+        if self.moving:
+            if (self.window().isMaximized() or self.window().isFullScreen()): # If moving the window while in fullscreen or maximized make it normal first
+                try:
+                    self.window().TopBar.MaximizeButton.setText("🗖")
+                except common_exceptions:
+                    pass
+                corPos = self.window().geometry().topRight()
+                self.window().showNormal()
+                self.window().AWWF_CentralWidget.showFrame()
+                QtWidgets.QApplication.instance().processEvents()
+                self.window().move(corPos-self.window().geometry().topRight()+self.window().geometry().topLeft())
+                self.offset = event.globalPos()-self.window().geometry().topLeft()
+            self.window().move(event.globalPos()-self.offset)
+        else:
+            #if self.childAt(event.pos())==None:
+            #    self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            #else: # Does not work... Maybe all widgets need self.setMouseTracking(True) ?
+            #    self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+            super(MTabWidget, self).mouseMoveEvent(event)
+
+
+# class MTabBar(QtWidgets.QTabBar): # Moveable Tab Bar # Does not work
+ #    def __init__(self, parent=None):
+ #        super(MTabBar, self).__init__(parent)
+ #        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+ #        self.moving = False
+ #        self.setMouseTracking(True)
+ #        self.offset = 0
+ #
+ #    def mousePressEvent(self,event):
+ #        if event.button() == QtCore.Qt.LeftButton and self.tabAt(event.pos())==None and self.moving == False:
+ #            self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
+ #            self.moving = True
+ #            self.offset = event.globalPos()-self.window().geometry().topLeft()
+ #        else:
+ #            self.moving = False
+ #        super(MTabBar, self).mousePressEvent(event)
+ #
+ #    def mouseReleaseEvent(self,event):
+ #        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+ #        if event.button() == QtCore.Qt.LeftButton and self.moving:
+ #            self.moving = False
+ #            pos = self.window().pos()
+ #            #if (pos.x() < 0):
+ #            #    pos.setX(0)
+ #            #    self.window().move(pos)
+ #            if (pos.y() < 0):
+ #                pos.setY(0)
+ #                self.window().move(pos)
+ #        else:
+ #            self.moving = False
+ #            super(MTabBar, self).mouseReleaseEvent(event)
+ #
+ #    def mouseMoveEvent(self,event):
+ #        if self.moving:
+ #            self.window().move(event.globalPos()-self.offset)
+ #        else:
+ #            if self.tabAt(event.pos())!=None:
+ #                self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+ #            else:
+ #                self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+ #            super(MTabBar, self).mouseMoveEvent(event)
 

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.5"
+Version = "0.15.6"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -118,37 +118,45 @@ def Superscript_Shortcut(Symbol):
     keyboard.write(" ")
     keyboard.write("\x08")
 
-class AMaDiA_Internal_File_Display_Window(QtWidgets.QMainWindow):
+class AMaDiA_Internal_File_Display_Window(AW.AWWF):
     def __init__(self,FileName,parent = None):
         try:
             super(AMaDiA_Internal_File_Display_Window, self).__init__(parent)
-            QtWidgets.QFrame.__init__(self,parent)
             self.setWindowTitle(FileName)
             self.resize(900, 500)
-            
-            if QtWidgets.QApplication.instance().AllUseCustomFrame:
-                self.TopBar = AW.TopBar_Widget(self)
-                self.TopBar.init()
-                self.Menubar = QtWidgets.QMenuBar(self)
-                self.setMenuBar(self.Menubar)
-                self.Menubar.setCornerWidget(self.TopBar)
-                self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                self.statusbar = QtWidgets.QStatusBar(self)
-                self.statusbar.setObjectName("statusbar")
-                self.setStatusBar(self.statusbar)
                 
-            self.centralwidget = QtWidgets.QWidget(self) # QtWidgets.QFrame(self)
+            self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
-            #self.centralwidget.setFrameShape(self.centralwidget.Box)
             self.centralwidget.setObjectName("centralwidget")
             self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
             self.gridLayout.setObjectName("gridLayout")
             
             self.TextBrowser = QtWidgets.QTextBrowser(self)
             self.TextBrowser.setObjectName("TopBar_Error_Label")
+            
+            if QtWidgets.QApplication.instance().AllUseCustomFrame:
+                if False: #TopBar in place of MenuBar
+                    self.TopBar = AW.TopBar_Widget(self,True)
+                    self.setMenuBar(self.TopBar)
+                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                    self.statusbar = QtWidgets.QStatusBar(self)
+                    self.statusbar.setObjectName("statusbar")
+                    self.setStatusBar(self.statusbar)
+                else: #MenuBar
+                    self.TopBar = AW.TopBar_Widget(self,True)
+                    self.Menubar = AW.MMenuBar(self)
+                    self.setMenuBar(self.Menubar)
+                    self.Menubar.setCornerWidget(self.TopBar)
+                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                    self.statusbar = QtWidgets.QStatusBar(self)
+                    self.statusbar.setObjectName("statusbar")
+                    self.setStatusBar(self.statusbar)
+                self.statusbar.showMessage(self.windowTitle()) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
+                
+                self.statusbar.setSizeGripEnabled(False)
+
+
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
-
-
             self.setCentralWidget(self.centralwidget)
 
             self.FolderPath = os.path.dirname(__file__)
@@ -167,9 +175,7 @@ class AMaDiA_Internal_File_Display_Window(QtWidgets.QMainWindow):
     def Scroll_To_End(self):
         self.TextBrowser.verticalScrollBar().setValue(self.TextBrowser.verticalScrollBar().maximum())
 
-
-
-class AMaDiA_About_Window(QtWidgets.QMainWindow):
+class AMaDiA_About_Window(AW.AWWF):
     def __init__(self,parent = None):
         try:
             super(AMaDiA_About_Window, self).__init__(parent)
@@ -186,15 +192,25 @@ class AMaDiA_About_Window(QtWidgets.QMainWindow):
             self.TextBrowser.setObjectName("TopBar_Error_Label")
 
             if QtWidgets.QApplication.instance().AllUseCustomFrame:
-                self.TopBar = AW.TopBar_Widget(self)
-                self.TopBar.init()
-                self.Menubar = QtWidgets.QMenuBar(self)
-                self.setMenuBar(self.Menubar)
-                self.Menubar.setCornerWidget(self.TopBar)
-                self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                self.statusbar = QtWidgets.QStatusBar(self)
-                self.statusbar.setObjectName("statusbar")
-                self.setStatusBar(self.statusbar)
+                if False: #TopBar in place of MenuBar
+                    self.TopBar = AW.TopBar_Widget(self,True)
+                    self.setMenuBar(self.TopBar)
+                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                    self.statusbar = QtWidgets.QStatusBar(self)
+                    self.statusbar.setObjectName("statusbar")
+                    self.setStatusBar(self.statusbar)
+                else: #MenuBar
+                    self.TopBar = AW.TopBar_Widget(self,True)
+                    self.Menubar = AW.MMenuBar(self)
+                    self.setMenuBar(self.Menubar)
+                    self.Menubar.setCornerWidget(self.TopBar)
+                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                    self.statusbar = QtWidgets.QStatusBar(self)
+                    self.statusbar.setObjectName("statusbar")
+                    self.setStatusBar(self.statusbar)
+                self.statusbar.showMessage(self.windowTitle()) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
+                
+                self.statusbar.setSizeGripEnabled(False)
 
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
             #self.layout = QtWidgets.QVBoxLayout()
@@ -211,9 +227,7 @@ class AMaDiA_About_Window(QtWidgets.QMainWindow):
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
-
-
-class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
+class AMaDiA_Notification_Window(AW.AWWF):
     def __init__(self,Notifications,parent = None):
         try:
             super(AMaDiA_Notification_Window, self).__init__(parent)
@@ -221,15 +235,25 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
             self.resize(900, 500)
 
             if QtWidgets.QApplication.instance().AllUseCustomFrame:
-                self.TopBar = AW.TopBar_Widget(self)
-                self.TopBar.init()
-                self.Menubar = QtWidgets.QMenuBar(self)
-                self.setMenuBar(self.Menubar)
-                self.Menubar.setCornerWidget(self.TopBar)
-                self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                self.statusbar = QtWidgets.QStatusBar(self)
-                self.statusbar.setObjectName("statusbar")
-                self.setStatusBar(self.statusbar)
+                if False: #TopBar in place of MenuBar
+                    self.TopBar = AW.TopBar_Widget(self,True)
+                    self.setMenuBar(self.TopBar)
+                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                    self.statusbar = QtWidgets.QStatusBar(self)
+                    self.statusbar.setObjectName("statusbar")
+                    self.setStatusBar(self.statusbar)
+                else: #MenuBar
+                    self.TopBar = AW.TopBar_Widget(self,True)
+                    self.Menubar = AW.MMenuBar(self)
+                    self.setMenuBar(self.Menubar)
+                    self.Menubar.setCornerWidget(self.TopBar)
+                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
+                    self.statusbar = QtWidgets.QStatusBar(self)
+                    self.statusbar.setObjectName("statusbar")
+                    self.setStatusBar(self.statusbar)
+                self.statusbar.showMessage(self.windowTitle()) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
+                
+                self.statusbar.setSizeGripEnabled(False)
 
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
@@ -266,8 +290,6 @@ class AMaDiA_Notification_Window(QtWidgets.QMainWindow):
             self.TheList.addItem(item)
             self.TheList.scrollToBottom()
 
-
-
 class AMaDiA_Main_App(QtWidgets.QApplication):
     # See:
     # https://doc.qt.io/qt-5/qapplication.html
@@ -282,7 +304,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.setApplicationVersion(Version)
         self.setOrganizationName("Robin Albers")
         self.setOrganizationDomain("https://github.com/AstusRush")
-        self.AllUseCustomFrame = False
+        self.AllUseCustomFrame = True
         self.Notification_List = []
 
         self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
@@ -304,7 +326,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
     
     def eventFilter(self, source, event):
         if event.type() == 6: # QtCore.QEvent.KeyPress
-            if event.modifiers() == ControlModifier and event.key() == QtCore.Qt.Key_0:
+            if event.modifiers() == ControlModifier and event.key() == QtCore.Qt.Key_0: # TODO: Inform the User that this feature exists
                 for w in self.topLevelWidgets():
                     w.resize(906, 634)
                     frameGm = w.frameGeometry()
@@ -374,7 +396,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
             return True
         return super(AMaDiA_Main_App, self).eventFilter(source, event)
 
-# ---------------------------------- Colour and Font ----------------------------------
+ # ---------------------------------- Colour and Font ----------------------------------
     def Recolour(self, Colour = "Dark"):
         if Colour == "Dark":
             self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
@@ -382,9 +404,23 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
             self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Bright()
         self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
         self.setPalette(self.Palette)
+
+        #FramePalette = self.palette()
+        #brush = QtGui.QBrush(QtGui.QColor(60, 60, 60))
+        #brush.setStyle(QtCore.Qt.SolidPattern)
+        #FramePalette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush) # Used for tab-text and for the arrows in spinboxes and scrollbars and QFrame
+        #brush = QtGui.QBrush(QtGui.QColor(10, 10, 10))
+        #brush.setStyle(QtCore.Qt.SolidPattern)
+        #FramePalette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        #brush = QtGui.QBrush(QtGui.QColor(27, 28, 31))
+        #brush.setStyle(QtCore.Qt.SolidPattern)
+        #FramePalette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.MplWidget):
                 i.SetColour(self.BG_Colour, self.TextColour)
+            #for i in w.findChildren(AW.Window_Frame_Widget):
+            #    i.setPalette(FramePalette)
         if self.MainWindow != None: # THIS IS SPECIFIC TO AMaDiA_Main_Window
             try:
                 self.MainWindow.init_Animations_With_Colour()
@@ -459,7 +495,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 try:
-                    if type(i.parentWidget()) == QtWidgets.QMenuBar:
+                    if type(i.parentWidget()) == AW.MMenuBar:
                         i.setMinimumHeight(i.parentWidget().height())
                     elif type(i.parentWidget()) == QtWidgets.QTabWidget:
                         i.setMinimumHeight(i.parentWidget().tabBar().height())
@@ -476,8 +512,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
 
-
-# ---------------------------------- Notifications ----------------------------------
+ # ---------------------------------- Notifications ----------------------------------
 
     def init_Notification_Flash(self):
         self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'FLASH_colour')
@@ -572,7 +607,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         if Time==None:
             Time = AF.cTimeSStr()
         Text = "Error at " + Time
-        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text,1)
+        Error_Text_TT = self.ListVeryRecentNotifications(Error_Text,1)[0]
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
@@ -679,9 +714,9 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.S_New_Notification.connect(self.AMaDiA_Notification_Window.AddNotification)
         self.AMaDiA_Notification_Window.show()
 
-# ---------------------------------- Other ----------------------------------
+ # ---------------------------------- Other ----------------------------------
 
-class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
+class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def __init__(self, MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent)
         #TODO: add the menubar and statusbar to the centralwidget and make a frame around it and reimplement the functions to access these to redirect to the new ones
@@ -692,13 +727,13 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.CreateFolders()
         # Read all config files:
         # FEATURE: Implement config files
-
+        
         sympy.init_printing() # doctest: +SKIP
         self.MainApp = MainApp
         self.MainApp.setMainWindow(self)
         
         #FEATURE: Add Statistic Tab to easily compare numbers and check impact of variables etc
-
+        
        # Build the UI
         self.init_Menu()
         self.setupUi(self)
@@ -709,8 +744,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.TopBarGridLayout.setSpacing(0)
         #self.TopBarGridLayout.setObjectName("TopBarGridLayout")
         #self.TopBar.setLayout(self.TopBarGridLayout)
-
-
+        
+        
         self.tabWidget.setContentsMargins(0,0,0,0)
         #self.tabWidget.tabBar(). # Access the TabBar of the TabWidget
         self.tabWidget.tabBar().setUsesScrollButtons(True)
@@ -719,26 +754,29 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         
         self.MenuBar.setContentsMargins(0,0,0,0)
         
-        self.setMenuBar(self.MenuBar)
+        #QtWidgets.QMainWindow.setMenuBar(self,self.MenuBar) # This allows the extension functionality but has no frame...
+        self.setMenuBar(self.MenuBar) # This breaks the extension functionality but has a frame...
+        
         self.MenuBar.setCornerWidget(self.TopBar)
-
+        
         self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
-
+        
         # Decline the OS' standard window frame:
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
         # Alternative: This keeps the frame to (only removes Title Bar) resize but has other drawbacks
         #self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
-
+        
         self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # CLEANUP: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
-
+        
         self.Tab_3_tabWidget.removeTab(1)# FEATURE: Add Complex plotter
         self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO: Fully implement the CONTROL input tab
         self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon. To test current features use \"Dev Function\" in Options")
-
+        
         # TODO: Find place to display WindowTitle. Maybe with a TextLabel in the statusbar?
         # MAYBE: Do something with the Statusbar
         self.statusbar.showMessage(WindowTitle) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
-
+        
+        self.statusbar.setSizeGripEnabled(False)
         
        # Set UI variables
         #Set starting tabs
@@ -766,7 +804,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.keylist = []
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
-
+        
        # Initialize Thread Related Things:
         self.ThreadList = []
         self.threadpool = QtCore.QThreadPool()#.globalInstance()
@@ -779,7 +817,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
        # Set the Text
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("AMaDiA" , WindowTitle))
-
+        
         Tab_5_4_Dirty_Input_Text = "#Example:\n\n"
         Tab_5_4_Dirty_Input_Text += "K_P = 5\nK_D = 0\nK_i = 0\n\nsys1 = tf([K_D,K_P,K_i],[1,1.33+K_D,1+K_P,K_i])\n\n"
         Tab_5_4_Dirty_Input_Text += "#Other example:\n#sys1 = tf([1],[1,2,3])\n\n"
@@ -812,7 +850,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.OtherContextMenuSetup()
         self.InstallSyntaxHighlighter()
         self.INIT_Animation()
-
+        
        # Initialize the first equation in Tab 4
         self.Tab_4_2_New_Equation_Name_Input.setText("Equation 1")
         self.Tab_4_F_New_Equation()
@@ -820,7 +858,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_4_1_Dimension_Input.setText(" 3x3 ")
         self.Tab_4_Currently_Displayed = ""
         self.Tab_4_Currently_Displayed_Solution = ""
-
+        
        # Other things:
         self.Tab_5_1_System_Set_Order()
         
@@ -833,9 +871,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             # A new variable that checks if the plot has already been used and if the LaTeX view has been used.
             # If the first is False and the second True then clear when the plot button is pressed and change the variables to ensure that this only happens once
             #       to not accidentally erase the plots of the user as this would be really bad...
-
+        
         self.Tab_1_InputField.setFocus()
-
+        
        # Welcome Message
         msg = ""
         if not AF.LaTeX_dvipng_Installed:
@@ -863,9 +901,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.NotifyUser(10,msg)
             except common_exceptions:
                 ExceptionOutput(sys.exc_info())
-
-        
-# ---------------------------------- Init and Maintenance ----------------------------------
+    
+ # ---------------------------------- Init and Maintenance ----------------------------------
 
     def ConnectSignals(self):
         self.Menu_Options_action_Dev_Function.triggered.connect(self.ReloadModules)
@@ -922,8 +959,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         if FirstTime:
             self.Menu = QtWidgets.QMenu(self)
             self.Menu.setObjectName("Menu")
-        self.MenuBar = QtWidgets.QMenuBar(self)
-        self.MenuBar.setObjectName("MenuBar")
+            self.MenuBar = AW.MMenuBar(self)
+            self.MenuBar.setObjectName("MenuBar")
        # Create submenus
         if FirstTime:
             self.Menu_Options = QtWidgets.QMenu(self.Menu)
@@ -1024,7 +1061,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.MenuBar.addAction(self.Menu_Chat.menuAction())
         self.Menu.addAction(self.Menu_Help.menuAction())
         self.MenuBar.addAction(self.Menu_Help.menuAction())
-
+        
        # Set the text of the menus
         if FirstTime:
             _translate = QtCore.QCoreApplication.translate
@@ -1183,7 +1220,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     ExceptionOutput(sys.exc_info())
                     self.pathOK = False
 
-# ---------------------------------- Key Remapper ----------------------------------
+ # ---------------------------------- Key Remapper ----------------------------------
     def ToggleRemapper(self):
         try:
             if self.Menu_Options_action_Use_Global_Keyboard_Remapper.isChecked():
@@ -1222,7 +1259,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             except common_exceptions :
                 pass
 
-# ---------------------------------- Option Toolbar Functions ----------------------------------
+ # ---------------------------------- Option Toolbar Functions ----------------------------------
     def ReloadModules(self):
         #AC.ReloadModules()
         #AF.ReloadModules()
@@ -1241,6 +1278,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         self.Tab_5_tabWidget.setTabEnabled(0,True)# TODO: Fully implement the CONTROL input tab
 
     def ToggleCompactMenu(self):
+        #TODO: If the MenuBar is used as a widget the extension functionality is not available. Maybe try to set a QMainWindow inside a QMainWindow to fix this...
+        #TODO: The size behaves weird when compact->scaling-up->switching->scaling-down
+        #TODO: The size behaves weird and you can manage to clip the TopBar outside the tabBar
         self.init_Menu(False)
         if self.Menu_Options_action_ToggleCompactMenu.isChecked():
             self.MenuBar.setVisible(False)
@@ -1257,24 +1297,28 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.setMenuBar(self.MenuBar)
             #for i in self.findChildren(QtWidgets.QMenu):
             #    i.setPalette(self.Palette)
-            for i in self.findChildren(QtWidgets.QMenu):
-                i.setFont(self.font())
+            #for i in self.findChildren(QtWidgets.QMenu):
+            #    i.setFont(self.font())
             self.TopBar.setParent(self)
             self.tabWidget.setCornerWidget(None)
             self.MenuBar.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
+            self.MenuBar.updateGeometry()
             self.TopBar.setVisible(True)
-            self.tabWidget.tabBar().setUsesScrollButtons(False)
-            # Palette and font need to be reset to wake up the MenuBar painter and font-setter
+            #self.tabWidget.tabBar().setUsesScrollButtons(False)
+            ##Palette and font need to be reset to wake up the MenuBar painter and font-setter
             ###self.setPalette(self.style().standardPalette())
-            self.MainApp.setPalette(self.style().standardPalette())
+            #self.MainApp.setPalette(self.style().standardPalette())
             ###self.setPalette(self.Palette)
-            self.MainApp.setPalette(self.MainApp.Palette)
+            #self.MainApp.setPalette(self.MainApp.Palette)
+            
+            # VALIDATE: are the following 6 lines necessary if self.MenuBar.updateGeometry() is called before?
             org_font = self.font()
             font = QtGui.QFont()
             font.setFamily("unifont")
             font.setPointSize(9)
             self.setFont(font)
             self.setFont(org_font)
+            
             self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().height())
             
 
@@ -1337,10 +1381,10 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
     def NotifyUser(self,Type,Text="Not Given",Time=None):
         self.MainApp.NotifyUser(Type,Text,Time)
-
-# ---------------------------------- TopBar Functions ----------------------------------
-        
-# ---------------------------------- Chat Toolbar Functions ----------------------------------
+ 
+ # ---------------------------------- TopBar Functions ----------------------------------
+         
+ # ---------------------------------- Chat Toolbar Functions ----------------------------------
 
     def OpenClient(self):
         self.Chat = AstusChat_Client.MainWindow()
@@ -1349,15 +1393,15 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def OpenServer(self):
         self.Sever = AstusChat_Server.MainWindow()
         self.Sever.show()
-
-# ---------------------------------- Events and Context Menu ----------------------------------
+ 
+ # ---------------------------------- Events and Context Menu ----------------------------------
     def OtherContextMenuSetup(self):
         self.Tab_3_1_Display.canvas.mpl_connect('button_press_event', self.Tab_3_1_Display_Context_Menu)
         self.Tab_4_Display.canvas.mpl_connect('button_press_event', self.Tab_4_Display_Context_Menu)
         self.Tab_5_2_Display.canvas.mpl_connect('button_press_event', self.Tab_5_2_Maximize_Axes)
         
         
- # ---------------------------------- 2D Plot Context Menu ---------------------------------- 
+  # ---------------------------------- 2D Plot Context Menu ---------------------------------- 
     def Tab_3_1_Display_Context_Menu(self,event):
         #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
         #      ('double' if event.dblclick else 'single', event.button,
@@ -1370,8 +1414,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             menu.setPalette(self.palette())
             menu.setFont(self.font())
             menu.exec_(cursor.pos())
-            
- # ---------------------------------- Multi-Dim Display Context Menu ---------------------------------- 
+             
+  # ---------------------------------- Multi-Dim Display Context Menu ---------------------------------- 
     def Tab_4_Display_Context_Menu(self,event):
         #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
         #      ('double' if event.dblclick else 'single', event.button,
@@ -1386,8 +1430,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             menu.setPalette(self.palette())
             menu.setFont(self.font())
             menu.exec_(cursor.pos())
-
- # ---------------------------------- Control Plot Interaction ---------------------------------- 
+ 
+  # ---------------------------------- Control Plot Interaction ---------------------------------- 
     def Tab_5_2_Maximize_Axes(self,event):
         try:
             if event.button == 1 and event.dblclick:
@@ -1401,8 +1445,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 self.NotifyUser(1,ExceptionOutput(sys.exc_info()))
             self.Tab_5_tabWidget.setCurrentIndex(1)
         self.Tab_5_tabWidget.setFocus()
-    
-# ---------------------------------- Event Filter ----------------------------------
+      
+ # ---------------------------------- Event Filter ----------------------------------
 
     def eventFilter(self, source, event):
         #print(event.type())
@@ -1431,6 +1475,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     or source is self.Tab_4_History #IMPROVE: This is temporary. Implement this context menu properly
                     )and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
+                if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
+                    action = menu.addAction('Copy Solution')
+                    action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
                 action = menu.addAction('Copy Text')
                 action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
                 action = menu.addAction('Copy LaTeX')
@@ -1440,9 +1487,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                     action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
                     action = menu.addAction('+ Copy cString')
                     action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
-                if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
-                    action = menu.addAction('Copy Solution')
-                    action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
                 menu.addSeparator()
                 # MAYBE: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
                 # It currently is handy to have it always because of the EvalF thing...
@@ -1493,9 +1537,9 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 return True
         #elif...
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
-  
-# ---------------------------------- History Context Menu Actions/Functions ----------------------------------
- # ----------------
+    
+ # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
+  # ----------------
          
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
@@ -1516,8 +1560,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def action_H_Copy_Solution(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).Evaluation)
-        
- # ----------------
+         
+  # ----------------
          
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
@@ -1533,8 +1577,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(1)
         self.Tab_2_F_Display(item.data(100),part="Evaluation")
-        
- # ----------------
+         
+  # ----------------
          
     def action_H_Load_Plot(self,source,event):
         TheItem = source.itemAt(event.pos())
@@ -1569,8 +1613,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 item.data(100).current_ax = None
                 self.Tab_3_1_F_RedrawPlot()
             self.Tab_3_1_F_Plot_init(item.data(100))
-        
- # ----------------
+         
+  # ----------------
         
     def action_H_Copy_x_Values(self,source,event):
         try:
@@ -1599,8 +1643,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         except common_exceptions:
             Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(2,Error)
-
- # ----------------
+ 
+  # ----------------
          
     def action_H_Delete(self,source,event):
         listItems=source.selectedItems()
@@ -1627,8 +1671,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 else:
                     item.data(100).Tab_4_is = False
                     item.data(100).Tab_4_ref = None
-
-# ---------------------------------- Tab_4_Matrix_List Context Menu Actions/Functions ----------------------------------
+ 
+ # ---------------------------------- Tab_4_Matrix_List Context Menu Actions/Functions ----------------------------------
     def action_tab_5_M_Load_into_Editor(self,source,event):
         item = source.itemAt(event.pos())
         Name = item.data(100)
@@ -1652,8 +1696,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         for item in listItems:
             a = source.takeItem(source.row(item))
             del self.Tab_4_Active_Equation.Variables[a.data(100)]
-        
-# ---------------------------------- Tab_3_1_Display_Context_Menu ----------------------------------
+         
+ # ---------------------------------- Tab_3_1_Display_Context_Menu ----------------------------------
     def action_tab_3_tab_1_Display_SavePlt(self):
         if self.pathOK:
             Filename = AF.cTimeFullStr("-")
@@ -1671,16 +1715,15 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         else:
             print("Could not save Plot: Could not validate save location")
             self.NotifyUser(1,"Could not save Plot: Could not validate save location")
-        
-# ---------------------------------- Tab_4_Display_Context_Menu ----------------------------------
+         
+ # ---------------------------------- Tab_4_Display_Context_Menu ----------------------------------
     def action_tab_5_Display_Copy_Displayed(self):
         QApplication.clipboard().setText(self.Tab_4_Currently_Displayed)
         
     def action_tab_5_Display_Copy_Displayed_Solution(self):
         QApplication.clipboard().setText(self.Tab_4_Currently_Displayed_Solution)
-
-
-# ---------------------------------- HistoryHandler ----------------------------------
+ 
+ # ---------------------------------- HistoryHandler ----------------------------------
 
     def HistoryHandler(self, AMaS_Object, Tab):
         
@@ -1753,9 +1796,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         else:
             print("History of Tab {} is unknown".format(Tab))
-
-
-# ---------------------------------- Thread Handler ----------------------------------
+ 
+ # ---------------------------------- Thread Handler ----------------------------------
 
     def TR(self, AMaS_Object , Function , ID=-1 , Eval = -1): # Thread Return: Threads report back here when they are done
         self.Function = Function
@@ -1850,9 +1892,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
 
         AMaS_Object.f_eval = f_eval
         AMaS_Object.f_powsimp = f_powsimp
-
-
-# ---------------------------------- Tab_1_ Calculator ----------------------------------
+ 
+ # ---------------------------------- Tab_1_ Calculator ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ControlModifier:
@@ -1882,9 +1923,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,1)
         self.ans = AMaS_Object.Evaluation
-        
-
-# ---------------------------------- Tab_2_ LaTeX ----------------------------------
+         
+ # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
         EvalL = self.Tab_2_Eval_checkBox.isChecked()
         if type(Text) != str:
@@ -1912,13 +1952,11 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
         self.NotifyUser(returnTuple)#[0],returnTuple[1])
-        
-
-# ---------------------------------- Tab_3_1_ 2D-Plot ----------------------------------
+         
+ # ---------------------------------- Tab_3_1_ 2D-Plot ----------------------------------
     def Tab_3_1_F_Plot_Button(self):
         #self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
         self.TC("NEW",self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Plot_init, Iam=AC.Iam_2D_plot)
-        
         
     def Tab_3_1_F_Plot_init(self , AMaS_Object): # MAYBE: get these values upon creation in case the User acts before the LaTeX conversion finishes? (Not very important)
         if not AMaS_Object.Plot_is_initialized: AMaS_Object.init_2D_plot()
@@ -1949,10 +1987,7 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
         #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_1_F_Plot ,ID))
         self.TC("WORK",AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.Tab_3_1_F_Plot)
         
-        
-        
-        
-    def Tab_3_1_F_Plot(self , AMaS_Object):
+    def Tab_3_1_F_Plot(self , AMaS_Object): # FEATURE: Add an option for each axis to scale logarithmically 
         # MAYBE: Add an extra option for this in the config tab... and change everything else accordingly
         #if self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked():
         #    self.Tab_3_1_Display.UseTeX(True)
@@ -2049,7 +2084,6 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_1_Display.UseTeX(False)
             self.Tab_3_1_Display.canvas.draw()
         
-        
     def Tab_3_1_F_Clear(self):
         self.Tab_3_1_Display.UseTeX(False)
         self.Tab_3_1_Display.canvas.ax.clear()
@@ -2066,6 +2100,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
             self.Tab_3_1_History.item(i).setForeground(brush)
             self.Tab_3_1_History.item(i).data(100).current_ax = None
             
+
+
     def Tab_3_1_F_Sympy_Plot_Button(self): # CLEANUP: DELETE SymPy Plotter
         #self.TC(lambda ID: AT.AMaS_Creator(self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot,ID))
         self.TC("NEW",self.Tab_3_1_Formula_Field.text() , self.Tab_3_1_F_Sympy_Plot)
@@ -2110,9 +2146,17 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 except common_exceptions:
                     Error = ExceptionOutput(sys.exc_info())
                     self.NotifyUser(1,Error)
-
-
-# ---------------------------------- Tab_4_ Multi-Dim ----------------------------------
+ 
+ # ---------------------------------- Tab_3_2_ 3D-Plot ----------------------------------
+    # FEATURE: 3D-Plot
+ 
+ # ---------------------------------- Tab_3_3_ Complex-Plot ----------------------------------
+    # FEATURE: Complex-Plot
+ 
+ # ---------------------------------- Tab_3_4_ ND-Plot ----------------------------------
+    # FEATURE: ND-Plot
+ 
+ # ---------------------------------- Tab_4_ Multi-Dim ----------------------------------
     def Tab_4_F_New_Equation(self):
         Name = ""+self.Tab_4_2_New_Equation_Name_Input.text().strip()
         if Name == "":
@@ -2292,9 +2336,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                                         )
         if returnTuple[0] != 0:
             self.NotifyUser(returnTuple[0],returnTuple[1])
-
-
-# ---------------------------------- Tab_5_ (Mind-)Control ----------------------------------
+ 
+ # ---------------------------------- Tab_5_ (Mind-)Control ----------------------------------
     def Tab_5_1_System_Set_Order(self,Order=None):
         if type(Order) != int:
             Order = self.Tab_5_1_SystemOrder_Spinbox.value()
@@ -2481,11 +2524,8 @@ class AMaDiA_Main_Window(QtWidgets.QMainWindow, Ui_AMaDiA_Main_Window):
                 Error = ExceptionOutput(sys.exc_info())
                 self.Tab_5_tabWidget.setCurrentIndex(3)
                 self.NotifyUser(1,Error)
-
-
-# ---------------------------------- Tab_6_ ??? ----------------------------------
-
-
+ 
+ # ---------------------------------- Tab_6_ ??? ----------------------------------
 
 # ---------------------------------- Main ----------------------------------
 if __name__ == "__main__":
