@@ -1376,7 +1376,9 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
 
     def eventFilter(self, source, event):
         #if event.type() == 6: # QtCore.QEvent.KeyPress
-        #    if event.modifiers() == QtCore.Qt.MetaModifier: # Does not work on Windows
+        #    #if event.modifiers() == QtCore.Qt.MetaModifier: # Does not work on windows as the meta key is not detected this way
+        #    modifiers = QtWidgets.QApplication.keyboardModifiers() # Detects the meta key
+        #    if modifiers == QtCore.Qt.MetaModifier: # Does not work on windows as windows eats all other key while the Meta Key is pressed...
         #        print("win")
         #        screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
         #        screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)

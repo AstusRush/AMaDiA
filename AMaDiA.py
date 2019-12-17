@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.6.4"
+Version = "0.15.6.5"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -484,18 +484,14 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
             for i in w.findChildren(AW.TopBar_Widget):
                 try:
                     if i.IncludeFontSpinBox:
+                        # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
+                        # If the new Value is the same it is NOT emitted.
+                        # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
                         i.Font_Size_spinBox.blockSignals(True)
                         i.Font_Size_spinBox.setValue(PointSize)
                         i.Font_Size_spinBox.blockSignals(False)
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
-        #else: # TODO: Implement this for all windows via the TopBarWidget
-        #    # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
-        #    # If the new Value is the same it is NOT emitted.
-        #    # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
-        #    self.TopBar_Font_Size_spinBox.blockSignals(True)
-        #    self.TopBar_Font_Size_spinBox.setValue(PointSize)
-        #    self.TopBar_Font_Size_spinBox.blockSignals(False)
         
         font = QtGui.QFont()
         font.setFamily(Family)
@@ -2476,16 +2472,20 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 if MError != "":
                     self.NotifyUser(2,MError)
                 # Remove empty leading entries
-                for i,y in enumerate(Ys):
-                    if y == 0:
-                        Ys.pop(i)
-                    else:
-                        break
-                for i,y in enumerate(Xs):
-                    if y == 0:
-                        Xs.pop(i)
-                    else:
-                        break
+                #for i,y in enumerate(Ys):
+                #    if y == 0:
+                #        Ys.pop(i)
+                #    else:
+                #        break
+                #for i,y in enumerate(Xs):
+                #    if y == 0:
+                #        Xs.pop(i)
+                #    else:
+                #        break
+                while Ys[0]==0:
+                    Ys.pop(0)
+                while Xs[0]==0:
+                    Xs.pop(0)
                 print(Ys,r"/",Xs)
                 sys1 = control.tf(Ys,Xs)
             elif Tab == 2: #State System
@@ -2522,7 +2522,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
     def Tab_5_4_Dirty_Display(self):
         if not self.Menu_Options_action_Advanced_Mode.isChecked():
-            self.NotifyUser(3,"This is the danger zone!\nPlease activate Advanced Mode to confirm that you know what you are doing!")
+            self.NotifyUser(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!")
         else:
             self.Tab_5_tabWidget.setCurrentIndex(1)
             input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal f\nf=\"\"\n" + self.Tab_5_4_Dirty_Input.toPlainText()
