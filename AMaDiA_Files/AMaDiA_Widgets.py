@@ -1311,6 +1311,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         self.AWWF_p_MenuBar = None
         self.AWWF_p_CentralWidget = None
         self.AWWF_p_StatusBar = None
+        self.standardSize = (900, 500)
 
         self.installEventFilter(self)
 
@@ -1496,7 +1497,7 @@ class TopBar_Widget(QtWidgets.QWidget):
             self.Font_Size_spinBox = QtWidgets.QSpinBox(self)
             self.Font_Size_spinBox.setMinimum(5)
             self.Font_Size_spinBox.setMaximum(25)
-            self.Font_Size_spinBox.setProperty("value", 9)
+            self.Font_Size_spinBox.setProperty("value", self.font().pointSize())
             self.Font_Size_spinBox.setObjectName("Font_Size_spinBox")
             self.layout().addWidget(self.Font_Size_spinBox, 0, 99, 1, 1,QtCore.Qt.AlignRight)
             self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)

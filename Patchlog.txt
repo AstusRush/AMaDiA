@@ -366,3 +366,11 @@ v0.15.6.2: Tab 5 Input Tab Bug Fix
 v0.15.6.3: Resizing Optimization
 + Reworked the resizing of the window to work reliable and smooth.
 
+v0.15.6.4: More Windows
++ It is now possible to open several instances of AMaDiA_Internal_File_Display_Window as long as their files are different
+++ This means that you can open the Examples and the Helpful Useable Commands at the same time!
+++ If a window for a specific file name is opened twice the old instance is closed
++ The font size spin box now initializes with the correct font size for new windows
++ Each window now saves its standard size
+++ This variable is applied when using "ctrl+0" and currently has no other use
+

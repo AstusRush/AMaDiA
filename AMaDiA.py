@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.6.3"
+Version = "0.15.6.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -123,7 +123,8 @@ class AMaDiA_Internal_File_Display_Window(AW.AWWF):
         try:
             super(AMaDiA_Internal_File_Display_Window, self).__init__(parent)
             self.setWindowTitle(FileName)
-            self.resize(900, 500)
+            self.standardSize = (900, 500)
+            self.resize(*self.standardSize)
                 
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
@@ -180,7 +181,8 @@ class AMaDiA_About_Window(AW.AWWF):
         try:
             super(AMaDiA_About_Window, self).__init__(parent)
             self.setWindowTitle("About AMaDiA")
-            self.resize(400, 600)
+            self.standardSize = (400, 600)
+            self.resize(*self.standardSize)
 
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
@@ -232,7 +234,8 @@ class AMaDiA_Notification_Window(AW.AWWF):
         try:
             super(AMaDiA_Notification_Window, self).__init__(parent)
             self.setWindowTitle("Notifications")
-            self.resize(900, 500)
+            self.standardSize = (900, 500)
+            self.resize(*self.standardSize)
 
             if QtWidgets.QApplication.instance().AllUseCustomFrame:
                 if False: #TopBar in place of MenuBar
@@ -328,12 +331,18 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         if event.type() == 6: # QtCore.QEvent.KeyPress
             if event.modifiers() == ControlModifier and event.key() == QtCore.Qt.Key_0: # TODO: Inform the User that this feature exists
                 for w in self.topLevelWidgets():
-                    w.resize(906, 634)
-                    frameGm = w.frameGeometry()
-                    screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
-                    centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
-                    frameGm.moveCenter(centerPoint)
-                    w.move(frameGm.topLeft())
+                    try:
+                        w.resize(*w.standardSize)
+                    except common_exceptions:
+                        w.resize(900, 600)
+                    try:
+                        frameGm = w.frameGeometry()
+                        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+                        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+                        frameGm.moveCenter(centerPoint)
+                        w.move(frameGm.topLeft())
+                    except common_exceptions:
+                        ExceptionOutput(sys.exc_info())
                 return True
             if source == self.MainWindow: # THIS IS SPECIFIC TO AMaDiA_Main_Window
                 if event.modifiers() == ControlModifier:
@@ -745,6 +754,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         #self.TopBarGridLayout.setObjectName("TopBarGridLayout")
         #self.TopBar.setLayout(self.TopBarGridLayout)
         
+        self.standardSize = (906, 634)
+        self.resize(*self.standardSize)
         
         self.tabWidget.setContentsMargins(0,0,0,0)
         #self.tabWidget.tabBar(). # Access the TabBar of the TabWidget
@@ -802,6 +813,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Bool_PreloadLaTeX = True
         self.firstrelease = False
         self.keylist = []
+        self.AMaDiA_Text_File_Window = {}
         self.Tab_2_Eval_checkBox.setCheckState(1)
         #QtWidgets.QCheckBox.setCheckState(1)
         
@@ -1105,22 +1117,22 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Help_action_Patchlog.setText(_translate("AMaDiA_Main_Window", "Patchlog"))
 
     #def Colour_Font_Init(self):
-    #    self.FontFamily = "Arial"
-    #    #self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
-    #    #self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
-    #    font = QtGui.QFont()
-    #    font.setFamily("Arial")
-    #    font.setPointSize(9)
-    #    self.MainApp.SetFont(font, 9, self)
-    #    self.MainApp.Recolour()
-    #
-    #    #self.Error_Palette = AMaDiA_Colour.Red_ERROR()[0] # Currently not in use
-    #
-    #    # Always keep Statusbar Font small
-    #    font = QtGui.QFont()
-    #    font.setFamily("Arial")
-    #    font.setPointSize(9)
-    #    #self.statusbar.setFont(font)
+     #   self.FontFamily = "Arial"
+     #   #self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
+     #   #self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
+     #   font = QtGui.QFont()
+     #   font.setFamily("Arial")
+     #   font.setPointSize(9)
+     #   self.MainApp.SetFont(font, 9, self)
+     #   self.MainApp.Recolour()
+     # 
+     #   #self.Error_Palette = AMaDiA_Colour.Red_ERROR()[0] # Currently not in use
+     # 
+     #   # Always keep Statusbar Font small
+     #   font = QtGui.QFont()
+     #   font.setFamily("Arial")
+     #   font.setPointSize(9)
+     #   #self.statusbar.setFont(font)
 
     def SetFont(self,Family = None, PointSize = 0): #FEATURE: Allow to change Font
         if type(Family) == QtGui.QFont:
@@ -1364,27 +1376,28 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         else:
             self.Threading = "LIST"
 
+    def NotifyUser(self,Type,Text="Not Given",Time=None):
+        self.MainApp.NotifyUser(Type,Text,Time)
+        
+ # ---------------------------------- SubWindows ----------------------------------
     def Show_AMaDiA_Text_File(self,FileName):
-        self.AMaDiA_Text_File_Window = AMaDiA_Internal_File_Display_Window(FileName)
-        self.AMaDiA_Text_File_Window.show()
+        self.AMaDiA_Text_File_Window[FileName] = AMaDiA_Internal_File_Display_Window(FileName)
+        self.AMaDiA_Text_File_Window[FileName].show()
         if FileName == "Patchlog.txt":
             worker = AT.Timer(0.1) # pylint: disable=no-value-for-parameter
-            worker.signals.finished.connect(self.AMaDiA_Text_File_ScrollToEnd)
+            worker.signals.finished.connect(lambda: self.AMaDiA_Text_File_ScrollToEnd(self.AMaDiA_Text_File_Window[FileName]))
             self.threadpool.start(worker)
         
-    def AMaDiA_Text_File_ScrollToEnd(self):
-        self.AMaDiA_Text_File_Window.Scroll_To_End()
+    def AMaDiA_Text_File_ScrollToEnd(self,window):
+        try:
+            window.Scroll_To_End()
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+        
 
     def Show_About(self):
         self.AMaDiA_About_Window_Window = AMaDiA_About_Window()
         self.AMaDiA_About_Window_Window.show()
-
-    def NotifyUser(self,Type,Text="Not Given",Time=None):
-        self.MainApp.NotifyUser(Type,Text,Time)
- 
- # ---------------------------------- TopBar Functions ----------------------------------
-         
- # ---------------------------------- Chat Toolbar Functions ----------------------------------
 
     def OpenClient(self):
         self.Chat = AstusChat_Client.MainWindow()
@@ -1393,7 +1406,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def OpenServer(self):
         self.Sever = AstusChat_Server.MainWindow()
         self.Sever.show()
- 
+
+
  # ---------------------------------- Events and Context Menu ----------------------------------
     def OtherContextMenuSetup(self):
         self.Tab_3_1_Display.canvas.mpl_connect('button_press_event', self.Tab_3_1_Display_Context_Menu)
