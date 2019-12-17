@@ -356,3 +356,7 @@ v0.15.6: Proper Window Frame
 + When moving a window to a corner/side of the screen it now fills it
 + The 'Copy Solution' context menu action is now at the very top
 
+v0.15.6.1: Degree Support
++ Added support for degree "°"
+++ "/°" converts to "*(360/pi/2)" and "°" converts to "/(360/pi/2)" thus ° converts a number to degree and /° to radiants
+

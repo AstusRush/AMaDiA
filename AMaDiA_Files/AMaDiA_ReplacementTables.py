@@ -149,13 +149,15 @@ n_greek_letters_nospace = [["\u0391","Alpha"],["\u03b1","alpha"],
 n_constants = [["\u03c0"," pi "],["∞"," oo "]]
 n_operators = [["^","**"],["·","*"]]
 n_operators_special = [["√","sqrt"],["∫","Integral"]]
-n_operators_notinv = [["–","-"],["—","-"],["×","*"],["÷","/"]]
+n_operators_notinv = [["–","-"],["—","-"],["×","*"],["÷","/"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
 n_space = [[" "," "]]
+
+n_priority_Invertable = [["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
 
 LIST_n_all = [n_standard_integrals , n_greek_letters_nospace , n_constants , n_operators , n_operators_special , n_operators_notinv , n_space]
 
 n_constants_nospace = [["π"," pi "]]
-LIST_n_invertable = [n_greek_letters_nospace , n_constants_nospace , n_operators , n_operators_special]
+LIST_n_invertable = [n_priority_Invertable , n_greek_letters_nospace , n_constants_nospace , n_operators , n_operators_special]
 # ---------------------------------- Special Replacements s_ ----------------------------------
 
 s_constants_math = [["i"," I "],["e"," E "]]
