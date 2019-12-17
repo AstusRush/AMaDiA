@@ -1698,13 +1698,21 @@ class Window_Frame_Widget(QtWidgets.QFrame):
         super(Window_Frame_Widget, self).__init__(parent)
         self.FrameEnabled = False
         self.moving = False
+        self.setMouseTracking(True)
+
+        
+        # Resizing was inspired by an answer to https://stackoverflow.com/questions/37047236/qt-resizable-and-movable-main-window-without-title-bar (16.12.2019)
         self.offset = 0
         self.mPos = None# For dragging, relative mouse position to upper left
         self.global_mPos = None # For resizing, global mouse position at mouse click
         self.rs_mPos = None # for resizing
         self.storeWidth = 0 # fix window size at mouseclick for resizing
         self.storeHeight = 0
-        self.setMouseTracking(True)
+        self.adjXFac = 0
+        self.adjYFac = 0
+        self.transXFac = 0
+        self.transYFac = 0
+        self.Direction = "D"
     
     def showFrame(self):
         self.FrameEnabled = True
@@ -1719,7 +1727,6 @@ class Window_Frame_Widget(QtWidgets.QFrame):
         #self.setMidLineWidth(3)
 
     def mousePressEvent(self,event):
-        # Modified and translated version of https://stackoverflow.com/questions/37047236/qt-resizable-and-movable-main-window-without-title-bar
         if (event.button() == QtCore.Qt.LeftButton):
             # Coordinates have been mapped such that the mouse position is relative to the upper left of the main window
             self.mPos = event.globalPos() - self.window().frameGeometry().topLeft()
@@ -1728,162 +1735,201 @@ class Window_Frame_Widget(QtWidgets.QFrame):
             self.global_mPos = event.globalPos()
             self.storeWidth = self.width()
             self.storeHeight= self.height()
+            self.offset = event.globalPos()-self.window().geometry().topLeft() # event.globalPos()-frameGeometry().topLeft()
+            rs_size = 20
+            # Big if statement checks if the mouse is near the frame and if the frame is enabled
+            if ( ((abs(self.offset.x()) < rs_size) or
+                    (abs(self.offset.x()) > self.width()-rs_size) or
+                    (abs(self.offset.x()) < rs_size) or
+                    (abs(self.offset.x()) > self.width()-rs_size)or
+                    (abs(self.offset.y()) < rs_size) or
+                    (abs(self.offset.y()) <rs_size) or
+                    (abs(self.offset.y())> self.height()-rs_size) or
+                    (abs(self.offset.y())> self.height()-rs_size))
+                    and self.FrameEnabled):
+                # Use 2x2 matrix to adjust how much you are resizing and how much you
+                # are moving. Since the default coordinates are relative to upper left
+                # You cannot just have one way of resizing and moving the window.
+                # It will depend on which corner you are referring to
+                # 
+                # self.adjXFac and self.adjYFac are for calculating the difference between your
+                # current mouse position and where your mouse was when you clicked.
+                # With respect to the upper left corner, moving your mouse to the right
+                # is an increase in coordinates, moving mouse to the bottom is increase etc.
+                # However, with other corners this is not so and since I chose to subtract
+                # This difference at the end for resizing, self.adjXFac and self.adjYFac should be
+                # 1 or -1 depending on whether moving the mouse in the x or y directions
+                # increases or decreases the coordinates respectively. 
+                # 
+                # self.transXFac self.transYFac is to move the window over. Resizing the window does not
+                # automatically pull the window back toward your mouse. This is what
+                # transfac is for (translate window in some direction). It will be either
+                # 0 or 1 depending on whether you need to translate in that direction.
+                #
+                # Initialize Matrix:
+                # Upper left corner section
+                if ( (abs(self.offset.x()) < rs_size and abs(self.offset.y()) < rs_size)):
+                    self.setCursor(QtCore.Qt.SizeFDiagCursor)
+                    # Upper left. No flipping of axis, no translating window
+                    self.adjXFac=1
+                    self.adjYFac=1
+                    self.transXFac=0
+                    self.transYFac=0
+                    self.Direction = "D"
+                    self.moving = True
+                # Upper right corner section
+                elif(abs(self.offset.x()) > self.width()-rs_size and abs(self.offset.y()) <rs_size):
+                    self.setCursor(QtCore.Qt.SizeBDiagCursor)
+                    # upper right. Flip displacements in mouse movement across x axis
+                    # and translate window left toward the mouse
+                    self.adjXFac=-1
+                    self.adjYFac=1
+                    self.transXFac=1
+                    self.transYFac=0
+                    self.Direction = "D"
+                    self.moving = True
+                # Lower left corner section
+                elif(abs(self.offset.x()) < rs_size and abs(self.offset.y())> self.height()-rs_size):
+                    self.setCursor(QtCore.Qt.SizeBDiagCursor)
+                    # lower left. Flip displacements in mouse movement across y axis
+                    # and translate window up toward mouse
+                    self.adjXFac=1
+                    self.adjYFac=-1
+                    self.transXFac=0
+                    self.transYFac=1
+                    self.Direction = "D"
+                    self.moving = True
+                # Lower right corner section
+                elif(abs(self.offset.x()) > self.width()-rs_size and abs(self.offset.y())> self.height()-rs_size):
+                    self.setCursor(QtCore.Qt.SizeFDiagCursor)
+                    # lower right. Flip mouse displacements on both axis and
+                    # translate in both x and y direction left and up toward mouse.
+                    self.adjXFac=-1
+                    self.adjYFac=-1
+                    self.transXFac=1
+                    self.transYFac=1
+                    self.Direction = "D"
+                    self.moving = True
+
+
+                # Upper Side
+                elif abs(self.offset.y()) < rs_size:
+                    self.setCursor(QtCore.Qt.SizeVerCursor)
+                    self.adjXFac=-1#1
+                    self.adjYFac=1
+                    self.transXFac=1#0
+                    self.transYFac=0
+                    self.Direction = "y"
+                    self.moving = True
+                # Lower side
+                elif abs(self.offset.y()) > self.height()-rs_size:
+                    self.setCursor(QtCore.Qt.SizeVerCursor)
+                    self.adjXFac=-1
+                    self.adjYFac=-1
+                    self.transXFac=1
+                    self.transYFac=1
+                    self.Direction = "y"
+                    self.moving = True
+                # Right Side
+                elif abs(self.offset.x()) > self.width()-rs_size:
+                    self.setCursor(QtCore.Qt.SizeHorCursor)
+                    self.adjXFac=-1
+                    self.adjYFac=-1#1
+                    self.transXFac=1
+                    self.transYFac=1#0
+                    self.Direction = "x"
+                    self.moving = True
+                # Left Side
+                elif abs(self.offset.x()) < rs_size:
+                    self.setCursor(QtCore.Qt.SizeHorCursor)
+                    self.adjXFac=1
+                    self.adjYFac=-1
+                    self.transXFac=0
+                    self.transYFac=1
+                    self.Direction = "x"
+                    self.moving = True
 
             event.accept()
 
     def mouseReleaseEvent(self,event):
+        self.moving = False
         self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
-    def mouseMoveEvent(self,event): # IMPROVE: Resizing often lags and looses focus... This must be improved...
-        # Modified and translated version of https://stackoverflow.com/questions/37047236/qt-resizable-and-movable-main-window-without-title-bar
-        # TODO: Make the sides resizable as well
-        offset = event.globalPos()-self.window().geometry().topLeft() # event.globalPos()-frameGeometry().topLeft()
-        rs_size = 20
-        # Big if statement checks if the mouse is near the frame and if the frame is enabled
-        if ( ((abs(offset.x()) < rs_size) or
-                (abs(offset.x()) > self.width()-rs_size) or
-                (abs(offset.x()) < rs_size) or
-                (abs(offset.x()) > self.width()-rs_size)or
-                (abs(offset.y()) < rs_size) or
-                (abs(offset.y()) <rs_size) or
-                (abs(offset.y())> self.height()-rs_size) or
-                (abs(offset.y())> self.height()-rs_size))
-                and self.FrameEnabled):
-            # Use 2x2 matrix to adjust how much you are resizing and how much you
-            # are moving. Since the default coordinates are relative to upper left
-            # You cannot just have one way of resizing and moving the window.
-            # It will depend on which corner you are referring to
-            # 
-            # adjXFac and adjYFac are for calculating the difference between your
-            # current mouse position and where your mouse was when you clicked.
-            # With respect to the upper left corner, moving your mouse to the right
-            # is an increase in coordinates, moving mouse to the bottom is increase etc.
-            # However, with other corners this is not so and since I chose to subtract
-            # This difference at the end for resizing, adjXFac and adjYFac should be
-            # 1 or -1 depending on whether moving the mouse in the x or y directions
-            # increases or decreases the coordinates respectively. 
-            # 
-            # transXFac transYFac is to move the window over. Resizing the window does not
-            # automatically pull the window back toward your mouse. This is what
-            # transfac is for (translate window in some direction). It will be either
-            # 0 or 1 depending on whether you need to translate in that direction.
-            #
-            # Initialize Matrix:
-            adjXFac = 0
-            adjYFac = 0
-            transXFac = 0
-            transYFac = 0
-            Direction = "D"
-            # Upper left corner section
-            if ( (abs(offset.x()) < rs_size and abs(offset.y()) < rs_size)):
-                self.setCursor(QtCore.Qt.SizeFDiagCursor)
-                # Upper left. No flipping of axis, no translating window
-                adjXFac=1
-                adjYFac=1
-                transXFac=0
-                transYFac=0
-                Direction = "D"
-            # Upper right corner section
-            elif(abs(offset.x()) > self.width()-rs_size and abs(offset.y()) <rs_size):
-                self.setCursor(QtCore.Qt.SizeBDiagCursor)
-                # upper right. Flip displacements in mouse movement across x axis
-                # and translate window left toward the mouse
-                adjXFac=-1
-                adjYFac=1
-                transXFac=1
-                transYFac=0
-                Direction = "D"
-            # Lower left corner section
-            elif(abs(offset.x()) < rs_size and abs(offset.y())> self.height()-rs_size):
-                self.setCursor(QtCore.Qt.SizeBDiagCursor)
-                # lower left. Flip displacements in mouse movement across y axis
-                # and translate window up toward mouse
-                adjXFac=1
-                adjYFac=-1
-                transXFac=0
-                transYFac=1
-                Direction = "D"
-            # Lower right corner section
-            elif(abs(offset.x()) > self.width()-rs_size and abs(offset.y())> self.height()-rs_size):
-                self.setCursor(QtCore.Qt.SizeFDiagCursor)
-                # lower right. Flip mouse displacements on both axis and
-                # translate in both x and y direction left and up toward mouse.
-                adjXFac=-1
-                adjYFac=-1
-                transXFac=1
-                transYFac=1
-                Direction = "D"
-
-
-            # Upper Side
-            elif abs(offset.y()) < rs_size:
-                self.setCursor(QtCore.Qt.SizeVerCursor)
-                adjXFac=-1#1
-                adjYFac=1
-                transXFac=1#0
-                transYFac=0
-                Direction = "y"
-            # Lower side
-            elif abs(offset.y()) > self.height()-rs_size:
-                self.setCursor(QtCore.Qt.SizeVerCursor)
-                adjXFac=-1
-                adjYFac=-1
-                transXFac=1
-                transYFac=1
-                Direction = "y"
-            # Right Side
-            elif abs(offset.x()) > self.width()-rs_size:
-                self.setCursor(QtCore.Qt.SizeHorCursor)
-                adjXFac=-1
-                adjYFac=-1#1
-                transXFac=1
-                transYFac=1#0
-                Direction = "x"
-            # Left Side
-            elif abs(offset.x()) < rs_size:
-                self.setCursor(QtCore.Qt.SizeHorCursor)
-                adjXFac=1
-                adjYFac=-1
-                transXFac=0
-                transYFac=1
-                Direction = "x"
-                
-            if (event.buttons()==QtCore.Qt.LeftButton ):
-                if Direction == "D":
-                    # Calculation of displacement. adjXFac=1 means normal displacement
-                    # adjXFac=-1 means flip over axis     
-                    adjXDiff = adjXFac*(event.globalPos().x() - self.global_mPos.x())
-                    adjYDiff = adjYFac*(event.globalPos().y() - self.global_mPos.y())
-                    # if transfac is 1 then movepoint of mouse is translated     
-                    movePoint = QtCore.QPoint(self.mPos.x() - transXFac*adjXDiff, self.mPos.y()-transYFac*adjYDiff)
-                    self.window().move(event.globalPos()-movePoint)
-                    self.window().resize(self.storeWidth-adjXDiff, self.storeHeight-adjYDiff)
-                elif Direction == "y": #TODO
-                    # Calculation of displacement. adjXFac=1 means normal displacement
-                    # adjXFac=-1 means flip over axis     
-                    adjXDiff = adjXFac*(event.globalPos().x() - self.global_mPos.x())
-                    adjYDiff = adjYFac*(event.globalPos().y() - self.global_mPos.y())
-                    # if transfac is 1 then movepoint of mouse is translated     
-                    movePoint = QtCore.QPoint(self.mPos.x() - transXFac*adjXDiff, self.mPos.y()-transYFac*adjYDiff)
-                    self.window().move(event.globalPos()-movePoint)
-                    self.window().resize(self.storeWidth, self.storeHeight-adjYDiff)#-adjXDiff
-                elif Direction == "x": #TODO
-                    # Calculation of displacement. adjXFac=1 means normal displacement
-                    # adjXFac=-1 means flip over axis     
-                    adjXDiff = adjXFac*(event.globalPos().x() - self.global_mPos.x())
-                    adjYDiff = adjYFac*(event.globalPos().y() - self.global_mPos.y())
-                    # if transfac is 1 then movepoint of mouse is translated     
-                    movePoint = QtCore.QPoint(self.mPos.x() - transXFac*adjXDiff, self.mPos.y()-transYFac*adjYDiff)
-                    self.window().move(event.globalPos()-movePoint)
-                    self.window().resize(self.storeWidth-adjXDiff, self.storeHeight)#-adjYDiff)
-                event.accept()
-        # In any move event if it is not in a resize region use the default cursor
+    def mouseMoveEvent(self,event):
+        if self.moving:
+            #if (event.buttons()==QtCore.Qt.LeftButton ):
+            if self.Direction == "D":
+                # Calculation of displacement. self.adjXFac=1 means normal displacement
+                # self.adjXFac=-1 means flip over axis     
+                adjXDiff = self.adjXFac*(event.globalPos().x() - self.global_mPos.x())
+                adjYDiff = self.adjYFac*(event.globalPos().y() - self.global_mPos.y())
+                # if transfac is 1 then movepoint of mouse is translated     
+                movePoint = QtCore.QPoint(self.mPos.x() - self.transXFac*adjXDiff, self.mPos.y()-self.transYFac*adjYDiff)
+                self.window().move(event.globalPos()-movePoint)
+                self.window().resize(self.storeWidth-adjXDiff, self.storeHeight-adjYDiff)
+            elif self.Direction == "y":
+                # Calculation of displacement. self.adjXFac=1 means normal displacement
+                # self.adjXFac=-1 means flip over axis     
+                adjXDiff = self.adjXFac*(event.globalPos().x() - self.global_mPos.x())
+                adjYDiff = self.adjYFac*(event.globalPos().y() - self.global_mPos.y())
+                # if transfac is 1 then movepoint of mouse is translated     
+                movePoint = QtCore.QPoint(self.mPos.x() - self.transXFac*adjXDiff, self.mPos.y()-self.transYFac*adjYDiff)
+                self.window().move(event.globalPos()-movePoint)
+                self.window().resize(self.storeWidth, self.storeHeight-adjYDiff)
+            elif self.Direction == "x":
+                # Calculation of displacement. self.adjXFac=1 means normal displacement
+                # self.adjXFac=-1 means flip over axis     
+                adjXDiff = self.adjXFac*(event.globalPos().x() - self.global_mPos.x())
+                adjYDiff = self.adjYFac*(event.globalPos().y() - self.global_mPos.y())
+                # if transfac is 1 then movepoint of mouse is translated     
+                movePoint = QtCore.QPoint(self.mPos.x() - self.transXFac*adjXDiff, self.mPos.y()-self.transYFac*adjYDiff)
+                self.window().move(event.globalPos()-movePoint)
+                self.window().resize(self.storeWidth-adjXDiff, self.storeHeight)
+            event.accept()
         else:
-            self.setCursor(QtCore.Qt.ArrowCursor)
-            #simple move section
-            #if (event.buttons()==QtCore.Qt.LeftButton ):#and resizeZone==False):
-            #    move = QtCore.QPoint(event.globalPos() - self.mPos)
-            #    event.accept()
+            self.offset = event.globalPos()-self.window().geometry().topLeft()
+            rs_size = 20
+            if ( ((abs(self.offset.x()) < rs_size) or
+                    (abs(self.offset.x()) > self.width()-rs_size) or
+                    (abs(self.offset.x()) < rs_size) or
+                    (abs(self.offset.x()) > self.width()-rs_size)or
+                    (abs(self.offset.y()) < rs_size) or
+                    (abs(self.offset.y()) <rs_size) or
+                    (abs(self.offset.y())> self.height()-rs_size) or
+                    (abs(self.offset.y())> self.height()-rs_size))
+                    and self.FrameEnabled):
+                # Upper left corner section
+                if ( (abs(self.offset.x()) < rs_size and abs(self.offset.y()) < rs_size)):
+                    self.setCursor(QtCore.Qt.SizeFDiagCursor)
+                # Upper right corner section
+                elif(abs(self.offset.x()) > self.width()-rs_size and abs(self.offset.y()) <rs_size):
+                    self.setCursor(QtCore.Qt.SizeBDiagCursor)
+                    self.Direction = "D"
+                # Lower left corner section
+                elif(abs(self.offset.x()) < rs_size and abs(self.offset.y())> self.height()-rs_size):
+                    self.setCursor(QtCore.Qt.SizeBDiagCursor)
+                # Lower right corner section
+                elif(abs(self.offset.x()) > self.width()-rs_size and abs(self.offset.y())> self.height()-rs_size):
+                    self.setCursor(QtCore.Qt.SizeFDiagCursor)
+
+
+                # Upper Side
+                elif abs(self.offset.y()) < rs_size:
+                    self.setCursor(QtCore.Qt.SizeVerCursor)
+                # Lower side
+                elif abs(self.offset.y()) > self.height()-rs_size:
+                    self.setCursor(QtCore.Qt.SizeVerCursor)
+                # Right Side
+                elif abs(self.offset.x()) > self.width()-rs_size:
+                    self.setCursor(QtCore.Qt.SizeHorCursor)
+                # Left Side
+                elif abs(self.offset.x()) < rs_size:
+                    self.setCursor(QtCore.Qt.SizeHorCursor)
+                    
+            # In any move event if it is not in a resize region use the default cursor
+            else:
+                self.setCursor(QtCore.Qt.ArrowCursor)
+
     def leaveEvent(self,event):
         self.setCursor(QtCore.Qt.ArrowCursor)
 

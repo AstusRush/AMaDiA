@@ -363,3 +363,6 @@ v0.15.6.1: Degree Support
 v0.15.6.2: Tab 5 Input Tab Bug Fix
 + Fixed a bug that caused the Save Button in the Input tab in tab 5 to not detect the current input method (TF,SS,etc.)
 
+v0.15.6.3: Resizing Optimization
++ Reworked the resizing of the window to work reliable and smooth.
+
