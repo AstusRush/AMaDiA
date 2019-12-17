@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.6.1"
+Version = "0.15.6.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -2377,7 +2377,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Tab_5_1_NameInput.selectAll()
 
     def Tab_5_1_System_Save(self):
-        Tab = self.Tab_5_1_Input_tabWidget.currentIndex()
+        Tab = self.Tab_5_1_System_tabWidget.currentIndex()
         try:
             NameInvalid=False
             Name = AF.AstusParse(self.Tab_5_1_NameInput.text()).strip()

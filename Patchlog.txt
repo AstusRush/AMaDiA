@@ -360,3 +360,6 @@ v0.15.6.1: Degree Support
 + Added support for degree "°"
 ++ "/°" converts to "*(360/pi/2)" and "°" converts to "/(360/pi/2)" thus ° converts a number to degree and /° to radiants
 
+v0.15.6.2: Tab 5 Input Tab Bug Fix
++ Fixed a bug that caused the Save Button in the Input tab in tab 5 to not detect the current input method (TF,SS,etc.)
+
