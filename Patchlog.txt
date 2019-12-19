@@ -396,3 +396,9 @@ v0.15.7.1: Screenshots
 + The folder path is now handled by the application instead of the main window
 + Finally added current screenshots!!!
 
+v0.15.8: Full Equation as LaTeX
++ Added the option to display entire equations in LaTeX
++ MultiDim-tab: Now displays the equations instead of only the solution
++ MultiDim-tab: When copying the text or equation the matrix names are now replaced by the actual matrices
++ Added highlight colours to the dark theme
+

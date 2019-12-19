@@ -14,7 +14,8 @@ def Dark():
     tbrush.setStyle(QtCore.Qt.SolidPattern)
 
     palette = QtGui.QPalette()
-    brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+    brush = QtGui.QBrush(QtGui.QColor(215, 213, 201))
+    #brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush) # Used for tab-text and for the arrows in spinboxes and scrollbars and QFrame
     #brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -165,10 +166,30 @@ def Dark():
     #brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
     
+    brush = QtGui.QBrush(QtGui.QColor(48, 140, 198))
+    brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
+    brush = QtGui.QBrush(QtGui.QColor(53, 68, 97))
+    brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
+    brush = QtGui.QBrush(QtGui.QColor(145, 145, 145))
+    brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
+
+    brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+    brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
+    brush = QtGui.QBrush(QtGui.QColor(255, 255, 254))
+    brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
+    brush = QtGui.QBrush(QtGui.QColor(255, 255, 254))
+    brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
+    
     #      UI        Special Background Colour  Special Text Colour
     return palette , (54/255, 57/255, 63/255) , (215/255, 213/255, 201/255)
 
-def Bright(): #TODO: Change the Values to a bright theme
+def Bright():
     tbrush = QtGui.QBrush(QtGui.QColor(255, 0, 255))
     tbrush.setStyle(QtCore.Qt.SolidPattern)
 
@@ -335,7 +356,6 @@ def Bright(): #TODO: Change the Values to a bright theme
 #----------------- Special -----------------
 
 def Red_ERROR():
-    # Inspired by Discord
     brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
     brush.setStyle(QtCore.Qt.SolidPattern)
     text_brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))

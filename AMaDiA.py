@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.7.1"
+Version = "0.15.8"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -291,7 +291,6 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
         self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
         self.Colour_Font_Init()
-        self.Recolour()
         self.init_Notification_Flash()
 
     def setMainWindow(self, TheWindow):
@@ -420,6 +419,8 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         elif Colour == "Bright":
             self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Bright()
         self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
+        #self.setPalette(AMaDiA_Colour.Red_ERROR()[0])
+        #self.processEvents()
         self.setPalette(self.Palette)
 
         #FramePalette = self.palette()
@@ -776,9 +777,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     S_Terminate_Threads = QtCore.pyqtSignal()
     def __init__(self, MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent,initTopBar=False)
-        #TODO: add the menubar and statusbar to the centralwidget and make a frame around it and reimplement the functions to access these to redirect to the new ones
-            # Then do the same for the other windows (especially adding the frame) and use the topbar for them
-            # see http://redino.net/blog/2014/05/qt-qwidget-add-menu-bar/
         
         # Read all config files:
         # FEATURE: Implement config files
@@ -900,7 +898,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
        # Run other init methods
         self.ConnectSignals()
         #self.Colour_Font_Init()
-        self.MainApp.Recolour()
+        self.MainApp.Recolour() #IMPROVE: This takes long but is necessary to initialize the Plots.
+        #                                    This could probably be done in the init of the canvas to reduce start time
         self.OtherContextMenuSetup()
         self.InstallSyntaxHighlighter()
         self.INIT_Animation()
@@ -1477,7 +1476,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         #       event.x, event.y, event.xdata, event.ydata))
         if event.button == 3:
             menu = QtWidgets.QMenu()
-            action = menu.addAction('Copy Text')
+            action = menu.addAction('Copy Equation')
             action.triggered.connect(self.action_tab_5_Display_Copy_Displayed)
             action = menu.addAction('Copy Solution')
             action.triggered.connect(self.action_tab_5_Display_Copy_Displayed_Solution)
@@ -1530,7 +1529,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                     or source is self.Tab_4_History #IMPROVE: This is temporary. Implement this context menu properly
                     )and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
-                if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
+                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet.":
                     action = menu.addAction('Copy Solution')
                     action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
                 action = menu.addAction('Copy Text')
@@ -1549,7 +1548,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_H_Calculate(source,event))
                 action = menu.addAction('Display LaTeX')
                 action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
-                if source.itemAt(event.pos()).data(100).Evaluation != "Not evaluated yet.":
+                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet.":
+                    action = menu.addAction('Display LaTeX Equation')
+                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
                     action = menu.addAction('Display LaTeX Solution')
                     action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
                 menu.addSeparator()
@@ -1596,6 +1597,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
  # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
   # ----------------
          
+    def action_H_Copy_Solution(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).Solution)
+         
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).Text)
@@ -1612,10 +1617,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).cstr)
         
-    def action_H_Copy_Solution(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).Evaluation)
-         
   # ----------------
          
     def action_H_Calculate(self,source,event):
@@ -1628,10 +1629,15 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.tabWidget.setCurrentIndex(1)
         self.Tab_2_F_Display(item.data(100))
 
+    def action_H_Display_LaTeX_Equation(self,source,event):
+        item = source.itemAt(event.pos())
+        self.tabWidget.setCurrentIndex(1)
+        self.Tab_2_F_Display(item.data(100),part="Equation")
+
     def action_H_Display_LaTeX_Solution(self,source,event):
         item = source.itemAt(event.pos())
         self.tabWidget.setCurrentIndex(1)
-        self.Tab_2_F_Display(item.data(100),part="Evaluation")
+        self.Tab_2_F_Display(item.data(100),part="Solution")
          
   # ----------------
          
@@ -1787,14 +1793,14 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             if AMaS_Object.tab_1_is != True:
                 item = QtWidgets.QListWidgetItem()
                 item.setData(100,AMaS_Object)
-                item.setText(AMaS_Object.EvaluationEquation)
+                item.setText(AMaS_Object.Equation)
                 
                 self.Tab_1_History.addItem(item)
                 AMaS_Object.tab_1_is = True
                 AMaS_Object.tab_1_ref = item
             else:
                 self.Tab_1_History.takeItem(self.Tab_1_History.row(AMaS_Object.tab_1_ref))
-                AMaS_Object.tab_1_ref.setText(AMaS_Object.EvaluationEquation)
+                AMaS_Object.tab_1_ref.setText(AMaS_Object.Equation)
                 self.Tab_1_History.addItem(AMaS_Object.tab_1_ref)
 
             self.Tab_1_History.scrollToBottom()
@@ -1997,7 +2003,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,1)
-        self.ans = AMaS_Object.Evaluation
+        self.ans = AMaS_Object.Solution
          
  # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
@@ -2018,11 +2024,19 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
-        elif part == "Evaluation":
+        elif part == "Equation":
             if AMaS_Object.LaTeX_E == "Not converted yet":
-                AMaS_Object.Convert_Evaluation_to_LaTeX()
+                AMaS_Object.ConvertToLaTeX_Equation()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
+                                            ,self.TopBar.Font_Size_spinBox.value()
+                                            ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
+                                            )
+        elif part == "Solution":
+            if AMaS_Object.LaTeX_S == "Not converted yet":
+                AMaS_Object.ConvertToLaTeX_Solution()
+            self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_S)
+            returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_S_L, AMaS_Object.LaTeX_S_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
@@ -2383,8 +2397,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.TC("WORK",AMaS_Object, lambda:AC.AMaS.UpdateEquation(AMaS_Object ,Text=Text), self.Tab_4_F_Display)
 
     def Tab_4_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
-        self.Tab_4_Currently_Displayed = AMaS_Object.EvaluationEquation
-        self.Tab_4_Currently_Displayed_Solution = AMaS_Object.Evaluation
+        self.Tab_4_Currently_Displayed = AMaS_Object.Equation
+        self.Tab_4_Currently_Displayed_Solution = AMaS_Object.Solution
         returnTuple = self.Tab_4_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                         ,self.TopBar.Font_Size_spinBox.value()
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
