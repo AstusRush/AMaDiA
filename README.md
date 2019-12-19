@@ -50,7 +50,7 @@ On Windows:<br/>
 
 <br/><br/>
 # Screenshot
-Screenshot from the very old Version 0.2.1<br/>
+Screenshot Version 0.15.7.1<br/>
 <img src="/AMaDiA v0.15.7.1 Demo.png" alt="Demo Picture"/>
 <br/><br/>
 # Short Term Roadmap
