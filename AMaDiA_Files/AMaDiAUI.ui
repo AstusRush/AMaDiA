@@ -398,7 +398,7 @@
                            <x>0</x>
                            <y>0</y>
                            <width>221</width>
-                           <height>264</height>
+                           <height>269</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_11">
@@ -708,7 +708,7 @@ p, li { white-space: pre-wrap; }
                     <x>0</x>
                     <y>0</y>
                     <width>618</width>
-                    <height>335</height>
+                    <height>340</height>
                    </rect>
                   </property>
                   <property name="sizePolicy">
@@ -1470,7 +1470,6 @@ p, li { white-space: pre-wrap; }
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <customwidgets>
   <customwidget>

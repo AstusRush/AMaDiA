@@ -7,6 +7,9 @@ solve(exp)		# solve exp for unknown variables
 solve(exp,x)	# solve exp for variable x
 roots(exp)		# solve exp for unknown variables and show the multiplicity of each Solution
 
+laplace_transform(exp,x,s)[0]		# Laplace transformation of exp
+inverse_laplace_transform(exp,s,x)	# inverse Laplace transformation of exp
+
 linsolve(exp)	# If exp is a  n x n+1  Matrix than this solves the linear system of equations
 
 pdsolve(exp)	# solve a partial differential equation

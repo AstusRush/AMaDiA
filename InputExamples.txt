@@ -36,6 +36,9 @@ Calculator Examples:
 		1 if 4 in [1,2,3,4,5,6] and 4 not in [4,8] else 0
 	Conditional:
 		2*2 if 2>3 else 2*3
+	Transformations:
+		inverse_laplace_transform(1/s,s,x)
+		laplace_transform(exp(x),x,s)[0]
 		
 		
 LaTeX Examples:

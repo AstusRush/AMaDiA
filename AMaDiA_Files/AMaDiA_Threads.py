@@ -77,9 +77,11 @@ class AMaS_Creator(QtCore.QRunnable):
         self.Return_Function = Return_Function
         self.ID = -1
         self.signals = WorkerSignals()
+        self.Thread = None
 
     @QtCore.pyqtSlot()
     def run(self):
+        self.Thread = QtCore.QThread.currentThread()
         self.AMaS_Object = AC.AMaS(self.Text, self.Iam, EvalL=self.EvalL)
         if self.AMaS_Object.Exists == True:
             self.signals.result.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
@@ -88,8 +90,19 @@ class AMaS_Creator(QtCore.QRunnable):
                 self.signals.error.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
         else:
             self.signals.error.emit(self.AMaS_Object , 1 , str(self.AMaS_Object.Exists) , self.Return_Function , self.ID)
-        self.exiting = True
         self.signals.finished.emit()
+        self.exiting = True
+
+    def terminate(self):
+        if self.Thread != None:
+            self.signals.finished.emit()
+            try:
+                self.signals.finished.disconnect()
+            except common_exceptions:
+                ExceptionOutput(sys.exc_info())
+            self.Thread.setTerminationEnabled(True)
+            self.Thread.terminate()
+            self.Thread = None
 #------------------------------------------------------------------------------
 
 class AMaS_Worker(QtCore.QRunnable):
@@ -103,6 +116,7 @@ class AMaS_Worker(QtCore.QRunnable):
         self.signals = WorkerSignals()
         
     def run(self):
+        self.Thread = QtCore.QThread.currentThread()
         Success = self.AMaS_Function()
         if Success == True:
             self.signals.result.emit(self.AMaS_Object , self.Return_Function , self.ID, -1)
@@ -111,8 +125,13 @@ class AMaS_Worker(QtCore.QRunnable):
                 self.signals.error.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
         else:
             self.signals.error.emit(self.AMaS_Object , 1 , str(Success) , self.Return_Function , self.ID)
-        self.exiting = True
         self.signals.finished.emit()
+        self.exiting = True
+
+    def terminate(self):
+        self.signals.finished.emit()
+        self.Thread.setTerminationEnabled(True)
+        self.Thread.terminate()
         
         
 """Usage: only replace __***__
@@ -134,6 +153,7 @@ class Timer(QtCore.QRunnable):
 class AMaS_Creator_Thread(QtCore.QThread):
     ReturnError = QtCore.pyqtSignal(AC.AMaS , int , str , types.MethodType , int)
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int , int)
+    finished = QtCore.pyqtSignal()
     def __init__(self, Parent, Text, Return_Function, ID, Eval=None, EvalL=1, Iam = AC.Iam_Normal):
         QtCore.QThread.__init__(self, Parent)
         self.exiting = False
@@ -155,10 +175,15 @@ class AMaS_Creator_Thread(QtCore.QThread):
                 self.ReturnError.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
         else:
             self.ReturnError.emit(self.AMaS_Object , 1 , str(self.AMaS_Object.Exists) , self.Return_Function , self.ID)
+        self.finished.emit()
         self.exiting = True
         self.exit()
         #self.quit()
         #self.deleteLater()
+
+    def terminate(self):
+        self.finished.emit()
+        super(AMaS_Creator_Thread, self).terminate()
         
 """Usage: only replace __***__
 self.TC(lambda ID: AT.AMaS_Creator(self, __Text__ , self.__Return_to_Method__ ,ID))
@@ -168,6 +193,7 @@ self.TC(lambda ID: AT.AMaS_Creator(self, __Text__ , self.__Return_to_Method__ ,I
 class AMaS_Thread(QtCore.QThread):
     ReturnError = QtCore.pyqtSignal(AC.AMaS , int , str , types.MethodType , int)
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
+    finished = QtCore.pyqtSignal()
     def __init__(self, Parent, AMaS_Object, AMaS_Function, Return_Function, ID):
         QtCore.QThread.__init__(self, Parent)
         self.ID = ID
@@ -185,10 +211,15 @@ class AMaS_Thread(QtCore.QThread):
                 self.ReturnError.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
         else:
             self.ReturnError.emit(self.AMaS_Object , 1 , str(Success) , self.Return_Function , self.ID)
+        self.finished.emit()
         self.exiting = True
         self.exit()
         #self.quit()
         #self.deleteLater()
+
+    def terminate(self):
+        self.finished.emit()
+        super(AMaS_Thread, self).terminate()
         
         
 """Usage: only replace __***__

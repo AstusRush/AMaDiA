@@ -378,3 +378,16 @@ v0.15.6.5: Tiny Fix
 + Control/Input/Transfer: Fixed the removal of leading entries that are 0
 + Fixed some typos in the patchlog
 
+v0.15.7: Window Titles, Menu Fixes and Dev Functions
++ Added a new window to execute code during runtime for debug purposes (Application wide shortcut is ctrl+T)
++ Added a button to close all running threads that are used for calculations
+++ This is a dirty implementation and it can only be implemented dirty! Use with caution!
++ Added a display for the currently running calculations
+++ This means that the user can now see if a calculation is running without looking into the console
++ Added a new menu for all Dev-Functions that should be used with caution!
++ Fixed size problems with the MenuBar
++ Moved most window-frame related code to the widget definitions to clean up the code
++ The window title now has its own space in the bottom right corner
+++ This frees the status bar to show other information like the aforementioned number of currently running calculations
++ Fixed the tool tips for the menu actions
+

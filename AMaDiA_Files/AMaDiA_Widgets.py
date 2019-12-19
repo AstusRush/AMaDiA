@@ -1299,14 +1299,20 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
 
 
 class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
-    def __init__(self, parent = None):
+    def __init__(self, parent = None, includeTopBar=True, initTopBar=True, includeStatusBar=True):
         super(AWWF, self).__init__(parent)
+        self.includeTopBar, self.includeStatusBar = includeTopBar, includeStatusBar
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
         self.AWWF_CentralWidget = Window_Frame_Widget(self)
         self.AWWF_CentralWidget_layout =  QtWidgets.QGridLayout(self.AWWF_CentralWidget)
         self.AWWF_CentralWidget_layout.setContentsMargins(0, 0, 0, 0)
         self.AWWF_CentralWidget_layout.setSpacing(0)
         self.AWWF_CentralWidget_layout.setObjectName("gridLayout")
         self.AWWF_CentralWidget.setLayout(self.AWWF_CentralWidget_layout)
+        
+        self.AWWF_CentralWindow = QtWidgets.QMainWindow(self)
+        self.AWWF_CentralWidget_layout.addWidget(self.AWWF_CentralWindow,1,0)
+        
         super(AWWF, self).setCentralWidget(self.AWWF_CentralWidget)
         self.AWWF_p_MenuBar = None
         self.AWWF_p_CentralWidget = None
@@ -1315,51 +1321,116 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
 
         self.installEventFilter(self)
 
+        if includeTopBar:
+            self.TopBar = TopBar_Widget(self,initTopBar)
+            self.MenuBar = MMenuBar(self)
+            self.setMenuBar(self.MenuBar)
+            self.MenuBar.setCornerWidget(self.TopBar)
+            self.MenuBar.setContentsMargins(0,0,0,0)
+        if includeStatusBar:
+            self.statusbar = StatusBar_Widget(self)
+            self.statusbar.setObjectName("statusbar")
+            self.setStatusBar(self.statusbar)
+            self.statusbar.setSizeGripEnabled(False)
+            self.windowTitleChanged.connect(self.statusbar.setWindowTitle)
+
+#####################
+ #    def setMenuBar(self, MenuBar):
+ #        if MenuBar == None:
+ #            try:
+ #                self.AWWF_CentralWidget_layout.addWidget(QtWidgets.QWidget(self),0,0)
+ #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
+ #            except common_exceptions:
+ #                pass
+ #        else:
+ #            self.AWWF_CentralWidget_layout.addWidget(MenuBar,0,0)
+ #            MenuBar.setCursor(MenuBar.cursor())
+ #        self.AWWF_p_MenuBar = MenuBar
+ #        return True
+ #
+ #    def menuBar(self):
+ #        return self.AWWF_p_MenuBar
+ #
+ #    def setCentralWidget(self, CentralWidget):
+ #        if CentralWidget == None:
+ #            try:
+ #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_CentralWidget)
+ #            except common_exceptions:
+ #                pass
+ #        else:
+ #            self.AWWF_CentralWidget_layout.addWidget(CentralWidget,1,0)
+ #            CentralWidget.setCursor(CentralWidget.cursor())
+ #        self.AWWF_p_CentralWidget = CentralWidget
+ #        return True
+ #
+ #    def centralWidget(self):
+ #        return self.AWWF_p_CentralWidget
+ #        
+ #    def setStatusBar(self, StatusBar):
+ #        if StatusBar == None:
+ #            try:
+ #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_StatusBar)
+ #            except common_exceptions:
+ #                pass
+ #        else:
+ #            self.AWWF_CentralWidget_layout.addWidget(StatusBar,2,0)
+ #            StatusBar.setCursor(StatusBar.cursor())
+ #        self.AWWF_p_StatusBar = StatusBar
+ #        return True
+ #
+ #    def statusBar(self):
+ #        return self.AWWF_p_StatusBar
+ #
+ #
+#####################
+
     def setMenuBar(self, MenuBar):
         if MenuBar == None:
             try:
-                self.AWWF_CentralWidget_layout.addWidget(QtWidgets.QWidget(self),0,0)
-                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
+                self.AWWF_CentralWindow.setMenuBar(None)
+                #self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
             except common_exceptions:
                 pass
         else:
-            self.AWWF_CentralWidget_layout.addWidget(MenuBar,0,0)
+            self.AWWF_CentralWindow.setMenuBar(MenuBar)
             MenuBar.setCursor(MenuBar.cursor())
         self.AWWF_p_MenuBar = MenuBar
         return True
 
     def menuBar(self):
-        return self.AWWF_p_MenuBar
+        return self.AWWF_CentralWindow.menuBar()
 
     def setCentralWidget(self, CentralWidget):
         if CentralWidget == None:
             try:
-                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_CentralWidget)
+                self.AWWF_CentralWindow.setCentralWidget(None)
             except common_exceptions:
                 pass
         else:
-            self.AWWF_CentralWidget_layout.addWidget(CentralWidget,1,0)
+            self.AWWF_CentralWindow.setCentralWidget(CentralWidget)
             CentralWidget.setCursor(CentralWidget.cursor())
         self.AWWF_p_CentralWidget = CentralWidget
         return True
 
     def centralWidget(self):
-        return self.AWWF_p_CentralWidget
+        return self.AWWF_CentralWindow.centralWidget()
         
     def setStatusBar(self, StatusBar):
         if StatusBar == None:
             try:
-                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_StatusBar)
+                self.AWWF_CentralWindow.setStatusBar(None)
             except common_exceptions:
                 pass
         else:
-            self.AWWF_CentralWidget_layout.addWidget(StatusBar,2,0)
+            self.AWWF_CentralWindow.setStatusBar(StatusBar)
             StatusBar.setCursor(StatusBar.cursor())
         self.AWWF_p_StatusBar = StatusBar
         return True
 
     def statusBar(self):
-        return self.AWWF_p_StatusBar
+        return self.AWWF_CentralWindow.statusBar()
+
+#####################
 
     def showNormal(self):
         self.AWWF_CentralWidget.showFrame()
@@ -1410,6 +1481,9 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         #            frameGm = self.window().frameGeometry()
         #            frameGm.moveBottomLeft(screen.bottomLeft())
         #            self.window().move(frameGm.topLeft())
+        
+        #if type(source) == QtWidgets.QAction and event.type() == QtCore.QEvent.Enter and source.toolTip()!="": #==10
+        #    QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),source.toolTip(),source)
         return super(AWWF, self).eventFilter(source, event) # let the normal eventFilter handle the event
 
 
@@ -1695,6 +1769,24 @@ class TopBar_Widget(QtWidgets.QWidget):
                 self.offset = event.globalPos()-self.window().geometry().topLeft()
             self.window().move(event.globalPos()-self.offset)
 
+class StatusBar_Widget(QtWidgets.QStatusBar):
+    def __init__(self, parent=None):
+        super(StatusBar_Widget, self).__init__(parent)
+        self.WindowNameLabel = QtWidgets.QLabel(self)
+        self.addPermanentWidget(self.WindowNameLabel)
+
+    def setWindowTitle(self, WindowTitle):
+        WindowTitle += " "
+        self.WindowNameLabel.setText(WindowTitle)
+
+class MenuAction(QtWidgets.QAction):
+    def __init__(self, parent=None):
+        super(MenuAction, self).__init__(parent)
+        self.hovered.connect(self.showToolTip)
+    
+    def showToolTip(self):
+        #if self.toolTip() != "" and self.toolTip() != None and self.toolTip() != self.text():
+        QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.toolTip())#,self)
 
 class Window_Frame_Widget(QtWidgets.QFrame):
     def __init__(self, parent = None):
@@ -2065,6 +2157,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
         #self.TabBar = MTabBar(self)
         #self.setTabBar(self.TabBar)
         ####self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.tabBar().setUsesScrollButtons(True)
         self.moving = False
         self.offset = 0
         self.setMouseTracking(True)
@@ -2183,7 +2276,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
             super(MTabWidget, self).mouseMoveEvent(event)
 
 
-# class MTabBar(QtWidgets.QTabBar): # Moveable Tab Bar # Does not work
+# class MTabBar(QtWidgets.QTabBar): # Moveable Tab Bar # Does not work since the TabBar is only the space of the tab names but not the free space next to the names...
  #    def __init__(self, parent=None):
  #        super(MTabBar, self).__init__(parent)
  #        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))

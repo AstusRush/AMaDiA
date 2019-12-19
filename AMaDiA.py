@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.6.5"
+Version = "0.15.7"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -121,7 +121,7 @@ def Superscript_Shortcut(Symbol):
 class AMaDiA_Internal_File_Display_Window(AW.AWWF):
     def __init__(self,FileName,parent = None):
         try:
-            super(AMaDiA_Internal_File_Display_Window, self).__init__(parent)
+            super(AMaDiA_Internal_File_Display_Window, self).__init__(parent,True)
             self.setWindowTitle(FileName)
             self.standardSize = (900, 500)
             self.resize(*self.standardSize)
@@ -133,28 +133,7 @@ class AMaDiA_Internal_File_Display_Window(AW.AWWF):
             self.gridLayout.setObjectName("gridLayout")
             
             self.TextBrowser = QtWidgets.QTextBrowser(self)
-            self.TextBrowser.setObjectName("TopBar_Error_Label")
-            
-            if QtWidgets.QApplication.instance().AllUseCustomFrame:
-                if False: #TopBar in place of MenuBar
-                    self.TopBar = AW.TopBar_Widget(self,True)
-                    self.setMenuBar(self.TopBar)
-                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                    self.statusbar = QtWidgets.QStatusBar(self)
-                    self.statusbar.setObjectName("statusbar")
-                    self.setStatusBar(self.statusbar)
-                else: #MenuBar
-                    self.TopBar = AW.TopBar_Widget(self,True)
-                    self.Menubar = AW.MMenuBar(self)
-                    self.setMenuBar(self.Menubar)
-                    self.Menubar.setCornerWidget(self.TopBar)
-                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                    self.statusbar = QtWidgets.QStatusBar(self)
-                    self.statusbar.setObjectName("statusbar")
-                    self.setStatusBar(self.statusbar)
-                self.statusbar.showMessage(self.windowTitle()) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
-                
-                self.statusbar.setSizeGripEnabled(False)
+            self.TextBrowser.setObjectName("TextBrowser")
 
 
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
@@ -191,28 +170,7 @@ class AMaDiA_About_Window(AW.AWWF):
             self.gridLayout.setObjectName("gridLayout")
             
             self.TextBrowser = QtWidgets.QTextBrowser(self)
-            self.TextBrowser.setObjectName("TopBar_Error_Label")
-
-            if QtWidgets.QApplication.instance().AllUseCustomFrame:
-                if False: #TopBar in place of MenuBar
-                    self.TopBar = AW.TopBar_Widget(self,True)
-                    self.setMenuBar(self.TopBar)
-                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                    self.statusbar = QtWidgets.QStatusBar(self)
-                    self.statusbar.setObjectName("statusbar")
-                    self.setStatusBar(self.statusbar)
-                else: #MenuBar
-                    self.TopBar = AW.TopBar_Widget(self,True)
-                    self.Menubar = AW.MMenuBar(self)
-                    self.setMenuBar(self.Menubar)
-                    self.Menubar.setCornerWidget(self.TopBar)
-                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                    self.statusbar = QtWidgets.QStatusBar(self)
-                    self.statusbar.setObjectName("statusbar")
-                    self.setStatusBar(self.statusbar)
-                self.statusbar.showMessage(self.windowTitle()) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
-                
-                self.statusbar.setSizeGripEnabled(False)
+            self.TextBrowser.setObjectName("TextBrowser")
 
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
             #self.layout = QtWidgets.QVBoxLayout()
@@ -237,27 +195,6 @@ class AMaDiA_Notification_Window(AW.AWWF):
             self.standardSize = (900, 500)
             self.resize(*self.standardSize)
 
-            if QtWidgets.QApplication.instance().AllUseCustomFrame:
-                if False: #TopBar in place of MenuBar
-                    self.TopBar = AW.TopBar_Widget(self,True)
-                    self.setMenuBar(self.TopBar)
-                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                    self.statusbar = QtWidgets.QStatusBar(self)
-                    self.statusbar.setObjectName("statusbar")
-                    self.setStatusBar(self.statusbar)
-                else: #MenuBar
-                    self.TopBar = AW.TopBar_Widget(self,True)
-                    self.Menubar = AW.MMenuBar(self)
-                    self.setMenuBar(self.Menubar)
-                    self.Menubar.setCornerWidget(self.TopBar)
-                    self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-                    self.statusbar = QtWidgets.QStatusBar(self)
-                    self.statusbar.setObjectName("statusbar")
-                    self.setStatusBar(self.statusbar)
-                self.statusbar.showMessage(self.windowTitle()) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
-                
-                self.statusbar.setSizeGripEnabled(False)
-
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
             self.centralwidget.setObjectName("centralwidget")
@@ -265,7 +202,7 @@ class AMaDiA_Notification_Window(AW.AWWF):
             self.gridLayout.setObjectName("gridLayout")
             
             self.TheList = QtWidgets.QListWidget(self)
-            self.TheList.setObjectName("TopBar_Error_Label")
+            self.TheList.setObjectName("TheList")
             self.TheList.setAlternatingRowColors(True)
             self.gridLayout.addWidget(self.TheList, 0, 0, 0, 0)
             self.setCentralWidget(self.centralwidget)
@@ -293,6 +230,45 @@ class AMaDiA_Notification_Window(AW.AWWF):
             self.TheList.addItem(item)
             self.TheList.scrollToBottom()
 
+class AMaDiA_exec_Window(AW.AWWF):
+    def __init__(self,parent = None):
+        try:
+            super(AMaDiA_exec_Window, self).__init__(parent)
+            self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
+            self.setWindowTitle("Code Execution Window")
+            self.standardSize = (900, 500)
+            self.resize(*self.standardSize)
+                
+            self.centralwidget = QtWidgets.QWidget(self)
+            self.centralwidget.setAutoFillBackground(True)
+            self.centralwidget.setObjectName("centralwidget")
+            self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+            self.gridLayout.setObjectName("gridLayout")
+            
+            self.Input_Field = AW.TextEdit(self)
+            self.Input_Field.setObjectName("Input_Field")
+
+
+            self.gridLayout.addWidget(self.Input_Field, 0, 0, 0, 0)
+            self.setCentralWidget(self.centralwidget)
+
+            self.Input_Field.returnCtrlPressed.connect(self.execute_code)
+            
+            self.setAutoFillBackground(True)
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+
+    def execute_code(self):
+        input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal f\nf=\"\"\n" + self.Input_Field.toPlainText()
+        try:
+            #g,l = dict(),dict()
+            exec(input_text)
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            sendNotification(1,Error)
+
+
+
 class AMaDiA_Main_App(QtWidgets.QApplication):
     # See:
     # https://doc.qt.io/qt-5/qapplication.html
@@ -307,7 +283,6 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.setApplicationVersion(Version)
         self.setOrganizationName("Robin Albers")
         self.setOrganizationDomain("https://github.com/AstusRush")
-        self.AllUseCustomFrame = True
         self.Notification_List = []
 
         self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
@@ -329,21 +304,27 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
     
     def eventFilter(self, source, event):
         if event.type() == 6: # QtCore.QEvent.KeyPress
-            if event.modifiers() == ControlModifier and event.key() == QtCore.Qt.Key_0: # TODO: Inform the User that this feature exists
-                for w in self.topLevelWidgets():
-                    try:
-                        w.resize(*w.standardSize)
-                    except common_exceptions:
-                        w.resize(900, 600)
-                    try:
-                        frameGm = w.frameGeometry()
-                        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
-                        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
-                        frameGm.moveCenter(centerPoint)
-                        w.move(frameGm.topLeft())
-                    except common_exceptions:
-                        ExceptionOutput(sys.exc_info())
-                return True
+            if event.modifiers() == ControlModifier:
+                if event.key() == QtCore.Qt.Key_0: # TODO: Inform the User that this feature exists
+                    for w in self.topLevelWidgets():
+                        try:
+                            w.resize(*w.standardSize)
+                        except common_exceptions:
+                            w.resize(900, 600)
+                        try:
+                            frameGm = w.frameGeometry()
+                            screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+                            centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+                            frameGm.moveCenter(centerPoint)
+                            w.move(frameGm.topLeft())
+                        except common_exceptions:
+                            ExceptionOutput(sys.exc_info())
+                    return True
+                if event.key() == QtCore.Qt.Key_T:
+                    self.Show_AMaDiA_exec_Window()
+                    return True
+            if event.modifiers() == AltModifier:
+                pass
             if source == self.MainWindow: # THIS IS SPECIFIC TO AMaDiA_Main_Window
                 if event.modifiers() == ControlModifier:
                     if event.key() == QtCore.Qt.Key_1:
@@ -501,9 +482,9 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
             for i in w.findChildren(AW.TopBar_Widget):
                 try:
                     if type(i.parentWidget()) == AW.MMenuBar:
-                        i.setMinimumHeight(i.parentWidget().height())
+                        i.setMinimumHeight(i.parentWidget().minimumHeight())
                     elif type(i.parentWidget()) == QtWidgets.QTabWidget:
-                        i.setMinimumHeight(i.parentWidget().tabBar().height())
+                        i.setMinimumHeight(i.parentWidget().tabBar().minimumHeight())
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
         # Always keep Statusbar Font small
@@ -713,17 +694,24 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
     #            self.TopBar_Error_Label.viewport(),
     #            self.TopBar_Error_Label.visualRect(index)
     #            )
+
+ # ---------------------------------- SubWindows ----------------------------------
     
     def Show_Notification_Window(self):
         self.AMaDiA_Notification_Window = AMaDiA_Notification_Window(self.Notification_List)
         self.S_New_Notification.connect(self.AMaDiA_Notification_Window.AddNotification)
         self.AMaDiA_Notification_Window.show()
 
+    def Show_AMaDiA_exec_Window(self):
+        self.AMaDiA_exec_Window_Window = AMaDiA_exec_Window()
+        self.AMaDiA_exec_Window_Window.show()
+
  # ---------------------------------- Other ----------------------------------
 
 class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
+    S_Terminate_Threads = QtCore.pyqtSignal()
     def __init__(self, MainApp, parent = None):
-        super(AMaDiA_Main_Window, self).__init__(parent)
+        super(AMaDiA_Main_Window, self).__init__(parent,initTopBar=False)
         #TODO: add the menubar and statusbar to the centralwidget and make a frame around it and reimplement the functions to access these to redirect to the new ones
             # Then do the same for the other windows (especially adding the frame) and use the topbar for them
             # see http://redino.net/blog/2014/05/qt-qwidget-add-menu-bar/
@@ -739,10 +727,11 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
         #FEATURE: Add Statistic Tab to easily compare numbers and check impact of variables etc
         
+        
        # Build the UI
         self.init_Menu()
         self.setupUi(self)
-        self.TopBar = AW.TopBar_Widget(self,True,True,True,True)
+        self.TopBar.init(True,True,True)
         self.TopBar.setObjectName("TopBar")
         #self.TopBarGridLayout = QtWidgets.QGridLayout(self.TopBar)
         #self.TopBarGridLayout.setContentsMargins(0, 0, 0, 0)
@@ -759,19 +748,12 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.tabWidget.tabBar().setGeometry(QtCore.QRect(0, 0, 906, 20)) # CLEANUP: Is this necessary?
         self.tabWidget.tabBar().installEventFilter(self.TopBar)
         
-        self.MenuBar.setContentsMargins(0,0,0,0)
+        #self.MenuBar.setContentsMargins(0,0,0,0)
         
         #QtWidgets.QMainWindow.setMenuBar(self,self.MenuBar) # This allows the extension functionality but has no frame...
-        self.setMenuBar(self.MenuBar) # This breaks the extension functionality but has a frame...
+        #self.setMenuBar(self.MenuBar) # This breaks the extension functionality but has a frame...
         
-        self.MenuBar.setCornerWidget(self.TopBar)
-        
-        self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
-        
-        # Decline the OS' standard window frame:
-        self.setWindowFlag(QtCore.Qt.FramelessWindowHint,True)
-        # Alternative: This keeps the frame to (only removes Title Bar) resize but has other drawbacks
-        #self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+        #self.MenuBar.setCornerWidget(self.TopBar)
         
         self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # CLEANUP: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
         
@@ -781,9 +763,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
         # TODO: Find place to display WindowTitle. Maybe with a TextLabel in the statusbar?
         # MAYBE: Do something with the Statusbar
-        self.statusbar.showMessage(WindowTitle) # TODO: This looks bad and disappears when the cursor hovers over the MenuBar
+        #self.statusbar.showMessage(WindowTitle)
         
-        self.statusbar.setSizeGripEnabled(False)
+        #self.statusbar.setSizeGripEnabled(False)
         
        # Set UI variables
         #Set starting tabs
@@ -804,6 +786,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
         
        # Initialize important variables and lists
+        self.workingThreads = 0
         self.ans = "1"
         self.LastOpenState = self.showNormal
         self.Bool_PreloadLaTeX = True
@@ -815,6 +798,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
        # Initialize Thread Related Things:
         self.ThreadList = []
+        self.oldThreadpools = []
         self.threadpool = QtCore.QThreadPool()#.globalInstance()
         #self.threadpool.setMaxThreadCount(8)
         print("Multithreading with maximum %d threads (when in Threadpool mode)" % self.threadpool.maxThreadCount())
@@ -913,11 +897,14 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
  # ---------------------------------- Init and Maintenance ----------------------------------
 
     def ConnectSignals(self):
-        self.Menu_Options_action_Dev_Function.triggered.connect(self.ReloadModules)
         self.Menu_Options_action_ToggleCompactMenu.changed.connect(self.ToggleCompactMenu)
         self.Menu_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
-        self.Menu_Options_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
         self.Menu_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
+
+        self.Menu_DevOptions_action_Dev_Function.triggered.connect(self.Dev_Function)
+        self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.triggered.connect(self.MainApp.Show_AMaDiA_exec_Window)
+        self.Menu_DevOptions_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
+        self.Menu_DevOptions_action_Terminate_All_Threads.triggered.connect(self.TerminateAllThreads)
 
         self.Menu_Chat_action_Open_Client.triggered.connect(self.OpenClient)
         self.Menu_Chat_action_Open_Server.triggered.connect(self.OpenServer)
@@ -967,12 +954,14 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         if FirstTime:
             self.Menu = QtWidgets.QMenu(self)
             self.Menu.setObjectName("Menu")
-            self.MenuBar = AW.MMenuBar(self)
-            self.MenuBar.setObjectName("MenuBar")
+            #self.MenuBar = AW.MMenuBar(self)
+            #self.MenuBar.setObjectName("MenuBar")
        # Create submenus
         if FirstTime:
             self.Menu_Options = QtWidgets.QMenu(self.Menu)
             self.Menu_Options.setObjectName("Menu_Options")
+            self.Menu_DevOptions = QtWidgets.QMenu(self.Menu)
+            self.Menu_DevOptions.setObjectName("Menu_DevOptions")
             self.Menu_Chat = QtWidgets.QMenu(self.Menu)
             self.Menu_Chat.setObjectName("Menu_Chat")
             self.Menu_Colour = QtWidgets.QMenu(self.Menu)
@@ -983,75 +972,86 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Options_MathRemap.setObjectName("Menu_Options_MathRemap")
        # Create Actions
         if FirstTime:
-            self.Menu_Options_action_Dev_Function = QtWidgets.QAction(self)
-            self.Menu_Options_action_Dev_Function.setObjectName("Menu_Options_action_Dev_Function")
-            self.Menu_Options_action_ToggleCompactMenu = QtWidgets.QAction(self)
+            self.Menu_Options_action_ToggleCompactMenu = AW.MenuAction(self)
             self.Menu_Options_action_ToggleCompactMenu.setCheckable(True)
             self.Menu_Options_action_ToggleCompactMenu.setObjectName("Menu_Options_action_ToggleCompactMenu")
-            self.Menu_Options_action_Advanced_Mode = QtWidgets.QAction(self)
+            self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
+            self.Menu_Options_action_Advanced_Mode = AW.MenuAction(self)
             self.Menu_Options_action_Advanced_Mode.setCheckable(True)
             self.Menu_Options_action_Advanced_Mode.setObjectName("Menu_Options_action_Advanced_Mode")
-            self.Menu_Options_action_Eval_Functions = QtWidgets.QAction(self)
+            self.Menu_Options_action_Eval_Functions = AW.MenuAction(self)
             self.Menu_Options_action_Eval_Functions.setCheckable(True)
             self.Menu_Options_action_Eval_Functions.setChecked(True)
             self.Menu_Options_action_Eval_Functions.setObjectName("Menu_Options_action_Eval_Functions")
-            self.Menu_Options_action_Use_Pretty_LaTeX_Display = QtWidgets.QAction(self)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display = AW.MenuAction(self)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setCheckable(True)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setEnabled(False)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setObjectName("Menu_Options_action_Use_Pretty_LaTeX_Display")
-            self.Menu_Options_action_Syntax_Highlighter = QtWidgets.QAction(self)
+            self.Menu_Options_action_Syntax_Highlighter = AW.MenuAction(self)
             self.Menu_Options_action_Syntax_Highlighter.setCheckable(True)
             self.Menu_Options_action_Syntax_Highlighter.setChecked(True)
             self.Menu_Options_action_Syntax_Highlighter.setObjectName("Menu_Options_action_Syntax_Highlighter")
-            self.Menu_Options_action_WindowStaysOnTop = QtWidgets.QAction(self)
+            self.Menu_Options_action_WindowStaysOnTop = AW.MenuAction(self)
             self.Menu_Options_action_WindowStaysOnTop.setCheckable(True)
             self.Menu_Options_action_WindowStaysOnTop.setObjectName("Menu_Options_action_WindowStaysOnTop")
-            self.Menu_Chat_action_Open_Client = QtWidgets.QAction(self)
-            self.Menu_Chat_action_Open_Client.setObjectName("Menu_Chat_action_Open_Client")
-            self.Menu_Chat_action_Open_Server = QtWidgets.QAction(self)
-            self.Menu_Chat_action_Open_Server.setObjectName("Menu_Chat_action_Open_Server")
-            self.Menu_Colour_action_Dark = QtWidgets.QAction(self)
-            self.Menu_Colour_action_Dark.setObjectName("Menu_Colour_action_Dark")
-            self.Menu_Colour_action_Bright = QtWidgets.QAction(self)
-            self.Menu_Colour_action_Bright.setObjectName("Menu_Colour_action_Bright")
-            self.Menu_Help_action_Examples = QtWidgets.QAction(self)
-            self.Menu_Help_action_Examples.setObjectName("Menu_Help_action_Examples")
-            self.Menu_Help_action_Helpful_Commands = QtWidgets.QAction(self)
-            self.Menu_Help_action_Helpful_Commands.setObjectName("Menu_Help_action_Helpful_Commands")
-            self.Menu_Help_action_License = QtWidgets.QAction(self)
-            self.Menu_Help_action_License.setObjectName("Menu_Help_action_License")
-            self.Menu_Help_action_About = QtWidgets.QAction(self)
-            self.Menu_Help_action_About.setObjectName("Menu_Help_action_About")
-            self.Menu_Options_action_Use_Threadpool = QtWidgets.QAction(self)
-            self.Menu_Options_action_Use_Threadpool.setCheckable(True)
-            self.Menu_Options_action_Use_Threadpool.setChecked(True)
-            self.Menu_Options_action_Use_Threadpool.setObjectName("Menu_Options_action_Use_Threadpool")
-            self.Menu_Help_action_Patchlog = QtWidgets.QAction(self)
-            self.Menu_Help_action_Patchlog.setObjectName("Menu_Help_action_Patchlog")
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper = QtWidgets.QAction(self)
+            self.Menu_Options_action_Use_Local_Keyboard_Remapper = AW.MenuAction(self)
             self.Menu_Options_action_Use_Local_Keyboard_Remapper.setCheckable(True)
             self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
             self.Menu_Options_action_Use_Local_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Local_Keyboard_Remapper")
-            self.Menu_Options_action_Use_Global_Keyboard_Remapper = QtWidgets.QAction(self)
+            self.Menu_Options_action_Use_Global_Keyboard_Remapper = AW.MenuAction(self)
             self.Menu_Options_action_Use_Global_Keyboard_Remapper.setCheckable(True)
             self.Menu_Options_action_Use_Global_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Global_Keyboard_Remapper")
-            self.Menu_Options_action_Highlighter = QtWidgets.QAction(self)
+            self.Menu_Options_action_Highlighter = AW.MenuAction(self)
             self.Menu_Options_action_Highlighter.setCheckable(True)
             self.Menu_Options_action_Highlighter.setChecked(True)
             self.Menu_Options_action_Highlighter.setObjectName("Menu_Options_action_Highlighter")
+
+            self.Menu_DevOptions_action_Dev_Function = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Dev_Function.setObjectName("Menu_DevOptions_action_Dev_Function")
+            self.Menu_DevOptions_action_Show_AMaDiA_exec_Window = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.setObjectName("Menu_DevOptions_action_Show_AMaDiA_exec_Window")
+            self.Menu_DevOptions_action_Use_Threadpool = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Use_Threadpool.setCheckable(True)
+            self.Menu_DevOptions_action_Use_Threadpool.setChecked(True)
+            self.Menu_DevOptions_action_Use_Threadpool.setObjectName("Menu_DevOptions_action_Use_Threadpool")
+            self.Menu_DevOptions_action_Terminate_All_Threads = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Terminate_All_Threads.setObjectName("Menu_DevOptions_action_Terminate_All_Threads")
+
+            self.Menu_Chat_action_Open_Client = AW.MenuAction(self)
+            self.Menu_Chat_action_Open_Client.setObjectName("Menu_Chat_action_Open_Client")
+            self.Menu_Chat_action_Open_Server = AW.MenuAction(self)
+            self.Menu_Chat_action_Open_Server.setObjectName("Menu_Chat_action_Open_Server")
+
+            self.Menu_Colour_action_Dark = AW.MenuAction(self)
+            self.Menu_Colour_action_Dark.setObjectName("Menu_Colour_action_Dark")
+            self.Menu_Colour_action_Bright = AW.MenuAction(self)
+            self.Menu_Colour_action_Bright.setObjectName("Menu_Colour_action_Bright")
+
+            self.Menu_Help_action_Examples = AW.MenuAction(self)
+            self.Menu_Help_action_Examples.setObjectName("Menu_Help_action_Examples")
+            self.Menu_Help_action_Helpful_Commands = AW.MenuAction(self)
+            self.Menu_Help_action_Helpful_Commands.setObjectName("Menu_Help_action_Helpful_Commands")
+            self.Menu_Help_action_License = AW.MenuAction(self)
+            self.Menu_Help_action_License.setObjectName("Menu_Help_action_License")
+            self.Menu_Help_action_About = AW.MenuAction(self)
+            self.Menu_Help_action_About.setObjectName("Menu_Help_action_About")
+            self.Menu_Help_action_Patchlog = AW.MenuAction(self)
+            self.Menu_Help_action_Patchlog.setObjectName("Menu_Help_action_Patchlog")
        # Add the Actions to the Submenus
         if FirstTime:
-            self.Menu_Options.addAction(self.Menu_Options_action_Dev_Function)
             self.Menu_Options.addAction(self.Menu_Options_action_ToggleCompactMenu)
             self.Menu_Options.addAction(self.Menu_Options_action_Advanced_Mode)
             self.Menu_Options.addAction(self.Menu_Options_action_Eval_Functions)
             self.Menu_Options.addAction(self.Menu_Options_action_Use_Pretty_LaTeX_Display)
             self.Menu_Options.addAction(self.Menu_Options_action_WindowStaysOnTop)
-            self.Menu_Options.addAction(self.Menu_Options_action_Use_Threadpool)
             self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Local_Keyboard_Remapper)
             self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Global_Keyboard_Remapper)
             self.Menu_Options.addAction(self.Menu_Options_MathRemap.menuAction())
             self.Menu_Options.addAction(self.Menu_Options_action_Highlighter)
+            self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Dev_Function)
+            self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Show_AMaDiA_exec_Window)
+            self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Use_Threadpool)
+            self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Terminate_All_Threads)
             self.Menu_Chat.addAction(self.Menu_Chat_action_Open_Client)
             self.Menu_Chat.addAction(self.Menu_Chat_action_Open_Server)
             self.Menu_Colour.addAction(self.Menu_Colour_action_Dark)
@@ -1063,6 +1063,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
        # Add submenus to Menu
         self.Menu.addAction(self.Menu_Options.menuAction())
         self.MenuBar.addAction(self.Menu_Options.menuAction())
+        self.Menu.addAction(self.Menu_DevOptions.menuAction())
+        self.MenuBar.addAction(self.Menu_DevOptions.menuAction())
         self.Menu.addAction(self.Menu_Colour.menuAction())
         self.MenuBar.addAction(self.Menu_Colour.menuAction())
         self.Menu.addAction(self.Menu_Chat.menuAction())
@@ -1074,11 +1076,11 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         if FirstTime:
             _translate = QtCore.QCoreApplication.translate
             self.Menu_Options.setTitle(_translate("AMaDiA_Main_Window", "O&ptions"))
+            self.Menu_DevOptions.setTitle(_translate("AMaDiA_Main_Window", "DevOptions"))
             self.Menu_Chat.setTitle(_translate("AMaDiA_Main_Window", "Chat"))
             self.Menu_Colour.setTitle(_translate("AMaDiA_Main_Window", "Colour"))
             self.Menu_Help.setTitle(_translate("AMaDiA_Main_Window", "Help"))
-            self.Menu_Options_action_Dev_Function.setText(_translate("AMaDiA_Main_Window", "&Dev Function"))
-            self.Menu_Options_action_Dev_Function.setShortcut(_translate("AMaDiA_Main_Window", "Alt+D"))
+
             self.Menu_Options_action_ToggleCompactMenu.setText(_translate("AMaDiA_Main_Window", "&Compact Menu"))
             self.Menu_Options_action_ToggleCompactMenu.setShortcut(_translate("AMaDiA_Main_Window", "Alt+C"))
             self.Menu_Options_action_Advanced_Mode.setText(_translate("AMaDiA_Main_Window", "&Advanced Mode"))
@@ -1094,22 +1096,30 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Options_action_WindowStaysOnTop.setShortcut(_translate("AMaDiA_Main_Window", "Alt+T"))
             self.Menu_Options_action_Highlighter.setToolTip(_translate("AMaDiA_Main_Window", "Syntax Highlighter for Brackets"))
             self.Menu_Options_action_Highlighter.setText(_translate("AMaDiA_Main_Window", "Highlighter"))
-
+            
             self.Menu_Options_MathRemap.setTitle(_translate("AMaDiA_Main_Window", "MathKeyboard"))
             self.Menu_Options_action_Use_Local_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>For a Remapping that works on all applications use the Global Remapper in the Options.</p></body></html>"))
             self.Menu_Options_action_Use_Local_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Local Keyboard Remapper"))
             self.Menu_Options_action_Use_Global_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Global Keyboard Remapper"))
             self.Menu_Options_action_Use_Global_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>This works for all inputs including those in other applications!<br/>(This might cause problems with anti cheat systems in games. Use with care.)</p></body></html>"))
 
+            self.Menu_DevOptions_action_Dev_Function.setText(_translate("AMaDiA_Main_Window", "&Dev Function"))
+            self.Menu_DevOptions_action_Dev_Function.setShortcut(_translate("AMaDiA_Main_Window", "Alt+D"))
+            self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.setText(_translate("AMaDiA_Main_Window", "Show Debug Terminal"))
+            self.Menu_DevOptions_action_Use_Threadpool.setText(_translate("AMaDiA_Main_Window", "Use Threadpool"))
+            self.Menu_DevOptions_action_Terminate_All_Threads.setText(_translate("AMaDiA_Main_Window", "Terminate All Threads"))
+            self.Menu_DevOptions_action_Terminate_All_Threads.setToolTip(_translate("AMaDiA_Main_Window", "Unstable, especially in Threadpool-mode"))
+
             self.Menu_Chat_action_Open_Client.setText(_translate("AMaDiA_Main_Window", "Open Client"))
             self.Menu_Chat_action_Open_Server.setText(_translate("AMaDiA_Main_Window", "Open Server"))
+
             self.Menu_Colour_action_Dark.setText(_translate("AMaDiA_Main_Window", "Dark"))
             self.Menu_Colour_action_Bright.setText(_translate("AMaDiA_Main_Window", "Bright"))
+
             self.Menu_Help_action_Examples.setText(_translate("AMaDiA_Main_Window", "Examples"))
             self.Menu_Help_action_Helpful_Commands.setText(_translate("AMaDiA_Main_Window", "Helpful Commands"))
             self.Menu_Help_action_License.setText(_translate("AMaDiA_Main_Window", "License"))
             self.Menu_Help_action_About.setText(_translate("AMaDiA_Main_Window", "About"))
-            self.Menu_Options_action_Use_Threadpool.setText(_translate("AMaDiA_Main_Window", "Use Threadpool"))
             self.Menu_Help_action_Patchlog.setText(_translate("AMaDiA_Main_Window", "Patchlog"))
 
     #def Colour_Font_Init(self):
@@ -1268,7 +1278,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 pass
 
  # ---------------------------------- Option Toolbar Functions ----------------------------------
-    def ReloadModules(self):
+    def Dev_Function(self):
         #AC.ReloadModules()
         #AF.ReloadModules()
         #AC.ReloadModules()
@@ -1286,9 +1296,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_5_tabWidget.setTabEnabled(0,True)# TODO: Fully implement the CONTROL input tab
 
     def ToggleCompactMenu(self):
-        #TODO: If the MenuBar is used as a widget the extension functionality is not available. Maybe try to set a QMainWindow inside a QMainWindow to fix this...
         #TODO: The size behaves weird when compact->scaling-up->switching->scaling-down
-        #TODO: The size behaves weird and you can manage to clip the TopBar outside the tabBar
         self.init_Menu(False)
         if self.Menu_Options_action_ToggleCompactMenu.isChecked():
             self.MenuBar.setVisible(False)
@@ -1298,8 +1306,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.MenuBar.setCornerWidget(None)
             self.tabWidget.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
             self.TopBar.setVisible(True)
-            self.tabWidget.tabBar().setUsesScrollButtons(True)
-            self.TopBar.CloseButton.setMinimumHeight(self.MenuBar.height())
+            #self.tabWidget.tabBar().setUsesScrollButtons(True)
+            self.TopBar.setMinimumHeight(self.MenuBar.minimumHeight())
+            self.TopBar.CloseButton.setMinimumHeight(self.MenuBar.minimumHeight())
         else:
             self.MenuBar.setVisible(True)
             self.setMenuBar(self.MenuBar)
@@ -1327,7 +1336,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.setFont(font)
             self.setFont(org_font)
             
-            self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().height())
+            self.TopBar.setMinimumHeight(self.tabWidget.tabBar().minimumHeight())
+            self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().minimumHeight())
             
 
     def ToggleSyntaxHighlighter(self):
@@ -1402,7 +1412,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def OpenServer(self):
         self.Sever = AstusChat_Server.MainWindow()
         self.Sever.show()
-
 
  # ---------------------------------- Events and Context Menu ----------------------------------
     def OtherContextMenuSetup(self):
@@ -1811,7 +1820,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
     def TR(self, AMaS_Object , Function , ID=-1 , Eval = -1): # Thread Return: Threads report back here when they are done
         self.Function = Function
-
+        
         if Function == self.Tab_1_F_Calculate:
             if Eval == 0 : Eval = True
             elif Eval == 1 : Eval = False
@@ -1832,10 +1841,14 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 elif Kind == "WORK":
                     Thread = AT.AMaS_Thread(self,*args,ID=ID) # pylint: disable=no-value-for-parameter
                 
+                
                 self.ThreadList.append(Thread) # INVESTIGATE: Check size of memory leak
 
                 self.ThreadList[ID].Return.connect(self.TR)
                 self.ThreadList[ID].ReturnError.connect(self.Error_Redirect)
+                self.ThreadList[ID].finished.connect(self.ThreadFinishedSlot)
+                self.ThreadList[ID].setTerminationEnabled(True)
+                self.S_Terminate_Threads.connect(self.ThreadList[ID].terminate)
                 self.ThreadList[ID].start()
 
             elif self.Threading == "POOL":
@@ -1845,11 +1858,14 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                     worker = AT.AMaS_Worker(*args) # pylint: disable=no-value-for-parameter
                 worker.signals.result.connect(self.TR)
                 worker.signals.error.connect(self.Error_Redirect)
-                #worker.signals.finished.connect(self.NONE)
+                worker.signals.finished.connect(self.ThreadFinishedSlot)
+                self.S_Terminate_Threads.connect(worker.terminate)
                 self.threadpool.start(worker) 
         except common_exceptions:
             Error = ExceptionOutput(sys.exc_info())
             self.NotifyUser(1,Error)
+        else:
+            self.workingThreadsDisplay(1)
         
     def TC_old(self,Thread): # Thread Creator: All new threads are created here # CLEANUP: TC_old
         ID = -1
@@ -1902,6 +1918,19 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
         AMaS_Object.f_eval = f_eval
         AMaS_Object.f_powsimp = f_powsimp
+
+    def ThreadFinishedSlot(self):
+        self.workingThreadsDisplay(-1)
+    def workingThreadsDisplay(self,pm):
+        self.workingThreads += pm
+        self.statusbar.showMessage("Currently working on {} equations".format(self.workingThreads))
+
+    def TerminateAllThreads(self):
+        self.S_Terminate_Threads.emit()
+        self.threadpool.clear()
+        if self.threadpool.activeThreadCount() >= 1:
+            self.oldThreadpools.append(self.threadpool)
+            self.threadpool = QtCore.QThreadPool()
  
  # ---------------------------------- Tab_1_ Calculator ----------------------------------
     def Tab_1_F_Calculate_Field_Input(self):
