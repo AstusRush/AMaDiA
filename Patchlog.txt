@@ -391,3 +391,8 @@ v0.15.7: Window Titles, Menu Fixes and Dev Functions
 ++ This frees the status bar to show other information like the aforementioned number of currently running calculations
 + Fixed the tool tips for the menu actions
 
+v0.15.7.1: Screenshots
++ F12 now saves a screenshot of the current window
++ The folder path is now handled by the application instead of the main window
++ Finally added current screenshots!!!
+

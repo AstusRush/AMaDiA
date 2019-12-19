@@ -1334,55 +1334,55 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             self.statusbar.setSizeGripEnabled(False)
             self.windowTitleChanged.connect(self.statusbar.setWindowTitle)
 
-#####################
- #    def setMenuBar(self, MenuBar):
- #        if MenuBar == None:
- #            try:
- #                self.AWWF_CentralWidget_layout.addWidget(QtWidgets.QWidget(self),0,0)
- #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
- #            except common_exceptions:
- #                pass
- #        else:
- #            self.AWWF_CentralWidget_layout.addWidget(MenuBar,0,0)
- #            MenuBar.setCursor(MenuBar.cursor())
- #        self.AWWF_p_MenuBar = MenuBar
- #        return True
- #
- #    def menuBar(self):
- #        return self.AWWF_p_MenuBar
- #
- #    def setCentralWidget(self, CentralWidget):
- #        if CentralWidget == None:
- #            try:
- #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_CentralWidget)
- #            except common_exceptions:
- #                pass
- #        else:
- #            self.AWWF_CentralWidget_layout.addWidget(CentralWidget,1,0)
- #            CentralWidget.setCursor(CentralWidget.cursor())
- #        self.AWWF_p_CentralWidget = CentralWidget
- #        return True
- #
- #    def centralWidget(self):
- #        return self.AWWF_p_CentralWidget
- #        
- #    def setStatusBar(self, StatusBar):
- #        if StatusBar == None:
- #            try:
- #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_StatusBar)
- #            except common_exceptions:
- #                pass
- #        else:
- #            self.AWWF_CentralWidget_layout.addWidget(StatusBar,2,0)
- #            StatusBar.setCursor(StatusBar.cursor())
- #        self.AWWF_p_StatusBar = StatusBar
- #        return True
- #
- #    def statusBar(self):
- #        return self.AWWF_p_StatusBar
- #
- #
-#####################
+ #####################
+  #    def setMenuBar(self, MenuBar):
+  #        if MenuBar == None:
+  #            try:
+  #                self.AWWF_CentralWidget_layout.addWidget(QtWidgets.QWidget(self),0,0)
+  #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
+  #            except common_exceptions:
+  #                pass
+  #        else:
+  #            self.AWWF_CentralWidget_layout.addWidget(MenuBar,0,0)
+  #            MenuBar.setCursor(MenuBar.cursor())
+  #        self.AWWF_p_MenuBar = MenuBar
+  #        return True
+  #
+  #    def menuBar(self):
+  #        return self.AWWF_p_MenuBar
+  #
+  #    def setCentralWidget(self, CentralWidget):
+  #        if CentralWidget == None:
+  #            try:
+  #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_CentralWidget)
+  #            except common_exceptions:
+  #                pass
+  #        else:
+  #            self.AWWF_CentralWidget_layout.addWidget(CentralWidget,1,0)
+  #            CentralWidget.setCursor(CentralWidget.cursor())
+  #        self.AWWF_p_CentralWidget = CentralWidget
+  #        return True
+  #
+  #    def centralWidget(self):
+  #        return self.AWWF_p_CentralWidget
+  #        
+  #    def setStatusBar(self, StatusBar):
+  #        if StatusBar == None:
+  #            try:
+  #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_StatusBar)
+  #            except common_exceptions:
+  #                pass
+  #        else:
+  #            self.AWWF_CentralWidget_layout.addWidget(StatusBar,2,0)
+  #            StatusBar.setCursor(StatusBar.cursor())
+  #        self.AWWF_p_StatusBar = StatusBar
+  #        return True
+  #
+  #    def statusBar(self):
+  #        return self.AWWF_p_StatusBar
+  #
+  #
+ #####################
 
     def setMenuBar(self, MenuBar):
         if MenuBar == None:
@@ -1430,7 +1430,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
     def statusBar(self):
         return self.AWWF_CentralWindow.statusBar()
 
-#####################
+ #####################
 
     def showNormal(self):
         self.AWWF_CentralWidget.showFrame()

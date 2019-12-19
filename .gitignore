@@ -13,6 +13,7 @@ GIT console commands
 TestCode
 Plots
 Config
+Screenshots
 *.code-workspace
 .vscode
 Test.py

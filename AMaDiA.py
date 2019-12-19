@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.7"
+Version = "0.15.7.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -139,9 +139,8 @@ class AMaDiA_Internal_File_Display_Window(AW.AWWF):
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
             self.setCentralWidget(self.centralwidget)
 
-            self.FolderPath = os.path.dirname(__file__)
-            # Check if the path that was returned is correct
-            FileName = os.path.join(self.FolderPath,FileName)
+            #self.FolderPath = os.path.dirname(__file__)
+            FileName = os.path.join(QtWidgets.QApplication.instance().FolderPath,FileName)
             with open(FileName,'r',encoding="utf-8") as text_file:
                 Text = text_file.read()
             
@@ -277,6 +276,10 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
     S_New_Notification = QtCore.pyqtSignal(str)
     def __init__(self, args):
         super(AMaDiA_Main_App, self).__init__(args)
+        
+        # Create Folders if not already existing
+        self.CreateFolders()
+
         self.installEventFilter(self)
         self.MainWindow = None
         self.setApplicationName("AMaDiA")
@@ -325,6 +328,30 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     return True
             if event.modifiers() == AltModifier:
                 pass
+            if event.key() == QtCore.Qt.Key_F12:
+                if self.pathOK:
+                    Filename = AF.cTimeFullStr("-")
+                    Filename += ".png"
+                    Filename = os.path.join(self.ScreenshotFolderPath,Filename)
+                    try:
+                        try:
+                            WID = source.window().winId()
+                            screen = source.window().screen()
+                        except:
+                            WID = source.winId()
+                            screen = source.screen()
+                        screen.grabWindow(WID).save(Filename)
+                        print(Filename)
+                    except:
+                        Error = "Could not save Screenshot: "
+                        Error += ExceptionOutput(sys.exc_info())
+                        self.NotifyUser(1,Error)
+                    else:
+                        self.NotifyUser(3,Filename)
+                else:
+                    print("Could not save Screenshot: Could not validate save location")
+                    self.NotifyUser(1,"Could not save Screenshot: Could not validate save location")
+                return True
             if source == self.MainWindow: # THIS IS SPECIFIC TO AMaDiA_Main_Window
                 if event.modifiers() == ControlModifier:
                     if event.key() == QtCore.Qt.Key_1:
@@ -708,6 +735,43 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 
  # ---------------------------------- Other ----------------------------------
 
+    def CreateFolders(self):
+        self.pathOK = False
+        # Find out Path
+        self.selfPath = os.path.abspath(__file__)
+        self.FolderPath = os.path.dirname(__file__)
+        # Check if the path that was returned is correct
+        filePath = os.path.join(self.FolderPath,"AMaDiA.py")
+        filePath = pathlib.Path(filePath)
+        if filePath.is_file():
+            self.pathOK = True
+            # Create Plots folder to save plots
+            self.PlotPath = os.path.join(self.FolderPath,"Plots")
+            try:
+                os.makedirs(self.PlotPath,exist_ok=True)
+            except OSError as e:
+                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnecessary thanks to exist_ok=True
+                    ExceptionOutput(sys.exc_info())
+                    self.pathOK = False
+            # Create Config folder to save configs
+            self.ConfigFolderPath = os.path.join(self.FolderPath,"Config")
+            try:
+                os.makedirs(self.ConfigFolderPath,exist_ok=True)
+            except OSError as e:
+                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnecessary thanks to exist_ok=True
+                    ExceptionOutput(sys.exc_info())
+                    self.pathOK = False
+            # Create Screenshots folder to save Screenshots
+            self.ScreenshotFolderPath = os.path.join(self.FolderPath,"Screenshots")
+            try:
+                os.makedirs(self.ScreenshotFolderPath,exist_ok=True)
+            except OSError as e:
+                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnecessary thanks to exist_ok=True
+                    ExceptionOutput(sys.exc_info())
+                    self.pathOK = False
+
+
+
 class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     S_Terminate_Threads = QtCore.pyqtSignal()
     def __init__(self, MainApp, parent = None):
@@ -716,8 +780,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             # Then do the same for the other windows (especially adding the frame) and use the topbar for them
             # see http://redino.net/blog/2014/05/qt-qwidget-add-menu-bar/
         
-        # Create Folders if not already existing
-        self.CreateFolders()
         # Read all config files:
         # FEATURE: Implement config files
         
@@ -1211,32 +1273,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def init_Animations_With_Colour(self):
         pass#self.init_Notification_Flash()
         
-    def CreateFolders(self):
-        self.pathOK = False
-        # Find out Path
-        self.selfPath = os.path.abspath(__file__)
-        self.FolderPath = os.path.dirname(__file__)
-        # Check if the path that was returned is correct
-        filePath = os.path.join(self.FolderPath,"AMaDiA.py")
-        filePath = pathlib.Path(filePath)
-        if filePath.is_file():
-            self.pathOK = True
-            # Create Plots folder to save plots
-            self.PlotPath = os.path.join(self.FolderPath,"Plots")
-            try:
-                os.makedirs(self.PlotPath,exist_ok=True)
-            except OSError as e:
-                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnecessary thanks to exist_ok=True
-                    ExceptionOutput(sys.exc_info())
-                    self.pathOK = False
-            # Create Config folder to save configs
-            self.ConfigFolderPath = os.path.join(self.FolderPath,"Config")
-            try:
-                os.makedirs(self.ConfigFolderPath,exist_ok=True)
-            except OSError as e:
-                if e.errno != errno.EEXIST: #CLEANUP: this if case in now unnecessary thanks to exist_ok=True
-                    ExceptionOutput(sys.exc_info())
-                    self.pathOK = False
 
  # ---------------------------------- Key Remapper ----------------------------------
     def ToggleRemapper(self):
@@ -1718,10 +1754,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
          
  # ---------------------------------- Tab_3_1_Display_Context_Menu ----------------------------------
     def action_tab_3_tab_1_Display_SavePlt(self):
-        if self.pathOK:
+        if self.MainApp.pathOK:
             Filename = AF.cTimeFullStr("-")
             Filename += ".png"
-            Filename = os.path.join(self.PlotPath,Filename)
+            Filename = os.path.join(self.MainApp.PlotPath,Filename)
             try:
                 print(Filename)
                 self.Tab_3_1_Display.canvas.fig.savefig(Filename , facecolor=self.MainApp.BG_Colour , edgecolor=self.MainApp.BG_Colour )

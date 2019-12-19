@@ -3,7 +3,7 @@ Astus' Mathematical Display Application<br/><br/>
 Current features:<br/>
  * Use (Shift+)AltGr+Key to type Mathematical Symbols (Refer to AMaDiA_ReplacementTables)<br/>
  * Tab 1 : Scientific Calculator<br/>
-   * Calculate with +,-,×,÷,√,^, Integral f(x) dx, d(f(x))/dx, y'(x), complex numbers, sin(), cos(), tan(), exp(), log() , π , E and more<br/>
+   * Calculate with +,-,×,÷,√,^,°, Integral f(x) dx, d(f(x))/dx, y'(x), complex numbers, sin(), cos(), tan(), exp(), log() , π , E and more<br/>
    * Solve an equation with unknown variables<br/>
    * Solve Differential Equations (including particular solutions)<br/>
    * Test for equality of two terms<br/>
@@ -20,6 +20,7 @@ Current features:<br/>
    * Share text files with all other users in the network via drag'n'drop into the input field<br/>
    * Server has some moderation tools (Muting/Kicking/Banning<br/>
    * WARNING: Messages are currently not encrypted! Do not send sensitive data!!!<br/>
+ * Custom Window Frames<br/>
 <br/>
 Feedback is welcome<br/>
 Suggestions are welcome<br/>
@@ -50,11 +51,10 @@ On Windows:<br/>
 <br/><br/>
 # Screenshot
 Screenshot from the very old Version 0.2.1<br/>
-<img src="/AMaDiA v0.2.1 Demo.png" alt="Demo Picture"/>
+<img src="/AMaDiA v0.15.7.1 Demo.png" alt="Demo Picture"/>
 <br/><br/>
 # Short Term Roadmap
 Planned features for (near) future (order reflects priority):<br/>
-- Make a new Demo Screenshot since the 0.2.1 is quite outdated<br/>
 - Tab 5 for System Control<br/>
 - Make Tab 4 even easier to use<br/>
 - Plot 3D and complex functions<br/>
