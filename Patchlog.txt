@@ -402,3 +402,7 @@ v0.15.8: Full Equation as LaTeX
 + MultiDim-tab: When copying the text or equation the matrix names are now replaced by the actual matrices
 + Added highlight colours to the dark theme
 
+v0.15.8.1: Bug Fix for Bad MultiDim Names
++ Fixed a crash in the MultiDim tab when a bad name for a matrix like "(" was used in a calculation
++ Removed AMaS_old to avoid confusion when programming
+

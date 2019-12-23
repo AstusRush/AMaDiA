@@ -63,7 +63,7 @@ def ReloadModules():
 
 # -----------------------------------------------------------------------------------------------------------------
 
-common_exceptions = (TypeError , SyntaxError , sympy.SympifyError ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError)
+common_exceptions = (TypeError , SyntaxError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError)
 def ExceptionOutput(exc_info,extraInfo = True):
     """
     Console output for exceptions\n
