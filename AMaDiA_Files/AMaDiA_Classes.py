@@ -203,21 +203,28 @@ class AMaS: # Astus' Mathematical Structure
         self.f_eval = True         # converted to floating-point approximations (decimal numbers)
         self.f_eval_LaTeX = 1      # If 0 prohibits all evaluation when converting to LaTeX
                                    # If 2 Allows most Solution
-
+        
+        
+        
+        # REMINDER : FOLLOWING ARE NOT SET BUT READ DIRECTLY:
+        self.f_simplify = None     # Simplifies
+        self.f_powsimp = None      # Simplifies/Collects exponents
+        self.f_expand = None       # Solve all * and **
+        self.f_factor = None       # takes a polynomial and factors it into irreducible factors (Inverse of expand)
+        self.f_collect = None      # collects common powers of a term in an expression
+        self.f_collect_arg = ""
+        self.f_cancel = None       # will take any rational function and put it into the standard canonical form p/q
+        self.f_apart = None        # performs a partial fraction decomposition on a rational function
+        self.f_expand_trig = None  # To expand trigonometric functions, that is, apply the sum or double angle identities
+        
+        
+        
         # REMINDER : FOLLOWING NEED IMPLEMENTATION:
-
+        
+        
         # Simplify: https://docs.sympy.org/latest/tutorial/simplification.html
-        self.f_simplify = True      # Simplifies
-        self.f_expand = False       # Solve all * and **
-        self.f_factor = False       # takes a polynomial and factors it into irreducible factors (Inverse of expand)
-        self.f_collect = False      # collects common powers of a term in an expression
-        self.f_cancel = False       # will take any rational function and put it into the standard canonical form p/q
-        self.f_apart = False        # performs a partial fraction decomposition on a rational function
-        self.f_expand_trig = False  # To expand trigonometric functions, that is, apply the sum or double angle identities
-        self.f_powsimp = True      # Simplifies/Collects exponents
-
-        self.f_rewrite = False      # A common way to deal with special functions is to rewrite them in terms of one another
-        self.f_rewriteFunc = None   # For example: tan(x).rewrite(sin)
+        self.f_rewrite = None      # A common way to deal with special functions is to rewrite them in terms of one another
+        self.f_rewrite_arg = ""       # For example: tan(x).rewrite(sin)
 
         #self.f_ = False
 
@@ -228,7 +235,12 @@ class AMaS: # Astus' Mathematical Structure
         except common_exceptions :
             pass#ExceptionOutput(sys.exc_info())
         try:
-            if self.f_powsimp:
+            if self.f_simplify == True or self.f_simplify == None and QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked():
+                expr = sympy.simplify(expr)
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
+        try:
+            if self.f_powsimp == True or self.f_powsimp == None and QtWidgets.QApplication.instance().optionWindow.cb_F_powsimp.isChecked():
                 if type(expr) == sympy.Equality:
                     expr = sympy.Eq(sympy.powsimp(expr.lhs),sympy.powsimp(expr.rhs))
                 else:
@@ -236,12 +248,48 @@ class AMaS: # Astus' Mathematical Structure
         except common_exceptions :
             ExceptionOutput(sys.exc_info())
         try:
-            if self.f_simplify:
-                expr = sympy.simplify(expr)
+            if self.f_expand == True or self.f_expand == None and QtWidgets.QApplication.instance().optionWindow.cb_F_expand.isChecked():
+                expr = sympy.expand(expr)
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
+        try:
+            if self.f_factor == True or self.f_factor == None and QtWidgets.QApplication.instance().optionWindow.cb_F_factor.isChecked():
+                expr = sympy.factor(expr)
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
+        try:
+            if self.f_collect == True:
+                expr = sympy.collect(expr,AF.parse(self.f_collect_arg))
+            elif self.f_collect == None and QtWidgets.QApplication.instance().optionWindow.cb_F_collect.isChecked():
+                expr = sympy.collect(expr,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_collect.text()))
+        except common_exceptions :
+            error = ExceptionOutput(sys.exc_info())
+            sendNotification(2,"Could not collect term: "+error)
+        try:
+            if self.f_cancel == True or self.f_cancel == None and QtWidgets.QApplication.instance().optionWindow.cb_F_cancel.isChecked():
+                expr = sympy.cancel(expr)
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
+        try:
+            if self.f_apart == True or self.f_apart == None and QtWidgets.QApplication.instance().optionWindow.cb_F_apart.isChecked():
+                expr = sympy.apart(expr)
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
+        try:
+            if self.f_expand_trig == True or self.f_expand_trig == None and QtWidgets.QApplication.instance().optionWindow.cb_F_expand_trig.isChecked():
+                expr = sympy.expand_trig(expr)
+                print(expr)
         except common_exceptions :
             ExceptionOutput(sys.exc_info())
         # TODO : Add the others
         return expr
+        """
+        try:
+            if self.f_? == True or self.f_? == None and QtWidgets.QApplication.instance().optionWindow.cb_F_?.isChecked():
+                expr = sympy.?(expr)
+        except common_exceptions :
+            ExceptionOutput(sys.exc_info())
+        """ # pylint: disable=unreachable
 
  # ---------------------------------- Notifications ----------------------------------
 
@@ -549,6 +597,8 @@ class AMaS: # Astus' Mathematical Structure
                 temp = "(" + temp
                 temp = temp.replace("=" , ") - (")
                 temp = temp + ")"
+                temp = AF.UnpackDualOperators(temp)
+                print(temp)
                 ans = parse_expr(temp,local_dict=self.Variables)
                 ParsedInput = ans
                 try:
@@ -556,7 +606,10 @@ class AMaS: # Astus' Mathematical Structure
                 except common_exceptions:
                     pass
                 try:
-                    ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                    if self.f_simplify==None:
+                        ans = sympy.dsolve(ans,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                    else:
+                        ans = sympy.dsolve(ans,simplify=self.f_simplify)
                     try:
                         classification = sympy.classify_ode(ParsedInput)
                         print("ODE Classification:\n",classification)
@@ -574,26 +627,65 @@ class AMaS: # Astus' Mathematical Structure
                         self.ConvertToLaTeX_Solution(ansF)
                 except common_exceptions:
                     Error = ExceptionOutput(sys.exc_info())
-                    ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
-                    self.Solution = "{ "
-                    for i in ans:
-                        if not type(i) == dict:
-                            i = self.ExecuteFlags(i)
-                        i_temp = str(i)
-                        #i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #CLEANUP: Delete this, Already implemented
-                        self.Solution += i_temp
-                        self.Solution += " , "
-                    self.Solution = self.Solution[:-3]
-                    if len(self.Solution) > 0:
-                        self.Solution += " }"
+                    if type(ans)==list:
+                        self.Solution = "[ "
+                        for ji in ans:
+                            if self.f_simplify==None:
+                                j = sympy.solve(ji,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                            else:
+                                j = sympy.solve(ji,dict=True,simplify=self.f_simplify)
+                            self.Solution += "{ "
+                            for i in j:
+                                if not type(i) == dict:
+                                    i = self.ExecuteFlags(i)
+                                i_temp = str(i)
+                                #i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #CLEANUP: Delete this, Already implemented
+                                self.Solution += i_temp
+                                self.Solution += " , "
+                            self.Solution = self.Solution[:-3]
+                            if len(self.Solution) > 0:
+                                self.Solution += " }"
+                            else:
+                                j = parse_expr(ji,local_dict=self.Variables)
+                                try:
+                                    j = j.doit()
+                                except common_exceptions:
+                                    ExceptionOutput(sys.exc_info())
+                                try: # MAYBE: get rid of this evalf()
+                                    if self.f_eval: j = j.evalf()
+                                except common_exceptions:
+                                    ExceptionOutput(sys.exc_info())
+                                self.Solution += "True" if j == 0 else "False: right side deviates by "+str(j)
+                            self.Solution += " , "
+                        self.Solution = self.Solution[:-3]
+                        self.Solution += " ]"
                     else:
-                        ans = parse_expr(temp,local_dict=self.Variables)
-                        ans = ans.doit()
-                        try: # MAYBE: get rid of this evalf()
-                            if self.f_eval: ans = ans.evalf()
-                        except common_exceptions:
-                            ExceptionOutput(sys.exc_info())
-                        self.Solution = "True" if ans == 0 else "False: right side deviates by "+str(ans)
+                        if self.f_simplify==None:
+                            ans = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                        else:
+                            ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                        self.Solution = "{ "
+                        for i in ans:
+                            if not type(i) == dict:
+                                i = self.ExecuteFlags(i)
+                            i_temp = str(i)
+                            #i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #CLEANUP: Delete this, Already implemented
+                            self.Solution += i_temp
+                            self.Solution += " , "
+                        self.Solution = self.Solution[:-3]
+                        if len(self.Solution) > 0:
+                            self.Solution += " }"
+                        else:
+                            ans = parse_expr(temp,local_dict=self.Variables)
+                            try:
+                                ans = ans.doit()
+                            except common_exceptions:
+                                ExceptionOutput(sys.exc_info())
+                            try: # MAYBE: get rid of this evalf()
+                                if self.f_eval: ans = ans.evalf()
+                            except common_exceptions:
+                                ExceptionOutput(sys.exc_info())
+                            self.Solution = "True" if ans == 0 else "False: right side deviates by "+str(ans)
                     self.ConvertToLaTeX_Solution()
                     
             except common_exceptions: #as inst:
@@ -606,7 +698,8 @@ class AMaS: # Astus' Mathematical Structure
             self.Equation += self.Text
         else:
             try:
-                ans = parse_expr(self.cstr,local_dict=self.Variables)
+                temp = AF.UnpackDualOperators(self.cstr)
+                ans = parse_expr(temp,local_dict=self.Variables)
                 separator = "   <==   "
                 ParsedInput = ans
                 if type(ans) == bool:
@@ -619,7 +712,10 @@ class AMaS: # Astus' Mathematical Structure
                         print("Could not simplify "+str(ans))
                         ExceptionOutput(sys.exc_info())
                     try:
-                        ans = sympy.dsolve(ans,simplify=self.f_simplify)
+                        if self.f_simplify==None:
+                            ans = sympy.dsolve(ans,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                        else:
+                            ans = sympy.dsolve(ans,simplify=self.f_simplify)
                         try:
                             classification = sympy.classify_ode(ParsedInput)
                             print("ODE Classification:\n",classification)
@@ -641,7 +737,10 @@ class AMaS: # Astus' Mathematical Structure
                                 ans = ans.evalf()
                             except common_exceptions:
                                 try:
-                                    ans_S = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                                    if self.f_simplify==None:
+                                        ans_S = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                    else:
+                                        ans_S = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                                     try:
                                         if not (type(ans_S)==list and len(ans_S)==0):
                                             ans = ans_S
@@ -741,7 +840,10 @@ class AMaS: # Astus' Mathematical Structure
             func += var
             func += ")"
             func = parse_expr(func)
-            equation = sympy.dsolve(equation,func=func,ics=ics,simplify=self.f_simplify)
+            if self.f_simplify==None:
+                equation = sympy.dsolve(equation,func=func,ics=ics,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+            else:
+                equation = sympy.dsolve(equation,func=func,ics=ics,simplify=self.f_simplify)
             equation = self.ExecuteFlags(equation)
             try:
                 self.Solution = str(equation.lhs) + " = "

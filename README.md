@@ -3,7 +3,7 @@ Astus' Mathematical Display Application<br/><br/>
 Current features:<br/>
  * Use (Shift+)AltGr+Key to type Mathematical Symbols (Refer to AMaDiA_ReplacementTables)<br/>
  * Tab 1 : Scientific Calculator<br/>
-   * Calculate with +,-,×,÷,√,^,°, Integral f(x) dx, d(f(x))/dx, y'(x), complex numbers, sin(), cos(), tan(), exp(), log() , π , E and more<br/>
+   * Calculate with +,-,±,×,÷,√,^,°, Integral f(x) dx, d(f(x))/dx, y'(x), complex numbers, sin(), cos(), tan(), exp(), log() , π , E and more<br/>
    * Solve an equation with unknown variables<br/>
    * Solve Differential Equations (including particular solutions)<br/>
    * Test for equality of two terms<br/>

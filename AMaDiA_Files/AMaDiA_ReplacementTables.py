@@ -150,6 +150,7 @@ n_constants = [["\u03c0"," pi "],["∞"," oo "]]
 n_operators = [["^","**"],["·","*"]]
 n_operators_special = [["√","sqrt"],["∫","Integral"]]
 n_operators_notinv = [["–","-"],["—","-"],["×","*"],["÷","/"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
+n_operators_dual = [["±","+","-"],["∓","-","+"]]
 n_space = [[" "," "]]
 
 n_priority_Invertable = [["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]

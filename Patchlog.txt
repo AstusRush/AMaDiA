@@ -406,3 +406,12 @@ v0.15.8.1: Bug Fix for Bad MultiDim Names
 + Fixed a crash in the MultiDim tab when a bad name for a matrix like "(" was used in a calculation
 + Removed AMaS_old to avoid confusion when programming
 
+v0.15.9: Options Window, PlusMinus and Flags
++ Added support for ± and ∓
++ Added a new options window
+++ Moved keyboard remap to options window
+++ Added a font combo box to the options window (which means that the setFont function is finally used to its full potential!)
+++ Implemented the first Flags to control the format of the solutions of the calculator
++ Fixed a bug that caused the window to resize when clicking on the top edge in compact mode to move the window
++ When a new text edit is initialized the highlighter activation status is now read instead of just assumed to be True
+

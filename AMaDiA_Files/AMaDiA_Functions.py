@@ -329,6 +329,10 @@ def Matrix_Encaser(string):
     # https://pyformat.info/
     # https://docs.python.org/3.4/library/string.html
 
+def parse(string):
+    """Returns the sympy object of a string"""
+    return parse_expr(AstusParse(string,False))
+
 def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = None):
     # FEATURE: MultiDim support
     # If Iam_Multi_Dim replace everything except multiplication signs
@@ -374,6 +378,7 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     string = string.replace(")(",")*(") # Add them between brackets
     string = re.sub(r"((?:\d+)|(?:[a-zA-Z]\w*\(\w+\)))((?:[a-zA-Z]\w*)|\()", r"\1*\2", string)
 
+    # string = UnpackDualOperators(string) # This does not work here if "=" is used so this is instead implemented in the calculation method
     if ConsoleOutput:
         print("Input parsed: ",string)
     return string
@@ -438,6 +443,26 @@ def NonInterpreteableBracketReplace(string):
             string.replace(j[0],j[1])
     
 """
+
+def UnpackDualOperators(string):
+    List = [string]
+    for i in ART.n_operators_dual:
+        tList = []
+        for j in List:
+            if i[0] in j:
+                tList.append(UnpackDualOperators(j.replace(i[0],i[1],1)))
+                tList.append(UnpackDualOperators(j.replace(i[0],i[2],1)))
+            else:
+                tList.append(j)
+        List = tList
+    if len(List)>1:
+        string = "["
+        for i in List:
+            string+=i
+            string+=","
+        string = string[:-1]
+        string+= "]"
+    return string
 
 def AstusParseInverse(string, Validate=False):
     string_i = string

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.8.1"
+Version = "0.15.9"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -51,6 +51,7 @@ from matplotlib.figure import Figure
 # cd /home/robin/Projects/AMaDiA/AMaDiA_Files/
 # pyuic5 AMaDiAUI.ui -o AMaDiAUI.py
 from AMaDiA_Files.AMaDiAUI import Ui_AMaDiA_Main_Window
+from AMaDiA_Files.AMaDiA_Options_UI import Ui_AMaDiA_Options
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_Functions as AF
 from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NotificationEvent, sendNotification
@@ -266,6 +267,70 @@ class AMaDiA_exec_Window(AW.AWWF):
             Error = ExceptionOutput(sys.exc_info())
             sendNotification(1,Error)
 
+class AMaDiA_options_window(AW.AWWF, Ui_AMaDiA_Options):
+    def __init__(self,app,parent = None):
+        try:
+            super(AMaDiA_options_window, self).__init__(parent, includeTopBar=False, initTopBar=False, includeStatusBar=True)
+            self.MainApp = app
+            self.setupUi(self)
+            self.TopBar = AW.TopBar_Widget(self,False)
+            self.tabWidget.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
+            self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
+            self.setWindowTitle("Options")
+            self.standardSize = (900, 500)
+            self.resize(*self.standardSize)
+            self.tabWidget.setCurrentIndex(0)
+            
+            self.setAutoFillBackground(True)
+            self.ConnectSignals()
+        except common_exceptions:
+            ExceptionOutput(sys.exc_info())
+            
+    def ConnectSignals(self):
+        self.fontComboBox.currentFontChanged.connect(self.SetFontFamily)
+        self.cb_O_Remapper_global.toggled.connect(self.ToggleGlobalRemapper)
+        self.cb_O_PairHighlighter.toggled.connect(self.MainApp.S_Highlighter.emit)
+        
+    def SetFontFamily(self,Family):
+        self.MainApp.SetFont(Family,self.TopBar.Font_Size_spinBox.value(),self)
+
+    def ToggleGlobalRemapper(self):
+        try:
+            if self.cb_O_Remapper_global.isChecked():
+                self.cb_O_Remapper_local.setChecked(False)
+                self.cb_O_Remapper_local.setDisabled(True)
+                altgr = "altgr+"
+                altgrShift = "altgr+shift+"
+                #keyboard.on_press(print)
+                #keyboard.add_hotkey("shift",keyboard.release, args=("altgr"),trigger_on_release=True)
+                #keyboard.block_key("AltGr")
+                #keyboard.add_hotkey("altgr",keyboard.release, args=("alt+control"), suppress=True)
+                #keyboard.add_hotkey("control+alt+altgr+shift",keyboard.release, args=("altgr+shift"), suppress=True)
+                for i in ART.KR_Map:
+                    if i[0]!=" ":
+                        if i[2] != " ":
+                            Key = altgr + i[0]
+                            keyboard.add_hotkey(Key, AltGr_Shortcut, args=(i[2],i[3]), suppress=True, trigger_on_release=True)
+                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
+                        if i[3] != " ":
+                            Key = altgrShift + i[0]
+                            keyboard.add_hotkey(Key, AltGr_Shift_Shortcut, args=(i[3]), suppress=True, trigger_on_release=True)
+                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
+                        if i[4] != " ":
+                            Key = "^+"+i[0]
+                            keyboard.add_hotkey(Key, Superscript_Shortcut, args=(i[4]), suppress=True, trigger_on_release=True)
+                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[4]), suppress=True, trigger_on_release=True)
+            else:
+                keyboard.clear_all_hotkeys()
+                self.cb_O_Remapper_local.setEnabled(True)
+                self.cb_O_Remapper_local.setChecked(True)
+        except common_exceptions :
+            Error = ExceptionOutput(sys.exc_info())
+            self.MainApp.NotifyUser(1,Error)
+            try:
+                print(i,Key)
+            except common_exceptions :
+                pass
 
 
 class AMaDiA_Main_App(QtWidgets.QApplication):
@@ -274,6 +339,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
     # https://doc.qt.io/qt-5/qguiapplication.html
     # https://doc.qt.io/qt-5/qcoreapplication.html
     S_New_Notification = QtCore.pyqtSignal(str)
+    S_Highlighter = QtCore.pyqtSignal(bool)
     def __init__(self, args):
         super(AMaDiA_Main_App, self).__init__(args)
         
@@ -292,6 +358,8 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
         self.Colour_Font_Init()
         self.init_Notification_Flash()
+
+        self.optionWindow = AMaDiA_options_window(self)
 
     def setMainWindow(self, TheWindow):
         self.MainWindow = TheWindow
@@ -326,7 +394,9 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     self.Show_AMaDiA_exec_Window()
                     return True
             if event.modifiers() == AltModifier:
-                pass
+                if event.key() == QtCore.Qt.Key_O:
+                    self.Show_Options()
+                    return True
             if event.key() == QtCore.Qt.Key_F12:
                 if self.pathOK:
                     Filename = AF.cTimeFullStr("-")
@@ -373,7 +443,8 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                         self.MainWindow.tabWidget.setCurrentIndex(4)
                         return True
             try:  # THIS IS SPECIFIC TO AMaDiA_Main_Window # FEATURE: Add superscript Macros
-                if self.MainWindow.Menu_Options_action_Use_Local_Keyboard_Remapper.isChecked():
+                #if self.MainWindow.Menu_Options_action_Use_Local_Keyboard_Remapper.isChecked():
+                if self.optionWindow.cb_O_Remapper_local.isChecked():
                     modifiers = QtWidgets.QApplication.keyboardModifiers() # instead of event.modifiers() to be more reliable
                     if modifiers == (GroupSwitchModifier | ShiftModifier) or modifiers == (ControlModifier | AltModifier | ShiftModifier):
                         for i in ART.KR_Map:
@@ -470,8 +541,10 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 
     def SetFont(self, Family=None, PointSize=0, source=None):
         if type(Family) == QtGui.QFont:
-            PointSize = Family.pointSize()
+            if PointSize==0:
+                PointSize = Family.pointSize()
             Family = Family.family()
+            self.FontFamily = Family
         elif Family == None:
             Family = self.FontFamily
         else:
@@ -480,7 +553,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
             PointSize = int(PointSize)
         if PointSize < 5:
             try:
-                PointSize = source.TopBar.Font_Size_spinBox.setValue(PointSize)
+                PointSize = source.TopBar.Font_Size_spinBox.value()
             except common_exceptions:
                 Error = ExceptionOutput(sys.exc_info())
                 self.NotifyUser(1,Error)
@@ -734,6 +807,10 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.AMaDiA_exec_Window_Window = AMaDiA_exec_Window()
         self.AMaDiA_exec_Window_Window.show()
 
+    def Show_Options(self):
+        self.optionWindow.show()
+        self.optionWindow.activateWindow()
+
  # ---------------------------------- Other ----------------------------------
 
     def CreateFolders(self):
@@ -960,7 +1037,19 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def ConnectSignals(self):
         self.Menu_Options_action_ToggleCompactMenu.changed.connect(self.ToggleCompactMenu)
         self.Menu_Options_action_WindowStaysOnTop.changed.connect(self.ToggleWindowStaysOnTop)
-        self.Menu_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
+        #self.Menu_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
+        self.Menu_Options_action_Options.triggered.connect(self.MainApp.Show_Options)
+        
+        self.MainApp.optionWindow.cb_O_AdvancedMode.toggled.connect(self.Menu_Options_action_Advanced_Mode.setChecked)
+        self.Menu_Options_action_Advanced_Mode.toggled.connect(self.MainApp.optionWindow.cb_O_AdvancedMode.setChecked)
+        
+        self.MainApp.optionWindow.cb_F_EvalF.toggled.connect(self.Menu_Options_action_Eval_Functions.setChecked)
+        self.Menu_Options_action_Eval_Functions.toggled.connect(self.MainApp.optionWindow.cb_F_EvalF.setChecked)
+
+        self.MainApp.optionWindow.cb_O_PairHighlighter.toggled.connect(self.Menu_Options_action_Highlighter.setChecked)
+        self.Menu_Options_action_Highlighter.toggled.connect(self.MainApp.optionWindow.cb_O_PairHighlighter.setChecked)
+        self.Menu_Options_action_Highlighter.toggled.connect(self.MainApp.S_Highlighter.emit)
+        #self.Menu_Options_action_Highlighter.toggled.connect(self.ToggleSyntaxHighlighter)
 
         self.Menu_DevOptions_action_Dev_Function.triggered.connect(self.Dev_Function)
         self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.triggered.connect(self.MainApp.Show_AMaDiA_exec_Window)
@@ -977,8 +1066,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Menu_Help_action_Helpful_Commands.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Helpful_Useable_Syntax.txt"))
         self.Menu_Help_action_Patchlog.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Patchlog.txt"))
         self.Menu_Help_action_About.triggered.connect(self.Show_About)
-
-        self.Menu_Options_action_Highlighter.toggled.connect(self.ToggleSyntaxHighlighter)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
         
@@ -1029,10 +1116,12 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Colour.setObjectName("Menu_Colour")
             self.Menu_Help = QtWidgets.QMenu(self.Menu)
             self.Menu_Help.setObjectName("Menu_Help")
-            self.Menu_Options_MathRemap = QtWidgets.QMenu(self.Menu_Options)
-            self.Menu_Options_MathRemap.setObjectName("Menu_Options_MathRemap")
+            #self.Menu_Options_MathRemap = QtWidgets.QMenu(self.Menu_Options)
+            #self.Menu_Options_MathRemap.setObjectName("Menu_Options_MathRemap")
        # Create Actions
         if FirstTime:
+            self.Menu_Options_action_Options = AW.MenuAction(self)
+            self.Menu_Options_action_Options.setObjectName("Menu_Options_action_Options")
             self.Menu_Options_action_ToggleCompactMenu = AW.MenuAction(self)
             self.Menu_Options_action_ToggleCompactMenu.setCheckable(True)
             self.Menu_Options_action_ToggleCompactMenu.setObjectName("Menu_Options_action_ToggleCompactMenu")
@@ -1055,13 +1144,13 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Options_action_WindowStaysOnTop = AW.MenuAction(self)
             self.Menu_Options_action_WindowStaysOnTop.setCheckable(True)
             self.Menu_Options_action_WindowStaysOnTop.setObjectName("Menu_Options_action_WindowStaysOnTop")
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper = AW.MenuAction(self)
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setCheckable(True)
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Local_Keyboard_Remapper")
-            self.Menu_Options_action_Use_Global_Keyboard_Remapper = AW.MenuAction(self)
-            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setCheckable(True)
-            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Global_Keyboard_Remapper")
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper = AW.MenuAction(self)
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setCheckable(True)
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Local_Keyboard_Remapper")
+            #self.Menu_Options_action_Use_Global_Keyboard_Remapper = AW.MenuAction(self)
+            #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setCheckable(True)
+            #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Global_Keyboard_Remapper")
             self.Menu_Options_action_Highlighter = AW.MenuAction(self)
             self.Menu_Options_action_Highlighter.setCheckable(True)
             self.Menu_Options_action_Highlighter.setChecked(True)
@@ -1100,14 +1189,15 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Help_action_Patchlog.setObjectName("Menu_Help_action_Patchlog")
        # Add the Actions to the Submenus
         if FirstTime:
+            self.Menu_Options.addAction(self.Menu_Options_action_Options)
             self.Menu_Options.addAction(self.Menu_Options_action_ToggleCompactMenu)
             self.Menu_Options.addAction(self.Menu_Options_action_Advanced_Mode)
             self.Menu_Options.addAction(self.Menu_Options_action_Eval_Functions)
             self.Menu_Options.addAction(self.Menu_Options_action_Use_Pretty_LaTeX_Display)
             self.Menu_Options.addAction(self.Menu_Options_action_WindowStaysOnTop)
-            self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Local_Keyboard_Remapper)
-            self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Global_Keyboard_Remapper)
-            self.Menu_Options.addAction(self.Menu_Options_MathRemap.menuAction())
+            #self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Local_Keyboard_Remapper)
+            #self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Global_Keyboard_Remapper)
+            #self.Menu_Options.addAction(self.Menu_Options_MathRemap.menuAction())
             self.Menu_Options.addAction(self.Menu_Options_action_Highlighter)
             self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Dev_Function)
             self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Show_AMaDiA_exec_Window)
@@ -1142,6 +1232,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Colour.setTitle(_translate("AMaDiA_Main_Window", "Colour"))
             self.Menu_Help.setTitle(_translate("AMaDiA_Main_Window", "Help"))
 
+            self.Menu_Options_action_Options.setText(_translate("AMaDiA_Main_Window", "&Options"))
+            self.Menu_Options_action_Options.setShortcut(_translate("AMaDiA_Main_Window", "Alt+O"))
             self.Menu_Options_action_ToggleCompactMenu.setText(_translate("AMaDiA_Main_Window", "&Compact Menu"))
             self.Menu_Options_action_ToggleCompactMenu.setShortcut(_translate("AMaDiA_Main_Window", "Alt+C"))
             self.Menu_Options_action_Advanced_Mode.setText(_translate("AMaDiA_Main_Window", "&Advanced Mode"))
@@ -1158,11 +1250,11 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Options_action_Highlighter.setToolTip(_translate("AMaDiA_Main_Window", "Syntax Highlighter for Brackets"))
             self.Menu_Options_action_Highlighter.setText(_translate("AMaDiA_Main_Window", "Highlighter"))
             
-            self.Menu_Options_MathRemap.setTitle(_translate("AMaDiA_Main_Window", "MathKeyboard"))
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>For a Remapping that works on all applications use the Global Remapper in the Options.</p></body></html>"))
-            self.Menu_Options_action_Use_Local_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Local Keyboard Remapper"))
-            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Global Keyboard Remapper"))
-            self.Menu_Options_action_Use_Global_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>This works for all inputs including those in other applications!<br/>(This might cause problems with anti cheat systems in games. Use with care.)</p></body></html>"))
+            #self.Menu_Options_MathRemap.setTitle(_translate("AMaDiA_Main_Window", "MathKeyboard"))
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>For a Remapping that works on all applications use the Global Remapper in the Options.</p></body></html>"))
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Local Keyboard Remapper"))
+            #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Global Keyboard Remapper"))
+            #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>This works for all inputs including those in other applications!<br/>(This might cause problems with anti cheat systems in games. Use with care.)</p></body></html>"))
 
             self.Menu_DevOptions_action_Dev_Function.setText(_translate("AMaDiA_Main_Window", "&Dev Function"))
             self.Menu_DevOptions_action_Dev_Function.setShortcut(_translate("AMaDiA_Main_Window", "Alt+D"))
@@ -1273,44 +1365,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         pass#self.init_Notification_Flash()
         
 
- # ---------------------------------- Key Remapper ----------------------------------
-    def ToggleRemapper(self):
-        try:
-            if self.Menu_Options_action_Use_Global_Keyboard_Remapper.isChecked():
-                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(False)
-                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setDisabled(True)
-                altgr = "altgr+"
-                altgrShift = "altgr+shift+"
-                #keyboard.on_press(print)
-                #keyboard.add_hotkey("shift",keyboard.release, args=("altgr"),trigger_on_release=True)
-                #keyboard.block_key("AltGr")
-                #keyboard.add_hotkey("altgr",keyboard.release, args=("alt+control"), suppress=True)
-                #keyboard.add_hotkey("control+alt+altgr+shift",keyboard.release, args=("altgr+shift"), suppress=True)
-                for i in ART.KR_Map:
-                    if i[0]!=" ":
-                        if i[2] != " ":
-                            Key = altgr + i[0]
-                            keyboard.add_hotkey(Key, AltGr_Shortcut, args=(i[2],i[3]), suppress=True, trigger_on_release=True)
-                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[2]), suppress=True, trigger_on_release=True)
-                        if i[3] != " ":
-                            Key = altgrShift + i[0]
-                            keyboard.add_hotkey(Key, AltGr_Shift_Shortcut, args=(i[3]), suppress=True, trigger_on_release=True)
-                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[3]), suppress=True, trigger_on_release=True)
-                        if i[4] != " ":
-                            Key = "^+"+i[0]
-                            keyboard.add_hotkey(Key, Superscript_Shortcut, args=(i[4]), suppress=True, trigger_on_release=True)
-                            #keyboard.add_hotkey(Key, keyboard.write, args=(i[4]), suppress=True, trigger_on_release=True)
-            else:
-                keyboard.clear_all_hotkeys()
-                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setEnabled(True)
-                self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
-        except common_exceptions :
-            Error = ExceptionOutput(sys.exc_info())
-            self.NotifyUser(1,Error)
-            try:
-                print(i,Key)
-            except common_exceptions :
-                pass
 
  # ---------------------------------- Option Toolbar Functions ----------------------------------
     def Dev_Function(self):
@@ -1375,7 +1429,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().minimumHeight())
             
 
-    def ToggleSyntaxHighlighter(self):
+    def ToggleSyntaxHighlighter(self): #CLEANUP: Integrated
         state = self.Menu_Options_action_Highlighter.isChecked()
         for i in self.findChildren(AW.ATextEdit):
             i.Highlighter.enabled = state
@@ -1536,7 +1590,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
                 action = menu.addAction('Copy LaTeX')
                 action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
-                if self.Menu_Options_action_Advanced_Mode.isChecked():
+                if QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
                     action = menu.addAction('+ Copy Input')
                     action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
                     action = menu.addAction('+ Copy cString')
@@ -1560,10 +1614,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 if source.itemAt(event.pos()).data(100).plottable :
                     action = menu.addAction('New Plot')
                     action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                elif self.Menu_Options_action_Advanced_Mode.isChecked() :
+                elif QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked() :
                     action = menu.addAction('+ New Plot')
                     action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                if source.itemAt(event.pos()).data(100).plot_data_exists and self.Menu_Options_action_Advanced_Mode.isChecked():
+                if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
                     menu.addSeparator()
                     action = menu.addAction('+ Copy x Values')
                     action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
@@ -1595,6 +1649,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
     
  # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
+    # FEATURE: when multiple items are selected when pressing ctrl+c they should all be copied and seperated with new lines
   # ----------------
          
     def action_H_Copy_Solution(self,source,event):
@@ -1868,7 +1923,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             elif Eval == 1 : Eval = False
             else: Eval = None
             if Eval == None:
-                Eval=self.Menu_Options_action_Eval_Functions.isChecked()
+                Eval=self.MainApp.optionWindow.cb_F_EvalF.isChecked()
             self.Function(AMaS_Object,Eval)
         else:
             self.Function(AMaS_Object)
@@ -1952,7 +2007,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
     def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
         if f_eval == None:
-            f_eval = self.Menu_Options_action_Eval_Functions.isChecked()
+            f_eval = self.MainApp.optionWindow.cb_F_EvalF.isChecked()
 
         #Temporary:
         if f_powsimp == None:
@@ -1978,9 +2033,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def Tab_1_F_Calculate_Field_Input(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ControlModifier:
-            Eval = False
+            Eval = not self.MainApp.optionWindow.cb_F_EvalF.isChecked()
         else:
-            Eval = self.Menu_Options_action_Eval_Functions.isChecked()
+            Eval = self.MainApp.optionWindow.cb_F_EvalF.isChecked()
         # Input.EvaluateLaTeX() # Could be used to evaluate LaTeX but: left( and right) brakes it...
         TheInput = self.Tab_1_InputField.text()
         if TheInput == "RUNTEST":
@@ -1996,7 +2051,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
     def Tab_1_F_Calculate(self,AMaS_Object,Eval = None):
         if Eval == None:
-            Eval = self.Menu_Options_action_Eval_Functions.isChecked()
+            Eval = self.MainApp.optionWindow.cb_F_EvalF.isChecked()
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
         #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
         self.TC("WORK", AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display)
@@ -2133,7 +2188,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 self.Tab_3_1_Display.canvas.draw()
         except common_exceptions :
             Error = ExceptionOutput(sys.exc_info(),False)
-            print("y_vals = ",r.repr(AMaS_Object.plot_y_vals),type(AMaS_Object.plot_y_vals),"\nYou can copy all elements in advanced mode in the contextmenu")
+            print("y_vals = ",r.repr(AMaS_Object.plot_y_vals),type(AMaS_Object.plot_y_vals),"\nYou can copy all elements in the contextmenu if advanced mode is active")
             #print("y_vals = ")
             #print(AMaS_Object.plot_y_vals)
             #print(type(AMaS_Object.plot_y_vals))
@@ -2387,9 +2442,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def Tab_4_F_Update_Equation(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ControlModifier:
-            Eval = False
+            Eval = not self.MainApp.optionWindow.cb_F_EvalF.isChecked()
         else:
-            Eval = self.Menu_Options_action_Eval_Functions.isChecked()
+            Eval = self.MainApp.optionWindow.cb_F_EvalF.isChecked()
         Text = self.Tab_4_FormulaInput.text()
         AMaS_Object = self.Tab_4_Active_Equation
         self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
@@ -2600,7 +2655,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.NotifyUser(1,Error)
 
     def Tab_5_4_Dirty_Display(self):
-        if not self.Menu_Options_action_Advanced_Mode.isChecked():
+        if not QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
             self.NotifyUser(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!")
         else:
             self.Tab_5_tabWidget.setCurrentIndex(1)
@@ -2629,7 +2684,6 @@ if __name__ == "__main__":
     else: print("latex and dvipng were not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
     print("AMaDiA Startup")
     app = AMaDiA_Main_App([])
-    #app = QtWidgets.QApplication([])
     app.setStyle("fusion")
     window = AMaDiA_Main_Window(app)
     print(datetime.datetime.now().strftime('%H:%M:%S:'),"AMaDiA Started\n")

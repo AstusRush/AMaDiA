@@ -1134,11 +1134,18 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, perfor
         QtGui.QSyntaxHighlighter.__init__(self, document)
         self.Widget = Widget
         self.init_Styles()
-        self.enabled = True
+        try:
+            self.enabled = QtWidgets.QApplication.instance().optionWindow.cb_O_PairHighlighter.isChecked()
+        except common_exceptions:
+            self.enabled = True
+        QtWidgets.QApplication.instance().S_Highlighter.connect(self.ToggleActive)
 
         # init the rules # Currently Unused...
         rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
         self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+
+    def ToggleActive(self,Active):
+        self.enabled = Active
 
     def init_Styles(self):
         # init Lists
@@ -1497,7 +1504,7 @@ class TopBar_Widget(QtWidgets.QWidget):
             self.init(IncludeMenu, IncludeFontSpinBox, IncludeErrorButton)
 
     def init(self, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False):
-        # TODO: Add a handle to resize the window
+        # exTODO: Add a handle to resize the window: Implemented via WindowFrame
         # TODO: restrict the height and add the option to add a QLabel for the WindowName
         #   and the Option for a QtWidgets.QSpacerItem to make the horizontal spacing work if not corner widget
         self.IncludeMenu, self.IncludeFontSpinBox, self.IncludeErrorButton = IncludeMenu, IncludeFontSpinBox, IncludeErrorButton
@@ -1548,7 +1555,7 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.MoveMe = QtWidgets.QLabel(self)
         self.MoveMe.setObjectName("MoveMe")
         self.layout().addWidget(self.MoveMe, 0, 101, 1, 1,QtCore.Qt.AlignRight)
-        self.MoveMe.setText("  🖐  ")#▨
+        self.MoveMe.setText("  🖐  ")#▨#🖐
         self.MoveMe.setCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
 
         self.CloseButton.clicked.connect(self.Exit)
@@ -2041,6 +2048,8 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
             self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
             self.moving = True
             self.offset = event.globalPos()-self.window().geometry().topLeft()
+            self.window().AWWF_CentralWidget.moving = False
+            event.accept()
         else:
             self.moving = False
         super(MMenuBar, self).mousePressEvent(event)
@@ -2130,6 +2139,8 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
 
     def mouseMoveEvent(self,event):
         if self.moving:
+            event.accept()
+            self.window().AWWF_CentralWidget.moving = False
             if (self.window().isMaximized() or self.window().isFullScreen()): # If moving the window while in fullscreen or maximized make it normal first
                 try:
                     self.window().TopBar.MaximizeButton.setText("🗖")
@@ -2164,9 +2175,11 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
 
     def mousePressEvent(self,event):
         if event.button() == QtCore.Qt.LeftButton and self.moving == False and self.childAt(event.pos())==None:
+            event.accept()
             self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
             self.moving = True
             self.offset = event.globalPos()-self.window().geometry().topLeft()
+            self.window().AWWF_CentralWidget.moving = False
         else:
             self.moving = False
         super(MTabWidget, self).mousePressEvent(event)
@@ -2256,6 +2269,8 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
 
     def mouseMoveEvent(self,event): # Only registers if mouse is pressed...
         if self.moving:
+            event.accept()
+            self.window().AWWF_CentralWidget.moving = False
             if (self.window().isMaximized() or self.window().isFullScreen()): # If moving the window while in fullscreen or maximized make it normal first
                 try:
                     self.window().TopBar.MaximizeButton.setText("🗖")
