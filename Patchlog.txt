@@ -415,3 +415,9 @@ v0.15.9: Options Window, PlusMinus and Flags
 + Fixed a bug that caused the window to resize when clicking on the top edge in compact mode to move the window
 + When a new text edit is initialized the highlighter activation status is now read instead of just assumed to be True
 
+v0.15.9.1: ToolTip Colour Fix
++ Finally fixed the ToolTip colour for dark theme
+++ It turns out the colours for text and base were simple swapped...
+++ I tried to fix this many times but never checked what colours I set. I just assumed they would be dark... They were not...)
+++ Thankfully the problem was that I simply set the wrong values and not that qt has a bug
+
