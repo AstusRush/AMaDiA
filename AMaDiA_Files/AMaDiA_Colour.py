@@ -146,24 +146,19 @@ def Dark():
     #brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
 
-    brush = QtGui.QBrush(QtGui.QColor(74, 77, 83))#(255, 255, 220))
+    brush = QtGui.QBrush(QtGui.QColor(54, 57, 63))
+    #brush = QtGui.QBrush(QtGui.QColor(74, 77, 83))
+    #brush = QtGui.QBrush(QtGui.QColor(255, 255, 220))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    #brush = QtGui.QBrush(QtGui.QColor(255, 255, 220))
-    #brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    #brush = QtGui.QBrush(QtGui.QColor(255, 255, 220))
-    #brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush) # <-This is used
     palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
 
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))#(0, 0, 0))
+    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
+    #brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    #brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
-    #brush.setStyle(QtCore.Qt.SolidPattern)
-    palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    #brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
-    #brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush) # <-This is used
     palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
     
     brush = QtGui.QBrush(QtGui.QColor(48, 140, 198))

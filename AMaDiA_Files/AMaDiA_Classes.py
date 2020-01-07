@@ -529,12 +529,15 @@ class AMaS: # Astus' Mathematical Structure
 
 
     def Evaluate(self, Method=1):
-        if Method==0:
+        if QtWidgets.QApplication.instance().optionWindow.cb_D_NewSolver.isChecked():
+            return self.Evaluate_SymPy()
+        elif Method==0:
             return self.Evaluate_SymPy()
         elif Method==1:
             return self.Evaluate_SymPy_old()
         else:
-            return "Invalid Method Number"
+            sendNotification(1,"Invalid evaluate method number. Using standard method instead.")
+            return self.Evaluate_SymPy_old()
 
 
     def Evaluate_SymPy(self):
@@ -597,7 +600,7 @@ class AMaS: # Astus' Mathematical Structure
                 temp = "(" + temp
                 temp = temp.replace("=" , ") - (")
                 temp = temp + ")"
-                temp = AF.UnpackDualOperators(temp)
+                temp = AF.UnpackDualOperators(temp,Brackets=("[","]"))
                 print(temp)
                 ans = parse_expr(temp,local_dict=self.Variables)
                 ParsedInput = ans
@@ -628,13 +631,28 @@ class AMaS: # Astus' Mathematical Structure
                 except common_exceptions:
                     Error = ExceptionOutput(sys.exc_info())
                     if type(ans)==list:
-                        self.Solution = "[ "
+                        self.Solution = "{ "
                         for ji in ans:
-                            if self.f_simplify==None:
-                                j = sympy.solve(ji,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                            if QtWidgets.QApplication.instance().optionWindow.cb_F_solveFor.isChecked():
+                                try:
+                                    if self.f_simplify==None:
+                                        j = sympy.solve(ji,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                    else:
+                                        j = sympy.solve(ji,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
+                                except common_exceptions:
+                                    Error = ExceptionOutput(sys.exc_info())
+                                    sendNotification(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()+"\n"+Error)
+                                    if self.f_simplify==None:
+                                        j = sympy.solve(ji,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                    else:
+                                        j = sympy.solve(ji,dict=True,simplify=self.f_simplify)
                             else:
-                                j = sympy.solve(ji,dict=True,simplify=self.f_simplify)
+                                if self.f_simplify==None:
+                                    j = sympy.solve(ji,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                else:
+                                    j = sympy.solve(ji,dict=True,simplify=self.f_simplify)
                             self.Solution += "{ "
+                            le = len(self.Solution)
                             for i in j:
                                 if not type(i) == dict:
                                     i = self.ExecuteFlags(i)
@@ -642,11 +660,12 @@ class AMaS: # Astus' Mathematical Structure
                                 #i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #CLEANUP: Delete this, Already implemented
                                 self.Solution += i_temp
                                 self.Solution += " , "
-                            self.Solution = self.Solution[:-3]
-                            if len(self.Solution) > 0:
+                            if len(self.Solution) > le:
+                                self.Solution = self.Solution[:-3]
                                 self.Solution += " }"
                             else:
-                                j = parse_expr(ji,local_dict=self.Variables)
+                                self.Solution = self.Solution[:-2]
+                                j = parse_expr(str(ji),local_dict=self.Variables)
                                 try:
                                     j = j.doit()
                                 except common_exceptions:
@@ -658,12 +677,26 @@ class AMaS: # Astus' Mathematical Structure
                                 self.Solution += "True" if j == 0 else "False: right side deviates by "+str(j)
                             self.Solution += " , "
                         self.Solution = self.Solution[:-3]
-                        self.Solution += " ]"
+                        self.Solution += " }"
                     else:
-                        if self.f_simplify==None:
-                            ans = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                        if QtWidgets.QApplication.instance().optionWindow.cb_F_solveFor.isChecked():
+                            try:
+                                if self.f_simplify==None:
+                                    ans = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                else:
+                                    ans = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
+                            except common_exceptions:
+                                Error = ExceptionOutput(sys.exc_info())
+                                sendNotification(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()+"\n"+Error)
+                                if self.f_simplify==None:
+                                    ans = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                else:
+                                    ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                         else:
-                            ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                            if self.f_simplify==None:
+                                ans = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                            else:
+                                ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                         self.Solution = "{ "
                         for i in ans:
                             if not type(i) == dict:
@@ -698,7 +731,7 @@ class AMaS: # Astus' Mathematical Structure
             self.Equation += self.Text
         else:
             try:
-                temp = AF.UnpackDualOperators(self.cstr)
+                temp = AF.UnpackDualOperators(self.cstr,Brackets=("{","}"))
                 ans = parse_expr(temp,local_dict=self.Variables)
                 separator = "   <==   "
                 ParsedInput = ans
@@ -737,10 +770,24 @@ class AMaS: # Astus' Mathematical Structure
                                 ans = ans.evalf()
                             except common_exceptions:
                                 try:
-                                    if self.f_simplify==None:
-                                        ans_S = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                    if QtWidgets.QApplication.instance().optionWindow.cb_F_solveFor.isChecked():
+                                        try:
+                                            if self.f_simplify==None:
+                                                ans_S = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                            else:
+                                                ans_S = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
+                                        except common_exceptions:
+                                            Error = ExceptionOutput(sys.exc_info())
+                                            sendNotification(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()+"\n"+Error)
+                                            if self.f_simplify==None:
+                                                ans_S = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                            else:
+                                                ans_S = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                                     else:
-                                        ans_S = sympy.solve(ans,dict=True,simplify=self.f_simplify)
+                                        if self.f_simplify==None:
+                                            ans_S = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
+                                        else:
+                                            ans_S = sympy.solve(ans,dict=True,simplify=self.f_simplify)
                                     try:
                                         if not (type(ans_S)==list and len(ans_S)==0):
                                             ans = ans_S

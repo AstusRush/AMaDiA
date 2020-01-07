@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.9.1"
+Version = "0.15.9.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -493,6 +493,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         #self.setPalette(AMaDiA_Colour.Red_ERROR()[0])
         #self.processEvents()
         self.setPalette(self.Palette)
+        QtWidgets.QToolTip.setPalette(self.Palette)
 
         #FramePalette = self.palette()
         #brush = QtGui.QBrush(QtGui.QColor(60, 60, 60))

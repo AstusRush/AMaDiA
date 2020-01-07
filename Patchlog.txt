@@ -421,3 +421,9 @@ v0.15.9.1: ToolTip Colour Fix
 ++ I tried to fix this many times but never checked what colours I set. I just assumed they would be dark... They were not...)
 ++ Thankfully the problem was that I simply set the wrong values and not that qt has a bug
 
+v0.15.9.2: Solve for Specific Variable and ToolTip Colour Fix for Windows
++ You can now set specific variables to solve equations for in the options window!
++ Improved handling of ± and ∓
++ Fixed the ToolTip colour for MS Windows (because MS Windows is "special" and needs the colour in a more explicit way than Linux)
++ Made the ToolTipBase darker
+

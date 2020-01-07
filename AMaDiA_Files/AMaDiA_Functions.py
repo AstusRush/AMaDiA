@@ -444,25 +444,38 @@ def NonInterpreteableBracketReplace(string):
     
 """
 
-def UnpackDualOperators(string):
+def UnpackDualOperators(string,Brackets=("[","]")):
     List = [string]
     for i in ART.n_operators_dual:
         tList = []
         for j in List:
             if i[0] in j:
-                tList.append(UnpackDualOperators(j.replace(i[0],i[1],1)))
-                tList.append(UnpackDualOperators(j.replace(i[0],i[2],1)))
+                tList.extend(UnpackDualOperators_Helper(j.replace(i[0],i[1],1)))
+                tList.extend(UnpackDualOperators_Helper(j.replace(i[0],i[2],1)))
             else:
                 tList.append(j)
         List = tList
     if len(List)>1:
-        string = "["
+        string = Brackets[0]
         for i in List:
             string+=i
             string+=","
         string = string[:-1]
-        string+= "]"
+        string+= Brackets[1]
     return string
+
+def UnpackDualOperators_Helper(string):
+    List = [string]
+    for i in ART.n_operators_dual:
+        tList = []
+        for j in List:
+            if i[0] in j:
+                tList.extend(UnpackDualOperators_Helper(j.replace(i[0],i[1],1)))
+                tList.extend(UnpackDualOperators_Helper(j.replace(i[0],i[2],1)))
+            else:
+                tList.append(j)
+        List = tList
+    return List
 
 def AstusParseInverse(string, Validate=False):
     string_i = string
