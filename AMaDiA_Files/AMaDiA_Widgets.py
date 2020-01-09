@@ -1124,8 +1124,15 @@ class LineEdit(ATextEdit):
     def insertFromMimeData(self,Data):
         if Data.hasText():
             text = Data.text()
-            text = text.replace('\n', ' + ').replace('\r', '')
-            Data.setText(text)
+            #text = text.replace('\n', ' + ').replace('\r', '')
+            lines = text.splitlines()
+            if len(lines)>1:
+                text = "( "+" ) + ( ".join(lines)+" )"
+                self.insertPlainText(text)
+            else:
+                super(LineEdit, self).insertFromMimeData(Data)
+            #Data.setText(text)
+        else:
             super(LineEdit, self).insertFromMimeData(Data)
 
 

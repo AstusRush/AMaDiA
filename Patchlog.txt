@@ -437,3 +437,10 @@ v0.15.10: History Copy QoL
 + "Preloading LaTeX" now uses a more complex string to ensure that LaTeX is fully preloaded
 ++ Previously "§1§" was used to preload but this only preloaded LaTeX partially
 
+v0.15.10.1: Improved LineEdit Multi-Line-Paste
++ When pasting a multiline string into a LineEdit the line breaks are now also removed when the MimeData has more than just Plain Text
+++ It was probably the case that the standard paste method preferred to paste HTML or /something else/ rather than the modified plain text
++++ The fix was to skip the standard print method but instead printing the plain text directly
++++ When the MimeData has no plain text the standard print method is still used which could cause line breaks to be pasted
+++ Furthermore all lines are now isolated in parentheses to better indicated the former line breaks
+

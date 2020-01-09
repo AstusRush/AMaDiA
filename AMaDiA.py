@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.10"
+Version = "0.15.10.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -1656,7 +1656,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
     
  # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
-    # FEATURE: when multiple items are selected when pressing ctrl+c they should all be copied and seperated with new lines
   # ----------------
          
     def action_H_Copy_Solution(self,source,event):
