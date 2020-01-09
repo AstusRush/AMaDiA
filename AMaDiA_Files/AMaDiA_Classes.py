@@ -131,7 +131,7 @@ class AMaS: # Astus' Mathematical Structure
         self.NotificationsStr = ""
         self.NotificationsLevel = 100
         self.Text = AF.AstusParseInverse(self.string)
-        self.Solution = "Not evaluated yet."
+        self.Solution = "Not evaluated yet"
         self.Equation = "? = " + self.Text
         self.cstr = AF.AstusParse(self.string) # the converted string that is interpretable
         if self.multiline:
@@ -489,8 +489,8 @@ class AMaS: # Astus' Mathematical Structure
                     expr = None
             if expr == None:
                 try:
-                    if self.Solution == "Not evaluated yet.":
-                        raise Exception("Not evaluated yet.")
+                    if self.Solution == "Not evaluated yet":
+                        raise Exception("Not evaluated yet")
                     if "=" in self.Solution:
                         parts = self.Solution.split("=")
                         self.LaTeX_S = ""

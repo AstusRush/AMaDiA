@@ -71,7 +71,7 @@
          <number>3</number>
         </property>
         <item row="0" column="0">
-         <widget class="QListWidget" name="Tab_1_History">
+         <widget class="HistoryWidget" name="Tab_1_History">
           <property name="selectionMode">
            <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>
@@ -124,7 +124,7 @@
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <widget class="QListWidget" name="Tab_2_History">
+           <widget class="HistoryWidget" name="Tab_2_History">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -173,7 +173,7 @@
             </sizepolicy>
            </property>
            <property name="placeholderText">
-            <string>Add Mathematical Expression to be Converted to LaTeX. Use ctrl+return or the Convert button to display. (First use after start can take a few seconds) Please give Feedback if return should convert and shift+return adds a new line instead!</string>
+            <string>Add Mathematical Expression to be Converted to LaTeX. Use ctrl+return or the Convert button to display. Please give Feedback if return should convert and shift+return adds a new line instead!</string>
            </property>
           </widget>
          </widget>
@@ -353,7 +353,7 @@
                        <number>0</number>
                       </property>
                       <item row="0" column="0">
-                       <widget class="QListWidget" name="Tab_3_1_History">
+                       <widget class="HistoryWidget" name="Tab_3_1_History">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                           <horstretch>0</horstretch>
@@ -894,7 +894,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="0" column="0" colspan="4">
-               <widget class="QListWidget" name="Tab_4_History">
+               <widget class="HistoryWidget" name="Tab_4_History">
                 <property name="selectionMode">
                  <enum>QAbstractItemView::ExtendedSelection</enum>
                 </property>
@@ -920,7 +920,7 @@ p, li { white-space: pre-wrap; }
              </layout>
             </widget>
            </widget>
-           <widget class="QListWidget" name="Tab_4_Matrix_List">
+           <widget class="ListWidget" name="Tab_4_Matrix_List">
             <property name="selectionMode">
              <enum>QAbstractItemView::ExtendedSelection</enum>
             </property>
@@ -1338,7 +1338,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QWidget" name="gridLayoutWidget">
                 <layout class="QGridLayout" name="gridLayout_20">
                  <item row="0" column="0">
-                  <widget class="QListWidget" name="Tab_5_1_SystemList"/>
+                  <widget class="ListWidget" name="Tab_5_1_SystemList"/>
                  </item>
                 </layout>
                </widget>
@@ -1517,6 +1517,16 @@ p, li { white-space: pre-wrap; }
    <extends>QTabWidget</extends>
    <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HistoryWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
   </customwidget>
  </customwidgets>
  <tabstops>

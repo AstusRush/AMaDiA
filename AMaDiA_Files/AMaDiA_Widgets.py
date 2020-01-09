@@ -197,7 +197,7 @@ class MplWidget_LaTeX(MplWidget):
         try:
             self.UseTeX(True)
             self.canvas.ax.clear()
-            self.canvas.ax.set_title("$1$",
+            self.canvas.ax.set_title(r"$\frac{2 \cdot 3 \int \left(x + 2 x\right)\, dx}{6}$",
                         loc = "left",
                         y=(1.15-(20/5000)),
                         horizontalalignment='left',
@@ -1244,6 +1244,8 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, perfor
         self.setCurrentBlockState(0)
 
 
+# -----------------------------------------------------------------------------------------------------------------
+
 class TableWidget(QtWidgets.QTableWidget):
     def __init__(self, parent=None):
         super(TableWidget, self).__init__(parent)
@@ -1304,6 +1306,62 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
 
 # -----------------------------------------------------------------------------------------------------------------
 
+class ListWidget(QtWidgets.QListWidget):
+    def __init__(self, parent=None):
+        super(ListWidget, self).__init__(parent)
+
+class HistoryWidget(ListWidget):
+    def __init__(self, parent=None):
+        super(HistoryWidget, self).__init__(parent)
+
+    def keyPressEvent(self,event):
+        try:
+            if event == QtGui.QKeySequence.Copy:
+                SelectedItems = self.selectedItems()
+                if len(SelectedItems)>1:
+                    string = ""
+                    for i in SelectedItems:
+                        string += i.text()
+                        string += "\n"
+                    Qt.QApplication.clipboard().setText(string)
+                    event.accept()
+                    return
+                elif len(SelectedItems)==1:
+                    item = SelectedItems[0]
+                    if QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Normal":
+                        Qt.QApplication.clipboard().setText(item.text())
+                    elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Solution"
+                            and item.data(100).Solution != "Not evaluated yet"):
+                        Qt.QApplication.clipboard().setText(item.data(100).Solution)
+                    elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Equation"
+                            and item.data(100).Solution != "Not evaluated yet"):
+                        Qt.QApplication.clipboard().setText(item.data(100).Equation)
+                    elif QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Text":
+                        Qt.QApplication.clipboard().setText(item.data(100).Text)
+                    elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="LaTeX"
+                            and item.data(100).LaTeX != "Not converted yet"
+                            and item.data(100).LaTeX != "Could not convert"):
+                        Qt.QApplication.clipboard().setText(item.data(100).LaTeX)
+                    elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="LaTeX Equation"
+                            and item.data(100).LaTeX_E != "Not converted yet"
+                            and item.data(100).LaTeX_E != "Could not convert"):
+                        Qt.QApplication.clipboard().setText(item.data(100).LaTeX_E)
+                    else:
+                        sendNotification(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode")
+                        Qt.QApplication.clipboard().setText(item.text())
+                    event.accept()
+                    return
+            super(HistoryWidget, self).keyPressEvent(event)
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            sendNotification(2,Error)
+            super(HistoryWidget, self).keyPressEvent(event)
+
+class NotificationListWidget(ListWidget):
+    def __init__(self, parent=None):
+        super(NotificationListWidget, self).__init__(parent)
+
+# -----------------------------------------------------------------------------------------------------------------
 
 class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
     def __init__(self, parent = None, includeTopBar=True, initTopBar=True, includeStatusBar=True):

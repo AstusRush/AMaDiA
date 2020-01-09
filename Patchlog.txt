@@ -427,3 +427,13 @@ v0.15.9.2: Solve for Specific Variable and ToolTip Colour Fix for Windows
 + Fixed the ToolTip colour for MS Windows (because MS Windows is "special" and needs the colour in a more explicit way than Linux)
 + Made the ToolTipBase darker
 
+v0.15.10: History Copy QoL
++ You can now select what ctrl+c copies in the history when having a single item selected
++ Selecting multiple items in a History and then pressing ctrl+c now copies all
++ Double-clicking an item in the calculator history now pastes the input of that item into the Input Field
++ Added 'Copy Equation' to History context menu
+++ This was already accessible via ctrl+c but the ctrl+c behaviour can now be changed which necessitates this option
++ Added 'Copy LaTeX Equation' to History context menu
++ "Preloading LaTeX" now uses a more complex string to ensure that LaTeX is fully preloaded
+++ Previously "§1§" was used to preload but this only preloaded LaTeX partially
+

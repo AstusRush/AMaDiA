@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.9.2"
+Version = "0.15.10"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -201,7 +201,7 @@ class AMaDiA_Notification_Window(AW.AWWF):
             self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
             self.gridLayout.setObjectName("gridLayout")
             
-            self.TheList = QtWidgets.QListWidget(self)
+            self.TheList = AW.NotificationListWidget(self)
             self.TheList.setObjectName("TheList")
             self.TheList.setAlternatingRowColors(True)
             self.gridLayout.addWidget(self.TheList, 0, 0, 0, 0)
@@ -959,7 +959,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
        # EventFilter
         self.installEventFilter(self)
-        # Set up context menus for the histories
+        # Set up context menus for the histories and other list widgets
         for i in self.findChildren(QtWidgets.QListWidget):
             i.installEventFilter(self)
         # Set up text input related Event Handlers
@@ -1005,7 +1005,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
         self.Tab_1_InputField.setFocus()
         
-       # Welcome Message
+       # Welcome Message and preload LaTeX
         msg = ""
         if not AF.LaTeX_dvipng_Installed:
             msg += "Please install LaTeX and dvipng to enable the LaTeX output mode"
@@ -1069,6 +1069,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Menu_Help_action_About.triggered.connect(self.Show_About)
         
         self.Tab_1_InputField.returnPressed.connect(self.Tab_1_F_Calculate_Field_Input)
+        self.Tab_1_History.itemDoubleClicked.connect(self.Tab_1_F_Item_doubleClicked)
         
         self.Tab_2_ConvertButton.clicked.connect(self.Tab_2_F_Convert)
         self.Tab_2_InputField.returnCtrlPressed.connect(self.Tab_2_F_Convert)
@@ -1584,13 +1585,18 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                     or source is self.Tab_4_History #IMPROVE: This is temporary. Implement this context menu properly
                     )and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
-                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet.":
+                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
                     action = menu.addAction('Copy Solution')
                     action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
+                    action = menu.addAction('Copy Equation')
+                    action.triggered.connect(lambda: self.action_H_Copy_Equation(source,event))
                 action = menu.addAction('Copy Text')
                 action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
                 action = menu.addAction('Copy LaTeX')
                 action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+                if source.itemAt(event.pos()).data(100).LaTeX_E != "Not converted yet" and source.itemAt(event.pos()).data(100).LaTeX_E != "Could not convert":
+                    action = menu.addAction('Copy LaTeX Equation')
+                    action.triggered.connect(lambda: self.action_H_Copy_LaTeX_E(source,event))
                 if QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
                     action = menu.addAction('+ Copy Input')
                     action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
@@ -1603,7 +1609,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 action.triggered.connect(lambda: self.action_H_Calculate(source,event))
                 action = menu.addAction('Display LaTeX')
                 action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
-                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet.":
+                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
                     action = menu.addAction('Display LaTeX Equation')
                     action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
                     action = menu.addAction('Display LaTeX Solution')
@@ -1657,6 +1663,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).Solution)
          
+    def action_H_Copy_Equation(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).Equation)
+         
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).Text)
@@ -1664,6 +1674,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def action_H_Copy_LaTeX(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(item.data(100).LaTeX)
+        
+    def action_H_Copy_LaTeX_E(self,source,event):
+        item = source.itemAt(event.pos())
+        QApplication.clipboard().setText(item.data(100).LaTeX_E)
         
     def action_H_Copy_Input(self,source,event):
         item = source.itemAt(event.pos())
@@ -2061,6 +2075,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.HistoryHandler(AMaS_Object,1)
         self.ans = AMaS_Object.Solution
          
+    def Tab_1_F_Item_doubleClicked(self,item):
+        self.Tab_1_InputField.selectAll()
+        self.Tab_1_InputField.insertPlainText(item.data(100).Input)
+
  # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
         EvalL = self.Tab_2_Eval_checkBox.isChecked()
