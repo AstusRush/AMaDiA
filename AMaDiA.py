@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.10.1"
+Version = "0.15.11"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -54,7 +54,7 @@ from AMaDiA_Files.AMaDiAUI import Ui_AMaDiA_Main_Window
 from AMaDiA_Files.AMaDiA_Options_UI import Ui_AMaDiA_Options
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NotificationEvent, sendNotification
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, NC, NotificationEvent, ExceptionOutput, NotificationEventText, sendNotification
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 from AMaDiA_Files import AMaDiA_Colour
@@ -478,8 +478,12 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                                     break
             except AttributeError:
                 pass
-        elif event.type() == NotificationEvent.EVENT_TYPE:
+        elif event.type() == NotificationEventText.EVENT_TYPE:
             self.NotifyUser(event.Type,event.Text,event.Time)
+            return True
+        elif event.type() == NotificationEvent.EVENT_TYPE: #TODO:NewNotification
+            u = event.N.unpack()
+            self.NotifyUser(*u)
             return True
         return super(AMaDiA_Main_App, self).eventFilter(source, event)
 

@@ -29,7 +29,7 @@ import warnings
 from External_Libraries.python_control_master import control
 
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NotificationEvent, sendNotification
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, NC, NotificationEvent, ExceptionOutput, NotificationEventText, sendNotification
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 

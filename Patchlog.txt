@@ -444,3 +444,9 @@ v0.15.10.1: Improved LineEdit Multi-Line-Paste
 +++ When the MimeData has no plain text the standard print method is still used which could cause line breaks to be pasted
 ++ Furthermore all lines are now isolated in parentheses to better indicated the former line breaks
 
+v0.15.11: Notification Class
++ Implemented a notification class
+++ This class can also handle the entire exception output, making the function ExceptionOutput obsolete
++++ ExceptionOutput now redirects to this new notification class and returns an object.
+++++ This object should be compatible with all old code as the important string function (__str__,__add__,__radd__) are implemented
+

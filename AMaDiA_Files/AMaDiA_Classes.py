@@ -31,7 +31,7 @@ import scipy
 
 
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NotificationEvent, sendNotification
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, sendNotification, NC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
 
@@ -1065,4 +1065,4 @@ class AMaS: # Astus' Mathematical Structure
 
  # ---------------------------------- ... ----------------------------------
 
- 
+

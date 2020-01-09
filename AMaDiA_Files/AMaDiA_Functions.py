@@ -26,27 +26,146 @@ from matplotlib import colors
 from External_Libraries.python_control_master import control
 
 
-class NotificationEvent(QtCore.QEvent):
+class NotificationEventText(QtCore.QEvent):
     """
-    Useage: QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEvent(Type, Text="Not Given", Time=None))  \n
+    Useage: QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEventText(Type, Text="Not Given", Time=None))  \n
     0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification  \n
     This is thread save!!!
     """
     # Inspired by: http://code.activestate.com/recipes/578299-pyqt-pyside-thread-safe-global-queue-main-loop-int/
     EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
     def __init__(self, Type, Text="Not Given", Time=None):
-        QtCore.QEvent.__init__(self, NotificationEvent.EVENT_TYPE)
+        QtCore.QEvent.__init__(self, NotificationEventText.EVENT_TYPE)
         self.Type = Type
         self.Text = Text
         self.Time = Time
+
 
 def sendNotification(Type, Text="Not Given", Time=None):
     """
     Type: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification  \n
     This is thread save!!!
     """
-    QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEvent(Type, Text, Time))
+    QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEventText(Type, Text, Time))
 
+# -----------------------------------------------------------------------------------------------------------------
+
+class NotificationEvent(QtCore.QEvent):
+    EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
+    def __init__(self, N):
+        QtCore.QEvent.__init__(self, NotificationEvent.EVENT_TYPE)
+        self.N = N
+
+class NC: # Notification Class
+    def __init__(self, lvl=None, msg=None, time=None, err=None, tb=None, exc=None, win=None, func=None):
+        self.exc_type, self.exc_obj, self.exc_tb = None,None,None
+        self._time, self.Time, self.Error = None,None,None
+        self.Window, self.ErrorTraceback, self.Function = None,None,None
+        self.Level, self.Message = 1,"NONE"
+        try:
+            if exc != None:
+                if exc == True:
+                    self.exc_type, self.exc_obj, self.exc_tb = sys.exc_info()
+                else:
+                    self.exc_type, self.exc_obj, self.exc_tb = exc
+                fName = os.path.split(self.exc_tb.tb_frame.f_code.co_filename)[1]
+                self._time = datetime.datetime.now() if time == None else time
+                self.Time = self._time.strftime('%H:%M:%S')
+                self.Level = 1 if lvl == None else lvl
+                self.Window = "N/A" if win == None else win
+                self.Function = "N/A" if func == None else func
+                self.Message = "Exception" if msg == None else msg
+                self.Error = str(self.exc_type)+": "+str(self.exc_obj)
+                self.ErrorTraceback = str(self.exc_type)+"  in "+str(fName)+"  line "+str(self.exc_tb.tb_lineno)
+                print(self.Time,":")
+                if len(str(self.exc_obj))<50:
+                    print(self.exc_type, " in", fName, " line", self.exc_tb.tb_lineno,": ", self.exc_obj)
+                else:
+                    print(self.exc_type, " in", fName, " line", self.exc_tb.tb_lineno)
+            else:
+                if type(lvl)==str:
+                    self.Level = 3
+                    self.Message = lvl
+                else:
+                    self.Level = 3 if lvl == None else lvl
+                    self.Message = msg
+                self._time = datetime.datetime.now() if time == None else time
+                self.Time = self._time.strftime('%H:%M:%S')
+                self.Window = "N/A" if win == None else win
+                self.Function = "N/A" if func == None else func
+                self.Error = err
+                self.ErrorTraceback = tb
+        except common_exceptions as inst:
+            print("An exception occurred while trying to create a Notification")
+            print(inst)
+            self._time = datetime.datetime.now() if time == None else time
+            self.Time = self._time.strftime('%H:%M:%S')
+            self.Message = "An exception occurred while trying to create a Notification"
+            self.exc_obj = inst
+            self.Error = str(inst)
+            self.send()
+
+    def send(self):
+        QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEvent(self))
+
+    def print(self):
+        print("\nNotification level",self.Level, "at",self.Time,"\nMessage:",self.Message)
+        if self.Error != None:
+            print("Error:",self.Error,"Traceback:",self.ErrorTraceback,"\n")
+
+    def unpack(self):
+        return (self.Level, self.Message, self.Time)
+
+    def l(self, level=None):
+        if level != None:
+            self.Level = level
+        return self.Level
+
+    def m(self, message=None):
+        if message != None:
+            self.Message = message
+        return self.Message
+
+    def t(self, time=None):
+        if time != None:
+            self._time = time
+            self.Time = self._time.strftime('%H:%M:%S')
+        return self.Time
+
+    def e(self, Error=None, ErrorTraceback=None):
+        if Error != None:
+            self.Error = Error
+        if ErrorTraceback != None:
+            self.ErrorTraceback = ErrorTraceback
+        return self.Error
+
+    def tb(self, ErrorTraceback=None):
+        if ErrorTraceback != None:
+            self.ErrorTraceback = ErrorTraceback
+        return self.ErrorTraceback
+
+    def __add__(self,other):
+        if self.Error != None:
+            return self.Error + str(other)
+        else:
+            return self.Message + str(other)
+
+    def __radd__(self,other):
+        if self.Error != None:
+            return str(other) + self.Error
+        else:
+            return str(other) + self.Message
+
+    def __call__(self):
+        return self.Message
+
+    def __str__(self):
+        if self.Error != None:
+            return self.Error
+        else:
+            return self.Message
+
+# -----------------------------------------------------------------------------------------------------------------
 
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
@@ -64,24 +183,33 @@ def ReloadModules():
 # -----------------------------------------------------------------------------------------------------------------
 
 common_exceptions = (TypeError , SyntaxError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError)
-def ExceptionOutput(exc_info,extraInfo = True):
+def ExceptionOutput(exc_info = None, extraInfo = True):
     """
     Console output for exceptions\n
     Use in `except:`: Error = ExceptionOutput(sys.exc_info())\n
     Prints Time, ExceptionType, Filename+Line and (if extraInfo in not False) the exception description to the console\n
-    Returns a string with Exception Type and description
+    Returns a Notification Object (NC) with all relevant information
     """
     try:
-        print(cTimeSStr(),":")
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fName = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        if extraInfo:
-            print(exc_type, " in", fName, " line", exc_tb.tb_lineno ,": ", exc_obj)
+        if True:
+            if exc_info == None:
+                exc_info = True
+            return NC(exc=exc_info)
         else:
-            print(exc_type, " in", fName, " line", exc_tb.tb_lineno)
-        return str(exc_type)+": "+str(exc_obj)
-    except common_exceptions:
+            print(cTimeSStr(),":")
+            if exc_info==None:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+            else:
+                exc_type, exc_obj, exc_tb = exc_info
+            fName = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            if extraInfo:
+                print(exc_type, " in", fName, " line", exc_tb.tb_lineno ,": ", exc_obj)
+            else:
+                print(exc_type, " in", fName, " line", exc_tb.tb_lineno)
+            return str(exc_type)+": "+str(exc_obj)
+    except common_exceptions as inst:
         print("An exception occurred while trying to print an exception!")
+        print(inst)
 
 background_Colour = (54/255, 57/255, 63/255)
 
