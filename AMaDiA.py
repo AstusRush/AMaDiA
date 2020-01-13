@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.11"
+Version = "0.15.12"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -54,7 +54,7 @@ from AMaDiA_Files.AMaDiAUI import Ui_AMaDiA_Main_Window
 from AMaDiA_Files.AMaDiA_Options_UI import Ui_AMaDiA_Options
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, NC, NotificationEvent, ExceptionOutput, NotificationEventText, sendNotification
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, NC, NotificationEvent, ExceptionOutput
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 from AMaDiA_Files import AMaDiA_Colour
@@ -119,6 +119,7 @@ def Superscript_Shortcut(Symbol):
     keyboard.write(" ")
     keyboard.write("\x08")
 
+#region ---------------------------------- Windows ----------------------------------
 class AMaDiA_Internal_File_Display_Window(AW.AWWF):
     def __init__(self,FileName,parent = None):
         try:
@@ -194,7 +195,7 @@ class AMaDiA_Notification_Window(AW.AWWF):
             self.setWindowTitle("Notifications")
             self.standardSize = (900, 500)
             self.resize(*self.standardSize)
-
+            
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
             self.centralwidget.setObjectName("centralwidget")
@@ -204,20 +205,34 @@ class AMaDiA_Notification_Window(AW.AWWF):
             self.TheList = AW.NotificationListWidget(self)
             self.TheList.setObjectName("TheList")
             self.TheList.setAlternatingRowColors(True)
-            self.gridLayout.addWidget(self.TheList, 0, 0, 0, 0)
+            self.gridLayout.addWidget(self.TheList, 0, 0)
+            
+            self.TheInfo = AW.ListWidget(self)
+            self.TheInfo.setObjectName("TheInfo")
+            self.TheInfo.setAlternatingRowColors(True)
+            self.gridLayout.addWidget(self.TheInfo, 0, 1)
+            
             self.setCentralWidget(self.centralwidget)
-
+            
+            item = QtWidgets.QListWidgetItem()
+            item.setText("For more information select a notification")
+            self.TheInfo.addItem(item)
+            
             for i in Notifications:
-                self.AddNotification(i[0])
+                self.AddNotification(i)
             
             self.setAutoFillBackground(True)
+            #self.TheList.itemPressed.connect(self.ShowNotificationDetails)
+            #self.TheList.itemSelectionChanged.connect(self.ShowNotificationDetails)
+            self.TheList.currentItemChanged.connect(self.ShowNotificationDetails)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
     def AddNotification(self,Notification):
         try:
             item = QtWidgets.QListWidgetItem()
-            item.setText(Notification)
+            item.setText(str(Notification))
+            item.setData(100,Notification)
             
             self.TheList.addItem(item)
             self.TheList.scrollToBottom()
@@ -229,6 +244,22 @@ class AMaDiA_Notification_Window(AW.AWWF):
             
             self.TheList.addItem(item)
             self.TheList.scrollToBottom()
+
+    def ShowNotificationDetails(self,Notification):
+        try:
+            #Notification = self.TheList.currentItem
+            Notification = Notification.data(100)
+            self.TheInfo.clear()
+            for k,v in Notification.items():
+                try:
+                    if v != None:
+                        item = QtWidgets.QListWidgetItem()
+                        item.setText(k+":\n"+str(v))
+                        self.TheInfo.addItem(item)
+                except common_exceptions:
+                    NC(msg="Could not display{}".format(str(k)),exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_Notification_Window.ShowNotificationDetails").send()
+        except common_exceptions:
+            NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_Notification_Window.ShowNotificationDetails").send()
 
 class AMaDiA_exec_Window(AW.AWWF):
     def __init__(self,parent = None):
@@ -256,16 +287,14 @@ class AMaDiA_exec_Window(AW.AWWF):
             
             self.setAutoFillBackground(True)
         except common_exceptions:
-            ExceptionOutput(sys.exc_info())
+            NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_exec_Window.__init__").send()
 
     def execute_code(self):
-        input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal f\nf=\"\"\n" + self.Input_Field.toPlainText()
+        input_text = self.Input_Field.toPlainText()
         try:
-            #g,l = dict(),dict()
             exec(input_text)
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            sendNotification(1,Error)
+            NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_exec_Window.execute_code",input=input_text).send()
 
 class AMaDiA_options_window(AW.AWWF, Ui_AMaDiA_Options):
     def __init__(self,app,parent = None):
@@ -325,20 +354,21 @@ class AMaDiA_options_window(AW.AWWF, Ui_AMaDiA_Options):
                 self.cb_O_Remapper_local.setEnabled(True)
                 self.cb_O_Remapper_local.setChecked(True)
         except common_exceptions :
-            Error = ExceptionOutput(sys.exc_info())
-            self.MainApp.NotifyUser(1,Error)
             try:
-                print(i,Key)
+                NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_options_window.ToggleGlobalRemapper",input="Failed to map {} to {}".format(str(i),str(Key))).send()
             except common_exceptions :
-                pass
+                NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_options_window.ToggleGlobalRemapper",input="Could not determine failed remap operation.").send()
 
+#endregion
 
+# ---------------------------------- Main Application ----------------------------------
 class AMaDiA_Main_App(QtWidgets.QApplication):
+ #
     # See:
     # https://doc.qt.io/qt-5/qapplication.html
     # https://doc.qt.io/qt-5/qguiapplication.html
     # https://doc.qt.io/qt-5/qcoreapplication.html
-    S_New_Notification = QtCore.pyqtSignal(str)
+    S_New_Notification = QtCore.pyqtSignal(NC)
     S_Highlighter = QtCore.pyqtSignal(bool)
     def __init__(self, args):
         super(AMaDiA_Main_App, self).__init__(args)
@@ -412,14 +442,12 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                         screen.grabWindow(WID).save(Filename)
                         print(Filename)
                     except:
-                        Error = "Could not save Screenshot: "
-                        Error += ExceptionOutput(sys.exc_info())
-                        self.NotifyUser(1,Error)
+                        NC(msg="Could not save Screenshot",exc=sys.exc_info(),func="AMaDiA_Main_App.eventFilter",input=Filename).send()
                     else:
-                        self.NotifyUser(3,Filename)
+                        NC(3,Filename,func="AMaDiA_Main_App.eventFilter",input=Filename).send()
                 else:
                     print("Could not save Screenshot: Could not validate save location")
-                    self.NotifyUser(1,"Could not save Screenshot: Could not validate save location")
+                    NC(1,"Could not save Screenshot: Could not validate save location",func="AMaDiA_Main_App.eventFilter",input=self.FolderPath).send()
                 return True
             if source == self.MainWindow: # THIS IS SPECIFIC TO AMaDiA_Main_Window
                 if event.modifiers() == ControlModifier:
@@ -478,12 +506,8 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                                     break
             except AttributeError:
                 pass
-        elif event.type() == NotificationEventText.EVENT_TYPE:
-            self.NotifyUser(event.Type,event.Text,event.Time)
-            return True
-        elif event.type() == NotificationEvent.EVENT_TYPE: #TODO:NewNotification
-            u = event.N.unpack()
-            self.NotifyUser(*u)
+        elif event.type() == NotificationEvent.EVENT_TYPE:
+            self.NotifyUser(event.N)
             return True
         return super(AMaDiA_Main_App, self).eventFilter(source, event)
 
@@ -560,11 +584,17 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
             try:
                 PointSize = source.TopBar.Font_Size_spinBox.value()
             except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
-                self.NotifyUser(1,Error)
+                try:
+                    NC(msg="Could not read Font_Size_spinBox.value()",exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont",win=source.windowTitle()).send()
+                except common_exceptions:
+                    NC(msg="Could not read Font_Size_spinBox.value()",exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont").send()
                 PointSize = 9
         if type(PointSize) != int:
             print(type(PointSize)," is an invalid type for font size (",PointSize,")")
+            try:
+                NC(msg="{} is an invalid type for font size ({})".format(str(type(PointSize)),str(PointSize)),exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont",win=source.windowTitle()).send()
+            except:
+                NC(msg="{} is an invalid type for font size ({})".format(str(type(PointSize)),str(PointSize)),exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont").send()
             PointSize = 9
                 
         for w in self.topLevelWidgets():
@@ -649,33 +679,34 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
     def Notification_Flash_Finished(self):
         pass#self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
 
-    def NotifyUser(self,Type,Text="Not Given",Time=None):
-        """0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification"""
-        # TODO: Allow a string as type and convert it into the number
-        if Text=="Not Given" and type(Type) == tuple:
-            Type, Text = Type[0], Type[1]
-        if type(Text) != str:
-            Text = str(Text)
-        Text = Text.rstrip()
+    def NotifyUser(self, N):
+        """
+        type N = NC  \n
+        Sends the notification N to the user
+        """
+        Type = N.l()
         
         if Type == 0:
             pass
         elif Type == 1:
-            self.NotifyUser_Error(Text,Time)
+            self.NotifyUser_Error(N)
         elif Type == 2:
-            self.NotifyUser_Warning(Text,Time)
+            self.NotifyUser_Warning(N)
         elif Type == 3:
-            self.NotifyUser_Notification(Text,Time)
+            self.NotifyUser_Notification(N)
         elif Type == 4:
             if self.MainWindow.Menu_Options_action_Advanced_Mode.isChecked():
-                self.NotifyUser_Notification(Text,Time)
+                self.NotifyUser_Notification(N)
         elif Type == 10:
-            self.NotifyUser_Direct(Text,Time)
+            self.NotifyUser_Direct(N)
         else:
             nText = "Notification of type "+str(Type)
             nText += " (Type unknown):\n"
-            nText += Text
-            self.NotifyUser_Warning(nText,Time)
+            nText += N.m()
+            N.m(nText)
+            self.NotifyUser_Warning(N)
+        self.Notification_List.append(N)
+        self.S_New_Notification.emit(N)
         # Allow the button to adjust to the new text:
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
@@ -683,23 +714,26 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     i.parentWidget().adjustSize()
         # REMINDER: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
         
-    def ListVeryRecentNotifications(self, Error_Text_TT, level):
+    def ListVeryRecentNotifications(self, N):
         cTime = time.time()
+        Error_Text_TT = N.m() if N.l()!=10 else ""
+        level = N.l()
         for i in range(len(self.Notification_List)):
-            if i< 10 and cTime - self.Notification_List[-i-1][1] < 2+i and len(Error_Text_TT.splitlines())<40:
+            if i< 10 and cTime - self.Notification_List[-i-1]._time_time < 2 and len(Error_Text_TT.splitlines())<40:
                 Error_Text_TT += "\n\n"
-                Error_Text_TT += self.Notification_List[-i-1][0]
-                if level > self.Notification_List[-i-1][2]:
-                    level = self.Notification_List[-i-1][2]
+                if self.Notification_List[-i-1].l() == 10:
+                    Error_Text_TT += "Direct Notification at " + N.t()+" :\n"
+                Error_Text_TT += self.Notification_List[-i-1].m()
+                cTime = self.Notification_List[-i-1]._time_time
+                if level > self.Notification_List[-i-1].l():
+                    level = self.Notification_List[-i-1].l()
             else:
                 break
         return (Error_Text_TT,level)
 
-    def NotifyUser_Error(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        Text = "Error at " + Time
-        Error_Text_TT = self.ListVeryRecentNotifications(Error_Text,1)[0]
+    def NotifyUser_Error(self,N):
+        Text = "Error at " + N.t()
+        Error_Text_TT = self.ListVeryRecentNotifications(N)[0]
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
@@ -707,20 +741,11 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     i.Error_Label.setToolTip(Error_Text_TT)
                     i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
 
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        #self.TopBar_Error_Label.setFrameShadow(QtWidgets.QFrame.Plain)
         self.Notification_Flash_Red.start()
 
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append((Text,time.time(),1))
-        self.S_New_Notification.emit(Text)
-
-    def NotifyUser_Warning(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        Text = "Warning at " + Time
-        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text,2)
+    def NotifyUser_Warning(self,N):
+        Text = "Warning at " + N.t()
+        Error_Text_TT,level = self.ListVeryRecentNotifications(N)
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
@@ -731,19 +756,11 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     else:
                         i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
 
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Yellow.start()
 
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append((Text,time.time(),2))
-        self.S_New_Notification.emit(Text)
-
-    def NotifyUser_Notification(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        Text = "Notification at " + Time
-        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text,3)
+    def NotifyUser_Notification(self,N):
+        Text = "Notification at " + N.t()
+        Error_Text_TT,level = self.ListVeryRecentNotifications(N)
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
@@ -756,23 +773,15 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                     else:
                         i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
 
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.Notification_Flash_Blue.start()
 
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append((Text,time.time(),3))
-        self.S_New_Notification.emit(Text)
-
-    def NotifyUser_Direct(self,Error_Text,Time=None):
-        if Time==None:
-            Time = AF.cTimeSStr()
-        Error_Text_TT = "Direct Notification at " + Time
-        Error_Text_TT,level = self.ListVeryRecentNotifications(Error_Text_TT,10)
+    def NotifyUser_Direct(self,N):
+        Error_Text_TT,level = self.ListVeryRecentNotifications(N)
+        Error_Text_TT = "Direct Notification at " + N.t() + Error_Text_TT
         for w in self.topLevelWidgets():
             for i in w.findChildren(AW.TopBar_Widget):
                 if i.IncludeErrorButton:
-                    i.Error_Label.setText(Error_Text)
+                    i.Error_Label.setText(N.m())
                     i.Error_Label.setToolTip(Error_Text_TT)
                     if level == 1:
                         i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
@@ -782,24 +791,6 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                         i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
                     else:
                         i.Error_Label.setIcon(QtGui.QIcon())
-                        
-        #self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.WinPanel)
-        #self.Notification_Flash_Blue.start()
-
-        Text = "Direct Notification at "+Time
-        Text += "\n"
-        Text += Error_Text
-        self.Notification_List.append((Text,time.time(),10))
-        self.S_New_Notification.emit(Text)
-
-    #def TopBar_Error_Label_Tooltip(self, index): #CLEANUP
-    #    if index.isValid():
-    #        QtGui.QToolTip.showText(
-    #            QtGui.QCursor.pos(),
-    #            index.data(),
-    #            self.TopBar_Error_Label.viewport(),
-    #            self.TopBar_Error_Label.visualRect(index)
-    #            )
 
  # ---------------------------------- SubWindows ----------------------------------
     
@@ -855,6 +846,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 
 
 
+# ---------------------------------- Main Window ----------------------------------
 class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     S_Terminate_Threads = QtCore.pyqtSignal()
     def __init__(self, MainApp, parent = None):
@@ -929,7 +921,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
        # Initialize important variables and lists
         self.workingThreads = 0
-        self.ans = "1"
         self.LastOpenState = self.showNormal
         self.Bool_PreloadLaTeX = True
         self.firstrelease = False
@@ -1028,14 +1019,15 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             msg += "The Keyboard Remapping does not work\n"
             msg += "If you are using Linux you need to run as root to enable Keyboard Remapping"
         if msg != "":
-            self.NotifyUser(3,msg)
+            NC(3,msg,win=self.windowTitle(),func="AMaDiA_Main_Window.__init__").send()
         else:
             try:
                 msg = "Welcome " + getpass.getuser()
                 #msg += ". How can I be of service?"
-                self.NotifyUser(10,msg)
-            except common_exceptions:
-                ExceptionOutput(sys.exc_info())
+                NC(10,msg,win=self.windowTitle(),func="AMaDiA_Main_Window.__init__").send()
+            except:
+                Error = ExceptionOutput(sys.exc_info())
+                NC(10,"Welcome Dave",err=str(Error),win=self.windowTitle(),func="AMaDiA_Main_Window.__init__").send()
     
  # ---------------------------------- Init and Maintenance ----------------------------------
 
@@ -1476,9 +1468,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Threading = "POOL"
         else:
             self.Threading = "LIST"
-
-    def NotifyUser(self,Type,Text="Not Given",Time=None):
-        self.MainApp.NotifyUser(Type,Text,Time)
         
  # ---------------------------------- SubWindows ----------------------------------
     def Show_AMaDiA_Text_File(self,FileName):
@@ -1553,10 +1542,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 if message[0] == 0:
                     self.Tab_5_tabWidget.setCurrentIndex(2)
                 else:
-                    self.NotifyUser(message)
+                    NC(message,func="AMaDiA_Main_Window.Tab_5_2_Maximize_Axes",win=self.windowTitle()).send()
         except common_exceptions as inst:
             if type(inst) != AttributeError:
-                self.NotifyUser(1,ExceptionOutput(sys.exc_info()))
+                NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_2_Maximize_Axes",win=self.windowTitle()).send()
             self.Tab_5_tabWidget.setCurrentIndex(1)
         self.Tab_5_tabWidget.setFocus()
       
@@ -1582,67 +1571,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                         self.TopBar.MaximizeButton.setText("🗖")
                     self.LastOpenState()
         elif event.type() == 82: # QtCore.QEvent.ContextMenu
-         # ---------------------------------- History Context Menu ----------------------------------
-            if (source is self.Tab_1_History 
-                    or source is self.Tab_2_History 
-                    or source is self.Tab_3_1_History 
-                    or source is self.Tab_4_History #IMPROVE: This is temporary. Implement this context menu properly
-                    )and source.itemAt(event.pos()):
-                menu = QtWidgets.QMenu()
-                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
-                    action = menu.addAction('Copy Solution')
-                    action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
-                    action = menu.addAction('Copy Equation')
-                    action.triggered.connect(lambda: self.action_H_Copy_Equation(source,event))
-                action = menu.addAction('Copy Text')
-                action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
-                action = menu.addAction('Copy LaTeX')
-                action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
-                if source.itemAt(event.pos()).data(100).LaTeX_E != "Not converted yet" and source.itemAt(event.pos()).data(100).LaTeX_E != "Could not convert":
-                    action = menu.addAction('Copy LaTeX Equation')
-                    action.triggered.connect(lambda: self.action_H_Copy_LaTeX_E(source,event))
-                if QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
-                    action = menu.addAction('+ Copy Input')
-                    action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
-                    action = menu.addAction('+ Copy cString')
-                    action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
-                menu.addSeparator()
-                # MAYBE: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
-                # It currently is handy to have it always because of the EvalF thing...
-                action = menu.addAction('Calculate')
-                action.triggered.connect(lambda: self.action_H_Calculate(source,event))
-                action = menu.addAction('Display LaTeX')
-                action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
-                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
-                    action = menu.addAction('Display LaTeX Equation')
-                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
-                    action = menu.addAction('Display LaTeX Solution')
-                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
-                menu.addSeparator()
-                if source.itemAt(event.pos()).data(100).plot_data_exists :
-                    action = menu.addAction('Load Plot')
-                    action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
-                if source.itemAt(event.pos()).data(100).plottable :
-                    action = menu.addAction('New Plot')
-                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                elif QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked() :
-                    action = menu.addAction('+ New Plot')
-                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
-                    menu.addSeparator()
-                    action = menu.addAction('+ Copy x Values')
-                    action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
-                    action = menu.addAction('+ Copy y Values')
-                    action.triggered.connect(lambda: self.action_H_Copy_y_Values(source,event))
-                menu.addSeparator()
-                action = menu.addAction('Delete')
-                action.triggered.connect(lambda: self.action_H_Delete(source,event))
-                menu.setPalette(self.palette())
-                menu.setFont(self.font())
-                menu.exec_(event.globalPos())
-                return True
          # ---------------------------------- Tab_4 Matrix List Context Menu ----------------------------------
-            elif (source is self.Tab_4_Matrix_List) and source.itemAt(event.pos()):
+            if (source is self.Tab_4_Matrix_List) and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
                 action = menu.addAction('Load to Editor')
                 action.triggered.connect(lambda: self.action_tab_5_M_Load_into_Editor(source,event))
@@ -1659,152 +1589,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         #elif...
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
     
- # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
-  # ----------------
-         
-    def action_H_Copy_Solution(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).Solution)
-         
-    def action_H_Copy_Equation(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).Equation)
-         
-    def action_H_Copy_Text(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).Text)
-        
-    def action_H_Copy_LaTeX(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).LaTeX)
-        
-    def action_H_Copy_LaTeX_E(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).LaTeX_E)
-        
-    def action_H_Copy_Input(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).Input)
-        
-    def action_H_Copy_cstr(self,source,event):
-        item = source.itemAt(event.pos())
-        QApplication.clipboard().setText(item.data(100).cstr)
-        
-  # ----------------
-         
-    def action_H_Calculate(self,source,event):
-        item = source.itemAt(event.pos())
-        self.tabWidget.setCurrentIndex(0)
-        self.Tab_1_F_Calculate(item.data(100))
-        
-    def action_H_Display_LaTeX(self,source,event):
-        item = source.itemAt(event.pos())
-        self.tabWidget.setCurrentIndex(1)
-        self.Tab_2_F_Display(item.data(100))
-
-    def action_H_Display_LaTeX_Equation(self,source,event):
-        item = source.itemAt(event.pos())
-        self.tabWidget.setCurrentIndex(1)
-        self.Tab_2_F_Display(item.data(100),part="Equation")
-
-    def action_H_Display_LaTeX_Solution(self,source,event):
-        item = source.itemAt(event.pos())
-        self.tabWidget.setCurrentIndex(1)
-        self.Tab_2_F_Display(item.data(100),part="Solution")
-         
-  # ----------------
-         
-    def action_H_Load_Plot(self,source,event):
-        TheItem = source.itemAt(event.pos())
-        if source is self.Tab_3_1_History:
-            listItems=source.selectedItems()
-            if not listItems: return
-        else:
-            listItems = [TheItem]
-        for item in listItems:
-            self.tabWidget.setCurrentIndex(2)
-            if not item.data(100).Plot_is_initialized:
-                item.data(100).init_2D_plot()
-            if item.data(100).current_ax != None:
-                item.data(100).current_ax.remove()
-                item.data(100).current_ax = None
-                self.Tab_3_1_F_RedrawPlot()
-            self.Tab_3_1_F_Plot(item.data(100))
-        
-    def action_H_New_Plot(self,source,event):
-        TheItem = source.itemAt(event.pos())
-        if source is self.Tab_3_1_History:
-            listItems=source.selectedItems()
-            if not listItems: return
-        else:
-            listItems = [TheItem]
-        for item in listItems:
-            self.tabWidget.setCurrentIndex(2)
-            if not item.data(100).Plot_is_initialized:
-                item.data(100).init_2D_plot()
-            if item.data(100).current_ax != None:
-                item.data(100).current_ax.remove()
-                item.data(100).current_ax = None
-                self.Tab_3_1_F_RedrawPlot()
-            self.Tab_3_1_F_Plot_init(item.data(100))
-         
-  # ----------------
-        
-    def action_H_Copy_x_Values(self,source,event):
-        try:
-            item = source.itemAt(event.pos())
-            Text = "[ "
-            for i in item.data(100).plot_x_vals:
-                Text += str(i)
-                Text += " , "
-            Text = Text[:-3]
-            Text += " ]"
-            QApplication.clipboard().setText(Text)
-        except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            self.NotifyUser(2,Error)
-        
-    def action_H_Copy_y_Values(self,source,event):
-        try:
-            item = source.itemAt(event.pos())
-            Text = "[ "
-            for i in item.data(100).plot_y_vals:
-                Text += str(i)
-                Text += " , "
-            Text = Text[:-3]
-            Text += " ]"
-            QApplication.clipboard().setText(Text)
-        except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            self.NotifyUser(2,Error)
- 
-  # ----------------
-         
-    def action_H_Delete(self,source,event):
-        listItems=source.selectedItems()
-        if not listItems: return        
-        for item in listItems:
-            source.takeItem(source.row(item))
-            # The cleanup below is apparently unnecessary but it is cleaner to do it anyways...
-            if source is self.Tab_1_History:
-                item.data(100).tab_1_is = False
-                item.data(100).tab_1_ref = None
-            elif source is self.Tab_2_History:
-                item.data(100).tab_2_is = False
-                item.data(100).tab_2_ref = None
-            elif source is self.Tab_3_1_History:
-                item.data(100).Tab_3_1_is = False
-                item.data(100).Tab_3_1_ref = None
-                if item.data(100).current_ax != None:
-                    item.data(100).current_ax.remove()
-                    item.data(100).current_ax = None
-                    self.Tab_3_1_F_RedrawPlot()
-            elif source is self.Tab_4_History:
-                if item.data(100) == self.Tab_4_Active_Equation:
-                    self.Tab_4_History.addItem(item)
-                else:
-                    item.data(100).Tab_4_is = False
-                    item.data(100).Tab_4_ref = None
  
  # ---------------------------------- Tab_4_Matrix_List Context Menu Actions/Functions ----------------------------------
     def action_tab_5_M_Load_into_Editor(self,source,event):
@@ -1841,14 +1625,12 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 print(Filename)
                 self.Tab_3_1_Display.canvas.fig.savefig(Filename , facecolor=self.MainApp.BG_Colour , edgecolor=self.MainApp.BG_Colour )
             except:
-                Error = "Could not save Plot: "
-                Error += ExceptionOutput(sys.exc_info())
-                self.NotifyUser(1,Error)
+                NC(lvl=1,msg="Could not save Plot: ",exc=sys.exc_info(),func="AMaDiA_Main_Window.action_tab_3_tab_1_Display_SavePlt",win=self.windowTitle(),input=Filename).send()
             else:
-                self.NotifyUser(3,Filename)
+                NC(3,"Saved plot as: {}".format(Filename),func="AMaDiA_Main_Window.action_tab_3_tab_1_Display_SavePlt",win=self.windowTitle(),input=Filename).send()
         else:
             print("Could not save Plot: Could not validate save location")
-            self.NotifyUser(1,"Could not save Plot: Could not validate save location")
+            NC(1,"Could not save Plot: Could not validate save location",func="AMaDiA_Main_Window.action_tab_3_tab_1_Display_SavePlt",win=self.windowTitle(),input=self.MainApp.FolderPath).send()
          
  # ---------------------------------- Tab_4_Display_Context_Menu ----------------------------------
     def action_tab_5_Display_Copy_Displayed(self):
@@ -1977,8 +1759,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 self.S_Terminate_Threads.connect(worker.terminate)
                 self.threadpool.start(worker) 
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            self.NotifyUser(1,Error)
+            NC(lvl=1,msg="Could not start thread",exc=sys.exc_info(),func="AMaDiA_Main_Window.TC",win=self.windowTitle(),input="Mode = {} , Kind = {}".format(self.Threading,Kind)).send()
         else:
             self.workingThreadsDisplay(1)
         
@@ -2021,18 +1802,13 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
     def Error_Redirect(self, AMaS_Object , ErrorType , Error_Text , ReturnFunction , ID=-1):
         #IMPROVE: Improve the Error_Redirect
-        self.NotifyUser(ErrorType,Error_Text)
+        NC(ErrorType,Error_Text,func="Thread was expected to return to: "+str(ReturnFunction),win=self.windowTitle(),input=AMaS_Object.Input).send()
 
-    def Set_AMaS_Flags(self,AMaS_Object, f_eval = None, f_powsimp = None):
+    def Set_AMaS_Flags(self,AMaS_Object, f_eval = None):
         if f_eval == None:
             f_eval = self.MainApp.optionWindow.cb_F_EvalF.isChecked()
 
-        #Temporary:
-        if f_powsimp == None:
-            f_powsimp = f_eval
-
         AMaS_Object.f_eval = f_eval
-        AMaS_Object.f_powsimp = f_powsimp
 
     def ThreadFinishedSlot(self):
         self.workingThreadsDisplay(-1)
@@ -2054,12 +1830,28 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             Eval = not self.MainApp.optionWindow.cb_F_EvalF.isChecked()
         else:
             Eval = self.MainApp.optionWindow.cb_F_EvalF.isChecked()
-        # Input.EvaluateLaTeX() # Could be used to evaluate LaTeX but: left( and right) brakes it...
         TheInput = self.Tab_1_InputField.text()
         if TheInput == "RUNTEST":
             self.RUNTEST()
         else:
-            TheInput = re.sub(r"(?<!\w)ans(?!\w)",self.ans,TheInput)
+            if self.Tab_1_History.count() >= 1:
+                TheInput = re.sub(r"(?<!\w)ans(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-1).data(100).Solution),TheInput)
+                TheInput = re.sub(r"(?<!\w)ans1(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-1).data(100).Solution),TheInput)
+                if self.Tab_1_History.count() >= 2:
+                    TheInput = re.sub(r"(?<!\w)ans2(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-2).data(100).Solution),TheInput)
+                    if self.Tab_1_History.count() >= 3:
+                        TheInput = re.sub(r"(?<!\w)ans3(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-3).data(100).Solution),TheInput)
+                    else:
+                        TheInput = re.sub(r"(?<!\w)ans3(?!\w)","(1)",TheInput)
+                else:
+                    TheInput = re.sub(r"(?<!\w)ans2(?!\w)","(1)",TheInput)
+                    TheInput = re.sub(r"(?<!\w)ans3(?!\w)","(0)",TheInput)
+            else:
+                TheInput = re.sub(r"(?<!\w)ans(?!\w)","(1)",TheInput)
+                TheInput = re.sub(r"(?<!\w)ans1(?!\w)","(1)",TheInput)
+                TheInput = re.sub(r"(?<!\w)ans2(?!\w)","(0)",TheInput)
+                TheInput = re.sub(r"(?<!\w)ans3(?!\w)","(0)",TheInput)
+            
             if TheInput == "len()":
                 TheInput = str(len(self.ThreadList))
             #self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
@@ -2076,7 +1868,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
     def Tab_1_F_Calculate_Display(self,AMaS_Object):
         self.HistoryHandler(AMaS_Object,1)
-        self.ans = AMaS_Object.Solution
          
     def Tab_1_F_Item_doubleClicked(self,item):
         self.Tab_1_InputField.selectAll()
@@ -2084,7 +1875,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
  # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
-        EvalL = self.Tab_2_Eval_checkBox.isChecked()
+        EvalL = self.Tab_2_Eval_checkBox.checkState()#isChecked()
         if type(Text) != str:
             Text = self.Tab_2_InputField.toPlainText()
         #self.TC(lambda ID: AT.AMaS_Creator(Text, self.Tab_2_F_Display,ID,EvalL=EvalL))
@@ -2097,6 +1888,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
         if part == "Normal":
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
+            latexInput = AMaS_Object.LaTeX_L
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
@@ -2105,6 +1897,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             if AMaS_Object.LaTeX_E == "Not converted yet":
                 AMaS_Object.ConvertToLaTeX_Equation()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
+            latexInput = AMaS_Object.LaTeX_E_L
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
@@ -2113,11 +1906,12 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             if AMaS_Object.LaTeX_S == "Not converted yet":
                 AMaS_Object.ConvertToLaTeX_Solution()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_S)
+            latexInput = AMaS_Object.LaTeX_S_L
             returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_S_L, AMaS_Object.LaTeX_S_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
-        self.NotifyUser(returnTuple)#[0],returnTuple[1])
+        NC(returnTuple,func="AMaDiA_Main_Window.Tab_2_F_Display",win=self.windowTitle(),input=latexInput).send()
          
  # ---------------------------------- Tab_3_1_ 2D-Plot ----------------------------------
     def Tab_3_1_F_Plot_Button(self):
@@ -2209,13 +2003,12 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 self.Tab_3_1_Display.UseTeX(False)
                 self.Tab_3_1_Display.canvas.draw()
         except common_exceptions :
-            Error = ExceptionOutput(sys.exc_info(),False)
-            print("y_vals = ",r.repr(AMaS_Object.plot_y_vals),type(AMaS_Object.plot_y_vals),"\nYou can copy all elements in the contextmenu if advanced mode is active")
+            NC(msg="y_vals = "+str(r.repr(AMaS_Object.plot_y_vals))+str(type(AMaS_Object.plot_y_vals))+"\nYou can copy all elements in the contextmenu if advanced mode is active"
+                    ,exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_3_1_F_Plot",win=self.windowTitle(), input=AMaS_Object.Input).send()
             #print("y_vals = ")
             #print(AMaS_Object.plot_y_vals)
             #print(type(AMaS_Object.plot_y_vals))
             AMaS_Object.plottable = False
-            self.NotifyUser(1,Error)
             
     def Tab_3_1_F_RedrawPlot(self):
         xmin , xmax = self.Tab_3_1_XLim_min.value(), self.Tab_3_1_XLim_max.value()
@@ -2302,16 +2095,15 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             else:
                 sympy.plot(temp)#, num="SP",backend=matplotlib.backends.backend_qt5.FigureCanvasBase)
         except common_exceptions: # MAYBE: plot_implicit uses other syntax for limits. Maybe make this work
-            Error = ExceptionOutput(sys.exc_info())
+            ExceptionOutput(sys.exc_info())
             try:
                 sympy.plot_implicit(temp)
             except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
+                ExceptionOutput(sys.exc_info())
                 try:
                     sympy.plot_implicit(parse_expr(AMaS_Object.string))
                 except common_exceptions:
-                    Error = ExceptionOutput(sys.exc_info())
-                    self.NotifyUser(1,Error)
+                    NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_3_1_F_Sympy_Plot",win=self.windowTitle()).send()
  
  # ---------------------------------- Tab_3_2_ 3D-Plot ----------------------------------
     # FEATURE: 3D-Plot
@@ -2341,30 +2133,33 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_4_F_Display(self.Tab_4_Active_Equation)
 
     def Tab_4_F_Load_Matrix_List(self):
-        self.Tab_4_Matrix_List.clear()
         try:
-            for Name, Variable in self.Tab_4_Active_Equation.Variables.items():
-                h, w = AF.shape2(Variable)
-                Text = Name + " = {}".format(str(Variable)) if h==1 and w==1 else Name + " : {}x{}".format(h,w)
-                item = QtWidgets.QListWidgetItem()
-                item.setText(Text)
-                item.setData(100,Name)
-                item.setData(101,Variable)
-                self.Tab_4_Matrix_List.addItem(item)
-        except ValueError:
-            ExceptionOutput(sys.exc_info())
+            self.Tab_4_Matrix_List.clear()
             try:
-                Name, Variable = self.Tab_4_Active_Equation.Variables.items()
-                h, w = AF.shape2(Variable)
-                Text = Name + " = {}".format(str(Variable)) if h==1 and w==1 else Name + " : {}x{}".format(h,w)
-                item = QtWidgets.QListWidgetItem()
-                item.setText(Text)
-                item.setData(100,Name)
-                item.setData(101,Variable)
-                self.Tab_4_Matrix_List.addItem(item)
-            except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
-                self.NotifyUser(1,Error)
+                for Name, Variable in self.Tab_4_Active_Equation.Variables.items():
+                    h, w = AF.shape2(Variable)
+                    Text = Name + " = {}".format(str(Variable)) if h==1 and w==1 else Name + " : {}x{}".format(h,w)
+                    item = QtWidgets.QListWidgetItem()
+                    item.setText(Text)
+                    item.setData(100,Name)
+                    item.setData(101,Variable)
+                    self.Tab_4_Matrix_List.addItem(item)
+            except ValueError:
+                ExceptionOutput(sys.exc_info())
+                try:
+                    Name, Variable = self.Tab_4_Active_Equation.Variables.items()
+                    h, w = AF.shape2(Variable)
+                    Text = Name + " = {}".format(str(Variable)) if h==1 and w==1 else Name + " : {}x{}".format(h,w)
+                    item = QtWidgets.QListWidgetItem()
+                    item.setText(Text)
+                    item.setData(100,Name)
+                    item.setData(101,Variable)
+                    self.Tab_4_Matrix_List.addItem(item)
+                except common_exceptions:
+                    NC(msg="Could not load the matrix list for this equation",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_4_F_Load_Matrix_List",
+                            win=self.windowTitle(),input=self.Tab_4_Active_Equation.Input).send()
+        except common_exceptions:
+            NC(msg="Could not load the matrix list",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_4_F_Load_Matrix_List",win=self.windowTitle()).send()
 
     def Tab_4_F_Load_Matrix(self,Name,Matrix):
         h,w = AF.shape2(Matrix)
@@ -2407,7 +2202,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 NameInvalid=True
 
             if NameInvalid:
-                self.NotifyUser(1,"Matrix Name Invalid")
+                NC(1,"Matrix Name Invalid",func="AMaDiA_Main_Window.Tab_4_F_Save_Matrix",win=self.windowTitle(),input=Name).send()
                 return False
             
             # Read the Input and save it in a nested List
@@ -2427,7 +2222,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                         MError += "\n"
                         Matrix[i].append("0")
             if MError != "":
-                self.NotifyUser(2,MError)
+                NC(2,MError,func="AMaDiA_Main_Window.Tab_4_F_Save_Matrix",win=self.windowTitle(),input=str(Matrix)).send()
             # Convert list into Matrix and save it in the Equation
             if len(Matrix) == 1 and len(Matrix[0]) == 1:
                 Matrix = parse_expr(Matrix[0][0])
@@ -2458,8 +2253,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             # Display the Matrix
             self.Tab_4_F_Display_Matrix(Name,Matrix)
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            self.NotifyUser(1,Error)
+            NC(1,"Could not save matrix!",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_4_F_Save_Matrix",win=self.windowTitle()).send()
         
     def Tab_4_F_Update_Equation(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -2481,7 +2275,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
-            self.NotifyUser(returnTuple[0],returnTuple[1])
+            NC(returnTuple[0],returnTuple[1],func="AMaDiA_Main_Window.Tab_4_F_Display",win=self.windowTitle(),input=AMaS_Object.LaTeX_E_L).send()
         
     def Tab_4_F_Display_Matrix(self,Name,Matrix):
         Text = sympy.latex(Matrix)
@@ -2501,7 +2295,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
         if returnTuple[0] != 0:
-            self.NotifyUser(returnTuple[0],returnTuple[1])
+            NC(returnTuple[0],returnTuple[1],func="AMaDiA_Main_Window.Tab_4_F_Display_Matrix",win=self.windowTitle(),input=Text1).send()
  
  # ---------------------------------- Tab_5_ (Mind-)Control ----------------------------------
     def Tab_5_1_System_Set_Order(self,Order=None):
@@ -2551,7 +2345,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 NameInvalid=True
 
             if NameInvalid:
-                self.NotifyUser(1,"System Name Invalid")
+                NC(1,"System Name Invalid",func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input=Name).send()
                 return False
 
 
@@ -2575,9 +2369,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                         Ys.append(float(i[1]))
                     print(Ys)
                 except common_exceptions:
-                    Error = "Error in Y(s)"
-                    Error += ExceptionOutput(sys.exc_info())
-                    self.NotifyUser(1,Error)
+                    NC(msg="Error in Y(s)",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input=self.Tab_5_1_System_4ATF_Ys.text()).send()
                     return False
                 try:
                     Xs_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.Tab_5_1_System_4ATF_Xs.text())).doit().evalf()),s)
@@ -2595,9 +2387,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                         Xs.append(float(i[1]))
                     print(Xs)
                 except common_exceptions:
-                    Error = "Error in X(s)"
-                    Error += ExceptionOutput(sys.exc_info())
-                    self.NotifyUser(1,Error)
+                    NC(msg="Error in X(s)",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input=self.Tab_5_1_System_4ATF_Xs.text()).send()
                     return False
                 sys1 = control.tf(Ys,Xs)
             elif Tab == 1: #Transfer
@@ -2626,18 +2416,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                         MError += "\n"
                         Xs.append(0)
                 if MError != "":
-                    self.NotifyUser(2,MError)
+                    NC(2,MError,func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input="X(s) = {}\nY(s) = {}".format(str(Xs),str(Ys))).send()
                 # Remove empty leading entries
-                #for i,y in enumerate(Ys):
-                #    if y == 0:
-                #        Ys.pop(i)
-                #    else:
-                #        break
-                #for i,y in enumerate(Xs):
-                #    if y == 0:
-                #        Xs.pop(i)
-                #    else:
-                #        break
                 while Ys[0]==0:
                     Ys.pop(0)
                 while Xs[0]==0:
@@ -2649,15 +2429,14 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             elif Tab == 3: #ODE
                 pass
             else: # Can not occur...
-                raise Exception("Tab {} in Control->Input Tab is unknown".format(Tab))
+                raise Exception("Tab {} in Control->Input Tab is unknown".format(str(Tab())))
             # FEATURE: Save Systems in list
             # REMINDER: Save duplicate in other list item to prevent accidental overwrites
             # REMINDER: Save delted items in other list item to prevent accidental deletions
             print(sys1)
             return sys1
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            self.NotifyUser(1,Error)
+            NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input="Control->Input Tab Number = {}".format(str(Tab))).send()
 
     def Tab_5_1_System_Plot_and_Save(self):
         sys1 = self.Tab_5_1_System_Save()
@@ -2668,17 +2447,17 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
     def Tab_5_1_System_Plot(self,sys1):
         try:
-            self.NotifyUser(self.Tab_5_2_Display.Display(sys1))
+            # if self.Tab_5_2_Display.Display(sys1) returns a 0 as the level (--> no error while displaying) the following notification is not displayed
+            NC(self.Tab_5_2_Display.Display(sys1),func="AMaDiA_Main_Window.Tab_5_2_Display.Display",win=self.windowTitle(),input=str(sys1)).send()
             self.Tab_5_tabWidget.setFocus()
             self.Tab_5_3_SingleDisplay.clear()
             self.Tab_5_tabWidget.setCurrentIndex(1)
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            self.NotifyUser(1,Error)
+            NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Plot",win=self.windowTitle(),input=str(sys1)).send()
 
     def Tab_5_4_Dirty_Display(self):
         if not QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
-            self.NotifyUser(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!")
+            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.Tab_5_4_Dirty_Display",win="Advanced Mode: {}".format(str(self.windowTitle(),input=QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked()))).send()
         else:
             self.Tab_5_tabWidget.setCurrentIndex(1)
             input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal f\nf=\"\"\n" + self.Tab_5_4_Dirty_Input.toPlainText()
@@ -2687,13 +2466,12 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 g,l = dict(),dict()
                 exec(input_text,g,l)
                 print(g["sys1"])
-                self.NotifyUser(self.Tab_5_2_Display.Display(g["sys1"],Ufunc=g["f"]))
+                NC(self.Tab_5_2_Display.Display(g["sys1"],Ufunc=g["f"]),func="AMaDiA_Main_Window.Tab_5_2_Display.Display",win=self.windowTitle(),input=input_text).send()
                 self.Tab_5_tabWidget.setFocus()
                 self.Tab_5_3_SingleDisplay.clear()
             except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
+                NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_4_Dirty_Display",win=self.windowTitle(),input=input_text).send()
                 self.Tab_5_tabWidget.setCurrentIndex(3)
-                self.NotifyUser(1,Error)
  
  # ---------------------------------- Tab_6_ ??? ----------------------------------
 

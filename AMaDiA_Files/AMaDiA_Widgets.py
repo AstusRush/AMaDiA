@@ -29,7 +29,7 @@ import warnings
 from External_Libraries.python_control_master import control
 
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, NC, NotificationEvent, ExceptionOutput, NotificationEventText, sendNotification
+from AMaDiA_Files.AMaDiA_Functions import common_exceptions, NC, NotificationEvent, ExceptionOutput
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
@@ -1320,6 +1320,7 @@ class ListWidget(QtWidgets.QListWidget):
 class HistoryWidget(ListWidget):
     def __init__(self, parent=None):
         super(HistoryWidget, self).__init__(parent)
+        self.installEventFilter(self)
 
     def keyPressEvent(self,event):
         try:
@@ -1354,15 +1355,218 @@ class HistoryWidget(ListWidget):
                             and item.data(100).LaTeX_E != "Could not convert"):
                         Qt.QApplication.clipboard().setText(item.data(100).LaTeX_E)
                     else:
-                        sendNotification(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode")
+                        NC(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode",win=self.window().windowTitle(),func="HistoryWidget.keyPressEvent",input=item.text()).send()
                         Qt.QApplication.clipboard().setText(item.text())
                     event.accept()
                     return
             super(HistoryWidget, self).keyPressEvent(event)
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            sendNotification(2,Error)
+            NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func="HistoryWidget.keyPressEvent",input=str(event)).send()
             super(HistoryWidget, self).keyPressEvent(event)
+
+    def eventFilter(self, source, event):
+        if event.type() == 82: # QtCore.QEvent.ContextMenu
+         # ---------------------------------- History Context Menu ----------------------------------
+            if source.itemAt(event.pos()):
+                menu = QtWidgets.QMenu()
+                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
+                    action = menu.addAction('Copy Solution')
+                    action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
+                    action = menu.addAction('Copy Equation')
+                    action.triggered.connect(lambda: self.action_H_Copy_Equation(source,event))
+                action = menu.addAction('Copy Text')
+                action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
+                action = menu.addAction('Copy LaTeX')
+                action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+                if source.itemAt(event.pos()).data(100).LaTeX_E != "Not converted yet" and source.itemAt(event.pos()).data(100).LaTeX_E != "Could not convert":
+                    action = menu.addAction('Copy LaTeX Equation')
+                    action.triggered.connect(lambda: self.action_H_Copy_LaTeX_E(source,event))
+                if QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
+                    action = menu.addAction('+ Copy Input')
+                    action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
+                    action = menu.addAction('+ Copy cString')
+                    action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
+                menu.addSeparator()
+                # MAYBE: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
+                # It currently is handy to have it always because of the EvalF thing...
+                action = menu.addAction('Calculate')
+                action.triggered.connect(lambda: self.action_H_Calculate(source,event))
+                action = menu.addAction('Display LaTeX')
+                action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
+                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
+                    action = menu.addAction('Display LaTeX Equation')
+                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
+                    action = menu.addAction('Display LaTeX Solution')
+                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
+                menu.addSeparator()
+                if source.itemAt(event.pos()).data(100).plot_data_exists :
+                    action = menu.addAction('Load Plot')
+                    action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
+                if source.itemAt(event.pos()).data(100).plottable :
+                    action = menu.addAction('New Plot')
+                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+                elif QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked() :
+                    action = menu.addAction('+ New Plot')
+                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+                if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
+                    menu.addSeparator()
+                    action = menu.addAction('+ Copy x Values')
+                    action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
+                    action = menu.addAction('+ Copy y Values')
+                    action.triggered.connect(lambda: self.action_H_Copy_y_Values(source,event))
+                menu.addSeparator()
+                action = menu.addAction('Delete')
+                action.triggered.connect(lambda: self.action_H_Delete(source,event))
+                menu.setPalette(self.palette())
+                menu.setFont(self.font())
+                menu.exec_(event.globalPos())
+                return True
+
+        return super(HistoryWidget, self).eventFilter(source, event)
+ # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
+  # ----------------
+         
+    def action_H_Copy_Solution(self,source,event):
+        item = source.itemAt(event.pos())
+        Qt.QApplication.clipboard().setText(item.data(100).Solution)
+         
+    def action_H_Copy_Equation(self,source,event):
+        item = source.itemAt(event.pos())
+        Qt.QApplication.clipboard().setText(item.data(100).Equation)
+         
+    def action_H_Copy_Text(self,source,event):
+        item = source.itemAt(event.pos())
+        Qt.QApplication.clipboard().setText(item.data(100).Text)
+        
+    def action_H_Copy_LaTeX(self,source,event):
+        item = source.itemAt(event.pos())
+        Qt.QApplication.clipboard().setText(item.data(100).LaTeX)
+        
+    def action_H_Copy_LaTeX_E(self,source,event):
+        item = source.itemAt(event.pos())
+        Qt.QApplication.clipboard().setText(item.data(100).LaTeX_E)
+        
+    def action_H_Copy_Input(self,source,event):
+        item = source.itemAt(event.pos())
+        Qt.QApplication.clipboard().setText(item.data(100).Input)
+        
+    def action_H_Copy_cstr(self,source,event):
+        item = source.itemAt(event.pos())
+        Qt.QApplication.clipboard().setText(item.data(100).cstr)
+        
+  # ----------------
+         
+    def action_H_Calculate(self,source,event):
+        item = source.itemAt(event.pos())
+        self.window().tabWidget.setCurrentIndex(0)
+        self.window().Tab_1_F_Calculate(item.data(100))
+        
+    def action_H_Display_LaTeX(self,source,event):
+        item = source.itemAt(event.pos())
+        self.window().tabWidget.setCurrentIndex(1)
+        self.window().Tab_2_F_Display(item.data(100))
+
+    def action_H_Display_LaTeX_Equation(self,source,event):
+        item = source.itemAt(event.pos())
+        self.window().tabWidget.setCurrentIndex(1)
+        self.window().Tab_2_F_Display(item.data(100),part="Equation")
+
+    def action_H_Display_LaTeX_Solution(self,source,event):
+        item = source.itemAt(event.pos())
+        self.window().tabWidget.setCurrentIndex(1)
+        self.window().Tab_2_F_Display(item.data(100),part="Solution")
+         
+  # ----------------
+         
+    def action_H_Load_Plot(self,source,event):
+        TheItem = source.itemAt(event.pos())
+        if source is self.window().Tab_3_1_History:
+            listItems=source.selectedItems()
+            if not listItems: return
+        else:
+            listItems = [TheItem]
+        for item in listItems:
+            self.window().tabWidget.setCurrentIndex(2)
+            if not item.data(100).Plot_is_initialized:
+                item.data(100).init_2D_plot()
+            if item.data(100).current_ax != None:
+                item.data(100).current_ax.remove()
+                item.data(100).current_ax = None
+                self.window().Tab_3_1_F_RedrawPlot()
+            self.window().Tab_3_1_F_Plot(item.data(100))
+        
+    def action_H_New_Plot(self,source,event):
+        TheItem = source.itemAt(event.pos())
+        if source is self.window().Tab_3_1_History:
+            listItems=source.selectedItems()
+            if not listItems: return
+        else:
+            listItems = [TheItem]
+        for item in listItems:
+            self.window().tabWidget.setCurrentIndex(2)
+            if not item.data(100).Plot_is_initialized:
+                item.data(100).init_2D_plot()
+            if item.data(100).current_ax != None:
+                item.data(100).current_ax.remove()
+                item.data(100).current_ax = None
+                self.window().Tab_3_1_F_RedrawPlot()
+            self.window().Tab_3_1_F_Plot_init(item.data(100))
+         
+  # ----------------
+        
+    def action_H_Copy_x_Values(self,source,event):
+        try:
+            item = source.itemAt(event.pos())
+            Text = "[ "
+            for i in item.data(100).plot_x_vals:
+                Text += str(i)
+                Text += " , "
+            Text = Text[:-3]
+            Text += " ]"
+            Qt.QApplication.clipboard().setText(Text)
+        except common_exceptions:
+            NC(lvl=2,msg="Could not copy x values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_x_Values",win=self.window().windowTitle(),input=item.data(100).Input).send()
+        
+    def action_H_Copy_y_Values(self,source,event):
+        try:
+            item = source.itemAt(event.pos())
+            Text = "[ "
+            for i in item.data(100).plot_y_vals:
+                Text += str(i)
+                Text += " , "
+            Text = Text[:-3]
+            Text += " ]"
+            Qt.QApplication.clipboard().setText(Text)
+        except common_exceptions:
+            NC(lvl=2,msg="Could not copy y values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_y_Values",win=self.window().windowTitle(),input=item.data(100).Input).send()
+ 
+  # ----------------
+         
+    def action_H_Delete(self,source,event):
+        listItems=source.selectedItems()
+        if not listItems: return        
+        for item in listItems:
+            source.takeItem(source.row(item))
+            # The cleanup below is apparently unnecessary but it is cleaner to do it anyways...
+            if source is self.window().Tab_1_History:
+                item.data(100).tab_1_is = False
+                item.data(100).tab_1_ref = None
+            elif source is self.window().Tab_2_History:
+                item.data(100).tab_2_is = False
+                item.data(100).tab_2_ref = None
+            elif source is self.window().Tab_3_1_History:
+                item.data(100).Tab_3_1_is = False
+                item.data(100).Tab_3_1_ref = None
+                if item.data(100).current_ax != None:
+                    item.data(100).current_ax.remove()
+                    item.data(100).current_ax = None
+                    self.window().Tab_3_1_F_RedrawPlot()
+            elif source is self.window().Tab_4_History:
+                if item.data(100) == self.window().Tab_4_Active_Equation:
+                    self.window().Tab_4_History.addItem(item)
+                else:
+                    item.data(100).Tab_4_is = False
+                    item.data(100).Tab_4_ref = None
 
 class NotificationListWidget(ListWidget):
     def __init__(self, parent=None):
@@ -1825,8 +2029,7 @@ class TopBar_Widget(QtWidgets.QWidget):
                     frameGm.moveBottomLeft(screen.bottomLeft())
                     self.window().move(frameGm.topLeft())
             except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
-                sendNotification(1,Error)
+                NC(exc=sys.exc_info(),win=self.window().windowTitle(),func="TopBar_Widget.mouseReleaseEvent").send()
 
     def mouseMoveEvent(self,event):
         if self.moving:
@@ -2196,8 +2399,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
                     frameGm.moveBottomLeft(screen.bottomLeft())
                     self.window().move(frameGm.topLeft())
             except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
-                sendNotification(1,Error)
+                NC(exc=sys.exc_info(),win=self.window().windowTitle(),func="MMenuBar.mouseReleaseEvent").send()
         else:
             self.moving = False
             super(MMenuBar, self).mouseReleaseEvent(event)
@@ -2326,8 +2528,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
                     frameGm.moveBottomLeft(screen.bottomLeft())
                     self.window().move(frameGm.topLeft())
             except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
-                sendNotification(1,Error)
+                NC(exc=sys.exc_info(),win=self.window().windowTitle(),func="MTabWidget.mouseReleaseEvent").send()
         else:
             self.moving = False
             super(MTabWidget, self).mouseReleaseEvent(event)

@@ -625,6 +625,26 @@ All Flags except &quot;Evaluate Functions&quot; are read during the calculations
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item row="1" column="0">
+            <widget class="Line" name="line_16">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
            <item row="0" column="0">
             <widget class="QCheckBox" name="cb_D_NewSolver">
              <property name="toolTip">
@@ -639,20 +659,20 @@ The new solver can not solve anything at the moment.</string>
             </widget>
            </item>
            <item row="2" column="0">
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
+            <widget class="QCheckBox" name="cb_D_NoEvalFile">
+             <property name="toolTip">
+              <string>Use th NoEvalFile that uses &quot;with sympy.evaluate(False)&quot;&lt;br&gt;
+It still influences the main process and thus can mess up all calculations.&lt;br&gt;
+To keep the calculator reliable this checkbox should be kept unchecked.&lt;br&gt;
+Sympy's &quot;with sympy.evaluate(False)&quot; is currently experimental anyways.</string>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
+             <property name="text">
+              <string>Enable LaTeX No Eval</string>
              </property>
-            </spacer>
+            </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="Line" name="line_16">
+           <item row="3" column="0">
+            <widget class="Line" name="line_18">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>

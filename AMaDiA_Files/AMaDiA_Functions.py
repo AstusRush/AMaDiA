@@ -10,6 +10,7 @@ from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpret
 import socket
 import datetime
 import time
+from time import time as timetime
 import platform
 import errno
 import os
@@ -26,27 +27,6 @@ from matplotlib import colors
 from External_Libraries.python_control_master import control
 
 
-class NotificationEventText(QtCore.QEvent):
-    """
-    Useage: QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEventText(Type, Text="Not Given", Time=None))  \n
-    0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification  \n
-    This is thread save!!!
-    """
-    # Inspired by: http://code.activestate.com/recipes/578299-pyqt-pyside-thread-safe-global-queue-main-loop-int/
-    EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
-    def __init__(self, Type, Text="Not Given", Time=None):
-        QtCore.QEvent.__init__(self, NotificationEventText.EVENT_TYPE)
-        self.Type = Type
-        self.Text = Text
-        self.Time = Time
-
-
-def sendNotification(Type, Text="Not Given", Time=None):
-    """
-    Type: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification  \n
-    This is thread save!!!
-    """
-    QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEventText(Type, Text, Time))
 
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -57,11 +37,19 @@ class NotificationEvent(QtCore.QEvent):
         self.N = N
 
 class NC: # Notification Class
-    def __init__(self, lvl=None, msg=None, time=None, err=None, tb=None, exc=None, win=None, func=None):
+    def __init__(self, lvl=None, msg=None, time=None, input=None, err=None, tb=None, exc=None, win=None, func=None):
+        """
+        Creates a new notification object  \n
+        lvl: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification , 10 = Direct Notification
+        """
+        self._time_time = timetime()
         self.exc_type, self.exc_obj, self.exc_tb = None,None,None
         self._time, self.Time, self.Error = None,None,None
         self.Window, self.ErrorTraceback, self.Function = None,None,None
-        self.Level, self.Message = 1,"NONE"
+        self.level, self.Level, self.Message = 1,"Notification level 1",None
+        self.Input = None
+        self.itemDict = {"Time":self.Time,"Level":self.Level,"Message":self.Message,"Error":self.Error,
+                        "Error Traceback":self.ErrorTraceback,"Function":self.Function,"Window":self.Window,"Input":self.Input}
         try:
             if exc != None:
                 if exc == True:
@@ -71,12 +59,20 @@ class NC: # Notification Class
                 fName = os.path.split(self.exc_tb.tb_frame.f_code.co_filename)[1]
                 self._time = datetime.datetime.now() if time == None else time
                 self.Time = self._time.strftime('%H:%M:%S')
-                self.Level = 1 if lvl == None else lvl
-                self.Window = "N/A" if win == None else win
-                self.Function = "N/A" if func == None else func
-                self.Message = "Exception" if msg == None else msg
+                if type(lvl)==str:
+                    self.level = 1
+                    self.Message = lvl
+                elif msg==None and type(lvl) == tuple:
+                    self.level, self.Message = lvl[0], lvl[1]
+                else:
+                    self.level = 1 if lvl == None else lvl
+                    self.Message = str(msg) if msg!=None else None
+                self.Window = win
+                self.Function = func
+                self.Input = input
                 self.Error = str(self.exc_type)+": "+str(self.exc_obj)
                 self.ErrorTraceback = str(self.exc_type)+"  in "+str(fName)+"  line "+str(self.exc_tb.tb_lineno)
+                self.GenerateLevelName()
                 print(self.Time,":")
                 if len(str(self.exc_obj))<50:
                     print(self.exc_type, " in", fName, " line", self.exc_tb.tb_lineno,": ", self.exc_obj)
@@ -84,66 +80,148 @@ class NC: # Notification Class
                     print(self.exc_type, " in", fName, " line", self.exc_tb.tb_lineno)
             else:
                 if type(lvl)==str:
-                    self.Level = 3
+                    self.level = 3
                     self.Message = lvl
+                elif msg==None and type(lvl) == tuple:
+                    self.level, self.Message = lvl[0], lvl[1]
                 else:
-                    self.Level = 3 if lvl == None else lvl
-                    self.Message = msg
+                    self.level = 3 if lvl == None else lvl
+                    self.Message = str(msg) if msg!=None else None
                 self._time = datetime.datetime.now() if time == None else time
                 self.Time = self._time.strftime('%H:%M:%S')
-                self.Window = "N/A" if win == None else win
-                self.Function = "N/A" if func == None else func
+                self.Window = win
+                self.Function = func
+                self.Input = input
                 self.Error = err
                 self.ErrorTraceback = tb
+                self.GenerateLevelName()
         except common_exceptions as inst:
-            print("An exception occurred while trying to create a Notification")
+            self.exc_type, self.exc_obj, self.exc_tb = None,None,None
+            self._time, self.Time, self.Error = None,None,None
+            self.Window, self.ErrorTraceback, self.Function = None,None,None
+            self.level, self.Level, self.Message = 1,"Notification level 1",None
+            print(cTimeSStr(),": An exception occurred while trying to create a Notification")
             print(inst)
             self._time = datetime.datetime.now() if time == None else time
             self.Time = self._time.strftime('%H:%M:%S')
             self.Message = "An exception occurred while trying to create a Notification"
             self.exc_obj = inst
             self.Error = str(inst)
+            self.GenerateLevelName()
             self.send()
-
+  #----------#----------#
     def send(self):
+        """Displays this notification (This method is thread save but this object should not be modified after using send)"""
         QtWidgets.QApplication.postEvent(QtCore.QThread.currentThread(), NotificationEvent(self))
 
     def print(self):
-        print("\nNotification level",self.Level, "at",self.Time,"\nMessage:",self.Message)
+        """Prints this notification to the console"""
+        print("\n",self.Level, "at",self.Time,"\nMessage:",self.Message)
         if self.Error != None:
             print("Error:",self.Error,"Traceback:",self.ErrorTraceback,"\n")
+  #----------#----------#
+    def items(self):
+        """
+        Returns self.itemDict.items()   \n
+        self.itemDict contains all relevant data about this notification.
+        """
+        self.itemDict = {"Time":self.Time,"Level":"({}) {}".format(self.level,self.Level),"Message":self.Message,"Error":self.Error,
+                        "Error Traceback":self.ErrorTraceback,"Function":self.Function,"Window":self.Window,"Input":self.Input}
+        return self.itemDict.items()
 
     def unpack(self):
-        return (self.Level, self.Message, self.Time)
-
+        """Returns a tuple (int(level),str(Message),str(Time))"""
+        return (self.level, str(self.Message), self.Time)
+  #----------#----------#
     def l(self, level=None):
+        """
+        Returns int(level)  \n
+        An int can be given to change the level
+        """
         if level != None:
-            self.Level = level
-        return self.Level
+            self.level = level
+            self.GenerateLevelName()
+        return self.level
 
     def m(self, message=None):
+        """
+        Returns str(Message)  \n
+        A str can be given to change the Message
+        """
         if message != None:
-            self.Message = message
-        return self.Message
+            self.Message = str(message)
+        return str(self.Message)
 
     def t(self, time=None):
+        """
+        Returns the time as %H:%M:%S  \n
+        datetime.datetime.now() can be given to change the time
+        """
         if time != None:
             self._time = time
             self.Time = self._time.strftime('%H:%M:%S')
         return self.Time
 
     def e(self, Error=None, ErrorTraceback=None):
+        """
+        Returns str(Error)  \n
+        strings can be given to change the Error and ErrorTraceback
+        """
         if Error != None:
-            self.Error = Error
+            self.Error = str(Error)
         if ErrorTraceback != None:
-            self.ErrorTraceback = ErrorTraceback
-        return self.Error
+            self.ErrorTraceback = str(ErrorTraceback)
+        return str(self.Error)
 
     def tb(self, ErrorTraceback=None):
+        """
+        Returns str(ErrorTraceback)  \n
+        A str can be given to change the ErrorTraceback
+        """
         if ErrorTraceback != None:
-            self.ErrorTraceback = ErrorTraceback
-        return self.ErrorTraceback
+            self.ErrorTraceback = str(ErrorTraceback)
+        return str(self.ErrorTraceback)
 
+    def f(self, func=None):
+        """
+        Returns str(Function)  \n
+        A str can be given to change the Function  \n
+        Function is the name of the function from which this notification originates
+        """
+        if func != None:
+            self.Function = str(func)
+        return str(self.Function)
+
+    def i(self, input=None):
+        """
+        Returns str(Input)  \n
+        A str can be given to change the Input  \n
+        Input is the (user-)input that caused this notification
+        """
+        if input != None:
+            self.Input = str(input)
+        return str(self.Input)
+  #----------#----------#
+    def GenerateLevelName(self):
+        """
+        Generates str(self.Level) from int(self.level)
+        """
+        if self.level == 0:
+            self.Level = "Empty Notification"
+        elif self.level == 1:
+            self.Level = "Error"
+        elif self.level == 2:
+            self.Level = "Warning"
+        elif self.level == 3:
+            self.Level = "Notification"
+        elif self.level == 4:
+            self.Level = "Advanced Mode Notification"
+        elif self.level == 10:
+            self.Level = "Direct Notification"
+        else:
+            self.Level = "Notification level "+str(self.level)
+        return self.Level
+  #----------#----------#
     def __add__(self,other):
         if self.Error != None:
             return self.Error + str(other)
@@ -161,9 +239,12 @@ class NC: # Notification Class
 
     def __str__(self):
         if self.Error != None:
-            return self.Error
+            if self.Message == None:
+                return "Exception at "+self.Time+":\n"+self.Error
+            else:
+                return self.Level+" at "+self.Time+":\n"+self.Message+"\n"+self.Error
         else:
-            return self.Message
+            return self.Level+" at "+self.Time+":\n"+self.Message
 
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -188,10 +269,10 @@ def ExceptionOutput(exc_info = None, extraInfo = True):
     Console output for exceptions\n
     Use in `except:`: Error = ExceptionOutput(sys.exc_info())\n
     Prints Time, ExceptionType, Filename+Line and (if extraInfo in not False) the exception description to the console\n
-    Returns a Notification Object (NC) with all relevant information
+    Returns a string
     """
     try:
-        if True:
+        if False:
             if exc_info == None:
                 exc_info = True
             return NC(exc=exc_info)
@@ -410,31 +491,64 @@ def LaTeX(expr,local_dict=None,evalf=1):
         ExceptionOutput(sys.exc_info())
 
     try:
-        if evalf == 2:
+        if evalf == 2 or type(evalf)==bool and evalf == True:
+            if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("True")
             expr = expr.replace("evalf","",1)
             rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
             rtnexpr = sympy.latex(rtnexpr)
-        elif evalf == 1:
+        elif evalf == 1 or type(evalf)==bool and evalf == False:
+            if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("False")
+            rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
+            rtnexpr = sympy.latex(rtnexpr)
+            try:
+                if parse_expr(expr,local_dict=local_dict) - sympy.parsing.latex.parse_latex(rtnexpr) != 0:
+                    rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                    rtnexpr = sympy.latex(rtnexpr)
+            except common_exceptions:
+                rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                rtnexpr = sympy.latex(rtnexpr)
+        elif not QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked():
             rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
             rtnexpr = sympy.latex(rtnexpr)
 
         else:
             try:
+                if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("File")
                 Path = os.path.dirname(__file__)
-                if platform.system() == 'Windows':
-                    Path += r"\NoEvalParse.py"
-                elif platform.system() == 'Linux':
-                    Path += r"/NoEvalParse.py"
+                #if platform.system() == 'Windows':
+                #    Path += r"\NoEvalParse.py"
+                #elif platform.system() == 'Linux':
+                #    Path += r"/NoEvalParse.py"
+                Path = os.path.join(Path,"NoEvalParse.py")
                 rtnexpr = subprocess.check_output([sys.executable, Path, expr])#, local_dict]) # IMPROVE: Make local_dict work
                 rtnexpr = rtnexpr.decode("utf8")
+                sympy.evaluate(True)
             except common_exceptions:
                 ExceptionOutput(sys.exc_info())
+                if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("Failed-->False")
+                sympy.evaluate(True)
                 rtnexpr = parse_expr(expr,evaluate=False,local_dict=local_dict)
                 rtnexpr = sympy.latex(rtnexpr)
+                try:
+                    if parse_expr(expr,local_dict=local_dict) - sympy.parsing.latex.parse_latex(rtnexpr) != 0:
+                        rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                        rtnexpr = sympy.latex(rtnexpr)
+                except common_exceptions:
+                    rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                    rtnexpr = sympy.latex(rtnexpr)
     except common_exceptions:
         ExceptionOutput(sys.exc_info())
+        if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("Failed-->True")
+        sympy.evaluate(True)
         rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
         rtnexpr = sympy.latex(rtnexpr)
+        try:
+            if parse_expr(expr,local_dict=local_dict) - sympy.parsing.latex.parse_latex(rtnexpr) != 0:
+                rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                rtnexpr = sympy.latex(rtnexpr)
+        except common_exceptions:
+            rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+            rtnexpr = sympy.latex(rtnexpr)
     
     return rtnexpr
 

@@ -450,3 +450,29 @@ v0.15.11: Notification Class
 +++ ExceptionOutput now redirects to this new notification class and returns an object.
 ++++ This object should be compatible with all old code as the important string function (__str__,__add__,__radd__) are implemented
 
+v0.15.12: Notification Class II
++ Notifications:
+++ Replaced all old notifications by the new notification class (NC)
++++ The old notification system is completely removed
+++ Added more information to existing notifications
++++ For example most notifications now include the function, the window and the user input that is associated with the notification
+++ The notification window now displays all information about a selected notification
+++ The changes of ExceptionOutput are reverted. Instead NC can now handle Exceptions on its own.
++++ Thanks to this the exception handling has been reduced to one line in most cases while being more readable in the code and giving more information in the notification!
+++ Advanced-Mode-Notifications that were send while advanced more was off are now always listed in the notification window.
+++ Changed requirement for recent notifications to be included in the tooltip
++ The context menu code now lives in the HistoryWidget to keep the main window code clean
++ NoEvalParse changes:
+++ The NoEvalParse option for the LaTeX view must be turned on in the dev tab in the option window
++++ It turns out that the new process still influences the main program which makes the calculator unreliable
+++ The half-checked state now checks if the LaTeX version equals the normal version
++++ This ensures that sin(2*2*t*pi) doesn't return the LaTeX sin(2*t*pi) but instead sin(4*t*pi)
++++ The old behaviour (without this check) is now the behaviour of the unchecked state if the box in the dev tab is not checked
+++ Improved the NoEvalParse script to work more reliable (That stuff behaves weird, dude!!!)
+++ The NoEvalParse should now be compatible with other OS than Windows and Linux
++++ This means that everything (excluding library dependencies) should be OS independent
++ Added ans1, ans2 and ans3 to access the solution of the last three items of the calculator list
+++ ans is no longer the last calculated solution but instead a synonyme for ans1
+++ All ans are isolated in parentheses to enable multiplication of complex numbers
++ Cleaned up the overhead of the code execution window
+
