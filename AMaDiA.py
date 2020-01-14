@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.12"
+Version = "0.15.12.1"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -241,6 +241,7 @@ class AMaDiA_Notification_Window(AW.AWWF):
             text = "Could not add notification: "+Error
             item = QtWidgets.QListWidgetItem()
             item.setText(text)
+            item.setData(100,NC(1,"Could not add notification",err=Error,func="AMaDiA_Notification_Window.AddNotification",win=self.windowTitle()))
             
             self.TheList.addItem(item)
             self.TheList.scrollToBottom()
@@ -687,7 +688,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         Type = N.l()
         
         if Type == 0:
-            pass
+            return
         elif Type == 1:
             self.NotifyUser_Error(N)
         elif Type == 2:

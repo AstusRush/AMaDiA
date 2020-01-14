@@ -337,10 +337,11 @@ class AMaS: # Astus' Mathematical Structure
                 #self.LaTeX = sympy.latex(expr)
                 self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
         except common_exceptions:
-            error = ExceptionOutput(sys.exc_info())
+            NC(exc=sys.exc_info(),lvl=2,msg="Could not convert to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX").send()
+            #error = ExceptionOutput(sys.exc_info())
+            #ErrTxt = "Could not convert to LaTeX: " + error
+            #self.Notify(2,ErrTxt)
             self.LaTeX = "Could not convert"
-            ErrTxt = "Could not convert to LaTeX: " + error
-            self.Notify(2,ErrTxt)
         
         # Set up the strings that are used in the LaTeX Displays
         if self.multiline:
@@ -406,10 +407,11 @@ class AMaS: # Astus' Mathematical Structure
                 #self.LaTeX_E = sympy.latex(expr)
                 self.LaTeX_E = AF.LaTeX(temp,local_dict=self.VariablesUnev,evalf=1)
         except common_exceptions:
-            error = ExceptionOutput(sys.exc_info())
+            NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Equation to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX_Equation").send()
+            #error = ExceptionOutput(sys.exc_info())
+            #ErrTxt = "Could not convert Equation to LaTeX: " + error
+            #self.Notify(2,ErrTxt)
             self.LaTeX_E = "Could not convert"
-            ErrTxt = "Could not convert Equation to LaTeX: " + error
-            self.Notify(2,ErrTxt)
         
         # Set up the strings that are used in the LaTeX Displays
         if self.LaTeX_E == "Could not convert":
@@ -475,8 +477,10 @@ class AMaS: # Astus' Mathematical Structure
 
 
     def ConvertToLaTeX_Solution(self, expr=None):
-        """expr must be a Sympy Expression (NOT A STRING!)\n
-        If not given or not convertable try to convert self.Solution"""
+        """
+        expr must be a Sympy Expression (NOT A STRING!)   \n
+        If not given or not convertable try to convert self.Solution
+        """
         # TODO: Add support for dicts inside dicts
         try:
             if expr != None:
@@ -517,10 +521,12 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_S_L += "$"
             self.LaTeX_S_N += "$"
         except common_exceptions: #as inst:
-            Error = ExceptionOutput(sys.exc_info())
-            ErrTxt = "Could not convert Solution to LaTeX: " + Error
-            self.Notify(2,ErrTxt)
-            return Error
+            NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX_Equation").send()
+            return False
+            #Error = ExceptionOutput(sys.exc_info())
+            #ErrTxt = "Could not convert Solution to LaTeX: " + Error
+            #self.Notify(2,ErrTxt)
+            #return Error
         return True
         
 

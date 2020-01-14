@@ -476,3 +476,7 @@ v0.15.12: Notification Class II
 ++ All ans are isolated in parentheses to enable multiplication of complex numbers
 + Cleaned up the overhead of the code execution window
 
+v0.15.12.1: Notification Class in AMaS
++ AMaS no uses the notification class instead of Notify in most cases.
++ The notification class cow saves its icon. (Currently unused)
+

@@ -50,6 +50,7 @@ class NC: # Notification Class
         self.Input = None
         self.itemDict = {"Time":self.Time,"Level":self.Level,"Message":self.Message,"Error":self.Error,
                         "Error Traceback":self.ErrorTraceback,"Function":self.Function,"Window":self.Window,"Input":self.Input}
+        self.icon = QtGui.QIcon()
         try:
             if exc != None:
                 if exc == True:
@@ -125,7 +126,7 @@ class NC: # Notification Class
         Returns self.itemDict.items()   \n
         self.itemDict contains all relevant data about this notification.
         """
-        self.itemDict = {"Time":self.Time,"Level":"({}) {}".format(self.level,self.Level),"Message":self.Message,"Error":self.Error,
+        self.itemDict = {"Time":self.Time,"Level":"({}) {}".format(str(self.level),self.Level),"Message":self.Message,"Error":self.Error,
                         "Error Traceback":self.ErrorTraceback,"Function":self.Function,"Window":self.Window,"Input":self.Input}
         return self.itemDict.items()
 
@@ -208,43 +209,49 @@ class NC: # Notification Class
         """
         if self.level == 0:
             self.Level = "Empty Notification"
+            self.icon = QtGui.QIcon()
         elif self.level == 1:
             self.Level = "Error"
+            self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical)
         elif self.level == 2:
             self.Level = "Warning"
+            self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning)
         elif self.level == 3:
             self.Level = "Notification"
+            self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation)
         elif self.level == 4:
             self.Level = "Advanced Mode Notification"
+            self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation)
         elif self.level == 10:
             self.Level = "Direct Notification"
+            self.icon = QtGui.QIcon()
         else:
             self.Level = "Notification level "+str(self.level)
         return self.Level
   #----------#----------#
     def __add__(self,other):
         if self.Error != None:
-            return self.Error + str(other)
+            return str(self.Error) + str(other)
         else:
-            return self.Message + str(other)
+            return str(self.Message) + str(other)
 
     def __radd__(self,other):
         if self.Error != None:
-            return str(other) + self.Error
+            return str(other) + str(self.Error)
         else:
-            return str(other) + self.Message
+            return str(other) + str(self.Message)
 
     def __call__(self):
-        return self.Message
+        return str(self.Message)
 
     def __str__(self):
         if self.Error != None:
             if self.Message == None:
-                return "Exception at "+self.Time+":\n"+self.Error
+                return "Exception at "+str(self.Time)+":\n"+str(self.Error)
             else:
-                return self.Level+" at "+self.Time+":\n"+self.Message+"\n"+self.Error
+                return str(self.Level)+" at "+str(self.Time)+":\n"+str(self.Message)+"\n"+str(self.Error)
         else:
-            return self.Level+" at "+self.Time+":\n"+self.Message
+            return str(self.Level)+" at "+str(self.Time)+":\n"+str(self.Message)
 
 # -----------------------------------------------------------------------------------------------------------------
 
