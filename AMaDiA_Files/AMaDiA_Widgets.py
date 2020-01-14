@@ -221,11 +221,8 @@ class MplWidget_LaTeX(MplWidget):
                 ExceptionOutput(sys.exc_info())
             ExceptionOutput(sys.exc_info())
     
-    def Display(self,Text_L,Text_N,Font_Size,Use_LaTeX = False): # TODO: return NC intead of tuple
-        """
-        Retrun Value compatible with NotifyUser.\n
-        Returns (0,0) if everything worked, (3,str) if minor exception, (2,str) if medium exception, (1,str) if not able to display
-        """
+    def Display(self,Text_L,Text_N,Font_Size,Use_LaTeX = False):
+        """Returns a notification with all relevant information"""
         self.LastCall = [Text_L, Text_N, Font_Size, Use_LaTeX]
 
         #SIMPLIFY: https://matplotlib.org/3.1.1/_modules/matplotlib/text.html#Text _get_rendered_text_width and similar
@@ -236,7 +233,7 @@ class MplWidget_LaTeX(MplWidget):
 
         self.Text = Text_L
         self.Font_Size = Font_Size * 2
-        returnTuple = (0,0)
+        Notification = NC(lvl=0,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
         #-----------IMPORTANT-----------
         if Use_LaTeX:
             self.Text = Text_L
@@ -300,7 +297,7 @@ class MplWidget_LaTeX(MplWidget):
         try:
             self.canvas.draw()
         except common_exceptions:
-            returnTuple = (4,"Could not display in Mathmode")
+            Notification = NC(4,"Could not display in Mathmode",exc=sys.exc_info(),input=self.Text,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.Text = Text_N
             if Use_LaTeX:
                 self.UseTeX(True)
@@ -324,9 +321,7 @@ class MplWidget_LaTeX(MplWidget):
             try:
                 self.canvas.draw()
             except common_exceptions:
-                ExceptionOutput(sys.exc_info())
-                print("Trying to output without LaTeX")
-                returnTuple = (2,"Could not display with LaTeX")
+                Notification = NC(2,"Could not display with LaTeX. Displaying with matplotlib instead.",exc=sys.exc_info(),input=self.Text,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
                 self.Text = Text_N.replace("\limits","") # pylint: disable=anomalous-backslash-in-string
                 self.UseTeX(False)
                 self.canvas.ax.clear()
@@ -346,8 +341,7 @@ class MplWidget_LaTeX(MplWidget):
                 try:
                     self.canvas.draw()
                 except common_exceptions:
-                    ExceptionOutput(sys.exc_info())
-                    returnTuple = (1,"Could not display at all")
+                    Notification = NC(1,"Could not display at all.",exc=sys.exc_info(),input=self.Text,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
                     self.UseTeX(False)
                     self.canvas.ax.clear()
                     if Use_LaTeX:
@@ -371,13 +365,11 @@ class MplWidget_LaTeX(MplWidget):
                     try:
                         self.canvas.draw()
                     except common_exceptions:
-                        ExceptionOutput(sys.exc_info())
-                        returnTuple = (1,"Critical Error: MatPlotLib Display seems broken")
-                        print("Can not display anything")
+                        Notification = NC(1,"Critical Error: MatPlotLib Display seems broken. Could not display anything",exc=sys.exc_info(),input=ErrorText,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
                 
         finally:
             self.UseTeX(False)
-            return returnTuple
+            return Notification
 
 
 # -----------------------------------------------------------------------------------------------------------------
@@ -525,14 +517,14 @@ class MplWidget_CONTROL(MplWidget):
         plt.rc('text', usetex=TheBool)
         return matplotlib.rcParams['text.usetex']
     
-    def Display(self,sys1,Use_LaTeX = False, T=None, X0 = 0.0, U=0.0, Ufunc = ""):
+    def Display(self,sys1,Use_LaTeX = False, T=None, X0 = 0.0, U=0.0, Ufunc = ""): #TODO: Convert returnTuple to NC
         """
-        Retrun Value compatible with NotifyUser.
-        sys1 = System
-        Use_LaTeX = bool
-        T = Time steps at which the input is defined; values must be evenly spaced.
-        X0 = Initial condition
-        U = Input array giving input at each time T used for "Forced Response"-plot
+        Retrun value compatible as argument to init NC   \n
+        sys1 = System   \n
+        Use_LaTeX = bool   \n
+        T = Time steps at which the input is defined; values must be evenly spaced.   \n
+        X0 = Initial condition   \n
+        U = Input array giving input at each time T used for "Forced Response"-plot   \n
         Ufunc = string (Name of the function that created U)
         """
         returnTuple = (0,"")
@@ -781,7 +773,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
             Error = ExceptionOutput(sys.exc_info())
             self.window().NotifyUser(1,Error)
         
-    def SetColour(self,BG=None,FG=None):
+    def SetColour(self,BG=None,FG=None): #TODO: Convert returnTuple to NC
         returnTuple = (0,0)
         if BG != None and FG != None:
             super(MplWidget_CONTROL_single_plot, self).SetColour(BG,FG)
@@ -879,9 +871,9 @@ class MplWidget_CONTROL_single_plot(MplWidget):
         except common_exceptions:
             pass
 
-    def Plot(self,system,PlotName):
+    def Plot(self,system,PlotName): #TODO: Convert returnTuple to NC
         """
-        Retrun Value compatible with NotifyUser.
+        Retrun value compatible as argument to init NC
         """
         returnTuple = (0,"")
         self.FuncLabel = ""
@@ -1316,10 +1308,9 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
 class ListWidget(QtWidgets.QListWidget):
     def __init__(self, parent=None):
         super(ListWidget, self).__init__(parent)
-
-class HistoryWidget(ListWidget):
-    def __init__(self, parent=None):
-        super(HistoryWidget, self).__init__(parent)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.installEventFilter(self)
 
     def keyPressEvent(self,event):
@@ -1334,7 +1325,21 @@ class HistoryWidget(ListWidget):
                     Qt.QApplication.clipboard().setText(string)
                     event.accept()
                     return
-                elif len(SelectedItems)==1:
+            super(ListWidget, self).keyPressEvent(event)
+        except common_exceptions:
+            NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(ListWidget).keyPressEvent",input=str(event)).send()
+            super(ListWidget, self).keyPressEvent(event)
+
+class HistoryWidget(ListWidget):
+    def __init__(self, parent=None):
+        super(HistoryWidget, self).__init__(parent)
+        self.installEventFilter(self)
+
+    def keyPressEvent(self,event):
+        try:
+            if event == QtGui.QKeySequence.Copy:
+                SelectedItems = self.selectedItems()
+                if len(SelectedItems)==1:
                     item = SelectedItems[0]
                     if QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Normal":
                         Qt.QApplication.clipboard().setText(item.text())
@@ -1355,13 +1360,13 @@ class HistoryWidget(ListWidget):
                             and item.data(100).LaTeX_E != "Could not convert"):
                         Qt.QApplication.clipboard().setText(item.data(100).LaTeX_E)
                     else:
-                        NC(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode",win=self.window().windowTitle(),func="HistoryWidget.keyPressEvent",input=item.text()).send()
+                        NC(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode",win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=item.text()).send()
                         Qt.QApplication.clipboard().setText(item.text())
                     event.accept()
                     return
             super(HistoryWidget, self).keyPressEvent(event)
         except common_exceptions:
-            NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func="HistoryWidget.keyPressEvent",input=str(event)).send()
+            NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=str(event)).send()
             super(HistoryWidget, self).keyPressEvent(event)
 
     def eventFilter(self, source, event):
@@ -1568,9 +1573,92 @@ class HistoryWidget(ListWidget):
                     item.data(100).Tab_4_is = False
                     item.data(100).Tab_4_ref = None
 
+# -----------------------------------------------------------------------------------------------------------------
+class NotificationsWidget(QtWidgets.QSplitter):
+    def __init__(self, parent=None, Notifications=[]):
+        super(NotificationsWidget, self).__init__(parent)
+        #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        #sizePolicy.setHorizontalStretch(0)
+        #sizePolicy.setVerticalStretch(20)
+        #sizePolicy.setHeightForWidth(self.Splitter.sizePolicy().hasHeightForWidth())
+        #self.Splitter.setSizePolicy(sizePolicy)
+        self.setOrientation(QtCore.Qt.Horizontal)
+        self.NotificationList = NotificationListWidget(self)
+        self.NotificationInfo = NotificationInfoWidget(self)
+        self.NotificationList.setObjectName("NotificationList")
+        self.NotificationInfo.setObjectName("NotificationInfo")
+
+        for i in Notifications:
+            self.AddNotification(i)
+        
+        self.NotificationList.currentItemChanged.connect(self.NotificationInfo.ShowNotificationDetails)
+
+    def AddNotification(self,Notification):
+        try:
+            item = QtWidgets.QListWidgetItem()
+            item.setText(str(Notification))
+            item.setData(100,Notification)
+            item.setIcon(Notification.icon)
+            
+            self.NotificationList.addItem(item)
+            self.NotificationList.scrollToBottom()
+        except common_exceptions:
+            Error = ExceptionOutput(sys.exc_info())
+            text = "Could not add notification: "+Error
+            item = QtWidgets.QListWidgetItem()
+            item.setText(text)
+            item.setData(100,NC(1,"Could not add notification",err=Error,func=str(self.objectName())+".(NotificationsWidget).AddNotification",win=self.window().windowTitle()))
+            
+            self.NotificationList.addItem(item)
+            self.NotificationList.scrollToBottom()
+
 class NotificationListWidget(ListWidget):
     def __init__(self, parent=None):
         super(NotificationListWidget, self).__init__(parent)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.setAlternatingRowColors(True)
+
+class NotificationInfoWidget(ListWidget):
+    def __init__(self, parent=None):
+        super(NotificationInfoWidget, self).__init__(parent)
+        self.setAlternatingRowColors(True)
+        self.installEventFilter(self)
+        
+        item = QtWidgets.QListWidgetItem()
+        item.setText("For more information select a notification")
+        self.addItem(item)
+
+    def keyPressEvent(self,event):
+        try:
+            if event == QtGui.QKeySequence.Copy:
+                SelectedItems = self.selectedItems()
+                if len(SelectedItems)>1:
+                    string = ""
+                    for i in SelectedItems:
+                        string += i.text()
+                        string += "\n\n"
+                    Qt.QApplication.clipboard().setText(string)
+                    event.accept()
+                    return
+            super(NotificationInfoWidget, self).keyPressEvent(event)
+        except common_exceptions:
+            NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(NotificationInfoWidget).keyPressEvent",input=str(event)).send()
+            super(NotificationInfoWidget, self).keyPressEvent(event)
+
+    def ShowNotificationDetails(self,Notification):
+        try:
+            Notification = Notification.data(100)
+            self.clear()
+            for k,v in Notification.items():
+                try:
+                    if v != None:
+                        item = QtWidgets.QListWidgetItem()
+                        item.setText(k+str(v))
+                        self.addItem(item)
+                except common_exceptions:
+                    NC(msg="Could not display{}".format(str(k)),exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(NotificationInfoWidget).ShowNotificationDetails").send()
+        except common_exceptions:
+            NC(exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(NotificationInfoWidget).ShowNotificationDetails").send()
 
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -2324,6 +2412,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
 
     def mouseReleaseEvent(self,event):
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.window().AWWF_CentralWidget.moving = False
         if event.button() == QtCore.Qt.LeftButton and self.moving:
             self.moving = False
             pos = self.window().pos()
@@ -2453,6 +2542,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
 
     def mouseReleaseEvent(self,event):
         self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.window().AWWF_CentralWidget.moving = False
         if event.button() == QtCore.Qt.LeftButton and self.moving:
             self.moving = False
             pos = self.window().pos()

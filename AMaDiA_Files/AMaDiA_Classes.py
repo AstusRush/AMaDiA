@@ -62,6 +62,7 @@ class AMaS: # Astus' Mathematical Structure
         self.TimeStamp = AF.cTimeSStr()
         self.TimeStampFull = AF.cTimeFullStr()
         self.mutex = QtCore.QMutex()
+        self.NotificationMutex = QtCore.QMutex()
         self.Name = "No Name Given"
         self.init_bools()
         self.init_Flags()
@@ -72,8 +73,8 @@ class AMaS: # Astus' Mathematical Structure
         try:
             self.INIT_WhatAmI(string)
         except common_exceptions :
-            Error = ExceptionOutput(sys.exc_info())
-            self.Exists = Error
+            self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
+            self.Exists = False
         else:
             self.Exists = True
     
@@ -128,8 +129,8 @@ class AMaS: # Astus' Mathematical Structure
         self.init_Critical()
 
     def init_Critical(self):
-        self.NotificationsStr = ""
-        self.NotificationsLevel = 100
+        with QtCore.QMutexLocker(self.NotificationMutex):
+            self.NotificationList = []
         self.Text = AF.AstusParseInverse(self.string)
         self.Solution = "Not evaluated yet"
         self.Equation = "? = " + self.Text
@@ -263,7 +264,7 @@ class AMaS: # Astus' Mathematical Structure
             elif self.f_collect == None and QtWidgets.QApplication.instance().optionWindow.cb_F_collect.isChecked():
                 expr = sympy.collect(expr,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_collect.text()))
         except common_exceptions :
-            NC(2,"Could not collect term",exc=sys.exc_info(),func="AMaS.ExecuteFlags",input=self.Input).send()
+            self.Notify(NC(2,"Could not collect term",exc=sys.exc_info(),func="AMaS.ExecuteFlags",input=self.Input))
         try:
             if self.f_cancel == True or self.f_cancel == None and QtWidgets.QApplication.instance().optionWindow.cb_F_cancel.isChecked():
                 expr = sympy.cancel(expr)
@@ -292,25 +293,34 @@ class AMaS: # Astus' Mathematical Structure
 
  # ---------------------------------- Notifications ----------------------------------
 
-    def Notifications(self):
-        """Returns the NotificationsStr and clears it"""
-        lvl , rtnStr = self.NotificationsLevel, self.NotificationsStr
-        self.NotificationsStr = ""
-        self.NotificationsLevel = 100
-        return lvl, rtnStr
+    def sendNotifications(self,win=None):
+        """
+        Sends all Notifications and clears them   \n
+        Optionally sets the window of all notifications to win
+        """
+        with QtCore.QMutexLocker(self.NotificationMutex):
+            if win != None:
+                for i in self.NotificationList:
+                    i.w(win)
+            for i in self.NotificationList:
+                i.send()
+            self.NotificationList = []
 
-    def Notify(self,lvl,text):
+    def Notify(self,Notification):
         """Used to add Notifications"""
-        self.NotificationsStr += text
-        self.NotificationsStr += "\n"
-        if lvl < self.NotificationsLevel:
-            self.NotificationsLevel = lvl
+        with QtCore.QMutexLocker(self.NotificationMutex):
+            if Notification.i() == "None":
+                Notification.i(self.Input)
+            elif Notification.i()!=self.Input:
+                In = Notification.i()
+                Notification.i("    self.Input: "+self.Input+"\nSpecific Input: "+In)
+            self.NotificationList.append(Notification)
 
     def NotifyFromNumpy(self,text,flag=""):
         """Used to add Notifications from Numpy"""
         print(text,flag)
         text += flag
-        self.Notify(3,text)
+        self.Notify(NC(3,text))
 
  # ---------------------------------- LaTeX Converter ----------------------------------
 
@@ -337,7 +347,7 @@ class AMaS: # Astus' Mathematical Structure
                 #self.LaTeX = sympy.latex(expr)
                 self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
         except common_exceptions:
-            NC(exc=sys.exc_info(),lvl=2,msg="Could not convert to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX").send()
+            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX"))
             #error = ExceptionOutput(sys.exc_info())
             #ErrTxt = "Could not convert to LaTeX: " + error
             #self.Notify(2,ErrTxt)
@@ -407,7 +417,7 @@ class AMaS: # Astus' Mathematical Structure
                 #self.LaTeX_E = sympy.latex(expr)
                 self.LaTeX_E = AF.LaTeX(temp,local_dict=self.VariablesUnev,evalf=1)
         except common_exceptions:
-            NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Equation to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX_Equation").send()
+            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Equation to LaTeX",input=self.Equation,func="AMaS.ConvertToLaTeX_Equation"))
             #error = ExceptionOutput(sys.exc_info())
             #ErrTxt = "Could not convert Equation to LaTeX: " + error
             #self.Notify(2,ErrTxt)
@@ -493,7 +503,7 @@ class AMaS: # Astus' Mathematical Structure
             if expr == None:
                 try:
                     if self.Solution == "Not evaluated yet":
-                        raise Exception("Not evaluated yet")
+                        raise Exception("Equation has not been evaluated yet")
                     if "=" in self.Solution:
                         parts = self.Solution.split("=")
                         self.LaTeX_S = ""
@@ -509,25 +519,23 @@ class AMaS: # Astus' Mathematical Structure
                         expr = parse_expr(self.Solution,evaluate=False,local_dict=self.Variables)
                         self.LaTeX_S = sympy.latex(expr)
                 except common_exceptions:
-                    Error = ExceptionOutput(sys.exc_info())
+                    if expr==None: expr=self.Solution
+                    self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Equation"))
                     self.LaTeX_S = "Could not convert"
                     self.LaTeX_S_L = self.Solution
                     self.LaTeX_S_N = self.Solution
-                    return Error
+                    return False
             self.LaTeX_S_L = r"$\displaystyle "
             self.LaTeX_S_N = "$"
             self.LaTeX_S_L += self.LaTeX_S
             self.LaTeX_S_N += self.LaTeX_S
             self.LaTeX_S_L += "$"
             self.LaTeX_S_N += "$"
-        except common_exceptions: #as inst:
-            NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX_Equation").send()
+        except common_exceptions:
+            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Equation"))
             return False
-            #Error = ExceptionOutput(sys.exc_info())
-            #ErrTxt = "Could not convert Solution to LaTeX: " + Error
-            #self.Notify(2,ErrTxt)
-            #return Error
-        return True
+        else:
+            return True
         
 
  # ---------------------------------- Calculator Methods ----------------------------------
@@ -541,13 +549,13 @@ class AMaS: # Astus' Mathematical Structure
         elif Method==1:
             return self.Evaluate_SymPy_old()
         else:
-            NC(1,"Invalid evaluate method number. Using standard method instead.",func="AMaS.Evaluate",input=self.Input).send()
+            self.Notify(NC(2,"Invalid evaluate method number. Using standard method instead.",func="AMaS.Evaluate",input=self.Input))
             return self.Evaluate_SymPy_old()
 
 
     def Evaluate_SymPy(self):
         separator = " = "
-        Error = "No Error"
+        Notification = NC(0)
         
         try:
             if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
@@ -560,10 +568,10 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 pass #TODO: Try to solve it
             except common_exceptions:
-                Error = ExceptionOutput(sys.exc_info())
+                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy",exc=sys.exc_info())
             # TODO: reimplement the two solvers from the old one (one equalsign or none) but make the code less redundant and deal with dicts better... See BUG_INPUT.txt
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
+            Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy",exc=sys.exc_info())
             self.Solution = "Fail"
         
         self.Equation = self.Solution + separator
@@ -575,7 +583,8 @@ class AMaS: # Astus' Mathematical Structure
         self.Solution = AF.number_shaver(self.Solution)
         
         if self.Solution == "Fail":
-            return Error
+            self.Notify(Notification)
+            return False
         else:
             return True
         return True
@@ -584,7 +593,7 @@ class AMaS: # Astus' Mathematical Structure
         #TODO: CALCULATE EVEN MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
-
+        Notification = NC(0)
         ODE = False
         if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
             try:
@@ -595,8 +604,7 @@ class AMaS: # Astus' Mathematical Structure
         if ODE == True:
             self.init_Flags() # Reset All Flags
             return ODE
-
-        Error = "None"
+        
         if self.cstr.count("=") == 1 :
             try:
                 temp = self.cstr
@@ -620,10 +628,9 @@ class AMaS: # Astus' Mathematical Structure
                         ans = sympy.dsolve(ans,simplify=self.f_simplify)
                     try:
                         classification = sympy.classify_ode(ParsedInput)
-                        print("ODE Classification:\n",classification)
-                        NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",input=self.Input).send()
+                        self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",input=self.Input))
                     except common_exceptions:
-                        Error = ExceptionOutput(sys.exc_info())
+                        Notification = NC(1,"Could not classify ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
                     try:
                         ansF = self.ExecuteFlags(ans)
                         self.Solution = str(ansF.lhs) + " = "
@@ -634,7 +641,7 @@ class AMaS: # Astus' Mathematical Structure
                         self.Solution = str(ansF)
                         self.ConvertToLaTeX_Solution(ansF)
                 except common_exceptions:
-                    Error = ExceptionOutput(sys.exc_info())
+                    Notification = NC(1,"Could not solve as ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
                     if type(ans)==list:
                         self.Solution = "{ "
                         for ji in ans:
@@ -645,7 +652,7 @@ class AMaS: # Astus' Mathematical Structure
                                     else:
                                         j = sympy.solve(ji,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
                                 except common_exceptions:
-                                    NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input).send()
+                                    self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input))
                                     if self.f_simplify==None:
                                         j = sympy.solve(ji,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                                     else:
@@ -690,8 +697,7 @@ class AMaS: # Astus' Mathematical Structure
                                 else:
                                     ans = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
                             except common_exceptions:
-                                Error = ExceptionOutput(sys.exc_info())
-                                NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input).send()
+                                self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input))
                                 if self.f_simplify==None:
                                     ans = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                                 else:
@@ -726,7 +732,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.ConvertToLaTeX_Solution()
                     
             except common_exceptions: #as inst:
-                Error = ExceptionOutput(sys.exc_info())
+                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -755,10 +761,9 @@ class AMaS: # Astus' Mathematical Structure
                             ans = sympy.dsolve(ans,simplify=self.f_simplify)
                         try:
                             classification = sympy.classify_ode(ParsedInput)
-                            print("ODE Classification:\n",classification)
-                            NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",input=self.Input).send()
+                            self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",input=self.Input))
                         except common_exceptions:
-                            Error = ExceptionOutput(sys.exc_info())
+                            Notification = NC(1,"Could not classify ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
                         ansF = self.ExecuteFlags(ans)
                         try:
                             self.Solution = str(ansF.lhs) + " = "
@@ -781,8 +786,7 @@ class AMaS: # Astus' Mathematical Structure
                                             else:
                                                 ans_S = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
                                         except common_exceptions:
-                                            Error = ExceptionOutput(sys.exc_info())
-                                            NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input).send()
+                                            self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input))
                                             if self.f_simplify==None:
                                                 ans_S = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                                             else:
@@ -804,7 +808,7 @@ class AMaS: # Astus' Mathematical Structure
                         self.ConvertToLaTeX_Solution(ansF)
                     #self.Solution = self.Solution.rstrip('0').rstrip('.') if '.' in self.Solution else self.Solution #CLEANUP: Delete this, Already implemented
             except common_exceptions: #as inst:
-                Error = ExceptionOutput(sys.exc_info())
+                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -824,8 +828,10 @@ class AMaS: # Astus' Mathematical Structure
                                         # The way of only converting the displayed Equation works does not have this problem.
                                         # The reason the Solution should be inverse-parsed is to give the user a prettier solution to copy.
         
+        
         if self.Solution == "Fail":
-            return Error
+            self.Notify(Notification)
+            return False
         else:
             return True
         
@@ -854,15 +860,13 @@ class AMaS: # Astus' Mathematical Structure
             ans = ans.evalf()
             self.Solution = str(ans)
         except common_exceptions: #as inst:
-            Error = ExceptionOutput(sys.exc_info())
-            #print(inst.args)
-            #if callable(inst.args):
-            #    print(inst.args())
+            self.Notify(NC(1,"Could not solve",func="AMaS.EvaluateLaTeX",exc=sys.exc_info()))
             self.Solution = "Fail"
-            return Error
+            return False
         return True
 
     def Solve_ODE_Version_1(self):
+        Notification = NC(0)
         try:
             Input = self.Input
             Input = Input.split(",")
@@ -879,7 +883,7 @@ class AMaS: # Astus' Mathematical Structure
             equation = parse_expr(equation,local_dict=self.Variables)
             classification = sympy.classify_ode(equation)
             print("ODE Classification:\n",classification)
-            NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Solve_ODE_Version_1",input=self.Input).send()
+            self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Solve_ODE_Version_1",input=self.Input))
             ics = {}
             for i in Input:
                 f,y=i.split("=")
@@ -910,7 +914,7 @@ class AMaS: # Astus' Mathematical Structure
                 self.ConvertToLaTeX_Solution(equation)
 
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
+            Notification = NC(1,"Could not solve ODE",func="AMaS.Solve_ODE_Version_1",exc=sys.exc_info())
             self.Solution = "Fail"
         
         self.Equation = AF.AstusParseInverse(self.Solution, True) + "   <==   "
@@ -918,7 +922,7 @@ class AMaS: # Astus' Mathematical Structure
         self.ConvertToLaTeX_Equation()
             
         if self.Solution == "Fail":
-            return Error
+            return Notification
         else:
             return True
             
@@ -956,10 +960,10 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables)
             except common_exceptions: #as inst:
-                Error = ExceptionOutput(sys.exc_info())
+                self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
                 self.plottable = False
                 np.seterrcall(oldErrCall)
-                return Error
+                return False
             try:
                 Function = Function.doit()
             except common_exceptions: #as inst:
@@ -1028,9 +1032,9 @@ class AMaS: # Astus' Mathematical Structure
                     else:
                         raise Exception("Can not calculate plot data")
                 except common_exceptions: #as inst:
-                    Error = ExceptionOutput(sys.exc_info())
+                    self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
                     np.seterrcall(oldErrCall)
-                    return Error
+                    return False
                     
             self.plot_data_exists = True
             np.seterrcall(oldErrCall)
@@ -1066,10 +1070,8 @@ class AMaS: # Astus' Mathematical Structure
             self.ConvertToLaTeX()
             return True
         except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            ErrTxt = "Could not update Equation: " + Error
-            self.Notify(1,ErrTxt)
-            return ErrTxt
+            self.Notify(NC(lvl=1,msg="Could not update Equation",exc=sys.exc_info(),func="AMaS.UpdateEquation"))
+            return False
 
 
  # ---------------------------------- ... ----------------------------------

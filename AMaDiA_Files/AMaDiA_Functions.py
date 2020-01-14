@@ -37,20 +37,17 @@ class NotificationEvent(QtCore.QEvent):
         self.N = N
 
 class NC: # Notification Class
+    """
+    This class represents all Notifications in AMaDiA  \n
+    lvl: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification , 10 = Direct Notification
+    """
     def __init__(self, lvl=None, msg=None, time=None, input=None, err=None, tb=None, exc=None, win=None, func=None):
         """
         Creates a new notification object  \n
         lvl: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification , 10 = Direct Notification
         """
         self._time_time = timetime()
-        self.exc_type, self.exc_obj, self.exc_tb = None,None,None
-        self._time, self.Time, self.Error = None,None,None
-        self.Window, self.ErrorTraceback, self.Function = None,None,None
-        self.level, self.Level, self.Message = 1,"Notification level 1",None
-        self.Input = None
-        self.itemDict = {"Time":self.Time,"Level":self.Level,"Message":self.Message,"Error":self.Error,
-                        "Error Traceback":self.ErrorTraceback,"Function":self.Function,"Window":self.Window,"Input":self.Input}
-        self.icon = QtGui.QIcon()
+        self._init_Values()
         try:
             if exc != None:
                 if exc == True:
@@ -71,13 +68,15 @@ class NC: # Notification Class
                 self.Window = win
                 self.Function = func
                 self.Input = input
-                self.Error = str(self.exc_type)+": "+str(self.exc_obj)
                 self.ErrorTraceback = str(self.exc_type)+"  in "+str(fName)+"  line "+str(self.exc_tb.tb_lineno)
                 self.GenerateLevelName()
                 print(self.Time,":")
                 if len(str(self.exc_obj))<50:
+                    self.Error = str(self.exc_type)+": "+str(self.exc_obj)
                     print(self.exc_type, " in", fName, " line", self.exc_tb.tb_lineno,": ", self.exc_obj)
                 else:
+                    self.Error = str(self.exc_type)
+                    self.ErrorLongDesc = str(self.exc_obj)
                     print(self.exc_type, " in", fName, " line", self.exc_tb.tb_lineno)
             else:
                 if type(lvl)==str:
@@ -97,10 +96,7 @@ class NC: # Notification Class
                 self.ErrorTraceback = tb
                 self.GenerateLevelName()
         except common_exceptions as inst:
-            self.exc_type, self.exc_obj, self.exc_tb = None,None,None
-            self._time, self.Time, self.Error = None,None,None
-            self.Window, self.ErrorTraceback, self.Function = None,None,None
-            self.level, self.Level, self.Message = 1,"Notification level 1",None
+            self._init_Values()
             print(cTimeSStr(),": An exception occurred while trying to create a Notification")
             print(inst)
             self._time = datetime.datetime.now() if time == None else time
@@ -110,6 +106,17 @@ class NC: # Notification Class
             self.Error = str(inst)
             self.GenerateLevelName()
             self.send()
+
+    def _init_Values(self):
+        self.exc_type, self.exc_obj, self.exc_tb = None,None,None
+        self._time, self.Time, self.Error = None,None,None
+        self.Window, self.ErrorTraceback, self.Function = None,None,None
+        self.level, self.Level, self.Message = 1,"Notification level 1",None
+        self.Input, self.ErrorLongDesc = None,None
+        self.icon = QtGui.QIcon()
+        self.itemDict = {"Time:\n":self.Time,"Level: ":self.Level,"Message:\n":self.Message,
+                        "Error:\n":self.Error,"Error Description:\n":self.ErrorLongDesc,"Error Traceback:\n":self.ErrorTraceback,
+                        "Function:\n":self.Function,"Window:\n":self.Window,"Input:\n":self.Input}
   #----------#----------#
     def send(self):
         """Displays this notification (This method is thread save but this object should not be modified after using send)"""
@@ -126,8 +133,9 @@ class NC: # Notification Class
         Returns self.itemDict.items()   \n
         self.itemDict contains all relevant data about this notification.
         """
-        self.itemDict = {"Time":self.Time,"Level":"({}) {}".format(str(self.level),self.Level),"Message":self.Message,"Error":self.Error,
-                        "Error Traceback":self.ErrorTraceback,"Function":self.Function,"Window":self.Window,"Input":self.Input}
+        self.itemDict = {"Time:\n":self.Time,"Level: ":"({})\n{}".format(str(self.level),self.Level),"Message:\n":self.Message,
+                        "Error:\n":self.Error,"Error Description:\n":self.ErrorLongDesc,"Error Traceback:\n":self.ErrorTraceback,
+                        "Function:\n":self.Function,"Window:\n":self.Window,"Input:\n":self.Input}
         return self.itemDict.items()
 
     def unpack(self):
@@ -195,6 +203,16 @@ class NC: # Notification Class
         if func != None:
             self.Function = str(func)
         return str(self.Function)
+
+    def w(self, win=None):
+        """
+        Returns str(Window)  \n
+        A str can be given to change the Window  \n
+        Window is the name of the window from which this notification originates
+        """
+        if win != None:
+            self.Window = str(win)
+        return str(self.Window)
 
     def i(self, input=None):
         """

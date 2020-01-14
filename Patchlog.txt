@@ -484,5 +484,20 @@ v0.15.12.2: Bugfix
 + Fixed a crash when trying to use the control code input without advanced mode
 + When a notification has no message but an error, the error is used as the message.
 + Fixed a minor bug for the LaTeX converter
-++ The bug had a workaround so it was not noticable for the user but this fix might increase quality in some cases
+++ The bug had a workaround so it was not noticeable for the user but this fix might increase quality in some cases
+
+v0.15.13: Notification Class III
++ Added new NotificationWidget that is used by the notification window and includes all methods
+++ Also made changes to the NotificationListWidget and created the NotificationInfoWidget
+++ Notifications in the NotificationListWidget now display their icon (if they have one)
++ Cleaned up the NotifyUser method from AMaDiA_Main_App and removed a lot of redundant code and methods
+++ The icon attribute of NC from v0.15.12.1 is used here
++ Reworked the notification system of AMaS to use NC everywhere and adjusted the workers and threads accordingly
+++ This new system also represents the first use of mutex in AMaDiA (I should really get to make AMaS more thread save...)
++ Reworked the notification system of the LaTeX displays to use NC everywhere
+++ The two control widgets are the last things that need to switch to NC
++ Fixed a crash when disabling Threadpool-mode
++ Fixed the MTabWidget and MMenuBar moving when clicking on the top edge without moving the mouse
++ Made some minor modifications on NC
++ Fixed a bug that would cause notifications to apply wrong colours when changing the colour palette
 

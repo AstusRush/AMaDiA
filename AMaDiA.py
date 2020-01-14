@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.12.2"
+Version = "0.15.13"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -202,65 +202,15 @@ class AMaDiA_Notification_Window(AW.AWWF):
             self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
             self.gridLayout.setObjectName("gridLayout")
             
-            self.TheList = AW.NotificationListWidget(self)
-            self.TheList.setObjectName("TheList")
-            self.TheList.setAlternatingRowColors(True)
-            self.gridLayout.addWidget(self.TheList, 0, 0)
-            
-            self.TheInfo = AW.ListWidget(self)
-            self.TheInfo.setObjectName("TheInfo")
-            self.TheInfo.setAlternatingRowColors(True)
-            self.gridLayout.addWidget(self.TheInfo, 0, 1)
+            self.NotificationsWidget = AW.NotificationsWidget(self, Notifications)
+            self.NotificationsWidget.setObjectName("NotificationsWidget")
+            self.gridLayout.addWidget(self.NotificationsWidget, 0, 0)
             
             self.setCentralWidget(self.centralwidget)
             
-            item = QtWidgets.QListWidgetItem()
-            item.setText("For more information select a notification")
-            self.TheInfo.addItem(item)
-            
-            for i in Notifications:
-                self.AddNotification(i)
-            
             self.setAutoFillBackground(True)
-            #self.TheList.itemPressed.connect(self.ShowNotificationDetails)
-            #self.TheList.itemSelectionChanged.connect(self.ShowNotificationDetails)
-            self.TheList.currentItemChanged.connect(self.ShowNotificationDetails)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
-
-    def AddNotification(self,Notification):
-        try:
-            item = QtWidgets.QListWidgetItem()
-            item.setText(str(Notification))
-            item.setData(100,Notification)
-            
-            self.TheList.addItem(item)
-            self.TheList.scrollToBottom()
-        except common_exceptions:
-            Error = ExceptionOutput(sys.exc_info())
-            text = "Could not add notification: "+Error
-            item = QtWidgets.QListWidgetItem()
-            item.setText(text)
-            item.setData(100,NC(1,"Could not add notification",err=Error,func="AMaDiA_Notification_Window.AddNotification",win=self.windowTitle()))
-            
-            self.TheList.addItem(item)
-            self.TheList.scrollToBottom()
-
-    def ShowNotificationDetails(self,Notification):
-        try:
-            #Notification = self.TheList.currentItem
-            Notification = Notification.data(100)
-            self.TheInfo.clear()
-            for k,v in Notification.items():
-                try:
-                    if v != None:
-                        item = QtWidgets.QListWidgetItem()
-                        item.setText(k+":\n"+str(v))
-                        self.TheInfo.addItem(item)
-                except common_exceptions:
-                    NC(msg="Could not display{}".format(str(k)),exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_Notification_Window.ShowNotificationDetails").send()
-        except common_exceptions:
-            NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_Notification_Window.ShowNotificationDetails").send()
 
 class AMaDiA_exec_Window(AW.AWWF):
     def __init__(self,parent = None):
@@ -388,7 +338,6 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
         self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
         self.Colour_Font_Init()
-        self.init_Notification_Flash()
 
         self.optionWindow = AMaDiA_options_window(self)
 
@@ -396,12 +345,12 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.MainWindow = TheWindow
     
     #def notify(self, obj, event): # Reimplementation of notify that does nothing other than redirecting to normal implementation for now...
-    #    try:
-    #        return super().notify(obj, event)
-    #    except:
-    #        ExceptionOutput(sys.exc_info())
-    #        print("Caught: ",obj,event)
-    #        return False
+        #try:
+        #    return super().notify(obj, event)
+        #except:
+        #    ExceptionOutput(sys.exc_info())
+        #    print("Caught: ",obj,event)
+        #    return False
     
     def eventFilter(self, source, event):
         if event.type() == 6: # QtCore.QEvent.KeyPress
@@ -523,6 +472,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         #self.processEvents()
         self.setPalette(self.Palette)
         QtWidgets.QToolTip.setPalette(self.Palette)
+        self.init_Notification_Flash()
 
         #FramePalette = self.palette()
         #brush = QtGui.QBrush(QtGui.QColor(60, 60, 60))
@@ -682,30 +632,35 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 
     def NotifyUser(self, N):
         """
-        type N = NC  \n
         Sends the notification N to the user
         """
-        Type = N.l()
-        
-        if Type == 0:
+        if N.l() == 0:
             return
-        elif Type == 1:
-            self.NotifyUser_Error(N)
-        elif Type == 2:
-            self.NotifyUser_Warning(N)
-        elif Type == 3:
-            self.NotifyUser_Notification(N)
-        elif Type == 4:
-            if self.MainWindow.Menu_Options_action_Advanced_Mode.isChecked():
-                self.NotifyUser_Notification(N)
-        elif Type == 10:
-            self.NotifyUser_Direct(N)
-        else:
-            nText = "Notification of type "+str(Type)
-            nText += " (Type unknown):\n"
-            nText += N.m()
-            N.m(nText)
-            self.NotifyUser_Warning(N)
+        elif N.l() in [10]:
+            Error_Text_TT,icon = self.ListVeryRecentNotifications(N)
+            Error_Text_TT = N.Level + " at " + N.t() + Error_Text_TT
+            for w in self.topLevelWidgets():
+                for i in w.findChildren(AW.TopBar_Widget):
+                    if i.IncludeErrorButton:
+                        i.Error_Label.setText(N.m())
+                        i.Error_Label.setToolTip(Error_Text_TT)
+                        i.Error_Label.setIcon(icon)
+        elif N.l()!=4 or self.optionWindow.cb_O_AdvancedMode.isChecked():
+            Text = N.Level + " at " + N.t()
+            Error_Text_TT,icon = self.ListVeryRecentNotifications(N)
+            for w in self.topLevelWidgets():
+                for i in w.findChildren(AW.TopBar_Widget):
+                    if i.IncludeErrorButton:
+                        i.Error_Label.setText(Text)
+                        i.Error_Label.setToolTip(Error_Text_TT)
+                        i.Error_Label.setIcon(icon)
+            if N.l() in [1]:
+                self.Notification_Flash_Red.start()
+            elif N.l() in [2]:
+                self.Notification_Flash_Yellow.start()
+            elif N.l() in [3,4]:
+                self.Notification_Flash_Blue.start()
+        
         self.Notification_List.append(N)
         self.S_New_Notification.emit(N)
         # Allow the button to adjust to the new text:
@@ -719,85 +674,27 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         cTime = time.time()
         Error_Text_TT = N.m() if N.l()!=10 else ""
         level = N.l()
+        icon = N.icon
         for i in range(len(self.Notification_List)):
             if i< 10 and cTime - self.Notification_List[-i-1]._time_time < 2 and len(Error_Text_TT.splitlines())<40:
-                Error_Text_TT += "\n\n"
-                if self.Notification_List[-i-1].l() == 10:
-                    Error_Text_TT += "Direct Notification at " + N.t()+" :\n"
-                Error_Text_TT += self.Notification_List[-i-1].m()
-                cTime = self.Notification_List[-i-1]._time_time
-                if level > self.Notification_List[-i-1].l():
-                    level = self.Notification_List[-i-1].l()
+                if self.Notification_List[-i-1].l()!=0 and (self.Notification_List[-i-1].l()!=4 or self.optionWindow.cb_O_AdvancedMode.isChecked()):
+                    Error_Text_TT += "\n\n"
+                    if self.Notification_List[-i-1].l() == 10:
+                        Error_Text_TT += "Direct Notification at " + N.t()+" :\n"
+                    Error_Text_TT += self.Notification_List[-i-1].m()
+                    cTime = self.Notification_List[-i-1]._time_time
+                    if level > self.Notification_List[-i-1].l():
+                        level = self.Notification_List[-i-1].l()
+                        icon = self.Notification_List[-i-1].icon
             else:
                 break
-        return (Error_Text_TT,level)
-
-    def NotifyUser_Error(self,N):
-        Text = "Error at " + N.t()
-        Error_Text_TT = self.ListVeryRecentNotifications(N)[0]
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.TopBar_Widget):
-                if i.IncludeErrorButton:
-                    i.Error_Label.setText(Text)
-                    i.Error_Label.setToolTip(Error_Text_TT)
-                    i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
-
-        self.Notification_Flash_Red.start()
-
-    def NotifyUser_Warning(self,N):
-        Text = "Warning at " + N.t()
-        Error_Text_TT,level = self.ListVeryRecentNotifications(N)
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.TopBar_Widget):
-                if i.IncludeErrorButton:
-                    i.Error_Label.setText(Text)
-                    i.Error_Label.setToolTip(Error_Text_TT)
-                    if level == 1:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
-                    else:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
-
-        self.Notification_Flash_Yellow.start()
-
-    def NotifyUser_Notification(self,N):
-        Text = "Notification at " + N.t()
-        Error_Text_TT,level = self.ListVeryRecentNotifications(N)
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.TopBar_Widget):
-                if i.IncludeErrorButton:
-                    i.Error_Label.setText(Text)
-                    i.Error_Label.setToolTip(Error_Text_TT)
-                    if level == 1:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
-                    elif level == 2:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
-                    else:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
-
-        self.Notification_Flash_Blue.start()
-
-    def NotifyUser_Direct(self,N):
-        Error_Text_TT,level = self.ListVeryRecentNotifications(N)
-        Error_Text_TT = "Direct Notification at " + N.t() + Error_Text_TT
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.TopBar_Widget):
-                if i.IncludeErrorButton:
-                    i.Error_Label.setText(N.m())
-                    i.Error_Label.setToolTip(Error_Text_TT)
-                    if level == 1:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical))
-                    elif level == 2:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
-                    elif level == 3:
-                        i.Error_Label.setIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
-                    else:
-                        i.Error_Label.setIcon(QtGui.QIcon())
+        return (Error_Text_TT,icon)
 
  # ---------------------------------- SubWindows ----------------------------------
     
     def Show_Notification_Window(self):
         self.AMaDiA_Notification_Window = AMaDiA_Notification_Window(self.Notification_List)
-        self.S_New_Notification.connect(self.AMaDiA_Notification_Window.AddNotification)
+        self.S_New_Notification.connect(self.AMaDiA_Notification_Window.NotificationsWidget.AddNotification)
         self.AMaDiA_Notification_Window.show()
 
     def Show_AMaDiA_exec_Window(self):
@@ -1465,7 +1362,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_1_InputField.setText(Text)
 
     def ToggleThreadMode(self):
-        if self.Menu_Options_action_Use_Threadpool.isChecked():
+        if self.Menu_DevOptions_action_Use_Threadpool.isChecked():
             self.Threading = "POOL"
         else:
             self.Threading = "LIST"
@@ -1801,9 +1698,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.ThreadList[ID].ReturnError.connect(self.Error_Redirect)
         self.ThreadList[ID].start()
 
-    def Error_Redirect(self, AMaS_Object , ErrorType , Error_Text , ReturnFunction , ID=-1):
+    def Error_Redirect(self, AMaS_Object , ReturnFunction , ID=-1):
         #IMPROVE: Improve the Error_Redirect
-        NC(ErrorType,Error_Text,func="Thread was expected to return to: "+str(ReturnFunction),win=self.windowTitle(),input=AMaS_Object.Input).send()
+        AMaS_Object.sendNotifications(self.windowTitle())
 
     def Set_AMaS_Flags(self,AMaS_Object, f_eval = None):
         if f_eval == None:
@@ -1886,11 +1783,11 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def Tab_2_F_Display(self , AMaS_Object , part = "Normal"):
         
         self.HistoryHandler(AMaS_Object,2)
+        Notification = NC(0)
         
         if part == "Normal":
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX)
-            latexInput = AMaS_Object.LaTeX_L
-            returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
+            Notification = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_L, AMaS_Object.LaTeX_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
@@ -1898,8 +1795,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             if AMaS_Object.LaTeX_E == "Not converted yet":
                 AMaS_Object.ConvertToLaTeX_Equation()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_E)
-            latexInput = AMaS_Object.LaTeX_E_L
-            returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
+            Notification = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
@@ -1907,12 +1803,13 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             if AMaS_Object.LaTeX_S == "Not converted yet":
                 AMaS_Object.ConvertToLaTeX_Solution()
             self.Tab_2_LaTeXOutput.setText(AMaS_Object.LaTeX_S)
-            latexInput = AMaS_Object.LaTeX_S_L
-            returnTuple = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_S_L, AMaS_Object.LaTeX_S_N
+            Notification = self.Tab_2_Viewer.Display(AMaS_Object.LaTeX_S_L, AMaS_Object.LaTeX_S_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
-        NC(returnTuple,func="AMaDiA_Main_Window.Tab_2_F_Display",win=self.windowTitle(),input=latexInput).send()
+        #Notification.f("AMaDiA_Main_Window.Tab_2_F_Display")
+        #Notification.w(self.windowTitle())
+        Notification.send()
          
  # ---------------------------------- Tab_3_1_ 2D-Plot ----------------------------------
     def Tab_3_1_F_Plot_Button(self):
@@ -2271,12 +2168,13 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def Tab_4_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
         self.Tab_4_Currently_Displayed = AMaS_Object.Equation
         self.Tab_4_Currently_Displayed_Solution = AMaS_Object.Solution
-        returnTuple = self.Tab_4_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
+        Notification = self.Tab_4_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
                                         ,self.TopBar.Font_Size_spinBox.value()
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
-        if returnTuple[0] != 0:
-            NC(returnTuple[0],returnTuple[1],func="AMaDiA_Main_Window.Tab_4_F_Display",win=self.windowTitle(),input=AMaS_Object.LaTeX_E_L).send()
+        Notification.f("AMaDiA_Main_Window.Tab_4_F_Display")
+        Notification.w(self.windowTitle())
+        Notification.send()
         
     def Tab_4_F_Display_Matrix(self,Name,Matrix):
         Text = sympy.latex(Matrix)
@@ -2291,12 +2189,13 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         Text1,Text2 = Text+Text1 , Text+Text2
         self.Tab_4_Currently_Displayed = Text + str(Matrix)
         self.Tab_4_Currently_Displayed_Solution = str(Matrix)
-        returnTuple = self.Tab_4_Display.Display(Text1,Text2
+        Notification = self.Tab_4_Display.Display(Text1,Text2
                                         ,self.TopBar.Font_Size_spinBox.value()
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )
-        if returnTuple[0] != 0:
-            NC(returnTuple[0],returnTuple[1],func="AMaDiA_Main_Window.Tab_4_F_Display_Matrix",win=self.windowTitle(),input=Text1).send()
+        Notification.f("AMaDiA_Main_Window.Tab_4_F_Display_Matrix")
+        Notification.w(self.windowTitle())
+        Notification.send()
  
  # ---------------------------------- Tab_5_ (Mind-)Control ----------------------------------
     def Tab_5_1_System_Set_Order(self,Order=None):

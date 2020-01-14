@@ -49,8 +49,8 @@ class WorkerSignals(QtCore.QObject):
         No data
     
     error
-        `tuple` (AC.AMaS , int , str , types.MethodType , int)
-        (self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
+        `tuple` (AC.AMaS , types.MethodType , int)
+        (self.AMaS_Object , self.Return_Function , self.ID)
     
     result
         `tuple` (AC.AMaS , types.MethodType , int , int)
@@ -58,7 +58,7 @@ class WorkerSignals(QtCore.QObject):
 
     '''
     finished = QtCore.pyqtSignal()
-    error = QtCore.pyqtSignal(AC.AMaS , int , str , types.MethodType , int)
+    error = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
     result = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int , int)
 #------------------------------------------------------------------------------
 class AMaS_Creator(QtCore.QRunnable):
@@ -85,11 +85,7 @@ class AMaS_Creator(QtCore.QRunnable):
         self.AMaS_Object = AC.AMaS(self.Text, self.Iam, EvalL=self.EvalL)
         if self.AMaS_Object.Exists == True:
             self.signals.result.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
-            lvl, notifications = self.AMaS_Object.Notifications()
-            if notifications != "":
-                self.signals.error.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
-        else:
-            self.signals.error.emit(self.AMaS_Object , 1 , str(self.AMaS_Object.Exists) , self.Return_Function , self.ID)
+        self.signals.error.emit(self.AMaS_Object , self.Return_Function , self.ID)
         self.signals.finished.emit()
         self.exiting = True
 
@@ -120,11 +116,7 @@ class AMaS_Worker(QtCore.QRunnable):
         Success = self.AMaS_Function()
         if Success == True:
             self.signals.result.emit(self.AMaS_Object , self.Return_Function , self.ID, -1)
-            lvl, notifications = self.AMaS_Object.Notifications()
-            if notifications != "":
-                self.signals.error.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
-        else:
-            self.signals.error.emit(self.AMaS_Object , 1 , str(Success) , self.Return_Function , self.ID)
+        self.signals.error.emit(self.AMaS_Object , self.Return_Function , self.ID)
         self.signals.finished.emit()
         self.exiting = True
 
@@ -151,7 +143,7 @@ class Timer(QtCore.QRunnable):
 
 #------------------------------------------------------------------------------ Threads ------------------------------------------------------------------------------
 class AMaS_Creator_Thread(QtCore.QThread):
-    ReturnError = QtCore.pyqtSignal(AC.AMaS , int , str , types.MethodType , int)
+    ReturnError = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int , int)
     finished = QtCore.pyqtSignal()
     def __init__(self, Parent, Text, Return_Function, ID, Eval=None, EvalL=1, Iam = AC.Iam_Normal):
@@ -170,11 +162,7 @@ class AMaS_Creator_Thread(QtCore.QThread):
         self.AMaS_Object = AC.AMaS(self.Text, self.Iam, EvalL=self.EvalL)
         if self.AMaS_Object.Exists == True:
             self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID , self.Eval)
-            lvl, notifications = self.AMaS_Object.Notifications()
-            if notifications != "":
-                self.ReturnError.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
-        else:
-            self.ReturnError.emit(self.AMaS_Object , 1 , str(self.AMaS_Object.Exists) , self.Return_Function , self.ID)
+        self.ReturnError.emit(self.AMaS_Object , self.Return_Function , self.ID)
         self.finished.emit()
         self.exiting = True
         self.exit()
@@ -191,7 +179,7 @@ self.TC(lambda ID: AT.AMaS_Creator(self, __Text__ , self.__Return_to_Method__ ,I
 #------------------------------------------------------------------------------
 
 class AMaS_Thread(QtCore.QThread):
-    ReturnError = QtCore.pyqtSignal(AC.AMaS , int , str , types.MethodType , int)
+    ReturnError = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
     Return = QtCore.pyqtSignal(AC.AMaS , types.MethodType , int)
     finished = QtCore.pyqtSignal()
     def __init__(self, Parent, AMaS_Object, AMaS_Function, Return_Function, ID):
@@ -206,11 +194,7 @@ class AMaS_Thread(QtCore.QThread):
         Success = self.AMaS_Function()
         if Success == True:
             self.Return.emit(self.AMaS_Object , self.Return_Function , self.ID)
-            lvl, notifications = self.AMaS_Object.Notifications()
-            if notifications != "":
-                self.ReturnError.emit(self.AMaS_Object , lvl , notifications , self.Return_Function , self.ID)
-        else:
-            self.ReturnError.emit(self.AMaS_Object , 1 , str(Success) , self.Return_Function , self.ID)
+        self.ReturnError.emit(self.AMaS_Object , self.Return_Function , self.ID)
         self.finished.emit()
         self.exiting = True
         self.exit()
