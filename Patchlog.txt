@@ -480,3 +480,9 @@ v0.15.12.1: Notification Class in AMaS
 + AMaS no uses the notification class instead of Notify in most cases.
 + The notification class cow saves its icon. (Currently unused)
 
+v0.15.12.2: Bugfix
++ Fixed a crash when trying to use the control code input without advanced mode
++ When a notification has no message but an error, the error is used as the message.
++ Fixed a minor bug for the LaTeX converter
+++ The bug had a workaround so it was not noticable for the user but this fix might increase quality in some cases
+

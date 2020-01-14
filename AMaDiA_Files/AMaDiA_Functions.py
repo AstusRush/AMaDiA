@@ -151,7 +151,10 @@ class NC: # Notification Class
         """
         if message != None:
             self.Message = str(message)
-        return str(self.Message)
+        if self.Message == None and self.Error != None:
+            return str(self.Error)
+        else:
+            return str(self.Message)
 
     def t(self, time=None):
         """

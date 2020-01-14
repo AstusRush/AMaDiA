@@ -221,7 +221,7 @@ class MplWidget_LaTeX(MplWidget):
                 ExceptionOutput(sys.exc_info())
             ExceptionOutput(sys.exc_info())
     
-    def Display(self,Text_L,Text_N,Font_Size,Use_LaTeX = False):
+    def Display(self,Text_L,Text_N,Font_Size,Use_LaTeX = False): # TODO: return NC intead of tuple
         """
         Retrun Value compatible with NotifyUser.\n
         Returns (0,0) if everything worked, (3,str) if minor exception, (2,str) if medium exception, (1,str) if not able to display

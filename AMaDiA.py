@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.12.1"
+Version = "0.15.12.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -2458,7 +2458,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
     def Tab_5_4_Dirty_Display(self):
         if not QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
-            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.Tab_5_4_Dirty_Display",win="Advanced Mode: {}".format(str(self.windowTitle(),input=QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked()))).send()
+            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.Tab_5_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked()))).send()
         else:
             self.Tab_5_tabWidget.setCurrentIndex(1)
             input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal f\nf=\"\"\n" + self.Tab_5_4_Dirty_Input.toPlainText()

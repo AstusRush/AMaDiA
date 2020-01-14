@@ -350,7 +350,7 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_L = self.cstr
             self.LaTeX_N = self.cstr
         else:
-            self.LaTeX_L = r"$\displaystyle"
+            self.LaTeX_L = r"$\displaystyle "
             self.LaTeX_N = "$"
             self.LaTeX_L += self.LaTeX
             self.LaTeX_N += self.LaTeX
@@ -418,7 +418,7 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_E_L = temp
             self.LaTeX_E_N = temp
         else:
-            self.LaTeX_E_L = r"$\displaystyle"
+            self.LaTeX_E_L = r"$\displaystyle "
             self.LaTeX_E_N = "$"
             self.LaTeX_E_L += self.LaTeX_E
             self.LaTeX_E_N += self.LaTeX_E
@@ -470,7 +470,7 @@ class AMaS: # Astus' Mathematical Structure
                 LineText += "$"
                 if n > 0:
                     LineText += "\n"
-                self.LaTeX_L += r"$\displaystyle"
+                self.LaTeX_L += r"$\displaystyle "
                 self.LaTeX_N += "$"
                 self.LaTeX_L += LineText
                 self.LaTeX_N += LineText
@@ -514,7 +514,7 @@ class AMaS: # Astus' Mathematical Structure
                     self.LaTeX_S_L = self.Solution
                     self.LaTeX_S_N = self.Solution
                     return Error
-            self.LaTeX_S_L = r"$\displaystyle"
+            self.LaTeX_S_L = r"$\displaystyle "
             self.LaTeX_S_N = "$"
             self.LaTeX_S_L += self.LaTeX_S
             self.LaTeX_S_N += self.LaTeX_S
