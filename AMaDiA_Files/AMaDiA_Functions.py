@@ -16,6 +16,7 @@ import errno
 import os
 import sympy
 import re
+import traceback
 
 
 from sympy.parsing.sympy_parser import parse_expr
@@ -68,7 +69,7 @@ class NC: # Notification Class
                 self.Window = win
                 self.Function = func
                 self.Input = input
-                self.ErrorTraceback = str(self.exc_type)+"  in "+str(fName)+"  line "+str(self.exc_tb.tb_lineno)
+                self.ErrorTraceback = str(self.exc_type)+"  in "+str(fName)+"  line "+str(self.exc_tb.tb_lineno)+"\n\n"+str(traceback.format_exc())#[:-1]) # TODO: Use traceback.format_exc() to get full traceback or something like traceback.extract_stack()[:-1] ([:-1] removes the NC.__init__())
                 self.GenerateLevelName()
                 print(self.Time,":")
                 if len(str(self.exc_obj))<50:

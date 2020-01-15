@@ -501,3 +501,7 @@ v0.15.13: Notification Class III
 + Made some minor modifications on NC
 + Fixed a bug that would cause notifications to apply wrong colours when changing the colour palette
 
+v0.15.13.1: Full Traceback
++ NC now stores (and displays) the full traceback
++ Fixed a crash (introduced in v0.15.13) when pressing return while the calculator input field was empty
+

@@ -70,6 +70,8 @@ class AMaS: # Astus' Mathematical Structure
         self.Iam = Iam
         self.Variables = {}
         self.VariablesUnev = {}
+        with QtCore.QMutexLocker(self.NotificationMutex):
+            self.NotificationList = []
         try:
             self.INIT_WhatAmI(string)
         except common_exceptions :
@@ -129,8 +131,6 @@ class AMaS: # Astus' Mathematical Structure
         self.init_Critical()
 
     def init_Critical(self):
-        with QtCore.QMutexLocker(self.NotificationMutex):
-            self.NotificationList = []
         self.Text = AF.AstusParseInverse(self.string)
         self.Solution = "Not evaluated yet"
         self.Equation = "? = " + self.Text
