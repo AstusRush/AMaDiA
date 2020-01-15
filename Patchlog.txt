@@ -505,3 +505,6 @@ v0.15.13.1: Full Traceback
 + NC now stores (and displays) the full traceback
 + Fixed a crash (introduced in v0.15.13) when pressing return while the calculator input field was empty
 
+v0.15.13.2: Negative Part of Root Locus Plot
++ Added the negative part to root lucus plots
+

@@ -250,73 +250,153 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
     PrintGain = config._get_param(
         'rlocus', 'PrintGain', PrintGain, _rlocus_defaults)
 
+    xlim_b, ylim_b = xlim, ylim
+    kvect_b = kvect
     # Convert numerator and denominator to polynomials if they aren't
-    (nump, denp) = _systopoly1d(sys)
+    try:
+        (nump, denp) = _systopoly1d(sys)
 
-    if kvect is None:
-        start_mat = _RLFindRoots(nump, denp, [1])
-        kvect, mymat, xlim, ylim = _default_gains(nump, denp, xlim, ylim)
-    else:
-        start_mat = _RLFindRoots(nump, denp, [kvect[0]])
-        mymat = _RLFindRoots(nump, denp, kvect)
-        mymat = _RLSortRoots(mymat)
+        if kvect is None:
+            start_mat = _RLFindRoots(nump, denp, [1])
+            kvect, mymat, xlim, ylim = _default_gains(nump, denp, xlim, ylim)
+        else:
+            start_mat = _RLFindRoots(nump, denp, [kvect[0]])
+            mymat = _RLFindRoots(nump, denp, kvect)
+            mymat = _RLSortRoots(mymat)
 
-    # Check for sisotool mode
-    sisotool = False if 'sisotool' not in kwargs else True
+        # Check for sisotool mode
+        sisotool = False if 'sisotool' not in kwargs else True
 
-    # Create the Plot
+        # Create the Plot
+        if Plot:
+            figure_number = pylab.get_fignums()
+            figure_title = [
+                pylab.figure(numb).canvas.get_window_title()
+                for numb in figure_number]
+            new_figure_name = "Root Locus"
+            rloc_num = 1
+            while new_figure_name in figure_title:
+                new_figure_name = "Root Locus " + str(rloc_num)
+                rloc_num += 1
+            f = pylab.figure(new_figure_name)
+
+            # zoom update on xlim/ylim changed, only then data on new limits
+            # is available, i.e., cannot combine with _RLClickDispatcher
+            dpfun = partial(
+                _RLZoomDispatcher, sys=sys, ax_rlocus=ax, plotstr=plotstr)
+            # TODO: the next too lines seem to take a long time to execute
+            # TODO: is there a way to speed them up?  (RMM, 6 Jun 2019)
+            #ax.callbacks.connect('xlim_changed', dpfun)
+            #ax.callbacks.connect('ylim_changed', dpfun)
+
+            # plot open loop poles
+            poles = array(denp.r)
+            ax.plot(real(poles), imag(poles), 'x', c="red")
+
+            # plot open loop zeros
+            zeros = array(nump.r)
+            if zeros.size > 0:
+                ax.plot(real(zeros), imag(zeros), 'o', c="orange")
+
+            # Now plot the loci
+            for index, col in enumerate(mymat.T):
+                ax.plot(real(col), imag(col), plotstr, label='rootlocus', c="violet")
+
+            # Set up plot axes and labels
+            if xlim:
+                ax.set_xlim(xlim)
+            if ylim:
+                ax.set_ylim(ylim)
+
+            ax.set_xlabel('Real')
+            ax.set_ylabel('Imaginary')
+            if grid and sisotool:
+                _sgrid_func(f)
+            elif grid:
+                _sgrid_func()
+            else:
+                ax.axhline(0., linestyle=':', color='k', zorder=-20)
+                ax.axvline(0., linestyle=':', color='k')
+        r_mymat, r_kvect = mymat, kvect
+    except:
+        r_mymat, r_kvect = None, None
+    #---------------------- INVERSE ----------------------
+    try:
+        sys = -1*sys
+        # Convert numerator and denominator to polynomials if they aren't
+        (nump, denp) = _systopoly1d(sys)
+
+        if kvect_b is None:
+            start_mat = _RLFindRoots(nump, denp, [1])
+            kvect, mymat, xlim_n, ylim_n = _default_gains(nump, denp, xlim_b, ylim_b)
+            if xlim_n[0]<xlim[0]: xlim[0] = xlim_n[0]
+            if xlim_n[1]>xlim[1]: xlim[1] = xlim_n[1]
+            if ylim_n[0]<ylim[0]: ylim[0] = ylim_n[0]
+            if ylim_n[1]>ylim[1]: ylim[1] = ylim_n[1]
+        else:
+            start_mat = _RLFindRoots(nump, denp, [kvect[0]])
+            mymat = _RLFindRoots(nump, denp, kvect)
+            mymat = _RLSortRoots(mymat)
+
+        # Check for sisotool mode
+        sisotool = False if 'sisotool' not in kwargs else True
+
+        # Create the Plot
+        if Plot:
+            figure_number = pylab.get_fignums()
+            figure_title = [
+                pylab.figure(numb).canvas.get_window_title()
+                for numb in figure_number]
+            new_figure_name = "Root Locus"
+            rloc_num = 1
+            while new_figure_name in figure_title:
+                new_figure_name = "Root Locus " + str(rloc_num)
+                rloc_num += 1
+            f = pylab.figure(new_figure_name)
+
+            # zoom update on xlim/ylim changed, only then data on new limits
+            # is available, i.e., cannot combine with _RLClickDispatcher
+            dpfun = partial(
+                _RLZoomDispatcher, sys=sys, ax_rlocus=ax, plotstr=plotstr)
+            # TODO: the next too lines seem to take a long time to execute
+            # TODO: is there a way to speed them up?  (RMM, 6 Jun 2019)
+            #ax.callbacks.connect('xlim_changed', dpfun)
+            #ax.callbacks.connect('ylim_changed', dpfun)
+
+            ## plot open loop poles
+            #poles = array(denp.r)
+            #ax.plot(real(poles), imag(poles), 'x', c="red")
+            #
+            ## plot open loop zeros
+            #zeros = array(nump.r)
+            #if zeros.size > 0:
+            #    ax.plot(real(zeros), imag(zeros), 'o', c="orange")
+
+            # Now plot the loci
+            for index, col in enumerate(mymat.T):
+                ax.plot(real(col), imag(col), plotstr, label='rootlocus', c="green")
+
+
+            ax.set_xlabel('Real')
+            ax.set_ylabel('Imaginary')
+            if grid and sisotool:
+                _sgrid_func(f)
+            elif grid:
+                _sgrid_func()
+            else:
+                ax.axhline(0., linestyle=':', color='k', zorder=-20)
+                ax.axvline(0., linestyle=':', color='k')
+    except:
+        pass
     if Plot:
-        figure_number = pylab.get_fignums()
-        figure_title = [
-            pylab.figure(numb).canvas.get_window_title()
-            for numb in figure_number]
-        new_figure_name = "Root Locus"
-        rloc_num = 1
-        while new_figure_name in figure_title:
-            new_figure_name = "Root Locus " + str(rloc_num)
-            rloc_num += 1
-        f = pylab.figure(new_figure_name)
-
-        # zoom update on xlim/ylim changed, only then data on new limits
-        # is available, i.e., cannot combine with _RLClickDispatcher
-        dpfun = partial(
-            _RLZoomDispatcher, sys=sys, ax_rlocus=ax, plotstr=plotstr)
-        # TODO: the next too lines seem to take a long time to execute
-        # TODO: is there a way to speed them up?  (RMM, 6 Jun 2019)
-        #ax.callbacks.connect('xlim_changed', dpfun)
-        #ax.callbacks.connect('ylim_changed', dpfun)
-
-        # plot open loop poles
-        poles = array(denp.r)
-        ax.plot(real(poles), imag(poles), 'x', c="red")
-
-        # plot open loop zeros
-        zeros = array(nump.r)
-        if zeros.size > 0:
-            ax.plot(real(zeros), imag(zeros), 'o', c="orange")
-
-        # Now plot the loci
-        for index, col in enumerate(mymat.T):
-            ax.plot(real(col), imag(col), plotstr, label='rootlocus')
-
         # Set up plot axes and labels
         if xlim:
             ax.set_xlim(xlim)
         if ylim:
             ax.set_ylim(ylim)
-
-        ax.set_xlabel('Real')
-        ax.set_ylabel('Imaginary')
-        if grid and sisotool:
-            _sgrid_func(f)
-        elif grid:
-            _sgrid_func()
-        else:
-            ax.axhline(0., linestyle=':', color='k', zorder=-20)
-            ax.axvline(0., linestyle=':', color='k')
         
 
-    return mymat, kvect
+    return r_mymat, r_kvect
 
 
 def _default_gains(num, den, xlim, ylim, zoom_xlim=None, zoom_ylim=None):
