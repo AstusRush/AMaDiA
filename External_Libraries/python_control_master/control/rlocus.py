@@ -299,8 +299,13 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
                 ax.plot(real(zeros), imag(zeros), 'o', c="orange")
 
             # Now plot the loci
+            setLabel = True
             for index, col in enumerate(mymat.T):
-                ax.plot(real(col), imag(col), plotstr, label='rootlocus', c="violet")
+                if setLabel:
+                    ax.plot(real(col), imag(col), plotstr, label='V>0', c="m")
+                    setLabel = False
+                else:
+                    ax.plot(real(col), imag(col), plotstr, c="m")
 
             # Set up plot axes and labels
             if xlim:
@@ -373,8 +378,13 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
             #    ax.plot(real(zeros), imag(zeros), 'o', c="orange")
 
             # Now plot the loci
+            setLabel = True
             for index, col in enumerate(mymat.T):
-                ax.plot(real(col), imag(col), plotstr, label='rootlocus', c="green")
+                if setLabel:
+                    ax.plot(real(col), imag(col), plotstr, label='V<0', c="g")
+                    setLabel = False
+                else:
+                    ax.plot(real(col), imag(col), plotstr, c="g")
 
 
             ax.set_xlabel('Real')

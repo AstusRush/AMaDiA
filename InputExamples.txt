@@ -39,6 +39,8 @@ Calculator Examples:
 	Transformations:
 		inverse_laplace_transform(1/s,s,x)
 		laplace_transform(exp(x),x,s)[0]
+	Units (with units turned on in the options):
+		convert_to(7foot+3inch,[m])
 		
 		
 LaTeX Examples:

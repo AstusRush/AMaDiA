@@ -508,3 +508,27 @@ v0.15.13.1: Full Traceback
 v0.15.13.2: Negative Part of Root Locus Plot
 + Added the negative part to root lucus plots
 
+v0.16.0: AGeLib, Units and Control System Input
++ Added a checkbox to the options to enable units (default: False)
++ The application ID is now set and each instance has its own ID
++ A widow icon is now set (only placeholder)(currently the standard PC icon)
++ Moved the basic widgets and function to a new folder (AGeLib) to make them useable for other projects
++ Warnings in the alternative method in AMaS.Plot_2D_Calc_Values are now displayed as notifications
++ Control Systems:
+++ Moved the Control Tab to its own window
+++ The input tab is now enabled by default
++++ The devFunction in the options menu currently has no function
+++ When a system is created (including Code Input) its Transfer Function and State Space is now displayed in the LaTeX tab in the Input tab
+++ Reworked the notification system of the Control displays to use NC everywhere
++++ This completes the transition to NC!
+++ The root-locus-plot in the single-plot-view now has a legend
+++ The Bode-plot in the single-plot-view now displays the margins
+++ The state system input is now fully implemented
+++ Added an input field for an input function for the forced response plot
+++ The save-function in the input tab now works
++ Improved UX of Table widgets:
+++ Enter and space now enter the editor of the current cell
+++ When an editor is entered the text is selected
++++ This means that pressing a key while having a cell selected deletes its content and inserts the character of the key
+++++ ctrl+Z can revert this overwrite if needed as long as the editor is not closed again
+

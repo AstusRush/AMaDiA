@@ -281,6 +281,8 @@ def bode_plot(syslist, omega=None,
 
                 # Show the phase and gain margins in the plot
                 if margins: # TODO: Make more pretty
+                    gm_color = 'c'
+                    pm_color = 'r'
                     margin = stability_margins(sys)
                     gm, pm, Wcg, Wcp = \
                         margin[0], margin[1], margin[3], margin[4]
@@ -294,11 +296,11 @@ def bode_plot(syslist, omega=None,
                     if Hz:
                         Wcg, Wcp = Wcg/(2*math.pi), Wcp/(2*math.pi)
 
-                    ax_mag.axhline(y=0 if dB else 1, color='k', linestyle=':',
+                    ax_mag.axhline(y=0 if dB else 1, color=gm_color, linestyle=':',
                                    zorder=-20)
                     ax_phase.axhline(y=phase_limit if deg else
                                      math.radians(phase_limit),
-                                     color='orange', linestyle=':', zorder=-20)
+                                     color=pm_color, linestyle=':', zorder=-20)
                     mag_ylim = ax_mag.get_ylim()
                     phase_ylim = ax_phase.get_ylim()
 
@@ -306,53 +308,53 @@ def bode_plot(syslist, omega=None,
                         if dB:
                             ax_mag.semilogx(
                                 [Wcp, Wcp], [0., -1e5],
-                                color='k', linestyle=':', zorder=-20)
+                                color=gm_color, linestyle=(0, (4, 4)), zorder=-20)
                         else:
                             ax_mag.loglog(
                                 [Wcp, Wcp], [1., 1e-8],
-                                color='k', linestyle=':', zorder=-20)
+                                color=gm_color, linestyle=(0, (4, 4)), zorder=-20)
 
                         if deg:
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [1e5, phase_limit+pm],
-                                color='orange', linestyle=':', zorder=-20)
+                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [phase_limit + pm, phase_limit],
-                                color='orange', zorder=-20)
+                                color=gm_color, zorder=-20)
                         else:
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [1e5, math.radians(phase_limit) +
                                              math.radians(pm)],
-                                color='orange', linestyle=':', zorder=-20)
+                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [math.radians(phase_limit) +
                                              math.radians(pm),
                                              math.radians(phase_limit)],
-                                color='orange', zorder=-20)
+                                color=gm_color, zorder=-20)
 
                     if gm != float('inf') and Wcg != float('nan'):
                         if dB:
                             ax_mag.semilogx(
                                 [Wcg, Wcg], [-20.*np.log10(gm), -1e5],
-                                color='k', linestyle=':', zorder=-20)
+                                color=pm_color, linestyle=(0, (4, 4)), zorder=-20)
                             ax_mag.semilogx(
                                 [Wcg, Wcg], [0, -20*np.log10(gm)],
-                                color='k', zorder=-20)
+                                color=pm_color, zorder=-20)
                         else:
                             ax_mag.loglog(
-                                [Wcg, Wcg], [1./gm, 1e-8], color='k',
-                                linestyle=':', zorder=-20)
+                                [Wcg, Wcg], [1./gm, 1e-8], color=pm_color,
+                                linestyle=(0, (4, 4)), zorder=-20)
                             ax_mag.loglog(
-                                [Wcg, Wcg], [1., 1./gm], color='k', zorder=-20)
+                                [Wcg, Wcg], [1., 1./gm], color=pm_color, zorder=-20)
 
                         if deg:
                             ax_phase.semilogx(
                                 [Wcg, Wcg], [1e-8, phase_limit],
-                                color='orange', linestyle=':', zorder=-20)
+                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
                         else:
                             ax_phase.semilogx(
                                 [Wcg, Wcg], [1e-8, math.radians(phase_limit)],
-                                color='orange', linestyle=':', zorder=-20)
+                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
 
                     ax_mag.set_ylim(mag_ylim)
                     ax_phase.set_ylim(phase_ylim)
@@ -360,35 +362,57 @@ def bode_plot(syslist, omega=None,
                     if sisotool:
                         ax_mag.text(
                             0.04, 0.06,
-                            'G.M.: %.2f %s\nFreq: %.2f %s' %
+                            'Gain Margin: %.2f %s\nFreq: %.2f %s' %
                             (20*np.log10(gm) if dB else gm,
                              'dB ' if dB else '',
                              Wcg, 'Hz' if Hz else 'rad/s'),
                             horizontalalignment='left',
                             verticalalignment='bottom',
                             transform=ax_mag.transAxes,
+                            color=gm_color,
                             fontsize=8 if int(mpl.__version__[0]) == 1 else 6)
                         ax_phase.text(
                             0.04, 0.06,
-                            'P.M.: %.2f %s\nFreq: %.2f %s' %
+                            'Phase Margin: %.2f %s\nFreq: %.2f %s' %
                             (pm if deg else math.radians(pm),
                              'deg' if deg else 'rad',
                              Wcp, 'Hz' if Hz else 'rad/s'),
                             horizontalalignment='left',
                             verticalalignment='bottom',
                             transform=ax_phase.transAxes,
-                            color = "orange",
+                            color=pm_color,
                             fontsize=8 if int(mpl.__version__[0]) == 1 else 6)
                     else:
-                        plt.suptitle(
-                            "Gm = %.2f %s(at %.2f %s), "
-                            "Pm = %.2f %s (at %.2f %s)" %
+                        #plt.suptitle(
+                        #    "Gain Margin (blue) = %.2f %s(at %.2f %s), "
+                        #    "Phase Margin (red) = %.2f %s (at %.2f %s)" %
+                        #    (20*np.log10(gm) if dB else gm,
+                        #     'dB ' if dB else '\b',
+                        #     Wcg, 'Hz' if Hz else 'rad/s',
+                        #     pm if deg else math.radians(pm),
+                        #     'deg' if deg else 'rad',
+                        #     Wcp, 'Hz' if Hz else 'rad/s'),
+                        #    color = "orange")
+                        ax_mag.text(
+                            0.04, 1,
+                            ' Gain Margin: %.2f %s\n  Frequency: %.2f %s' %
                             (20*np.log10(gm) if dB else gm,
-                             'dB ' if dB else '\b',
-                             Wcg, 'Hz' if Hz else 'rad/s',
-                             pm if deg else math.radians(pm),
+                             'dB ' if dB else '',
+                             Wcg, 'Hz' if Hz else 'rad/s'),
+                            horizontalalignment='left',
+                            verticalalignment='bottom',
+                            transform=ax_phase.transAxes,
+                            color=gm_color)
+                        ax_phase.text(
+                            0.96, 1,
+                            'Phase Margin: %.2f %s\n  Frequency: %.2f %s' %
+                            (pm if deg else math.radians(pm),
                              'deg' if deg else 'rad',
-                             Wcp, 'Hz' if Hz else 'rad/s'))
+                             Wcp, 'Hz' if Hz else 'rad/s'),
+                            horizontalalignment='right',
+                            verticalalignment='bottom',
+                            transform=ax_phase.transAxes,
+                            color=pm_color)
 
                 if nyquistfrq_plot:
                     ax_phase.axvline(

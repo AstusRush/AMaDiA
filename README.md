@@ -8,12 +8,13 @@ Current features:<br/>
    * Solve Differential Equations (including particular solutions)<br/>
    * Test for equality of two terms<br/>
    * Use mathematic Unicode symbols to type faster!<br/>
-   * For more detailed Useage check out Help/Examples and copy/paste the examples to the according tab input fields<br/>
+   * Turn on units in the options to do things like convert_to(7foot+3inch,m)<br/>
+   * For more detailed usage check out Help/Examples and copy/paste the examples to the according tab input fields<br/>
  * Tab 2 : Convert input to LaTeX and display it<br/>
  * Tab 3 : Plot 2D Graphs (3D and complex Graphs are WIP)<br/>
  * Tab 4 : Equations with matrices and vectors as well as systems of linear equations<br/>
- * Tab 5 : Everything for System Control (WIP)<br/>
- * LAN chat program<br/>
+ * System Control Window : Everything for System Control (WIP)<br/>
+ * LAN chat program (needs overhaul)<br/>
    * Intended for sharing equations with other users in the same network to make cooperative working easier<br/>
    * Separate Server and Client applications<br/>
    * Allows sending of text and text files<br/>
@@ -55,15 +56,13 @@ Screenshot Version 0.15.7.1<br/>
 <br/><br/>
 # Short Term Roadmap
 Planned features for (near) future (order reflects priority):<br/>
-- Tab 5 for System Control<br/>
+- Improve System Control Window<br/>
 - Make Tab 4 even easier to use<br/>
 - Plot 3D and complex functions<br/>
 - (Continuous:) Better parser to allow a more flexible input<br/>
 - Simple Texteditor<br/>
-- Allow the user to change the Font<br/>
 - Add more colour-schemes<br/>
-- Unit converter<br/>
-- Unit calculator<br/>
+- better unit handling (like automatic simplification)<br/>
 - Automatic recognition for PDEs so that the user no longer has to put them in "pdsolve(...)"<br/>
 - PDF-Viewer<br/>
 - Save/load the history<br/>

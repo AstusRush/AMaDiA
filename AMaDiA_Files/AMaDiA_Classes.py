@@ -8,6 +8,8 @@ Created on Wed Sep  4 14:55:31 2019
 # if__name__ == "__main__":
 #     pass
 
+from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC
+
 import sys
 sys.path.append('..')
 from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
@@ -18,6 +20,7 @@ import errno
 import os
 import sympy
 import re
+import warnings
 
 from PyQt5 import QtCore
 
@@ -31,16 +34,14 @@ import scipy
 
 
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 
-
-from External_Libraries.python_control_master import control
 
 import importlib
 def ReloadModules():
     importlib.reload(AF)
     importlib.reload(ART)
+
 
 
 Iam_Lost = "Lost"
@@ -51,8 +52,9 @@ Iam_Multi_Dim = "Multi-Dim"
 IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_ODE, Iam_Multi_Dim]
 
 
-#parse_expr\((.*),evaluate=False,local_dict=self.Variables\)
+#parse_expr\((.*),evaluate=False,local_dict=self.Variables,global_dict=self.global_dict()\)
 #
+warningMutex = QtCore.QMutex()
 
 class AMaS: # Astus' Mathematical Structure
 
@@ -291,6 +293,14 @@ class AMaS: # Astus' Mathematical Structure
             ExceptionOutput(sys.exc_info())
         """ # pylint: disable=unreachable
 
+    def global_dict(self):
+        if QtWidgets.QApplication.instance().optionWindow.cb_O_Units.isChecked():
+            global_dict = {}
+            exec('from sympy import *', global_dict)
+            exec('from sympy.physics.units import *', global_dict)
+            return global_dict
+        else:
+            return None
  # ---------------------------------- Notifications ----------------------------------
 
     def sendNotifications(self,win=None):
@@ -317,10 +327,15 @@ class AMaS: # Astus' Mathematical Structure
             self.NotificationList.append(Notification)
 
     def NotifyFromNumpy(self,text,flag=""):
-        """Used to add Notifications from Numpy"""
+        """Used to add Notifications from Numpy and scipy"""
         print(text,flag)
         text += flag
         self.Notify(NC(3,text))
+
+    def NotifyWarning(self, message, category, filename, lineno, file=None, line=None):
+        TheWarning = warnings.formatwarning(message, category, filename, lineno, line)
+        print("Warning in AMaS for",self.Input,"\n",TheWarning)
+        self.Notify(NC(2,TheWarning,err=message,tb="filename: {}\nlineno: {}".format(str(filename),str(lineno))))
 
  # ---------------------------------- LaTeX Converter ----------------------------------
 
@@ -510,13 +525,13 @@ class AMaS: # Astus' Mathematical Structure
                         for i in parts:
                             if len(i)>0:
                                 #self.LaTeX_S += sympy.latex( sympy.S(i,evaluate=False))
-                                expr = parse_expr(i,evaluate=False,local_dict=self.Variables)
+                                expr = parse_expr(i,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
                                 self.LaTeX_S += sympy.latex(expr)
                             self.LaTeX_S += " = "
                         self.LaTeX_S = self.LaTeX_S[:-3]
                     else:
                         #self.LaTeX_S = sympy.latex( sympy.S(self.Solution,evaluate=False))
-                        expr = parse_expr(self.Solution,evaluate=False,local_dict=self.Variables)
+                        expr = parse_expr(self.Solution,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
                         self.LaTeX_S = sympy.latex(expr)
                 except common_exceptions:
                     if expr==None: expr=self.Solution
@@ -593,6 +608,7 @@ class AMaS: # Astus' Mathematical Structure
         #TODO: CALCULATE EVEN MORE STUFF
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
+        
         Notification = NC(0)
         ODE = False
         if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
@@ -615,7 +631,7 @@ class AMaS: # Astus' Mathematical Structure
                 temp = temp + ")"
                 temp = AF.UnpackDualOperators(temp,Brackets=("[","]"))
                 print(temp)
-                ans = parse_expr(temp,local_dict=self.Variables)
+                ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
                 ParsedInput = ans
                 try:
                     ans = ans.doit()
@@ -676,7 +692,7 @@ class AMaS: # Astus' Mathematical Structure
                                 self.Solution += " }"
                             else:
                                 self.Solution = self.Solution[:-2]
-                                j = parse_expr(str(ji),local_dict=self.Variables)
+                                j = parse_expr(str(ji),local_dict=self.Variables,global_dict=self.global_dict())
                                 try:
                                     j = j.doit()
                                 except common_exceptions:
@@ -719,7 +735,7 @@ class AMaS: # Astus' Mathematical Structure
                         if len(self.Solution) > 0:
                             self.Solution += " }"
                         else:
-                            ans = parse_expr(temp,local_dict=self.Variables)
+                            ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
                             try:
                                 ans = ans.doit()
                             except common_exceptions:
@@ -742,7 +758,7 @@ class AMaS: # Astus' Mathematical Structure
         else:
             try:
                 temp = AF.UnpackDualOperators(self.cstr,Brackets=("{","}"))
-                ans = parse_expr(temp,local_dict=self.Variables)
+                ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
                 separator = "   <==   "
                 ParsedInput = ans
                 if type(ans) == bool:
@@ -880,7 +896,7 @@ class AMaS: # Astus' Mathematical Structure
             print("Function:",func)
             print("Variable:",var)
             var_Parsed = parse_expr(var)
-            equation = parse_expr(equation,local_dict=self.Variables)
+            equation = parse_expr(equation,local_dict=self.Variables,global_dict=self.global_dict())
             classification = sympy.classify_ode(equation)
             print("ODE Classification:\n",classification)
             self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Solve_ODE_Version_1",input=self.Input))
@@ -892,7 +908,7 @@ class AMaS: # Astus' Mathematical Structure
                 f+="("
                 f+=var
                 f+=")"
-                f,x,y = parse_expr(AF.AstusParse(f,False)),parse_expr(AF.AstusParse(x,False),local_dict=self.Variables),parse_expr(AF.AstusParse(y,False),local_dict=self.Variables)
+                f,x,y = parse_expr(AF.AstusParse(f,False)),parse_expr(AF.AstusParse(x,False),local_dict=self.Variables,global_dict=self.global_dict()),parse_expr(AF.AstusParse(y,False),local_dict=self.Variables,global_dict=self.global_dict())
                 f = f.subs(var_Parsed,x)
                 ics[f] = y
             #ics = {f1.subs(x,x1):y1,f2.subs(x,x2):y2}
@@ -938,17 +954,19 @@ class AMaS: # Astus' Mathematical Structure
             
     def Plot_2D_Calc_Values(self):
         oldErrCall = np.seterrcall(self.NotifyFromNumpy)
+        oldErrCall_sp = scipy.seterrcall(self.NotifyFromNumpy)
         if self.cstr.count("=")>=1:
             try:
                 temp_line_split = self.cstr.split("=",1)
                 temp_line_split[0] = temp_line_split[0].strip()
                 if temp_line_split[0] == "x":
-                    temp_line_x_val = parse_expr(temp_line_split[1],local_dict=self.Variables)
+                    temp_line_x_val = parse_expr(temp_line_split[1],local_dict=self.Variables,global_dict=self.global_dict())
                     temp_line_x_val = float(temp_line_x_val.evalf())
                     if type(temp_line_x_val) == int or type(temp_line_x_val) == float :
                         self.plot_x_vals = temp_line_x_val
                         self.plot_data_exists = True
                         np.seterrcall(oldErrCall)
+                        scipy.seterrcall(oldErrCall_sp)
                         return True
             except common_exceptions:
                 pass
@@ -958,11 +976,12 @@ class AMaS: # Astus' Mathematical Structure
             x = sympy.symbols('x')
             n = sympy.symbols('n') # pylint: disable=unused-variable
             try:
-                Function = parse_expr(self.cstr,local_dict=self.Variables)
+                Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
             except common_exceptions: #as inst:
                 self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
                 self.plottable = False
                 np.seterrcall(oldErrCall)
+                scipy.seterrcall(oldErrCall_sp)
                 return False
             try:
                 Function = Function.doit()
@@ -991,7 +1010,7 @@ class AMaS: # Astus' Mathematical Structure
                     raise Exception("Dimensions do not match")
                 
             except common_exceptions: #as inst:
-                ExceptionOutput(sys.exc_info())
+                TheException = sys.exc_info()
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
@@ -999,6 +1018,11 @@ class AMaS: # Astus' Mathematical Structure
                 # This occurs, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
                 # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
                 try:
+                    warningMutex.lock()
+                    oldNPWarn = np.warnings.showwarning
+                    oldWarn = warnings.showwarning
+                    np.warnings.showwarning = self.NotifyWarning
+                    warnings.showwarning = self.NotifyWarning
                     if self.cstr.count("Integral") == 0:
                         evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
                         self.plot_y_vals = evalfunc(self.plot_x_vals)
@@ -1009,6 +1033,7 @@ class AMaS: # Astus' Mathematical Structure
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             print(self.plot_y_vals.shape)
                             raise Exception("Dimensions do not match")
+                        self.Notify(NC(3,msg="Could not calculate plot with sympy.\nUsing numpy instead.",exc=TheException,func="AMaS.Plot_2D_Calc_Values"))
                     elif self.cstr.count("Integral") == 1 and( ( re.fullmatch(r"Integral\((.(?<!Integral))+,x\)",self.cstr) and self.cstr.count(",x)") == 1 ) or ( re.fullmatch(r"Integral\((.(?<!Integral))+\)",self.cstr) and self.cstr.count(",x)") == 0 )):
                         temp_Text = self.cstr
                         temp_Text = temp_Text.replace("Integral","")
@@ -1029,19 +1054,28 @@ class AMaS: # Astus' Mathematical Structure
                             self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             raise Exception("Dimensions do not match")
+                        self.Notify(NC(2,msg="Could not calculate plot with sympy.\nInstead using numpy to generate the data for the function and scipy to generate the integral of this data."
+                                                +"\nWARNING: The displayed plot is not the plot of the input integral but of the integral of the plot of the function.",exc=TheException,func="AMaS.Plot_2D_Calc_Values"))
                     else:
                         raise Exception("Can not calculate plot data")
                 except common_exceptions: #as inst:
                     self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
                     np.seterrcall(oldErrCall)
+                    scipy.seterrcall(oldErrCall_sp)
                     return False
+                finally:
+                    np.warnings.showwarning = oldNPWarn
+                    warnings.showwarning = oldWarn
+                    warningMutex.unlock()
                     
             self.plot_data_exists = True
             np.seterrcall(oldErrCall)
+            scipy.seterrcall(oldErrCall_sp)
             return True
         else:
             np.seterrcall(oldErrCall)
-            return "Not Plotable"
+            scipy.seterrcall(oldErrCall_sp)
+            return False
 
 
  # ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------

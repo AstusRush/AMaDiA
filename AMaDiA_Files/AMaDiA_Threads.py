@@ -5,6 +5,8 @@ Created on Fri Sep 13 12:51:32 2019
 @author: Robin
 """
 
+from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC
+
 import sys
 sys.path.append('..')
 from PyQt5 import QtWidgets,QtCore,QtGui
@@ -23,12 +25,9 @@ import time
 import numpy as np
 import scipy.integrate
 
-from External_Libraries.python_control_master import control
-
 #import AMaDiA
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput, NC
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 

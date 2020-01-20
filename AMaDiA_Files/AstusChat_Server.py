@@ -11,6 +11,7 @@ ServerVersionAuthor+= " by "
 ServerVersionAuthor+= Author
 
 
+from AGeLib import AGeMain
 import sys
 sys.path.append('..')
 from PyQt5 import QtWidgets, QtCore, QtGui
@@ -20,7 +21,6 @@ import platform
 import datetime
 from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
 from AMaDiA_Files.AstusChat_Server_UI import Ui_ServerInterface
-from AMaDiA_Files import AMaDiA_Colour
 
 WindowTitle = ServerVersionAuthor
 
@@ -1132,7 +1132,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
 #    app = QtWidgets.QApplication(sys.argv)
 #    app.setStyle("fusion")
 #
-#    form = MainWindow(AMaDiA_Colour.Dark()[0],"Arial")
+#    form = MainWindow()
 #    form.show()
 #    sys.exit(app.exec_())
 # 

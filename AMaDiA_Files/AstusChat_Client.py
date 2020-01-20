@@ -10,6 +10,7 @@ WindowTitle+= ClientVersion
 WindowTitle+= " by "
 WindowTitle+= Author
 
+from AGeLib import AGeMain
 import sys
 sys.path.append('..')
 from PyQt5 import QtWidgets,QtCore,QtGui
@@ -19,7 +20,6 @@ import errno
 import os
 from AMaDiA_Files.AMaDiA_Functions import common_exceptions, ExceptionOutput
 from AMaDiA_Files.AstusChat_Client_UI import Ui_ClientInterface
-from AMaDiA_Files import AMaDiA_Colour
 
 
 bConnected = False
@@ -305,7 +305,7 @@ class listener(QtCore.QThread):
 #    app = QtWidgets.QApplication(sys.argv)
 #    app.setStyle("fusion")
 #
-#    form = MainWindow(AMaDiA_Colour.Dark()[0],"Arial")
+#    form = MainWindow()
 #    form.show()
 #    sys.exit(app.exec_())
 # 

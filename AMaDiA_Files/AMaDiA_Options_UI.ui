@@ -70,6 +70,13 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item row="4" column="0">
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
            <item row="10" column="0">
             <widget class="Line" name="line_3">
              <property name="orientation">
@@ -77,18 +84,12 @@
              </property>
             </widget>
            </item>
-           <item row="15" column="0">
-            <spacer name="verticalSpacer_2">
+           <item row="7" column="0">
+            <widget class="Line" name="line_2">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
+            </widget>
            </item>
            <item row="6" column="0">
             <widget class="QCheckBox" name="cb_O_Remapper_global">
@@ -111,49 +112,8 @@ This can clutter the context menus, flood you with neglectible errors and unlock
              </property>
             </widget>
            </item>
-           <item row="17" column="0">
+           <item row="19" column="0">
             <widget class="QFontComboBox" name="fontComboBox"/>
-           </item>
-           <item row="8" column="0">
-            <widget class="QCheckBox" name="cb_O_PairHighlighter">
-             <property name="toolTip">
-              <string>Syntax highlighter for brackets, Integrals, etc.</string>
-             </property>
-             <property name="text">
-              <string>Pair Highlighter</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="16" column="0">
-            <widget class="Line" name="line_5">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="Line" name="line_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="14" column="0">
-            <widget class="Line" name="line_17">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
            </item>
            <item row="5" column="0">
             <widget class="QCheckBox" name="cb_O_Remapper_local">
@@ -165,6 +125,31 @@ This can clutter the context menus, flood you with neglectible errors and unlock
              </property>
              <property name="checked">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="0">
+            <widget class="Line" name="line_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="15" column="0">
+            <widget class="QCheckBox" name="cb_O_Units">
+             <property name="toolTip">
+              <string>If checked the calculator is sensitive for units.&lt;br&gt;
+For example m is no longer a variable but instead &quot;meter&quot;.</string>
+             </property>
+             <property name="text">
+              <string>Enable Units</string>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="0">
+            <widget class="Line" name="line_17">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -216,6 +201,39 @@ This can clutter the context menus, flood you with neglectible errors and unlock
                </widget>
               </item>
              </layout>
+            </widget>
+           </item>
+           <item row="17" column="0">
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="8" column="0">
+            <widget class="QCheckBox" name="cb_O_PairHighlighter">
+             <property name="toolTip">
+              <string>Syntax highlighter for brackets, Integrals, etc.</string>
+             </property>
+             <property name="text">
+              <string>Pair Highlighter</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="0">
+            <widget class="Line" name="line_19">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
             </widget>
            </item>
           </layout>
@@ -709,7 +727,7 @@ Sympy's &quot;with sympy.evaluate(False)&quot; is currently experimental anyways
   <customwidget>
    <class>MTabWidget</class>
    <extends>QTabWidget</extends>
-   <header location="global">AMaDiA_Files.AMaDiA_Widgets</header>
+   <header location="global">AGeLib.AGeMain</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

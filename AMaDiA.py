@@ -1,19 +1,40 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.15.13.2"
+Version = "0.16.0"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
 WindowTitle+= " by "
 WindowTitle+= Author
-
 #region ---------------------------------- imports ----------------------------------
+Copyright_Short =   """
+                        Copyright (C) 2020  Robin Albers
+
+                        This program is distributed in the hope that it will be useful,
+                        but WITHOUT ANY WARRANTY; without even the implied warranty of
+                        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                        GNU General Public License for more details.
+
+                        You should have received a copy of the GNU General Public License
+                        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+                    """
 
 import datetime
+import platform
 if __name__ == "__main__":
     print()
     print(datetime.datetime.now().strftime('%H:%M:%S'))
     print(WindowTitle)
     print("Loading Modules")#,end="")
+    if platform.system() == 'Windows':
+        try:
+            import ctypes
+            myAppId = u'{}{}'.format(WindowTitle , datetime.datetime.now().strftime('%H:%M:%S')) # arbitrary string
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myAppId)
+        except:
+            pass
+
+from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC
+from AGeLib import AGeMain
 
 
 # import qt Modules
@@ -26,7 +47,6 @@ from distutils.spawn import find_executable
 import sys
 import socket
 import time
-import platform
 import errno
 import os
 import pathlib
@@ -54,10 +74,8 @@ from AMaDiA_Files.AMaDiAUI import Ui_AMaDiA_Main_Window
 from AMaDiA_Files.AMaDiA_Options_UI import Ui_AMaDiA_Options
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_Functions as AF
-from AMaDiA_Files.AMaDiA_Functions import common_exceptions, NC, NotificationEvent, ExceptionOutput
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
-from AMaDiA_Files import AMaDiA_Colour
 from AMaDiA_Files import AMaDiA_Threads as AT
 from AMaDiA_Files import AstusChat_Client
 from AMaDiA_Files import AstusChat_Server
@@ -75,7 +93,7 @@ r.maxstring = 40    # max characters displayed for strings
 
 # Load External Libraries
 # These are not part of the standard Anaconda package and thus are already part of AMaDiA to make installation easy
-from External_Libraries.python_control_master import control
+#from External_Libraries.python_control_master import control
 try:
     from External_Libraries.keyboard_master import keyboard
 except common_exceptions :
@@ -120,13 +138,14 @@ def Superscript_Shortcut(Symbol):
     keyboard.write("\x08")
 
 #region ---------------------------------- Windows ----------------------------------
-class AMaDiA_Internal_File_Display_Window(AW.AWWF):
+class AMaDiA_Internal_File_Display_Window(AGeMain.AWWF):
     def __init__(self,FileName,parent = None):
         try:
             super(AMaDiA_Internal_File_Display_Window, self).__init__(parent,True)
             self.setWindowTitle(FileName)
             self.standardSize = (900, 500)
             self.resize(*self.standardSize)
+            self.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_FileDialogInfoView))
                 
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
@@ -156,13 +175,14 @@ class AMaDiA_Internal_File_Display_Window(AW.AWWF):
     def Scroll_To_End(self):
         self.TextBrowser.verticalScrollBar().setValue(self.TextBrowser.verticalScrollBar().maximum())
 
-class AMaDiA_About_Window(AW.AWWF):
+class AMaDiA_About_Window(AGeMain.AWWF):
     def __init__(self,parent = None):
         try:
             super(AMaDiA_About_Window, self).__init__(parent)
             self.setWindowTitle("About AMaDiA")
             self.standardSize = (400, 600)
             self.resize(*self.standardSize)
+            self.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_DialogHelpButton))
 
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
@@ -188,34 +208,10 @@ class AMaDiA_About_Window(AW.AWWF):
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
-class AMaDiA_Notification_Window(AW.AWWF):
-    def __init__(self,Notifications,parent = None):
-        try:
-            super(AMaDiA_Notification_Window, self).__init__(parent)
-            self.setWindowTitle("Notifications")
-            self.standardSize = (900, 500)
-            self.resize(*self.standardSize)
-            
-            self.centralwidget = QtWidgets.QWidget(self)
-            self.centralwidget.setAutoFillBackground(True)
-            self.centralwidget.setObjectName("centralwidget")
-            self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
-            self.gridLayout.setObjectName("gridLayout")
-            
-            self.NotificationsWidget = AW.NotificationsWidget(self, Notifications)
-            self.NotificationsWidget.setObjectName("NotificationsWidget")
-            self.gridLayout.addWidget(self.NotificationsWidget, 0, 0)
-            
-            self.setCentralWidget(self.centralwidget)
-            
-            self.setAutoFillBackground(True)
-        except common_exceptions:
-            ExceptionOutput(sys.exc_info())
-
-class AMaDiA_exec_Window(AW.AWWF):
+class AMaDiA_exec_Window(AGeMain.AWWF):
     def __init__(self,parent = None):
         try:
-            super(AMaDiA_exec_Window, self).__init__(parent)
+            super(AMaDiA_exec_Window, self).__init__(parent, initTopBar=False)
             self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
             self.setWindowTitle("Code Execution Window")
             self.standardSize = (900, 500)
@@ -227,7 +223,7 @@ class AMaDiA_exec_Window(AW.AWWF):
             self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
             self.gridLayout.setObjectName("gridLayout")
             
-            self.Input_Field = AW.TextEdit(self)
+            self.Input_Field = AW.AMaDiA_TextEdit(self)
             self.Input_Field.setObjectName("Input_Field")
 
 
@@ -247,13 +243,14 @@ class AMaDiA_exec_Window(AW.AWWF):
         except common_exceptions:
             NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_exec_Window.execute_code",input=input_text).send()
 
-class AMaDiA_options_window(AW.AWWF, Ui_AMaDiA_Options):
+class AMaDiA_options_window(AGeMain.AWWF, Ui_AMaDiA_Options):
     def __init__(self,app,parent = None):
         try:
             super(AMaDiA_options_window, self).__init__(parent, includeTopBar=False, initTopBar=False, includeStatusBar=True)
             self.MainApp = app
+            self.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_FileDialogListView))
             self.setupUi(self)
-            self.TopBar = AW.TopBar_Widget(self,False)
+            self.TopBar = AGeMain.TopBar_Widget(self,False)
             self.tabWidget.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
             self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
             self.setWindowTitle("Options")
@@ -313,7 +310,7 @@ class AMaDiA_options_window(AW.AWWF, Ui_AMaDiA_Options):
 #endregion
 
 # ---------------------------------- Main Application ----------------------------------
-class AMaDiA_Main_App(QtWidgets.QApplication):
+class AMaDiA_Main_App(AGeMain.Main_App):
  #
     # See:
     # https://doc.qt.io/qt-5/qapplication.html
@@ -331,48 +328,17 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
         self.MainWindow = None
         self.setApplicationName("AMaDiA")
         self.setApplicationVersion(Version)
-        self.setOrganizationName("Robin Albers")
-        self.setOrganizationDomain("https://github.com/AstusRush")
-        self.Notification_List = []
+        
+        self.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_ComputerIcon))
 
-        self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
-        self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
         self.Colour_Font_Init()
 
         self.optionWindow = AMaDiA_options_window(self)
-
-    def setMainWindow(self, TheWindow):
-        self.MainWindow = TheWindow
-    
-    #def notify(self, obj, event): # Reimplementation of notify that does nothing other than redirecting to normal implementation for now...
-        #try:
-        #    return super().notify(obj, event)
-        #except:
-        #    ExceptionOutput(sys.exc_info())
-        #    print("Caught: ",obj,event)
-        #    return False
     
     def eventFilter(self, source, event):
         if event.type() == 6: # QtCore.QEvent.KeyPress
             if event.modifiers() == ControlModifier:
-                if event.key() == QtCore.Qt.Key_0: # TODO: Inform the User that this feature exists
-                    for w in self.topLevelWidgets():
-                        try:
-                            w.resize(*w.standardSize)
-                        except common_exceptions:
-                            w.resize(900, 600)
-                        try:
-                            frameGm = w.frameGeometry()
-                            screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
-                            centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
-                            frameGm.moveCenter(centerPoint)
-                            w.move(frameGm.topLeft())
-                        except common_exceptions:
-                            ExceptionOutput(sys.exc_info())
-                    return True
-                if event.key() == QtCore.Qt.Key_T:
-                    self.Show_AMaDiA_exec_Window()
-                    return True
+                pass
             if event.modifiers() == AltModifier:
                 if event.key() == QtCore.Qt.Key_O:
                     self.Show_Options()
@@ -456,40 +422,11 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                                     break
             except AttributeError:
                 pass
-        elif event.type() == NotificationEvent.EVENT_TYPE:
-            self.NotifyUser(event.N)
-            return True
         return super(AMaDiA_Main_App, self).eventFilter(source, event)
 
  # ---------------------------------- Colour and Font ----------------------------------
     def Recolour(self, Colour = "Dark"):
-        if Colour == "Dark":
-            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
-        elif Colour == "Bright":
-            self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Bright()
-        self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
-        #self.setPalette(AMaDiA_Colour.Red_ERROR()[0])
-        #self.processEvents()
-        self.setPalette(self.Palette)
-        QtWidgets.QToolTip.setPalette(self.Palette)
-        self.init_Notification_Flash()
-
-        #FramePalette = self.palette()
-        #brush = QtGui.QBrush(QtGui.QColor(60, 60, 60))
-        #brush.setStyle(QtCore.Qt.SolidPattern)
-        #FramePalette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush) # Used for tab-text and for the arrows in spinboxes and scrollbars and QFrame
-        #brush = QtGui.QBrush(QtGui.QColor(10, 10, 10))
-        #brush.setStyle(QtCore.Qt.SolidPattern)
-        #FramePalette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-        #brush = QtGui.QBrush(QtGui.QColor(27, 28, 31))
-        #brush.setStyle(QtCore.Qt.SolidPattern)
-        #FramePalette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.MplWidget):
-                i.SetColour(self.BG_Colour, self.TextColour)
-            #for i in w.findChildren(AW.Window_Frame_Widget):
-            #    i.setPalette(FramePalette)
+        super(AMaDiA_Main_App, self).Recolour(Colour)
         if self.MainWindow != None: # THIS IS SPECIFIC TO AMaDiA_Main_Window
             try:
                 self.MainWindow.init_Animations_With_Colour()
@@ -499,205 +436,10 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
                         self.MainWindow.Tab_3_1_History.item(i).setForeground(brush)
             except common_exceptions:
                 ExceptionOutput(sys.exc_info())
-        
-    def Colour_Font_Init(self):
-        self.FontFamily = "Arial"
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(9)
-        self.setFont(font)
-        self.Recolour()
-
-        # Always keep Statusbar Font small
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(9)
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(QtWidgets.QStatusBar):
-                try:
-                    i.setFont(font)
-                except common_exceptions:
-                    ExceptionOutput(sys.exc_info())
-
-    def SetFont(self, Family=None, PointSize=0, source=None):
-        if type(Family) == QtGui.QFont:
-            if PointSize==0:
-                PointSize = Family.pointSize()
-            Family = Family.family()
-            self.FontFamily = Family
-        elif Family == None:
-            Family = self.FontFamily
-        else:
-            self.FontFamily = Family
-        if type(PointSize) == str:
-            PointSize = int(PointSize)
-        if PointSize < 5:
-            try:
-                PointSize = source.TopBar.Font_Size_spinBox.value()
-            except common_exceptions:
-                try:
-                    NC(msg="Could not read Font_Size_spinBox.value()",exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont",win=source.windowTitle()).send()
-                except common_exceptions:
-                    NC(msg="Could not read Font_Size_spinBox.value()",exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont").send()
-                PointSize = 9
-        if type(PointSize) != int:
-            print(type(PointSize)," is an invalid type for font size (",PointSize,")")
-            try:
-                NC(msg="{} is an invalid type for font size ({})".format(str(type(PointSize)),str(PointSize)),exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont",win=source.windowTitle()).send()
-            except:
-                NC(msg="{} is an invalid type for font size ({})".format(str(type(PointSize)),str(PointSize)),exc=sys.exc_info(),func="AMaDiA_Main_App.SetFont").send()
-            PointSize = 9
-                
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.TopBar_Widget):
-                try:
-                    if i.IncludeFontSpinBox:
-                        # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
-                        # If the new Value is the same it is NOT emitted.
-                        # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
-                        i.Font_Size_spinBox.blockSignals(True)
-                        i.Font_Size_spinBox.setValue(PointSize)
-                        i.Font_Size_spinBox.blockSignals(False)
-                except common_exceptions:
-                    ExceptionOutput(sys.exc_info())
-        
-        font = QtGui.QFont()
-        font.setFamily(Family)
-        font.setPointSize(PointSize)
-        self.setFont(font)
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.TopBar_Widget):
-                try:
-                    if type(i.parentWidget()) == AW.MMenuBar:
-                        i.setMinimumHeight(i.parentWidget().minimumHeight())
-                    elif type(i.parentWidget()) == QtWidgets.QTabWidget:
-                        i.setMinimumHeight(i.parentWidget().tabBar().minimumHeight())
-                except common_exceptions:
-                    ExceptionOutput(sys.exc_info())
-        # Always keep Statusbar Font small
-        font = QtGui.QFont()
-        font.setFamily(Family)
-        font.setPointSize(9)
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(QtWidgets.QStatusBar):
-                try:
-                    i.setFont(font)
-                except common_exceptions:
-                    ExceptionOutput(sys.exc_info())
-
- # ---------------------------------- Notifications ----------------------------------
-
-    def init_Notification_Flash(self):
-        self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Red.setDuration(1000)
-        self.Notification_Flash_Red.setLoopCount(1)
-        self.Notification_Flash_Red.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Red.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Red.setKeyValueAt(0.5, QtGui.QColor(255, 0, 0))
-        self.Notification_Flash_Red.finished.connect(self.Notification_Flash_Finished)
-        
-        self.Notification_Flash_Yellow = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Yellow.setDuration(1000)
-        self.Notification_Flash_Yellow.setLoopCount(1)
-        self.Notification_Flash_Yellow.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Yellow.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Yellow.setKeyValueAt(0.5, QtGui.QColor(255, 255, 0))
-        self.Notification_Flash_Yellow.finished.connect(self.Notification_Flash_Finished)
-
-        self.Notification_Flash_Green = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Green.setDuration(1000)
-        self.Notification_Flash_Green.setLoopCount(1)
-        self.Notification_Flash_Green.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Green.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Green.setKeyValueAt(0.5, QtGui.QColor(0, 255, 0))
-        self.Notification_Flash_Green.finished.connect(self.Notification_Flash_Finished)
-
-        self.Notification_Flash_Blue = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Blue.setDuration(1000)
-        self.Notification_Flash_Blue.setLoopCount(1)
-        self.Notification_Flash_Blue.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Blue.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Blue.setKeyValueAt(0.5, QtGui.QColor(0, 0, 255))
-        self.Notification_Flash_Blue.finished.connect(self.Notification_Flash_Finished)
-
-    def _set_FLASH_colour(self, col): # Handles changes to the Property FLASH_colour
-        palette = self.Palette
-        palette.setColor(QtGui.QPalette.Window, col)
-        self.setPalette(palette)
-        #self.MainApp.setPalette(self.Palette)
-    FLASH_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_FLASH_colour) # Defines the Property FLASH_colour
-    
-    def Notification_Flash_Finished(self):
-        pass#self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
-
-    def NotifyUser(self, N):
-        """
-        Sends the notification N to the user
-        """
-        if N.l() == 0:
-            return
-        elif N.l() in [10]:
-            Error_Text_TT,icon = self.ListVeryRecentNotifications(N)
-            Error_Text_TT = N.Level + " at " + N.t() + Error_Text_TT
-            for w in self.topLevelWidgets():
-                for i in w.findChildren(AW.TopBar_Widget):
-                    if i.IncludeErrorButton:
-                        i.Error_Label.setText(N.m())
-                        i.Error_Label.setToolTip(Error_Text_TT)
-                        i.Error_Label.setIcon(icon)
-        elif N.l()!=4 or self.optionWindow.cb_O_AdvancedMode.isChecked():
-            Text = N.Level + " at " + N.t()
-            Error_Text_TT,icon = self.ListVeryRecentNotifications(N)
-            for w in self.topLevelWidgets():
-                for i in w.findChildren(AW.TopBar_Widget):
-                    if i.IncludeErrorButton:
-                        i.Error_Label.setText(Text)
-                        i.Error_Label.setToolTip(Error_Text_TT)
-                        i.Error_Label.setIcon(icon)
-            if N.l() in [1]:
-                self.Notification_Flash_Red.start()
-            elif N.l() in [2]:
-                self.Notification_Flash_Yellow.start()
-            elif N.l() in [3,4]:
-                self.Notification_Flash_Blue.start()
-        
-        self.Notification_List.append(N)
-        self.S_New_Notification.emit(N)
-        # Allow the button to adjust to the new text:
-        for w in self.topLevelWidgets():
-            for i in w.findChildren(AW.TopBar_Widget):
-                if i.IncludeErrorButton:
-                    i.parentWidget().adjustSize()
-        # REMINDER: Somewhere you need to make the error message "Sorry Dave, I can't let you do this."
-        
-    def ListVeryRecentNotifications(self, N):
-        cTime = time.time()
-        Error_Text_TT = N.m() if N.l()!=10 else ""
-        level = N.l()
-        icon = N.icon
-        for i in range(len(self.Notification_List)):
-            if i< 10 and cTime - self.Notification_List[-i-1]._time_time < 2 and len(Error_Text_TT.splitlines())<40:
-                if self.Notification_List[-i-1].l()!=0 and (self.Notification_List[-i-1].l()!=4 or self.optionWindow.cb_O_AdvancedMode.isChecked()):
-                    Error_Text_TT += "\n\n"
-                    if self.Notification_List[-i-1].l() == 10:
-                        Error_Text_TT += "Direct Notification at " + N.t()+" :\n"
-                    Error_Text_TT += self.Notification_List[-i-1].m()
-                    cTime = self.Notification_List[-i-1]._time_time
-                    if level > self.Notification_List[-i-1].l():
-                        level = self.Notification_List[-i-1].l()
-                        icon = self.Notification_List[-i-1].icon
-            else:
-                break
-        return (Error_Text_TT,icon)
 
  # ---------------------------------- SubWindows ----------------------------------
     
-    def Show_Notification_Window(self):
-        self.AMaDiA_Notification_Window = AMaDiA_Notification_Window(self.Notification_List)
-        self.S_New_Notification.connect(self.AMaDiA_Notification_Window.NotificationsWidget.AddNotification)
-        self.AMaDiA_Notification_Window.show()
-
-    def Show_AMaDiA_exec_Window(self):
+    def Show_exec_Window(self):
         self.AMaDiA_exec_Window_Window = AMaDiA_exec_Window()
         self.AMaDiA_exec_Window_Window.show()
 
@@ -745,7 +487,7 @@ class AMaDiA_Main_App(QtWidgets.QApplication):
 
 
 # ---------------------------------- Main Window ----------------------------------
-class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
+class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
     S_Terminate_Threads = QtCore.pyqtSignal()
     def __init__(self, MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent,initTopBar=False)
@@ -790,8 +532,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_3_1_Button_Plot_SymPy.setVisible(False) # CLEANUP: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
         
         self.Tab_3_tabWidget.removeTab(1)# FEATURE: Add Complex plotter
-        self.Tab_5_tabWidget.setTabEnabled(0,False)# TODO: Fully implement the CONTROL input tab
-        self.Tab_5_tabWidget.setTabToolTip(0,"Coming soon. To test current features use \"Dev Function\" in Options")
         
         # TODO: Find place to display WindowTitle. Maybe with a TextLabel in the statusbar?
         # MAYBE: Do something with the Statusbar
@@ -804,7 +544,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_3_tabWidget.setCurrentIndex(0)
         self.Tab_3_1_TabWidget.setCurrentIndex(0)
         self.Tab_4_tabWidget.setCurrentIndex(0)
-        self.Tab_5_tabWidget.setCurrentIndex(3)# REMINDER: 0 # Fully implement the CONTROL input tab and set this to 0
         self.tabWidget.setCurrentIndex(0)
         
         #Set Splitter Start Values
@@ -818,6 +557,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
         
        # Initialize important variables and lists
+        self.ControlWindow = None
         self.workingThreads = 0
         self.LastOpenState = self.showNormal
         self.Bool_PreloadLaTeX = True
@@ -840,15 +580,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
        # Set the Text
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("AMaDiA" , WindowTitle))
-        
-        Tab_5_4_Dirty_Input_Text = "#Example:\n\n"
-        Tab_5_4_Dirty_Input_Text += "K_P = 5\nK_D = 0\nK_i = 0\n\nsys1 = tf([K_D,K_P,K_i],[1,1.33+K_D,1+K_P,K_i])\n\n"
-        Tab_5_4_Dirty_Input_Text += "#Other example:\n#sys1 = tf([1],[1,2,3])\n\n"
-        Tab_5_4_Dirty_Input_Text += "#Other example:\n#sys1 = ss([[2,8],[1,0]],[[1],[-0.5000]],[-1/8,-1],[0])\n\n"
-        Tab_5_4_Dirty_Input_Text += "#Setting Input Function:\nf=\"sin(x)\"\n#f=\"1/(x+1)\""
-        
-        self.Tab_5_4_Dirty_Input.setPlaceholderText(Tab_5_4_Dirty_Input_Text)
-        self.Tab_5_4_Dirty_Input.setText(Tab_5_4_Dirty_Input_Text)
         
        # EventFilter
         self.installEventFilter(self)
@@ -884,7 +615,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_4_Currently_Displayed_Solution = ""
         
        # Other things:
-        self.Tab_5_1_System_Set_Order()
         
         # VALIDATE: Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
         self.Tab_3_1_F_Clear()
@@ -944,10 +674,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.MainApp.optionWindow.cb_O_PairHighlighter.toggled.connect(self.Menu_Options_action_Highlighter.setChecked)
         self.Menu_Options_action_Highlighter.toggled.connect(self.MainApp.optionWindow.cb_O_PairHighlighter.setChecked)
         self.Menu_Options_action_Highlighter.toggled.connect(self.MainApp.S_Highlighter.emit)
-        #self.Menu_Options_action_Highlighter.toggled.connect(self.ToggleSyntaxHighlighter)
 
         self.Menu_DevOptions_action_Dev_Function.triggered.connect(self.Dev_Function)
-        self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.triggered.connect(self.MainApp.Show_AMaDiA_exec_Window)
+        self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.triggered.connect(self.MainApp.Show_exec_Window)
         self.Menu_DevOptions_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
         self.Menu_DevOptions_action_Terminate_All_Threads.triggered.connect(self.TerminateAllThreads)
 
@@ -956,6 +685,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         
         self.Menu_Colour_action_Dark.triggered.connect(lambda: self.Recolour("Dark"))
         self.Menu_Colour_action_Bright.triggered.connect(lambda: self.Recolour("Bright"))
+        
+        self.Menu_OtherWindows_action_SystemControl.triggered.connect(self.OpenControlWindow)
 
         self.Menu_Help_action_Examples.triggered.connect(lambda: self.Show_AMaDiA_Text_File("InputExamples.txt"))
         self.Menu_Help_action_Helpful_Commands.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Helpful_Useable_Syntax.txt"))
@@ -983,16 +714,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_4_2_New_Equation_Button.clicked.connect(self.Tab_4_F_New_Equation)
         self.Tab_4_2_New_Equation_Name_Input.returnPressed.connect(self.Tab_4_F_New_Equation)
         self.Tab_4_2_Load_Selected_Button.clicked.connect(self.Tab_4_F_Load_Selected_Equation)
-
-        self.Tab_5_1_SystemOrder_Confrim.clicked.connect(self.Tab_5_1_System_Set_Order)
-        self.Tab_5_1_SaveButton.clicked.connect(self.Tab_5_1_System_Save)
-        self.Tab_5_1_SavePlotButton.clicked.connect(self.Tab_5_1_System_Plot_and_Save)
-        
-        self.Tab_5_1_System_4ATF_Ys.returnPressed.connect(lambda: self.Tab_5_1_SetFocus_on(self.Tab_5_1_System_4ATF_Xs))
-        self.Tab_5_1_System_4ATF_Xs.returnPressed.connect(lambda: self.Tab_5_1_SetFocus_on(self.Tab_5_1_NameInput))
-        self.Tab_5_1_NameInput.returnPressed.connect(self.Tab_5_1_System_Plot_and_Save)
-
-        self.Tab_5_4_Dirty_Input.returnCtrlPressed.connect(self.Tab_5_4_Dirty_Display)
     
     def init_Menu(self,FirstTime=True):
         if FirstTime:
@@ -1010,78 +731,83 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Chat.setObjectName("Menu_Chat")
             self.Menu_Colour = QtWidgets.QMenu(self.Menu)
             self.Menu_Colour.setObjectName("Menu_Colour")
+            self.Menu_OtherWindows = QtWidgets.QMenu(self.Menu)
+            self.Menu_OtherWindows.setObjectName("Menu_OtherWindows")
             self.Menu_Help = QtWidgets.QMenu(self.Menu)
             self.Menu_Help.setObjectName("Menu_Help")
             #self.Menu_Options_MathRemap = QtWidgets.QMenu(self.Menu_Options)
             #self.Menu_Options_MathRemap.setObjectName("Menu_Options_MathRemap")
        # Create Actions
         if FirstTime:
-            self.Menu_Options_action_Options = AW.MenuAction(self)
+            self.Menu_Options_action_Options = AGeMain.MenuAction(self)
             self.Menu_Options_action_Options.setObjectName("Menu_Options_action_Options")
-            self.Menu_Options_action_ToggleCompactMenu = AW.MenuAction(self)
+            self.Menu_Options_action_ToggleCompactMenu = AGeMain.MenuAction(self)
             self.Menu_Options_action_ToggleCompactMenu.setCheckable(True)
             self.Menu_Options_action_ToggleCompactMenu.setObjectName("Menu_Options_action_ToggleCompactMenu")
             self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
-            self.Menu_Options_action_Advanced_Mode = AW.MenuAction(self)
+            self.Menu_Options_action_Advanced_Mode = AGeMain.MenuAction(self)
             self.Menu_Options_action_Advanced_Mode.setCheckable(True)
             self.Menu_Options_action_Advanced_Mode.setObjectName("Menu_Options_action_Advanced_Mode")
-            self.Menu_Options_action_Eval_Functions = AW.MenuAction(self)
+            self.Menu_Options_action_Eval_Functions = AGeMain.MenuAction(self)
             self.Menu_Options_action_Eval_Functions.setCheckable(True)
             self.Menu_Options_action_Eval_Functions.setChecked(True)
             self.Menu_Options_action_Eval_Functions.setObjectName("Menu_Options_action_Eval_Functions")
-            self.Menu_Options_action_Use_Pretty_LaTeX_Display = AW.MenuAction(self)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display = AGeMain.MenuAction(self)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setCheckable(True)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setEnabled(False)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setObjectName("Menu_Options_action_Use_Pretty_LaTeX_Display")
-            self.Menu_Options_action_Syntax_Highlighter = AW.MenuAction(self)
+            self.Menu_Options_action_Syntax_Highlighter = AGeMain.MenuAction(self)
             self.Menu_Options_action_Syntax_Highlighter.setCheckable(True)
             self.Menu_Options_action_Syntax_Highlighter.setChecked(True)
             self.Menu_Options_action_Syntax_Highlighter.setObjectName("Menu_Options_action_Syntax_Highlighter")
-            self.Menu_Options_action_WindowStaysOnTop = AW.MenuAction(self)
+            self.Menu_Options_action_WindowStaysOnTop = AGeMain.MenuAction(self)
             self.Menu_Options_action_WindowStaysOnTop.setCheckable(True)
             self.Menu_Options_action_WindowStaysOnTop.setObjectName("Menu_Options_action_WindowStaysOnTop")
-            #self.Menu_Options_action_Use_Local_Keyboard_Remapper = AW.MenuAction(self)
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper = AGeMain.MenuAction(self)
             #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setCheckable(True)
             #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
             #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Local_Keyboard_Remapper")
-            #self.Menu_Options_action_Use_Global_Keyboard_Remapper = AW.MenuAction(self)
+            #self.Menu_Options_action_Use_Global_Keyboard_Remapper = AGeMain.MenuAction(self)
             #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setCheckable(True)
             #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Global_Keyboard_Remapper")
-            self.Menu_Options_action_Highlighter = AW.MenuAction(self)
+            self.Menu_Options_action_Highlighter = AGeMain.MenuAction(self)
             self.Menu_Options_action_Highlighter.setCheckable(True)
             self.Menu_Options_action_Highlighter.setChecked(True)
             self.Menu_Options_action_Highlighter.setObjectName("Menu_Options_action_Highlighter")
 
-            self.Menu_DevOptions_action_Dev_Function = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Dev_Function = AGeMain.MenuAction(self)
             self.Menu_DevOptions_action_Dev_Function.setObjectName("Menu_DevOptions_action_Dev_Function")
-            self.Menu_DevOptions_action_Show_AMaDiA_exec_Window = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Show_AMaDiA_exec_Window = AGeMain.MenuAction(self)
             self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.setObjectName("Menu_DevOptions_action_Show_AMaDiA_exec_Window")
-            self.Menu_DevOptions_action_Use_Threadpool = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Use_Threadpool = AGeMain.MenuAction(self)
             self.Menu_DevOptions_action_Use_Threadpool.setCheckable(True)
             self.Menu_DevOptions_action_Use_Threadpool.setChecked(True)
             self.Menu_DevOptions_action_Use_Threadpool.setObjectName("Menu_DevOptions_action_Use_Threadpool")
-            self.Menu_DevOptions_action_Terminate_All_Threads = AW.MenuAction(self)
+            self.Menu_DevOptions_action_Terminate_All_Threads = AGeMain.MenuAction(self)
             self.Menu_DevOptions_action_Terminate_All_Threads.setObjectName("Menu_DevOptions_action_Terminate_All_Threads")
 
-            self.Menu_Chat_action_Open_Client = AW.MenuAction(self)
+            self.Menu_Chat_action_Open_Client = AGeMain.MenuAction(self)
             self.Menu_Chat_action_Open_Client.setObjectName("Menu_Chat_action_Open_Client")
-            self.Menu_Chat_action_Open_Server = AW.MenuAction(self)
+            self.Menu_Chat_action_Open_Server = AGeMain.MenuAction(self)
             self.Menu_Chat_action_Open_Server.setObjectName("Menu_Chat_action_Open_Server")
 
-            self.Menu_Colour_action_Dark = AW.MenuAction(self)
+            self.Menu_Colour_action_Dark = AGeMain.MenuAction(self)
             self.Menu_Colour_action_Dark.setObjectName("Menu_Colour_action_Dark")
-            self.Menu_Colour_action_Bright = AW.MenuAction(self)
+            self.Menu_Colour_action_Bright = AGeMain.MenuAction(self)
             self.Menu_Colour_action_Bright.setObjectName("Menu_Colour_action_Bright")
+            
+            self.Menu_OtherWindows_action_SystemControl = AGeMain.MenuAction(self)
+            self.Menu_OtherWindows_action_SystemControl.setObjectName("Menu_OtherWindows_action_SystemControl")
 
-            self.Menu_Help_action_Examples = AW.MenuAction(self)
+            self.Menu_Help_action_Examples = AGeMain.MenuAction(self)
             self.Menu_Help_action_Examples.setObjectName("Menu_Help_action_Examples")
-            self.Menu_Help_action_Helpful_Commands = AW.MenuAction(self)
+            self.Menu_Help_action_Helpful_Commands = AGeMain.MenuAction(self)
             self.Menu_Help_action_Helpful_Commands.setObjectName("Menu_Help_action_Helpful_Commands")
-            self.Menu_Help_action_License = AW.MenuAction(self)
+            self.Menu_Help_action_License = AGeMain.MenuAction(self)
             self.Menu_Help_action_License.setObjectName("Menu_Help_action_License")
-            self.Menu_Help_action_About = AW.MenuAction(self)
+            self.Menu_Help_action_About = AGeMain.MenuAction(self)
             self.Menu_Help_action_About.setObjectName("Menu_Help_action_About")
-            self.Menu_Help_action_Patchlog = AW.MenuAction(self)
+            self.Menu_Help_action_Patchlog = AGeMain.MenuAction(self)
             self.Menu_Help_action_Patchlog.setObjectName("Menu_Help_action_Patchlog")
        # Add the Actions to the Submenus
         if FirstTime:
@@ -1095,14 +821,20 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             #self.Menu_Options_MathRemap.addAction(self.Menu_Options_action_Use_Global_Keyboard_Remapper)
             #self.Menu_Options.addAction(self.Menu_Options_MathRemap.menuAction())
             self.Menu_Options.addAction(self.Menu_Options_action_Highlighter)
+            
             self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Dev_Function)
             self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Show_AMaDiA_exec_Window)
             self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Use_Threadpool)
             self.Menu_DevOptions.addAction(self.Menu_DevOptions_action_Terminate_All_Threads)
+            
             self.Menu_Chat.addAction(self.Menu_Chat_action_Open_Client)
             self.Menu_Chat.addAction(self.Menu_Chat_action_Open_Server)
+            
             self.Menu_Colour.addAction(self.Menu_Colour_action_Dark)
             self.Menu_Colour.addAction(self.Menu_Colour_action_Bright)
+            
+            self.Menu_OtherWindows.addAction(self.Menu_OtherWindows_action_SystemControl)
+            
             self.Menu_Help.addAction(self.Menu_Help_action_Examples)
             self.Menu_Help.addAction(self.Menu_Help_action_Helpful_Commands)
             self.Menu_Help.addAction(self.Menu_Help_action_Patchlog)
@@ -1116,6 +848,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.MenuBar.addAction(self.Menu_Colour.menuAction())
         self.Menu.addAction(self.Menu_Chat.menuAction())
         self.MenuBar.addAction(self.Menu_Chat.menuAction())
+        self.Menu.addAction(self.Menu_OtherWindows.menuAction())
+        self.MenuBar.addAction(self.Menu_OtherWindows.menuAction())
         self.Menu.addAction(self.Menu_Help.menuAction())
         self.MenuBar.addAction(self.Menu_Help.menuAction())
         
@@ -1126,6 +860,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_DevOptions.setTitle(_translate("AMaDiA_Main_Window", "DevOptions"))
             self.Menu_Chat.setTitle(_translate("AMaDiA_Main_Window", "Chat"))
             self.Menu_Colour.setTitle(_translate("AMaDiA_Main_Window", "Colour"))
+            self.Menu_OtherWindows.setTitle(_translate("AMaDiA_Main_Window", "More Windows"))
             self.Menu_Help.setTitle(_translate("AMaDiA_Main_Window", "Help"))
 
             self.Menu_Options_action_Options.setText(_translate("AMaDiA_Main_Window", "&Options"))
@@ -1164,6 +899,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
 
             self.Menu_Colour_action_Dark.setText(_translate("AMaDiA_Main_Window", "Dark"))
             self.Menu_Colour_action_Bright.setText(_translate("AMaDiA_Main_Window", "Bright"))
+            
+            self.Menu_OtherWindows_action_SystemControl.setText(_translate("AMaDiA_Main_Window", "System Control"))
 
             self.Menu_Help_action_Examples.setText(_translate("AMaDiA_Main_Window", "Examples"))
             self.Menu_Help_action_Helpful_Commands.setText(_translate("AMaDiA_Main_Window", "Helpful Commands"))
@@ -1171,85 +908,9 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Help_action_About.setText(_translate("AMaDiA_Main_Window", "About"))
             self.Menu_Help_action_Patchlog.setText(_translate("AMaDiA_Main_Window", "Patchlog"))
 
-    #def Colour_Font_Init(self):
-     #   self.FontFamily = "Arial"
-     #   #self.Palette , self.BG_Colour , self.TextColour = AMaDiA_Colour.Dark()
-     #   #self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
-     #   font = QtGui.QFont()
-     #   font.setFamily("Arial")
-     #   font.setPointSize(9)
-     #   self.MainApp.SetFont(font, 9, self)
-     #   self.MainApp.Recolour()
-     # 
-     #   #self.Error_Palette = AMaDiA_Colour.Red_ERROR()[0] # Currently not in use
-     # 
-     #   # Always keep Statusbar Font small
-     #   font = QtGui.QFont()
-     #   font.setFamily("Arial")
-     #   font.setPointSize(9)
-     #   #self.statusbar.setFont(font)
-
-    def SetFont(self,Family = None, PointSize = 0): #FEATURE: Allow to change Font
-        if type(Family) == QtGui.QFont:
-            PointSize = Family.pointSize()
-            Family = Family.family()
-        elif Family == None:
-            try:
-                Family = self.FontFamily # pylint: disable=access-member-before-definition
-            except common_exceptions:
-                self.FontFamily = "Arial"
-        else:
-            self.FontFamily = Family
-        if type(PointSize) == str:
-            PointSize = int(PointSize)
-        if PointSize < 5:
-            PointSize = self.TopBar.Font_Size_spinBox.value() # TODO: Remove this and let the MainApp draw it from the TopBar of the source
-        self.MainApp.SetFont(Family, PointSize, self)
-        #else: #CLEANUP
-        #    # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
-        #    # If the new Value is the same it is NOT emitted.
-        #    # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
-        #    self.TopBar_Font_Size_spinBox.blockSignals(True)
-        #    self.TopBar_Font_Size_spinBox.setValue(PointSize)
-        #    self.TopBar_Font_Size_spinBox.blockSignals(False)
-        #
-        ##font = QtGui.QFont()
-        ##font.setFamily(Family)
-        ##font.setPointSize(PointSize)
-        ##self.setFont(font)
-        ##self.S_Font_Changed.emit(font)
-        #
-        #self.ChangeFontSize()
-        ## Always keep Statusbar Font small
-        #font = QtGui.QFont()
-        #font.setFamily(Family)
-        #font.setPointSize(9)
-        #self.statusbar.setFont(font)
-
-
     def Recolour(self, Colour = "Dark"):
         self.MainApp.Recolour(Colour)
         
-
-    def ChangeFontSize(self): #TODO
-        try:
-            self.MainApp.SetFont(self.FontFamily, self.TopBar.Font_Size_spinBox.value(), self)
-        except common_exceptions:
-            ExceptionOutput(sys.exc_info())
-        #Size = self.TopBar_Font_Size_spinBox.value()
-        #newFont = QtGui.QFont()
-        #newFont.setFamily(self.FontFamily)
-        #newFont.setPointSize(Size)
-        #self.setFont(newFont)
-        #for i in self.findChildren(QtWidgets.QMenu):
-        #    i.setFont(newFont)
-        #
-        #self.S_Font_Changed.emit(newFont)
-        #if self.Menu_Options_action_ToggleCompactMenu.isChecked():
-        #    self.TopBar.CloseButton.setMinimumHeight(self.MenuBar.height())
-        #else:
-        #    self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().height())
-
     def InstallSyntaxHighlighter(self):
         #self.Tab_1_InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1_InputField.document())
         pass
@@ -1260,8 +921,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
     def init_Animations_With_Colour(self):
         pass#self.init_Notification_Flash()
         
-
-
  # ---------------------------------- Option Toolbar Functions ----------------------------------
     def Dev_Function(self):
         #AC.ReloadModules()
@@ -1274,11 +933,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         #importlib.reload(AC)
         #importlib.reload(ART)
         #importlib.reload(AT)
-        #importlib.reload(AMaDiA_Colour)
         #
         #self.ColourMain()
 
-        self.Tab_5_tabWidget.setTabEnabled(0,True)# TODO: Fully implement the CONTROL input tab
+        NC(3,"The DevFunction is currently not assigned",win=self.windowTitle(),func="AMaDiA_Main_Window.Dev_Function").send()
 
     def ToggleCompactMenu(self):
         #TODO: The size behaves weird when compact->scaling-up->switching->scaling-down
@@ -1318,17 +976,12 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             font = QtGui.QFont()
             font.setFamily("unifont")
             font.setPointSize(9)
-            self.setFont(font)
-            self.setFont(org_font)
+            self.MainApp.SetFont(font)
+            self.MainApp.SetFont(org_font)
             
             self.TopBar.setMinimumHeight(self.tabWidget.tabBar().minimumHeight())
             self.TopBar.CloseButton.setMinimumHeight(self.tabWidget.tabBar().minimumHeight())
             
-
-    def ToggleSyntaxHighlighter(self): #CLEANUP: Integrated
-        state = self.Menu_Options_action_Highlighter.isChecked()
-        for i in self.findChildren(AW.ATextEdit):
-            i.Highlighter.enabled = state
 
     def ToggleWindowStaysOnTop(self):
         if self.Menu_Options_action_WindowStaysOnTop.isChecked():
@@ -1382,7 +1035,6 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
         
-
     def Show_About(self):
         self.AMaDiA_About_Window_Window = AMaDiA_About_Window()
         self.AMaDiA_About_Window_Window.show()
@@ -1395,11 +1047,17 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         self.Sever = AstusChat_Server.MainWindow()
         self.Sever.show()
 
+    def OpenControlWindow(self):
+        if self.ControlWindow == None:
+            from AMaDiA_Files.AMaDiA_SystemControl import AMaDiA_Control_Window # pylint: disable=no-name-in-module
+            self.ControlWindow = AMaDiA_Control_Window()
+        self.ControlWindow.show()
+        self.ControlWindow.activateWindow()
+
  # ---------------------------------- Events and Context Menu ----------------------------------
     def OtherContextMenuSetup(self):
         self.Tab_3_1_Display.canvas.mpl_connect('button_press_event', self.Tab_3_1_Display_Context_Menu)
         self.Tab_4_Display.canvas.mpl_connect('button_press_event', self.Tab_4_Display_Context_Menu)
-        self.Tab_5_2_Display.canvas.mpl_connect('button_press_event', self.Tab_5_2_Maximize_Axes)
         
         
   # ---------------------------------- 2D Plot Context Menu ---------------------------------- 
@@ -1424,29 +1082,14 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         if event.button == 3:
             menu = QtWidgets.QMenu()
             action = menu.addAction('Copy Equation')
-            action.triggered.connect(self.action_tab_5_Display_Copy_Displayed)
+            action.triggered.connect(self.action_tab_4_Display_Copy_Displayed)
             action = menu.addAction('Copy Solution')
-            action.triggered.connect(self.action_tab_5_Display_Copy_Displayed_Solution)
+            action.triggered.connect(self.action_tab_4_Display_Copy_Displayed_Solution)
             cursor = QtGui.QCursor()
             menu.setPalette(self.palette())
             menu.setFont(self.font())
             menu.exec_(cursor.pos())
- 
-  # ---------------------------------- Control Plot Interaction ---------------------------------- 
-    def Tab_5_2_Maximize_Axes(self,event):
-        try:
-            if event.button == 1 and event.dblclick:
-                message = self.Tab_5_3_SingleDisplay.Plot(self.Tab_5_2_Display.Curr_Sys, event.inaxes.title.get_text())
-                if message[0] == 0:
-                    self.Tab_5_tabWidget.setCurrentIndex(2)
-                else:
-                    NC(message,func="AMaDiA_Main_Window.Tab_5_2_Maximize_Axes",win=self.windowTitle()).send()
-        except common_exceptions as inst:
-            if type(inst) != AttributeError:
-                NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_2_Maximize_Axes",win=self.windowTitle()).send()
-            self.Tab_5_tabWidget.setCurrentIndex(1)
-        self.Tab_5_tabWidget.setFocus()
-      
+
  # ---------------------------------- Event Filter ----------------------------------
 
     def eventFilter(self, source, event):
@@ -1473,13 +1116,13 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             if (source is self.Tab_4_Matrix_List) and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
                 action = menu.addAction('Load to Editor')
-                action.triggered.connect(lambda: self.action_tab_5_M_Load_into_Editor(source,event))
+                action.triggered.connect(lambda: self.action_tab_4_M_Load_into_Editor(source,event))
                 action = menu.addAction('Display')
-                action.triggered.connect(lambda: self.action_tab_5_M_Display(source,event))
+                action.triggered.connect(lambda: self.action_tab_4_M_Display(source,event))
                 action = menu.addAction('Copy as String')
-                action.triggered.connect(lambda: self.action_tab_5_M_Copy_string(source,event))
+                action.triggered.connect(lambda: self.action_tab_4_M_Copy_string(source,event))
                 action = menu.addAction('Delete')
-                action.triggered.connect(lambda: self.action_tab_5_M_Delete(source,event))
+                action.triggered.connect(lambda: self.action_tab_4_M_Delete(source,event))
                 menu.setPalette(self.palette())
                 menu.setFont(self.font())
                 menu.exec_(event.globalPos())
@@ -1487,25 +1130,24 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         #elif...
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
     
- 
  # ---------------------------------- Tab_4_Matrix_List Context Menu Actions/Functions ----------------------------------
-    def action_tab_5_M_Load_into_Editor(self,source,event):
+    def action_tab_4_M_Load_into_Editor(self,source,event):
         item = source.itemAt(event.pos())
         Name = item.data(100)
         Matrix = item.data(101)
         self.Tab_4_F_Load_Matrix(Name,Matrix)
     
-    def action_tab_5_M_Display(self,source,event):
+    def action_tab_4_M_Display(self,source,event):
         item = source.itemAt(event.pos())
         Name = item.data(100)
         Matrix = item.data(101)
         self.Tab_4_F_Display_Matrix(Name,Matrix)
     
-    def action_tab_5_M_Copy_string(self,source,event):
+    def action_tab_4_M_Copy_string(self,source,event):
         item = source.itemAt(event.pos())
         QApplication.clipboard().setText(str(item.data(101)))
     
-    def action_tab_5_M_Delete(self,source,event):
+    def action_tab_4_M_Delete(self,source,event):
         # FEATURE: Paperbin for matrices: If only one item was deleted save it in a temporary List item (The same as the duplicate item from the save function)
         listItems=source.selectedItems()
         if not listItems: return        
@@ -1531,10 +1173,10 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
             NC(1,"Could not save Plot: Could not validate save location",func="AMaDiA_Main_Window.action_tab_3_tab_1_Display_SavePlt",win=self.windowTitle(),input=self.MainApp.FolderPath).send()
          
  # ---------------------------------- Tab_4_Display_Context_Menu ----------------------------------
-    def action_tab_5_Display_Copy_Displayed(self):
+    def action_tab_4_Display_Copy_Displayed(self):
         QApplication.clipboard().setText(self.Tab_4_Currently_Displayed)
         
-    def action_tab_5_Display_Copy_Displayed_Solution(self):
+    def action_tab_4_Display_Copy_Displayed_Solution(self):
         QApplication.clipboard().setText(self.Tab_4_Currently_Displayed_Solution)
  
  # ---------------------------------- HistoryHandler ----------------------------------
@@ -2110,7 +1752,7 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
                 Matrix.append([])
                 for j in range(self.Tab_4_1_Matrix_Input.columnCount()):
                     try:
-                        if self.Tab_4_1_Matrix_Input.item(i,j).text().strip() != "":
+                        if self.Tab_4_1_Matrix_Input.item(i,j).text() != None and self.Tab_4_1_Matrix_Input.item(i,j).text().strip() != "":
                             Matrix[i].append(AF.AstusParse(self.Tab_4_1_Matrix_Input.item(i,j).text(),False))
                         else:
                             Matrix[i].append("0")
@@ -2197,182 +1839,8 @@ class AMaDiA_Main_Window(AW.AWWF, Ui_AMaDiA_Main_Window):
         Notification.w(self.windowTitle())
         Notification.send()
  
- # ---------------------------------- Tab_5_ (Mind-)Control ----------------------------------
-    def Tab_5_1_System_Set_Order(self,Order=None):
-        if type(Order) != int:
-            Order = self.Tab_5_1_SystemOrder_Spinbox.value()
-        
-        # Transfer
-        ## Add/Remove Columns
-        shift = Order+1-self.Tab_5_1_System_1TF_tableWidget.columnCount()
-        if shift > 0:
-            for i in range(abs(shift)):
-                self.Tab_5_1_System_1TF_tableWidget.insertColumn(0)
-        elif shift < 0:
-            for i in range(abs(shift)):
-                self.Tab_5_1_System_1TF_tableWidget.removeColumn(0)
+ # ---------------------------------- Tab_5_ ??? ----------------------------------
 
-        ## Set Header Labels
-        HeaderLabel = []
-        i=Order
-        while i >=0:
-            s="s{}".format(i)
-            HeaderLabel.append(u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in s))
-            i-=1
-        self.Tab_5_1_System_1TF_tableWidget.setHorizontalHeaderLabels(HeaderLabel)
-
-        # State System
-        #TODO: Adjust other input methods
-        #TODO: For SS set the HeaderLabels to x₁,x₂,...
-
-        # ODE
-        #TODO: Adjust other input methods
-
-    def Tab_5_1_SetFocus_on(self,item):
-        if item == self.Tab_5_1_System_4ATF_Xs:
-            self.Tab_5_1_System_4ATF_Xs.setFocus()
-            self.Tab_5_1_System_4ATF_Xs.selectAll()
-        elif item == self.Tab_5_1_NameInput:
-            self.Tab_5_1_NameInput.setFocus()
-            self.Tab_5_1_NameInput.selectAll()
-
-    def Tab_5_1_System_Save(self):
-        Tab = self.Tab_5_1_System_tabWidget.currentIndex()
-        try:
-            NameInvalid=False
-            Name = AF.AstusParse(self.Tab_5_1_NameInput.text()).strip()
-            if Name == "" or " " in Name: #IMPROVE: Better checks for System Name!!!
-                NameInvalid=True
-
-            if NameInvalid:
-                NC(1,"System Name Invalid",func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input=Name).send()
-                return False
-
-
-
-            if Tab == 0: #Autoarrange Transfer Function
-                # Parse the input and find out the coefficients of the powers of s
-                s = sympy.symbols("s")
-                try:
-                    Ys_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.Tab_5_1_System_4ATF_Ys.text())).doit().evalf()),s)
-                    #a = list(reversed(Ys_r.collect(s).as_ordered_terms()))
-                    #Ys = [a[p].coeff(s**p) for p in range(len(a)-1,0,-1)] # 0 is not included on purpose
-                    #Ys.append(a[0]) # get the coefficient of s^0
-                    #for i,v in enumerate(Ys): # Make sure that the type is correct
-                    #    val = str(v)
-                    #    if "s" in val: # If coefficient = 1, s is returned.
-                    #        val = "1"  # This is handeled here.
-                    #    Ys[i] = float(val)
-                    terms = Ys_r.all_terms()
-                    Ys = []
-                    for i in terms:
-                        Ys.append(float(i[1]))
-                    print(Ys)
-                except common_exceptions:
-                    NC(msg="Error in Y(s)",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input=self.Tab_5_1_System_4ATF_Ys.text()).send()
-                    return False
-                try:
-                    Xs_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.Tab_5_1_System_4ATF_Xs.text())).doit().evalf()),s)
-                    #a = list(reversed(Xs_r.collect(s).as_ordered_terms()))
-                    #Xs = [a[p].coeff(s**p) for p in range(len(a)-1,0,-1)] # 0 is not included on purpose
-                    #Xs.append(a[0]) # get the coefficient of s^0
-                    #for i,v in enumerate(Xs): # Make sure that the type is correct
-                    #    val = str(v)
-                    #    if "s" in val: # If coefficient = 1, s is returned.
-                    #        val = "1"  # This is handeled here.
-                    #    Xs[i] = float(val)
-                    terms = Xs_r.all_terms()
-                    Xs = []
-                    for i in terms:
-                        Xs.append(float(i[1]))
-                    print(Xs)
-                except common_exceptions:
-                    NC(msg="Error in X(s)",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input=self.Tab_5_1_System_4ATF_Xs.text()).send()
-                    return False
-                sys1 = control.tf(Ys,Xs)
-            elif Tab == 1: #Transfer
-                Ys = []
-                Xs = []
-                MError = ""
-                for j in range(self.Tab_5_1_System_1TF_tableWidget.columnCount()):
-                    try:
-                        if self.Tab_5_1_System_1TF_tableWidget.item(0,j).text().strip() != "":
-                            Ys.append(float(parse_expr(AF.AstusParse(self.Tab_5_1_System_1TF_tableWidget.item(0,j).text(),True)).doit().evalf()))
-                        else:
-                            Ys.append(0)
-                    except common_exceptions:
-                        MError += "Could not add item to System at ({},{}). Inserting a Zero instead. ".format(1,j+1)
-                        #MError += ExceptionOutput(sys.exc_info())
-                        MError += "\n"
-                        Ys.append(0)
-                    try:
-                        if self.Tab_5_1_System_1TF_tableWidget.item(1,j).text().strip() != "":
-                            Xs.append(float(parse_expr(AF.AstusParse(self.Tab_5_1_System_1TF_tableWidget.item(1,j).text(),True)).doit().evalf()))
-                        else:
-                            Xs.append(0)
-                    except common_exceptions:
-                        MError += "Could not add item to System at ({},{}). Inserting a Zero instead. ".format(2,j+1)
-                        #MError += ExceptionOutput(sys.exc_info())
-                        MError += "\n"
-                        Xs.append(0)
-                if MError != "":
-                    NC(2,MError,func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input="X(s) = {}\nY(s) = {}".format(str(Xs),str(Ys))).send()
-                # Remove empty leading entries
-                while Ys[0]==0:
-                    Ys.pop(0)
-                while Xs[0]==0:
-                    Xs.pop(0)
-                print(Ys,r"/",Xs)
-                sys1 = control.tf(Ys,Xs)
-            elif Tab == 2: #State System
-                pass
-            elif Tab == 3: #ODE
-                pass
-            else: # Can not occur...
-                raise Exception("Tab {} in Control->Input Tab is unknown".format(str(Tab())))
-            # FEATURE: Save Systems in list
-            # REMINDER: Save duplicate in other list item to prevent accidental overwrites
-            # REMINDER: Save delted items in other list item to prevent accidental deletions
-            print(sys1)
-            return sys1
-        except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Save",win=self.windowTitle(),input="Control->Input Tab Number = {}".format(str(Tab))).send()
-
-    def Tab_5_1_System_Plot_and_Save(self):
-        sys1 = self.Tab_5_1_System_Save()
-        if sys1 == False:
-            pass
-        else:
-            self.Tab_5_1_System_Plot(sys1)
-
-    def Tab_5_1_System_Plot(self,sys1):
-        try:
-            # if self.Tab_5_2_Display.Display(sys1) returns a 0 as the level (--> no error while displaying) the following notification is not displayed
-            NC(self.Tab_5_2_Display.Display(sys1),func="AMaDiA_Main_Window.Tab_5_2_Display.Display",win=self.windowTitle(),input=str(sys1)).send()
-            self.Tab_5_tabWidget.setFocus()
-            self.Tab_5_3_SingleDisplay.clear()
-            self.Tab_5_tabWidget.setCurrentIndex(1)
-        except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_1_System_Plot",win=self.windowTitle(),input=str(sys1)).send()
-
-    def Tab_5_4_Dirty_Display(self):
-        if not QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
-            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.Tab_5_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked()))).send()
-        else:
-            self.Tab_5_tabWidget.setCurrentIndex(1)
-            input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal f\nf=\"\"\n" + self.Tab_5_4_Dirty_Input.toPlainText()
-            #K_D,K_P,K_i = 0,1,0
-            try:
-                g,l = dict(),dict()
-                exec(input_text,g,l)
-                print(g["sys1"])
-                NC(self.Tab_5_2_Display.Display(g["sys1"],Ufunc=g["f"]),func="AMaDiA_Main_Window.Tab_5_2_Display.Display",win=self.windowTitle(),input=input_text).send()
-                self.Tab_5_tabWidget.setFocus()
-                self.Tab_5_3_SingleDisplay.clear()
-            except common_exceptions:
-                NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_5_4_Dirty_Display",win=self.windowTitle(),input=input_text).send()
-                self.Tab_5_tabWidget.setCurrentIndex(3)
- 
  # ---------------------------------- Tab_6_ ??? ----------------------------------
 
 # ---------------------------------- Main ----------------------------------
