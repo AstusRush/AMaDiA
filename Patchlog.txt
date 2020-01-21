@@ -555,3 +555,6 @@ v0.16.2: Normal Equations
 +++ If anyone wants to access the normal version please send me feedback and I will implement it
 +++ But as I currently see no reason one would want to access it I will not clutter the UI with this until someone complains
 
+v0.16.2.1: Normal Copy Adjustment
++ The normal copy mode now copies the Equation in the history of tab 1 and 4
+

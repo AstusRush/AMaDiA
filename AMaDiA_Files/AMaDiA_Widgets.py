@@ -226,7 +226,11 @@ class HistoryWidget(ListWidget):
                 if len(SelectedItems)==1:
                     item = SelectedItems[0]
                     if QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Normal":
-                        Qt.QApplication.clipboard().setText(item.text())
+                        if (self == QtWidgets.QApplication.instance().MainWindow.Tab_1_History 
+                                or self == QtWidgets.QApplication.instance().MainWindow.Tab_4_History) and item.data(100).Solution != "Not evaluated yet":
+                            Qt.QApplication.clipboard().setText(item.data(100).Equation)
+                        else:
+                            Qt.QApplication.clipboard().setText(item.text())
                     elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Solution"
                             and item.data(100).Solution != "Not evaluated yet"):
                         Qt.QApplication.clipboard().setText(item.data(100).Solution)
