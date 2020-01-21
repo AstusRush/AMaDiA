@@ -136,7 +136,7 @@ This can clutter the context menus, flood you with neglectible errors and unlock
             </widget>
            </item>
            <item row="15" column="0">
-            <widget class="QCheckBox" name="cb_O_Units">
+            <widget class="QCheckBox" name="cb_U_EnableUnits">
              <property name="toolTip">
               <string>If checked the calculator is sensitive for units.&lt;br&gt;
 For example m is no longer a variable but instead &quot;meter&quot;.</string>

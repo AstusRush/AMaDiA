@@ -135,7 +135,8 @@ class AMaS: # Astus' Mathematical Structure
     def init_Critical(self):
         self.Text = AF.AstusParseInverse(self.string)
         self.Solution = "Not evaluated yet"
-        self.Equation = "? = " + self.Text
+        self.EquationReverse = "? = " + self.Text
+        self.Equation = self.Text + " = ?"
         self.cstr = AF.AstusParse(self.string) # the converted string that is interpretable
         if self.multiline:
             self.cstrList = []
@@ -150,6 +151,9 @@ class AMaS: # Astus' Mathematical Structure
         self.LaTeX_E = "Not converted yet" #For display of the Equation
         self.LaTeX_E_L = "Not converted yet" #For display if in LaTeX-Mode
         self.LaTeX_E_N = "Not converted yet" #For display if in Not-LaTeX-Mode
+        self.LaTeX_ER = "Not converted yet" #For display of the Equation
+        self.LaTeX_ER_L = "Not converted yet" #For display if in LaTeX-Mode
+        self.LaTeX_ER_N = "Not converted yet" #For display if in Not-LaTeX-Mode
         self.Am_I_Plottable()
         self.ConvertToLaTeX()
         
@@ -294,7 +298,7 @@ class AMaS: # Astus' Mathematical Structure
         """ # pylint: disable=unreachable
 
     def global_dict(self):
-        if QtWidgets.QApplication.instance().optionWindow.cb_O_Units.isChecked():
+        if QtWidgets.QApplication.instance().optionWindow.cb_U_EnableUnits.isChecked():
             global_dict = {}
             exec('from sympy import *', global_dict)
             exec('from sympy.physics.units import *', global_dict)
@@ -387,8 +391,8 @@ class AMaS: # Astus' Mathematical Structure
         """Convert the entire Equation to LaTeX"""
         try:
             temp = AF.AstusParse(self.Equation)
-            if "<==" in temp:
-                parts = temp.split("<==")
+            if "==>" in temp:
+                parts = temp.split("==>")
                 self.LaTeX_E = ""
                 for i in parts:
                     if len(i)>0:
@@ -410,8 +414,8 @@ class AMaS: # Astus' Mathematical Structure
                             #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                             #self.LaTeX_E = sympy.latex(expr)
                             self.LaTeX_E += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=1)
-                    self.LaTeX_E += r" \Longleftarrow "
-                self.LaTeX_E = self.LaTeX_E[:-len(r" \Longleftarrow ")]
+                    self.LaTeX_E += r" \Longrightarrow "
+                self.LaTeX_E = self.LaTeX_E[:-len(r" \Longrightarrow ")]
             elif "=" in temp:
                 parts = temp.split("=")
                 self.LaTeX_E = ""
@@ -449,6 +453,71 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_E_N += self.LaTeX_E
             self.LaTeX_E_L += "$"
             self.LaTeX_E_N += "$"
+        #Reverse Equation:
+        try:
+            temp = AF.AstusParse(self.EquationReverse)
+            if "<==" in temp:
+                parts = temp.split("<==")
+                self.LaTeX_ER = ""
+                for i in parts:
+                    if len(i)>0:
+                        if "=" in i:
+                            ip = i.split("=")
+                            for j in ip:
+                                if len(j)>0:
+                                    #self.LaTeX_ER += sympy.latex( sympy.S(j,evaluate=False))
+                                    #with sympy.evaluate(False): # Breaks The calculator
+                                    #expr = parse_expr(j,evaluate=False,local_dict=self.VariablesUnev)
+                                    #expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                                    #self.LaTeX_ER += sympy.latex(expr)
+                                    self.LaTeX_ER += AF.LaTeX(j,local_dict=self.VariablesUnev,evalf=1)
+                                self.LaTeX_ER += " = "
+                            self.LaTeX_ER = self.LaTeX_ER[:-3]
+                        else:
+                            #self.LaTeX_ER = sympy.latex( sympy.S(i,evaluate=False))
+                            #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
+                            #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                            #self.LaTeX_ER = sympy.latex(expr)
+                            self.LaTeX_ER += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=1)
+                    self.LaTeX_ER += r" \Longleftarrow "
+                self.LaTeX_ER = self.LaTeX_ER[:-len(r" \Longleftarrow ")]
+            elif "=" in temp:
+                parts = temp.split("=")
+                self.LaTeX_ER = ""
+                for i in parts:
+                    if len(i)>0:
+                        #self.LaTeX_ER += sympy.latex( sympy.S(i,evaluate=False))
+                        #with sympy.evaluate(False): # Breaks The calculator
+                        #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
+                        #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                        #self.LaTeX_ER += sympy.latex(expr)
+                        self.LaTeX_ER += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=1)
+                    self.LaTeX_ER += " = "
+                self.LaTeX_ER = self.LaTeX_ER[:-3]
+            else:
+                #self.LaTeX_ER = sympy.latex( sympy.S(temp,evaluate=False))
+                #expr = parse_expr(temp,evaluate=False,local_dict=self.VariablesUnev)
+                #expr = AF.SPParseNoEval(temp,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                #self.LaTeX_ER = sympy.latex(expr)
+                self.LaTeX_ER = AF.LaTeX(temp,local_dict=self.VariablesUnev,evalf=1)
+        except common_exceptions:
+            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Reverse Equation to LaTeX",input=self.EquationReverse,func="AMaS.ConvertToLaTeX_Equation"))
+            #error = ExceptionOutput(sys.exc_info())
+            #ErrTxt = "Could not convert Reverse Equation to LaTeX: " + error
+            #self.Notify(2,ErrTxt)
+            self.LaTeX_ER = "Could not convert"
+        
+        # Set up the strings that are used in the LaTeX Displays
+        if self.LaTeX_ER == "Could not convert":
+            self.LaTeX_ER_L = temp
+            self.LaTeX_ER_N = temp
+        else:
+            self.LaTeX_ER_L = r"$\displaystyle "
+            self.LaTeX_ER_N = "$"
+            self.LaTeX_ER_L += self.LaTeX_ER
+            self.LaTeX_ER_N += self.LaTeX_ER
+            self.LaTeX_ER_L += "$"
+            self.LaTeX_ER_N += "$"
         
     def ConvertToLaTeX_Multiline(self):
         self.LaTeX_L = ""
@@ -535,7 +604,7 @@ class AMaS: # Astus' Mathematical Structure
                         self.LaTeX_S = sympy.latex(expr)
                 except common_exceptions:
                     if expr==None: expr=self.Solution
-                    self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Equation"))
+                    self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Solution"))
                     self.LaTeX_S = "Could not convert"
                     self.LaTeX_S_L = self.Solution
                     self.LaTeX_S_N = self.Solution
@@ -547,7 +616,7 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_S_L += "$"
             self.LaTeX_S_N += "$"
         except common_exceptions:
-            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Equation"))
+            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Solution"))
             return False
         else:
             return True
@@ -753,8 +822,10 @@ class AMaS: # Astus' Mathematical Structure
                 #if callable(inst.args):
                 #    print(inst.args())
                 self.Solution = "Fail"
-            self.Equation = AF.AstusParseInverse(self.Solution, True) + "   <==   "
-            self.Equation += self.Text
+            self.EquationReverse = AF.AstusParseInverse(self.Solution, True) + "   <==   "
+            self.EquationReverse += self.Text
+            self.Equation = self.Text + "   ==>   "
+            self.Equation += AF.AstusParseInverse(self.Solution, True)
         else:
             try:
                 temp = AF.UnpackDualOperators(self.cstr,Brackets=("{","}"))
@@ -830,12 +901,17 @@ class AMaS: # Astus' Mathematical Structure
                 #    print(inst.args())
                 self.Solution = "Fail"
                 separator = "   <==   "
-            self.Equation = AF.AstusParseInverse(self.Solution, True) + separator
-            self.Equation += self.Text
+            self.EquationReverse = AF.AstusParseInverse(self.Solution, True) + separator
+            self.EquationReverse += self.Text
+            if separator == "   <==   ":
+                separator = "   ==>   "
+            self.Equation = self.Text + separator
+            self.Equation += AF.AstusParseInverse(self.Solution, True)
         
         self.init_Flags() # Reset All Flags
         
         self.Equation = AF.number_shaver(self.Equation)
+        self.EquationReverse = AF.number_shaver(self.EquationReverse)
         self.Solution = AF.number_shaver(self.Solution)
         self.ConvertToLaTeX_Equation()
 
@@ -933,8 +1009,10 @@ class AMaS: # Astus' Mathematical Structure
             Notification = NC(1,"Could not solve ODE",func="AMaS.Solve_ODE_Version_1",exc=sys.exc_info())
             self.Solution = "Fail"
         
-        self.Equation = AF.AstusParseInverse(self.Solution, True) + "   <==   "
-        self.Equation += self.Text
+        self.EquationReverse = AF.AstusParseInverse(self.Solution, True) + "   <==   "
+        self.EquationReverse += self.Text
+        self.Equation = self.Text + "   ==>   "
+        self.Equation += AF.AstusParseInverse(self.Solution, True)
         self.ConvertToLaTeX_Equation()
             
         if self.Solution == "Fail":

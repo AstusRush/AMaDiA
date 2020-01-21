@@ -248,6 +248,14 @@ class HistoryWidget(ListWidget):
                         Qt.QApplication.clipboard().setText(item.text())
                     event.accept()
                     return
+                elif self == QtWidgets.QApplication.instance().MainWindow.Tab_1_History:
+                    string = ""
+                    for i in SelectedItems:
+                        string += i.data(100).Equation
+                        string += "\n"
+                    Qt.QApplication.clipboard().setText(string)
+                    event.accept()
+                    return
             super(HistoryWidget, self).keyPressEvent(event)
         except common_exceptions:
             NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=str(event)).send()

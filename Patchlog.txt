@@ -542,3 +542,16 @@ v0.16.1: More Control System Input Interaction
 ++ The LaTeX display now sends error notifications
 + The installation instructions in README.md now include the standard installation folder for more clarity
 
+v0.16.2: Normal Equations
++ Sooo... a bit different patch notes this time:
+++ The calculator flips equations so that the solution is on the left side and the the input is on the right side
+++ This is done so that it is easy to find the solution: just look at the very left.
+++ When writing equations down however the order is the inverse of what the calculator displays
+++ The Calculator now stores it both ways and converts both to LaTeX:
++++ The normal LaTeX is used for the LaTeX display
++++ The reverse LaTeX is used in Tab 4 for the same reason it is reverse in the calculator output
+++ The reverse text is still displayed in the calculator but when copying the usual order is used to make pasting in a file easier.
+++ The reverse version is currently inaccessible and is solely used for display purposes
++++ If anyone wants to access the normal version please send me feedback and I will implement it
++++ But as I currently see no reason one would want to access it I will not clutter the UI with this until someone complains
+

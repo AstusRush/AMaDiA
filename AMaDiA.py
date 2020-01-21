@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.16.1"
+Version = "0.16.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -1188,14 +1188,14 @@ class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
             if AMaS_Object.tab_1_is != True:
                 item = QtWidgets.QListWidgetItem()
                 item.setData(100,AMaS_Object)
-                item.setText(AMaS_Object.Equation)
+                item.setText(AMaS_Object.EquationReverse)
                 
                 self.Tab_1_History.addItem(item)
                 AMaS_Object.tab_1_is = True
                 AMaS_Object.tab_1_ref = item
             else:
                 self.Tab_1_History.takeItem(self.Tab_1_History.row(AMaS_Object.tab_1_ref))
-                AMaS_Object.tab_1_ref.setText(AMaS_Object.Equation)
+                AMaS_Object.tab_1_ref.setText(AMaS_Object.EquationReverse)
                 self.Tab_1_History.addItem(AMaS_Object.tab_1_ref)
 
             self.Tab_1_History.scrollToBottom()
@@ -1810,7 +1810,7 @@ class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
     def Tab_4_F_Display(self, AMaS_Object): # TODO: Display the Equation in addition to the solution
         self.Tab_4_Currently_Displayed = AMaS_Object.Equation
         self.Tab_4_Currently_Displayed_Solution = AMaS_Object.Solution
-        Notification = self.Tab_4_Display.Display(AMaS_Object.LaTeX_E_L, AMaS_Object.LaTeX_E_N
+        Notification = self.Tab_4_Display.Display(AMaS_Object.LaTeX_ER_L, AMaS_Object.LaTeX_ER_N
                                         ,self.TopBar.Font_Size_spinBox.value()
                                         ,self.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                         )

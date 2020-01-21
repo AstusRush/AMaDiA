@@ -238,7 +238,7 @@ def LaTeX(expr,local_dict=None,evalf=1):
     
     global_dict = {}
     exec('from sympy import *', global_dict)
-    if QtWidgets.QApplication.instance().optionWindow.cb_O_Units.isChecked():
+    if QtWidgets.QApplication.instance().optionWindow.cb_U_EnableUnits.isChecked():
         exec('from sympy.physics.units import *', global_dict)
     try:
         expr = Matrix_Encaser(expr)
