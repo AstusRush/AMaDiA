@@ -532,3 +532,13 @@ v0.16.0: AGeLib, Units and Control System Input
 +++ This means that pressing a key while having a cell selected deletes its content and inserts the character of the key
 ++++ ctrl+Z can revert this overwrite if needed as long as the editor is not closed again
 
+v0.16.1: More Control System Input Interaction
++ Changes to Control System Window -> Input Tab:
+++ You can now load a system to the editor
+++ You can now copy a system as a string
+++ You can now generate the closed loop of a system
+++ The LaTeX Display now shows whether the system is BIBO-stable
+++ The header labels for the ss-input now show what the row/column is used for
+++ The LaTeX display now sends error notifications
++ The installation instructions in README.md now include the standard installation folder for more clarity
+

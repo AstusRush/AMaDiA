@@ -682,17 +682,38 @@ class SystemClass():
         C,D = AF.number_shaver(str(sympy.Matrix(C))) , AF.number_shaver(str(sympy.Matrix(D)))
         self.SSx_LaTeX = AF.LaTeX("Eq("+x_vec_diff+","+A+"*"+x_vec+"+"+B+"*u(t))")
         self.SSy_LaTeX = AF.LaTeX("Eq(y(t),"+C+"*"+x_vec+"+"+D+"*u(t))")
-        # Combine LaTeX of ss and tf:
         self.Sys_SS_LaTeX_L = r"$\displaystyle " + self.SSx_LaTeX + "$\n" + r"$\displaystyle " + self.SSy_LaTeX + "$"
         self.Sys_SS_LaTeX_N = "$" + self.SSx_LaTeX + "$\n$" + self.SSy_LaTeX + "$"
         
         
-        # Display LaTeX:
-        self.Sys_LaTeX_L = "Transfer Function:\n" + self.Sys_Gs_LaTeX_L + "\nState Space:\n" + self.Sys_SS_LaTeX_L
-        self.Sys_LaTeX_N = "Transfer Function:\n" + self.Sys_Gs_LaTeX_N + "\nState Space:\n" + self.Sys_SS_LaTeX_N
+        # Combine LaTeX of ss and tf:
+        self.CheckStability()
+        try:
+            self.Sys_LaTeX_L = "System: ${}$ \nBIBO-Stable: ${}$\nTransfer Function:\n".format(AF.LaTeX(AF.AstusParse(self.Name)),self.BIBOStabel) + self.Sys_Gs_LaTeX_L + "\nState Space:\n" + self.Sys_SS_LaTeX_L
+            self.Sys_LaTeX_N = "System: ${}$ \nBIBO-Stable: ${}$\nTransfer Function:\n".format(AF.LaTeX(AF.AstusParse(self.Name)),self.BIBOStabel) + self.Sys_Gs_LaTeX_N + "\nState Space:\n" + self.Sys_SS_LaTeX_N
+        except common_exceptions:
+            NC(1,"Invalid Name (Could not convert name to LaTeX)",exc=sys.exc_info(),func="SystemClass.__init__",input=self.Name,win="System Control Window").send()
+            raise Exception("Invalid Name (Could not convert name to LaTeX)")
 
     def Item(self):
         item = QtWidgets.QListWidgetItem()
         item.setText(self.Name)
         item.setData(100,self)
         return item
+
+    def Close(self):
+        SystemObject = SystemClass(control.feedback(self.sys),self.Name+"_closed",self.Tab,self.systemInput)
+        item = QtWidgets.QListWidgetItem()
+        item.setText(SystemObject.Name)
+        item.setData(100,SystemObject)
+        return item
+
+    def CheckStability(self):
+        self.BIBOStabel = True
+        #A = sympy.Matrix(control.ssdata(self.sys)[0])
+        #eigenvals = A.eigenvals()
+        poles = self.sys.pole()
+        for i in poles:
+            if np.real(i) >= 0:
+                self.BIBOStabel = False
+                break

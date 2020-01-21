@@ -34,7 +34,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         self.resize(*self.standardSize)
         
         self.ControlSystems_tabWidget.setCurrentIndex(0)
-        self.ControlSystems_1_Output_tabWidget.setCurrentIndex(1)
+        self.ControlSystems_1_Output_tabWidget.removeTab(1)
         
         ControlSystems_4_Dirty_Input_Text = "#Example:\n\n"
         ControlSystems_4_Dirty_Input_Text += "K_P = 5\nK_D = 0\nK_i = 0\n\nsys1 = tf([K_D,K_P,K_i],[1,1.33+K_D,1+K_P,K_i])\n\n"
@@ -106,14 +106,16 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
          # ---------------------------------- Tab_4 Matrix List Context Menu ----------------------------------
             if (source is self.ControlSystems_1_SystemList) and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
-                #action = menu.addAction('Load to Editor') # TODO: Load System Input
-                #action.triggered.connect(lambda: self.action_SystemList_Load_into_Editor(source,event))
-                action = menu.addAction('Plot')
-                action.triggered.connect(lambda: self.action_SystemList_Plot(source,event))
+                action = menu.addAction('Load to Editor')
+                action.triggered.connect(lambda: self.action_SystemList_Load_into_Editor(source,event))
+                action = menu.addAction('Copy as String')
+                action.triggered.connect(lambda: self.action_SystemList_Copy_string(source,event))
                 action = menu.addAction('Display')
                 action.triggered.connect(lambda: self.action_SystemList_Display(source,event))
-                #action = menu.addAction('Copy as String') # TODO: Copy as String
-                #action.triggered.connect(lambda: self.action_SystemList_Copy_string(source,event))
+                action = menu.addAction('Plot')
+                action.triggered.connect(lambda: self.action_SystemList_Plot(source,event))
+                action = menu.addAction('Plot Closed-Loop System')
+                action.triggered.connect(lambda: self.action_SystemList_Plot_Closed(source,event))
                 action = menu.addAction('Delete')
                 action.triggered.connect(lambda: self.action_SystemList_Delete(source,event))
                 menu.setPalette(self.palette())
@@ -126,7 +128,52 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
     def action_SystemList_Load_into_Editor(self,source,event):
         item = source.itemAt(event.pos())
         system = item.data(100)
-        # TODO: Load System Input
+        self.ControlSystems_1_System_tabWidget.setCurrentIndex(system.Tab)
+        self.ControlSystems_1_SystemOrder_Spinbox.setValue(system.Order)
+        self.ControlSystems_1_System_Set_Order(system.Order)
+        if system.Tab == 0:
+            Ys, Xs = system.systemInput
+            self.ControlSystems_1_System_4ATF_Ys.setText(Ys)
+            self.ControlSystems_1_System_4ATF_Xs.setText(Xs)
+        elif system.Tab == 1:
+            Ys, Xs, Order = system.systemInput
+            self.ControlSystems_1_System_Set_Order(Order)
+            for j in range(self.ControlSystems_1_System_1TF_tableWidget.columnCount()):
+                item = Qt.QTableWidgetItem()
+                t = AF.number_shaver(str(Ys[j])) if AF.number_shaver(str(Ys[j])) != "0" else ""
+                item.setText(t)
+                self.ControlSystems_1_System_1TF_tableWidget.setItem(0,j,item)
+                item = Qt.QTableWidgetItem()
+                t = AF.number_shaver(str(Xs[j])) if AF.number_shaver(str(Xs[j])) != "0" else ""
+                item.setText(t)
+                self.ControlSystems_1_System_1TF_tableWidget.setItem(1,j,item)
+        elif system.Tab == 2:
+            A,B,C,D = system.systemInput
+            for i in range(system.Order):
+                for j in range(system.Order):
+                    item = Qt.QTableWidgetItem()
+                    item.setText(AF.number_shaver(str(A[i][j])))
+                    self.ControlSystems_1_System_2SS_A_tableWidget.setItem(i,j,item)
+                item = Qt.QTableWidgetItem()
+                item.setText(AF.number_shaver(str(B[i][0])))
+                self.ControlSystems_1_System_2SS_B_tableWidget.setItem(i,0,item)
+                item = Qt.QTableWidgetItem()
+                item.setText(AF.number_shaver(str(C[i])))
+                self.ControlSystems_1_System_2SS_C_tableWidget.setItem(0,i,item)
+            item = Qt.QTableWidgetItem()
+            t = AF.number_shaver(str(D[0][0])) if AF.number_shaver(str(D[0][0])) != "0" else ""
+            item.setText(t)
+            self.ControlSystems_1_System_2SS_D_tableWidget.setItem(0,0,item)
+    
+    def action_SystemList_Copy_string(self,source,event):
+        item = source.itemAt(event.pos())
+        system = item.data(100)
+        QApplication.clipboard().setText(str(system.sys))
+    
+    def action_SystemList_Display(self,source,event):
+        item = source.itemAt(event.pos())
+        system = item.data(100)
+        self.ControlSystems_1_System_Display_LaTeX(system)
     
     def action_SystemList_Plot(self,source,event):
         item = source.itemAt(event.pos())
@@ -134,23 +181,20 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         self.ControlSystems_1_System_Display_LaTeX(system)
         self.ControlSystems_1_System_Plot(system)
     
-    def action_SystemList_Display(self,source,event):
-        item = source.itemAt(event.pos())
-        system = item.data(100)
-        self.ControlSystems_1_System_Display_LaTeX(system)
-    
-    def action_SystemList_Copy_string(self,source,event):
-        item = source.itemAt(event.pos())
-        system = item.data(100)
-        # TODO: Copy as String
-        QApplication.clipboard().setText(str(item.text()))
+    def action_SystemList_Plot_Closed(self,source,event):
+        open_system = source.itemAt(event.pos()).data(100)
+        item = open_system.Close()
+        closed_system = item.data(100)
+        self.ControlSystems_1_SystemList.addItem(item)
+        self.ControlSystems_1_System_Display_LaTeX(closed_system)
+        self.ControlSystems_1_System_Plot(closed_system)
     
     def action_SystemList_Delete(self,source,event):
         # FEATURE: Paperbin for matrices: If only one item was deleted save it in a temporary List item (The same as the duplicate item from the save function)
         listItems=source.selectedItems()
         if not listItems: return        
         for item in listItems:
-            a = source.takeItem(source.row(item))
+            source.takeItem(source.row(item))
          
     # TODO: System Input
   # ---------------------------------- Control Plot Interaction ---------------------------------- 
@@ -183,7 +227,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         ## Set Header Labels
         HeaderLabel = []
         i=Order
-        while i >=0:
+        while i >= 0:
             s="s{}".format(i)
             HeaderLabel.append(u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in s))
             i-=1
@@ -202,10 +246,30 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         
         self.ControlSystems_1_System_2SS_D_tableWidget.setRowCount(q)
         self.ControlSystems_1_System_2SS_D_tableWidget.setColumnCount(p)
-        #TODO: For SS set the HeaderLabels to x₁,x₂,...
-
-        # ODE
-        #TODO: Adjust other input methods
+        
+        ## Set Header Labels
+        HeaderLabelX = []
+        i=1
+        while i <= Order:
+            s="x{}·".format(i)
+            HeaderLabelX.append(u''.join(dict(zip(u"0123456789", u"₀₁₂₃₄₅₆₇₈₉")).get(c, c) for c in s))
+            i+=1
+        HeaderLabelXDiff = []
+        i=1
+        while i <= Order:
+            s="ẋ{}=".format(i)
+            HeaderLabelXDiff.append(u''.join(dict(zip(u"0123456789", u"₀₁₂₃₄₅₆₇₈₉")).get(c, c) for c in s))
+            i+=1
+        HeaderLabelU = ["u·"]
+        HeaderLabelY = ["y="]
+        self.ControlSystems_1_System_2SS_A_tableWidget.setHorizontalHeaderLabels(HeaderLabelX)
+        self.ControlSystems_1_System_2SS_A_tableWidget.setVerticalHeaderLabels(HeaderLabelXDiff)
+        self.ControlSystems_1_System_2SS_B_tableWidget.setHorizontalHeaderLabels(HeaderLabelU)
+        self.ControlSystems_1_System_2SS_B_tableWidget.setVerticalHeaderLabels(HeaderLabelXDiff)
+        self.ControlSystems_1_System_2SS_C_tableWidget.setHorizontalHeaderLabels(HeaderLabelX)
+        self.ControlSystems_1_System_2SS_C_tableWidget.setVerticalHeaderLabels(HeaderLabelY)
+        self.ControlSystems_1_System_2SS_D_tableWidget.setHorizontalHeaderLabels(HeaderLabelU)
+        self.ControlSystems_1_System_2SS_D_tableWidget.setVerticalHeaderLabels(HeaderLabelY)
 
     def ControlSystems_1_SetFocus_on(self,item):
         if item == self.ControlSystems_1_System_4ATF_Xs:
@@ -232,6 +296,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
 
             if Tab == 0: #Autoarrange Transfer Function
                 # Parse the input and find out the coefficients of the powers of s
+                systemInput = (self.ControlSystems_1_System_4ATF_Ys.text(),self.ControlSystems_1_System_4ATF_Xs.text())
                 s = sympy.symbols("s")
                 try:
                     Ys_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.ControlSystems_1_System_4ATF_Ys.text())).doit().evalf()),s)
@@ -255,8 +320,8 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                     return False
                 sys1 = control.tf(Ys,Xs)
             elif Tab == 1: #Transfer
-                Ys = []
-                Xs = []
+                Ys,YsI = [],[]
+                Xs,XsI = [],[]
                 MError = ""
                 for j in range(self.ControlSystems_1_System_1TF_tableWidget.columnCount()):
                     try:
@@ -279,6 +344,9 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                         #MError += ExceptionOutput(sys.exc_info())
                         MError += "\n"
                         Xs.append(0)
+                    YsI.append(Ys[j])
+                    XsI.append(Xs[j])
+                systemInput = (YsI,XsI,self.ControlSystems_1_System_1TF_tableWidget.columnCount()-1)
                 if MError != "":
                     NC(2,MError,func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="X(s) = {}\nY(s) = {}".format(str(Xs),str(Ys))).send()
                 # Remove empty leading entries
@@ -347,13 +415,13 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                 if MError != "":
                     NC(2,MError,func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="A:\n{}\n\nB:\n{}\n\nC:\n{}\n\nD:\n{}".format(str(A),str(B),str(C),str(D))).send()
                 # Creating System
+                systemInput = (A,B,C,D)
                 sys1 = control.ss(A,B,C,D)
             elif Tab == 3: #ODE
                 raise Exception("ODE Input is not implemented yet")
             else: # Can not occur...
                 raise Exception("Tab {} in Control->Input Tab is unknown".format(str(Tab)))
             
-            systemInput = None # TODO: System Input
             sysObject = SystemClass(sys1,Name,Tab,systemInput)
             self.ControlSystems_1_System_Display_LaTeX(sysObject)
             self.ControlSystems_1_SystemList.addItem(sysObject.Item())
@@ -388,7 +456,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             self.ControlSystems_1_Output_2L_LaTeXDisplay.Display(sysObject.Sys_LaTeX_L,sysObject.Sys_LaTeX_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,QtWidgets.QApplication.instance().MainWindow.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
-                                            )
+                                            ).send()
         except common_exceptions:
             NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Display_LaTeX",win=self.windowTitle(),input=str(sysObject.sys)).send()
 

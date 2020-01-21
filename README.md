@@ -33,7 +33,7 @@ On Windows:<br/>
  * Install https://gitforwindows.org/<br/>
  * Install https://www.anaconda.com/distribution/<br/>
  * Create two files "AMaDiA.bat" and "AMaDiA_INSTALL.bat" and copy the text from the two file in WINDOWS-INSTALL into them by rightcklicking on them and selecting the modify option<br/>
- * doubleclick on "AMaDiA_INSTALL.bat" to install AMaDiA<br/>
+ * doubleclick on "AMaDiA_INSTALL.bat" to install AMaDiA (The installation location is the user folder. This can be changed by editing both files.)<br/>
  * From now on doubleclicking on AMaDiA.bat will update and then run AMaDiA<br/>
  
 (Disclaimer: Use theses .bat files on your own risk. I doubt they can cause any harm but i am no expert on batch files and can not foresee all eventualities)<br/>

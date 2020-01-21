@@ -420,11 +420,6 @@
             <property name="currentIndex">
              <number>0</number>
             </property>
-            <widget class="QWidget" name="ControlSystems_1_Output_1R">
-             <attribute name="title">
-              <string>Results</string>
-             </attribute>
-            </widget>
             <widget class="QWidget" name="ControlSystems_1_Output_2L">
              <attribute name="title">
               <string>LaTeX</string>
@@ -449,6 +444,11 @@
                <widget class="MplWidget_LaTeX" name="ControlSystems_1_Output_2L_LaTeXDisplay" native="true"/>
               </item>
              </layout>
+            </widget>
+            <widget class="QWidget" name="ControlSystems_1_Output_1R">
+             <attribute name="title">
+              <string>Results</string>
+             </attribute>
             </widget>
            </widget>
            <widget class="QTabWidget" name="ControlSystems_1_Input_tabWidget">
