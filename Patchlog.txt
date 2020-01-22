@@ -558,3 +558,9 @@ v0.16.2: Normal Equations
 v0.16.2.1: Normal Copy Adjustment
 + The normal copy mode now copies the Equation in the history of tab 1 and 4
 
+v0.16.2.2: SS Input Flow and LaTeX Copy
++ Pressing tab when the last cell of one of the SS matrices is selected now selects the next matrix
+++ For matrix D pressing tab selects the system name input field and changes the tab back to matrix A
++ Pressing tab when the last cell of the TF Table is selected now selects the system name input field
++ LaTeX display widgets now have a context menu to copy the entire LaTeX string that is currently displayed
+

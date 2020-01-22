@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.16.2.1"
+Version = "0.16.2.2"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -1057,6 +1057,7 @@ class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
  # ---------------------------------- Events and Context Menu ----------------------------------
     def OtherContextMenuSetup(self):
         self.Tab_3_1_Display.canvas.mpl_connect('button_press_event', self.Tab_3_1_Display_Context_Menu)
+        self.Tab_4_Display.canvas.mpl_disconnect(self.Tab_4_Display.ContextMenu_cid)
         self.Tab_4_Display.canvas.mpl_connect('button_press_event', self.Tab_4_Display_Context_Menu)
         
         
@@ -1085,6 +1086,7 @@ class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
             action.triggered.connect(self.action_tab_4_Display_Copy_Displayed)
             action = menu.addAction('Copy Solution')
             action.triggered.connect(self.action_tab_4_Display_Copy_Displayed_Solution)
+            menu = self.Tab_4_Display.add_context_action(menu)
             cursor = QtGui.QCursor()
             menu.setPalette(self.palette())
             menu.setFont(self.font())

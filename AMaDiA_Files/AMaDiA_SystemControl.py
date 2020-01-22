@@ -67,7 +67,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         NC(10,"Welcome to CONTROL (WIP)",win=self.windowTitle(),func="{}.__init__".format(str(self.objectName()))).send()
     
  # ---------------------------------- Init and Maintenance ----------------------------------
-
+    
     def ConnectSignals(self):
         self.ControlSystems_1_SystemOrder_Confrim.clicked.connect(self.ControlSystems_1_System_Set_Order)
         self.ControlSystems_1_SaveButton.clicked.connect(self.ControlSystems_1_System_Save)
@@ -75,14 +75,20 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         
         self.ControlSystems_1_System_4ATF_Ys.returnPressed.connect(lambda: self.ControlSystems_1_SetFocus_on(self.ControlSystems_1_System_4ATF_Xs))
         self.ControlSystems_1_System_4ATF_Xs.returnPressed.connect(lambda: self.ControlSystems_1_SetFocus_on(self.ControlSystems_1_NameInput))
+        self.ControlSystems_1_System_1TF_tableWidget.S_Focus_Next.connect(lambda: self.ControlSystems_1_SetFocus_on(self.ControlSystems_1_NameInput))
+        self.ControlSystems_1_System_2SS_A_tableWidget.S_Focus_Next.connect(lambda: self.ControlSystems_1_SetFocus_on(self.ControlSystems_1_System_2SS_B_tableWidget))
+        self.ControlSystems_1_System_2SS_B_tableWidget.S_Focus_Next.connect(lambda: self.ControlSystems_1_SetFocus_on(self.ControlSystems_1_System_2SS_C_tableWidget))
+        self.ControlSystems_1_System_2SS_C_tableWidget.S_Focus_Next.connect(lambda: self.ControlSystems_1_SetFocus_on(self.ControlSystems_1_System_2SS_D_tableWidget))
+        self.ControlSystems_1_System_2SS_D_tableWidget.S_Focus_Next.connect(lambda: self.ControlSystems_1_SetFocus_on(self.ControlSystems_1_NameInput))
         self.ControlSystems_1_NameInput.returnPressed.connect(self.ControlSystems_1_System_Plot_and_Save)
         
-        self.ControlSystems_2_Display.canvas.mpl_connect('button_press_event', self.ControlSystems_2_Maximize_Axes)
-
-        self.ControlSystems_4_Dirty_Input.returnCtrlPressed.connect(self.ControlSystems_4_Dirty_Display)
         
+        self.ControlSystems_2_Display.canvas.mpl_connect('button_press_event', self.ControlSystems_2_Maximize_Axes)
+        
+        self.ControlSystems_4_Dirty_Input.returnCtrlPressed.connect(self.ControlSystems_4_Dirty_Display)
+    
  # ---------------------------------- Event Filter ----------------------------------
-
+    
     def eventFilter(self, source, event):
         #print(event.type())
         if event.type() == 6: # QtCore.QEvent.KeyPress
@@ -195,8 +201,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         if not listItems: return        
         for item in listItems:
             source.takeItem(source.row(item))
-         
-    # TODO: System Input
+    
   # ---------------------------------- Control Plot Interaction ---------------------------------- 
     def ControlSystems_2_Maximize_Axes(self,event):
         try:
@@ -208,7 +213,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                 NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_2_Maximize_Axes",win=self.windowTitle()).send()
             self.ControlSystems_tabWidget.setCurrentIndex(1)
         self.ControlSystems_tabWidget.setFocus()
-      
+    
  # ---------------------------------- ControlSystems_ (Mind-)Control ----------------------------------
     def ControlSystems_1_System_Set_Order(self,Order=None):
         if type(Order) != int:
@@ -223,7 +228,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         elif shift < 0:
             for i in range(abs(shift)):
                 self.ControlSystems_1_System_1TF_tableWidget.removeColumn(0)
-
+        
         ## Set Header Labels
         HeaderLabel = []
         i=Order
@@ -232,7 +237,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             HeaderLabel.append(u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in s))
             i-=1
         self.ControlSystems_1_System_1TF_tableWidget.setHorizontalHeaderLabels(HeaderLabel)
-
+        
         # State System
         q,p = 1,1 # Future use for multi dimensional input and output (See https://en.wikipedia.org/wiki/State-space_representation)
         self.ControlSystems_1_System_2SS_A_tableWidget.setRowCount(Order)
@@ -270,15 +275,25 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         self.ControlSystems_1_System_2SS_C_tableWidget.setVerticalHeaderLabels(HeaderLabelY)
         self.ControlSystems_1_System_2SS_D_tableWidget.setHorizontalHeaderLabels(HeaderLabelU)
         self.ControlSystems_1_System_2SS_D_tableWidget.setVerticalHeaderLabels(HeaderLabelY)
-
+    
     def ControlSystems_1_SetFocus_on(self,item):
         if item == self.ControlSystems_1_System_4ATF_Xs:
             self.ControlSystems_1_System_4ATF_Xs.setFocus()
             self.ControlSystems_1_System_4ATF_Xs.selectAll()
         elif item == self.ControlSystems_1_NameInput:
+            self.ControlSystems_1_System_2SS_tabWidget.setCurrentIndex(0)
             self.ControlSystems_1_NameInput.setFocus()
             self.ControlSystems_1_NameInput.selectAll()
-
+        elif item == self.ControlSystems_1_System_2SS_B_tableWidget:
+            self.ControlSystems_1_System_2SS_tabWidget.setCurrentIndex(1)
+            self.ControlSystems_1_System_2SS_B_tableWidget.setFocus()
+        elif item == self.ControlSystems_1_System_2SS_C_tableWidget:
+            self.ControlSystems_1_System_2SS_tabWidget.setCurrentIndex(2)
+            self.ControlSystems_1_System_2SS_C_tableWidget.setFocus()
+        elif item == self.ControlSystems_1_System_2SS_D_tableWidget:
+            self.ControlSystems_1_System_2SS_tabWidget.setCurrentIndex(3)
+            self.ControlSystems_1_System_2SS_D_tableWidget.setFocus()
+    
     def ControlSystems_1_System_Save(self):
         Tab = self.ControlSystems_1_System_tabWidget.currentIndex()
         sys1 = None
@@ -287,13 +302,13 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             Name = AF.AstusParse(self.ControlSystems_1_NameInput.text()).strip()
             if Name == "" or " " in Name: #IMPROVE: Better checks for System Name!!!
                 NameInvalid=True
-
+            
             if NameInvalid:
                 NC(1,"System Name Invalid",func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=Name).send()
                 return False
-
-
-
+            
+            
+            
             if Tab == 0: #Autoarrange Transfer Function
                 # Parse the input and find out the coefficients of the powers of s
                 systemInput = (self.ControlSystems_1_System_4ATF_Ys.text(),self.ControlSystems_1_System_4ATF_Xs.text())
@@ -433,14 +448,14 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             return sysObject
         except common_exceptions:
             NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Control->Input Tab Number = {}\nSystem: {}".format(str(Tab),str(sys1))).send()
-
+    
     def ControlSystems_1_System_Plot_and_Save(self):
         sysObject = self.ControlSystems_1_System_Save()
         if sysObject == False:
             pass
         else:
             self.ControlSystems_1_System_Plot(sysObject)
-
+    
     def ControlSystems_1_System_Plot(self,sysObject):
         try:
             self.ControlSystems_2_Display.Display(sysObject.sys, Ufunc=self.ControlSystems_1_Input_InputFunction.text())
@@ -449,8 +464,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             self.ControlSystems_tabWidget.setCurrentIndex(1)
         except common_exceptions:
             NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Plot",win=self.windowTitle(),input=str(sysObject.sys)).send()
-
-            
+    
     def ControlSystems_1_System_Display_LaTeX(self,sysObject):
         try:
             self.ControlSystems_1_Output_2L_LaTeXDisplay.Display(sysObject.Sys_LaTeX_L,sysObject.Sys_LaTeX_N
@@ -459,7 +473,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                                             ).send()
         except common_exceptions:
             NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Display_LaTeX",win=self.windowTitle(),input=str(sysObject.sys)).send()
-
+    
     def ControlSystems_4_Dirty_Display(self):
         if not QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
             NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.ControlSystems_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked()))).send()

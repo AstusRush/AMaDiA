@@ -777,6 +777,34 @@ class MplWidget_LaTeX(MplWidget):
         self.layout().setContentsMargins(0,0,0,0)
 
         self.LastCall = False
+        self.LaTeX = ""
+
+        self.ContextMenu_cid = self.canvas.mpl_connect('button_press_event', self.Context_Menu)
+        
+        
+    def Context_Menu(self,event):
+        #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+        #      ('double' if event.dblclick else 'single', event.button,
+        #       event.x, event.y, event.xdata, event.ydata))
+        if event.button == 3:
+            menu = QtWidgets.QMenu()
+            menu = self.add_context_action(menu)
+            cursor = QtGui.QCursor()
+            menu.setPalette(self.palette())
+            menu.setFont(self.font())
+            menu.exec_(cursor.pos())
+    
+    def add_context_action(self,menu):
+        """Adds standard actions to menu and return menu"""
+        action = menu.addAction('Copy LaTeX')
+        action.triggered.connect(self.action_Copy_LaTeX)
+        return menu
+    
+    def action_Copy_LaTeX(self):
+        try:
+            Qt.QApplication.clipboard().setText(self.LaTeX)
+        except common_exceptions:
+            NC(2,"Could not copy LaTeX",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".action_Copy_LaTeX").send()
         
     def SetColour(self,BG=None,FG=None):
         super(MplWidget_LaTeX, self).SetColour(BG,FG)
@@ -839,6 +867,7 @@ class MplWidget_LaTeX(MplWidget):
         # You can set Usetex for each individual text object. Example:
         # plt.xlabel('$x$', usetex=True)
 
+        self.LaTeX = Text_L
         self.Text = Text_L
         self.Font_Size = Font_Size * 2
         Notification = NC(lvl=0,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
@@ -1210,6 +1239,7 @@ class LineEdit(ATextEdit):
 # -----------------------------------------------------------------------------------------------------------------
 
 class TableWidget(QtWidgets.QTableWidget):
+    S_Focus_Next = QtCore.pyqtSignal()
     def __init__(self, parent=None):
         super(TableWidget, self).__init__(parent)
         #print(type(self.itemDelegate()))
@@ -1232,6 +1262,7 @@ class TableWidget(QtWidgets.QTableWidget):
                     source.setCurrentCell(0,0)
                     source.clearSelection()
                     QtWidgets.QAbstractScrollArea.focusNextPrevChild(source, True)
+                    self.S_Focus_Next.emit()
                     return True
             elif event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter or event.key() == QtCore.Qt.Key_Space:
                 self.edit(index)
