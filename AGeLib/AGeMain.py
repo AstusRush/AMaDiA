@@ -1,6 +1,6 @@
 # Astus General Library Main File
 
-Version = "1.0.0"
+Version = "1.0.1"
 Author = "Robin \'Astus\' Albers"
 """
     Copyright (C) 2020  Robin Albers

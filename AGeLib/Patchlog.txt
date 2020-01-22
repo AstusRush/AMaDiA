@@ -1,0 +1,10 @@
+v1.0.0: Initial Upload
++ Initial Upload
+
+v1.0.1: Fixes and LaTeX Context Menu
++ The LaTeX Widget now has a context menu to copy the LaTeX that is displayed
++ Added Focus Next signal to Table Widget
++ Fixed Table Widget
++ Made AGeColour import more flexible
++ Fixed "Colours" list in AGeColour
+
