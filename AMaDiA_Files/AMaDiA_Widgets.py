@@ -204,7 +204,7 @@ class AMaDiA_TableWidget(AGeMain.TableWidget):
         self.TheDelegate = AMaDiA_TableWidget_Delegate(self)
         self.setItemDelegate(self.TheDelegate)
 
-class AMaDiA_TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
+class AMaDiA_TableWidget_Delegate(AGeMain.TableWidget_Delegate):
     def __init__(self, parent=None):
         super(AMaDiA_TableWidget_Delegate, self).__init__(parent)
 

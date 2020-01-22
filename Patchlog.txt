@@ -564,3 +564,6 @@ v0.16.2.2: SS Input Flow and LaTeX Copy
 + Pressing tab when the last cell of the TF Table is selected now selects the system name input field
 + LaTeX display widgets now have a context menu to copy the entire LaTeX string that is currently displayed
 
+v0.16.2.3: Multi Dim Table Fix
++ Fixed the table widget in tab 4
+
