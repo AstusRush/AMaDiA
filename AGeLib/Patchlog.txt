@@ -8,3 +8,8 @@ v1.0.1: Fixes and LaTeX Context Menu
 + Made AGeColour import more flexible
 + Fixed "Colours" list in AGeColour
 
+v1.0.2: Permanent Clipboard
++ On Windows the clipboard is now set on OS level when the application exits
++ On all other platforms any clipboard managers are given a last chance to store the clipboard before the application exits
++ (The clipboard resetting on application exit is a DX11 and OS feature and is hard to circumvent)
+

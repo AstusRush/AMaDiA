@@ -1,6 +1,6 @@
 # Astus General Library Main File
 
-Version = "1.0.1"
+Version = "1.0.2"
 Author = "Robin \'Astus\' Albers"
 """
     Copyright (C) 2020  Robin Albers
@@ -366,6 +366,7 @@ class Main_App(QtWidgets.QApplication):
         super(Main_App, self).__init__(args)
 
         self.installEventFilter(self)
+        self.aboutToQuit.connect(self.SaveClipboard)
         
         self.MainWindow = None
         self.Notification_Window = None
@@ -420,6 +421,25 @@ class Main_App(QtWidgets.QApplication):
             self.NotifyUser(event.N)
             return True
         return super(Main_App, self).eventFilter(source, event)
+
+    def SaveClipboard(self):
+        clipboard = Qt.QApplication.clipboard()
+        if platform.system() == 'Windows':
+            try:
+                import win32clipboard
+                text = clipboard.text()
+                win32clipboard.OpenClipboard()
+                win32clipboard.EmptyClipboard()
+                win32clipboard.SetClipboardText(text)
+                win32clipboard.CloseClipboard()
+            except:
+                print("Could not save clipboard data:")
+                ExceptionOutput(sys.exc_info())
+        else: #FEATURE: Find a linux version of win32clipboard
+            print("Clipboard is only saved if a clipboard manager is installed due to OS limitations.")
+            event = QtCore.QEvent(QtCore.QEvent.Clipboard)
+            Qt.QApplication.sendEvent(clipboard, event)
+            self.processEvents()
 
  # ---------------------------------- Colour and Font ----------------------------------
     def Recolour(self, Colour = "Dark"):
