@@ -567,3 +567,8 @@ v0.16.2.2: SS Input Flow and LaTeX Copy
 v0.16.2.3: Multi Dim Table Fix
 + Fixed the table widget in tab 4
 
+v0.16.2.4: Number Grouping
++ Added an option to enable number grouping in the calculator display (default: True)
+++ For example 5000666.12345 is displayed as 5,000,666.12345
+++ This only influences the displayed text of the items in the calculator history and does not change anything else
+

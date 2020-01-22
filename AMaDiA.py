@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.16.2.3"
+Version = "0.16.2.4"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -1190,14 +1190,14 @@ class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
             if AMaS_Object.tab_1_is != True:
                 item = QtWidgets.QListWidgetItem()
                 item.setData(100,AMaS_Object)
-                item.setText(AMaS_Object.EquationReverse)
+                item.setText(AF.Digit_Grouping(AMaS_Object.EquationReverse))
                 
                 self.Tab_1_History.addItem(item)
                 AMaS_Object.tab_1_is = True
                 AMaS_Object.tab_1_ref = item
             else:
                 self.Tab_1_History.takeItem(self.Tab_1_History.row(AMaS_Object.tab_1_ref))
-                AMaS_Object.tab_1_ref.setText(AMaS_Object.EquationReverse)
+                AMaS_Object.tab_1_ref.setText(AF.Digit_Grouping(AMaS_Object.EquationReverse))
                 self.Tab_1_History.addItem(AMaS_Object.tab_1_ref)
 
             self.Tab_1_History.scrollToBottom()

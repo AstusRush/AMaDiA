@@ -509,6 +509,8 @@ def Replace(string,List,a=0,b=1):
                 string = string.replace(i[a],i[b])
     return string
 
+# -----------------------------------------------------------------------------------------------------------------
+
 def number_shaver(ch,
                   expr = re.compile('(?<![\d.])0*(?:'               # pylint: disable=anomalous-backslash-in-string
                                     '(\d+)\.?|\.(0)'                # pylint: disable=anomalous-backslash-in-string
@@ -518,6 +520,26 @@ def number_shaver(ch,
                                      if mat.lastindex!=3
                                      else '0' + mat.group(3) ):
     return expr.sub(repl,ch)
+
+#FEATURE: Add decimal seperators to the displayed text in the calculator tab (only the text of the item, not any text of the AMaSObject)
+# Do this by making a RegEx that matches with the end of the number (ANY symbol other than a number) and makes sure that there is no point at the start of the "number"
+def Digit_Grouping(text):
+    text_org = text
+    try:
+        if QtWidgets.QApplication.instance().optionWindow.cb_F_Digit_Grouping.isChecked():
+            textparts = text.split(".")
+            textparts[0] = re.sub(r"(\d)(?=(\d{3})+(?!\d))", r"\1,", textparts[0])
+            i = 1
+            while i < len(textparts):
+                items = re.split(r"(\D)",textparts[i],1)
+                if len(items)==3:
+                    textparts[i] = items[0]+items[1]+re.sub(r"(\d)(?=(\d{3})+(?!\d))", r"\1,", items[2])
+                i+=1
+            text = ".".join(textparts)
+        return text
+    except common_exceptions:
+        NC(4,"Could not apply thousand seperators.",exc=sys.exc_info(),func="Digit_Grouping",input=text_org)
+        return text_org
 # -----------------------------------------------------------------------------------------------------------------
 
 
