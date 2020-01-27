@@ -13,3 +13,11 @@ v1.0.2: Permanent Clipboard
 + On all other platforms any clipboard managers are given a last chance to store the clipboard before the application exits
 + (The clipboard resetting on application exit is a DX11 and OS feature and is hard to circumvent)
 
+v1.0.3: Top Bar Improvements
++ NC now handles the displayed text, tool tip and flash which further simplifies the notification system and makes it more flexible
++ The advanced mode has been improved:
+++ alt+A is the application wide shortcut
+++ The top bar widget has an optional checkbox
++ The top bar widget error button now loads the last notifications on init
+++ If there was no previous notification the user is greeted by username
+

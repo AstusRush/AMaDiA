@@ -74,13 +74,19 @@ class AMaS: # Astus' Mathematical Structure
         self.VariablesUnev = {}
         with QtCore.QMutexLocker(self.NotificationMutex):
             self.NotificationList = []
-        try:
-            self.INIT_WhatAmI(string)
-        except common_exceptions :
-            self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
+        
+        if string == "":
+            N = NC(1,"ERROR: No input",func="AMaS.__init__",DplStr="Please give an input")
+            self.Notify(N)
             self.Exists = False
         else:
-            self.Exists = True
+            try:
+                self.INIT_WhatAmI(string)
+            except common_exceptions :
+                self.Notify(NC(1,"Could not create AMaS object",func="AMaS.__init__",exc=sys.exc_info(),input=string))
+                self.Exists = False
+            else:
+                self.Exists = True
     
     def init_bools(self):
         self.multiline = False
@@ -390,7 +396,7 @@ class AMaS: # Astus' Mathematical Structure
     def ConvertToLaTeX_Equation(self):
         """Convert the entire Equation to LaTeX"""
         try:
-            temp = AF.AstusParse(self.Equation)
+            temp = AF.AstusParse(self.Equation,False)
             if "==>" in temp:
                 parts = temp.split("==>")
                 self.LaTeX_E = ""
@@ -455,7 +461,7 @@ class AMaS: # Astus' Mathematical Structure
             self.LaTeX_E_N += "$"
         #Reverse Equation:
         try:
-            temp = AF.AstusParse(self.EquationReverse)
+            temp = AF.AstusParse(self.EquationReverse,False)
             if "<==" in temp:
                 parts = temp.split("<==")
                 self.LaTeX_ER = ""

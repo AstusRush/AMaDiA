@@ -28,7 +28,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         self.setupUi(self)
         self.TopBar = AGeMain.TopBar_Widget(self,False)
         self.ControlSystems_tabWidget.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
-        self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
+        self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True,IncludeAdvancedCB=True)
         
         self.standardSize = (906, 634)
         self.resize(*self.standardSize)
@@ -475,8 +475,8 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Display_LaTeX",win=self.windowTitle(),input=str(sysObject.sys)).send()
     
     def ControlSystems_4_Dirty_Display(self):
-        if not QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
-            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.ControlSystems_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked()))).send()
+        if not QtWidgets.QApplication.instance().advanced_mode:
+            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.ControlSystems_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().advanced_mode))).send()
         else:
             self.ControlSystems_tabWidget.setCurrentIndex(1)
             input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal u\nu=\"\"\n" + self.ControlSystems_4_Dirty_Input.toPlainText()

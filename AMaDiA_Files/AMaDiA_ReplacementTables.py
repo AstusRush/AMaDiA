@@ -85,7 +85,7 @@ l_pairs_special_I_D_all_Integrals = [["Integral","d","Integral("],["d(",")/d","d
 l_pairs_special_I_D_Unicode = [["∫","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
 
 l_pairs_special = [["sqrt(",")"],["√(",")"]]
-l_seperators = [',']
+l_separators = [',']
 
 LIST_l_normal_pairs = [l_pairs_brackets , l_pairs_special_I_D_all_Integrals , l_pairs_special]
 LIST_l_normal_pairs_Unicode = [l_pairs_brackets , l_pairs_special_I_D_Unicode , l_pairs_special]
@@ -149,16 +149,16 @@ n_greek_letters_nospace = [["\u0391","Alpha"],["\u03b1","alpha"],
 n_constants = [["\u03c0"," pi "],["∞"," oo "]]
 n_operators = [["^","**"],["·","*"]]
 n_operators_special = [["√","sqrt"],["∫","Integral"]]
-n_operators_notinv = [["–","-"],["—","-"],["×","*"],["÷","/"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
+n_operators_notinv = [["–","-"],["—","-"],["×","*"],["÷","/"],["°C","degC"],["°F","*5/9*degC-32*5/9*degC"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
 n_operators_dual = [["±","+","-"],["∓","-","+"]]
 n_space = [[" "," "]]
 
-n_priority_Invertable = [["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
+n_priority_Invertable = [["°C","*degC"],["°C","degC"],["°F","*5/9*degC-32*5/9*degC"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
 
 LIST_n_all = [n_standard_integrals , n_greek_letters_nospace , n_constants , n_operators , n_operators_special , n_operators_notinv , n_space]
 
 n_constants_nospace = [["π"," pi "]]
-LIST_n_invertable = [n_priority_Invertable , n_greek_letters_nospace , n_constants_nospace , n_operators , n_operators_special]
+LIST_n_invertable = [n_priority_Invertable , n_operators , n_operators_special]
 # ---------------------------------- Special Replacements s_ ----------------------------------
 
 s_constants_math = [["i"," I "],["e"," E "]]

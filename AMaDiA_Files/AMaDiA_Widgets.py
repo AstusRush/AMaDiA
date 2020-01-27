@@ -282,7 +282,7 @@ class HistoryWidget(ListWidget):
                 if source.itemAt(event.pos()).data(100).LaTeX_E != "Not converted yet" and source.itemAt(event.pos()).data(100).LaTeX_E != "Could not convert":
                     action = menu.addAction('Copy LaTeX Equation')
                     action.triggered.connect(lambda: self.action_H_Copy_LaTeX_E(source,event))
-                if QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
+                if QtWidgets.QApplication.instance().advanced_mode:
                     action = menu.addAction('+ Copy Input')
                     action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
                     action = menu.addAction('+ Copy cString')
@@ -306,10 +306,10 @@ class HistoryWidget(ListWidget):
                 if source.itemAt(event.pos()).data(100).plottable :
                     action = menu.addAction('New Plot')
                     action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                elif QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked() :
+                elif QtWidgets.QApplication.instance().advanced_mode :
                     action = menu.addAction('+ New Plot')
                     action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().optionWindow.cb_O_AdvancedMode.isChecked():
+                if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().advanced_mode:
                     menu.addSeparator()
                     action = menu.addAction('+ Copy x Values')
                     action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))

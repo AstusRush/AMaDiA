@@ -572,3 +572,17 @@ v0.16.2.4: Number Grouping
 ++ For example 5000666.12345 is displayed as 5,000,666.12345
 ++ This only influences the displayed text of the items in the calculator history and does not change anything else
 
+v0.16.3: Fahrenheit to Celsius
++ Updated AGeLib to v1.0.3
+++ This makes alt+A the application wide shortcut for the advanced mode
+++ The control window has the new advanced mode checkbox in the top bar
+++ All instances where the advanced mode is relevant now ask the application instead of the options window
++ °F will now automatically be convert to °C
+++ Sympy does not support temperatures so I added the conversion formula to the replacement tables
++++ Due to this an inverse conversion is not easily possible
++++ °C is recognized as a variable which means that one must be careful when solving for unknowns
++ Empty inputs are now recognized by AMaS and have a special error message
++ Units are now enabled by default
++ Inverse parsing of Greek letters now only converts them if they are not part of another word
++ Fixed some typos
+

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.16.2.4"
+Version = "0.16.3"
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -54,7 +54,7 @@ import importlib
 import re
 import getpass
 
-# import Math modules
+# import Maths modules
 import matplotlib
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
@@ -120,22 +120,31 @@ MetaModifier = QtCore.Qt.MetaModifier
 #endregion
 
 def AltGr_Shortcut(Symbol,shift_Symbol):
-    if keyboard.is_pressed("shift"):
-        AltGr_Shift_Shortcut(shift_Symbol)
+    if Keyboard_Remap_Works:
+        if keyboard.is_pressed("shift"):
+            AltGr_Shift_Shortcut(shift_Symbol)
+        else:
+            keyboard.write(Symbol)
+            keyboard.release("alt")
+            keyboard.release("control")
     else:
+        print("Could not load External_Libraries.keyboard_master.keyboard")
+def AltGr_Shift_Shortcut(Symbol):
+    if Keyboard_Remap_Works:
         keyboard.write(Symbol)
         keyboard.release("alt")
         keyboard.release("control")
-def AltGr_Shift_Shortcut(Symbol):
-    keyboard.write(Symbol)
-    keyboard.release("alt")
-    keyboard.release("control")
-    keyboard.press("shift")
+        keyboard.press("shift")
+    else:
+        print("Could not load External_Libraries.keyboard_master.keyboard")
 def Superscript_Shortcut(Symbol):
-    #keyboard.write("\x08")
-    keyboard.write(Symbol)
-    keyboard.write(" ")
-    keyboard.write("\x08")
+    if Keyboard_Remap_Works:
+        #keyboard.write("\x08")
+        keyboard.write(Symbol)
+        keyboard.write(" ")
+        keyboard.write("\x08")
+    else:
+        print("Could not load External_Libraries.keyboard_master.keyboard")
 
 #region ---------------------------------- Windows ----------------------------------
 class AMaDiA_Internal_File_Display_Window(AGeMain.AWWF):
@@ -212,7 +221,7 @@ class AMaDiA_exec_Window(AGeMain.AWWF):
     def __init__(self,parent = None):
         try:
             super(AMaDiA_exec_Window, self).__init__(parent, initTopBar=False)
-            self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
+            self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True, IncludeAdvancedCB=True)
             self.setWindowTitle("Code Execution Window")
             self.standardSize = (900, 500)
             self.resize(*self.standardSize)
@@ -265,6 +274,8 @@ class AMaDiA_options_window(AGeMain.AWWF, Ui_AMaDiA_Options):
             
     def ConnectSignals(self):
         self.fontComboBox.currentFontChanged.connect(self.SetFontFamily)
+        self.cb_O_AdvancedMode.clicked.connect(QtWidgets.QApplication.instance().ToggleAdvancedMode)
+        QtWidgets.QApplication.instance().S_advanced_mode_changed.connect(self.cb_O_AdvancedMode.setChecked)
         self.cb_O_Remapper_global.toggled.connect(self.ToggleGlobalRemapper)
         self.cb_O_PairHighlighter.toggled.connect(self.MainApp.S_Highlighter.emit)
         
@@ -665,8 +676,8 @@ class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
         #self.Menu_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
         self.Menu_Options_action_Options.triggered.connect(self.MainApp.Show_Options)
         
-        self.MainApp.optionWindow.cb_O_AdvancedMode.toggled.connect(self.Menu_Options_action_Advanced_Mode.setChecked)
-        self.Menu_Options_action_Advanced_Mode.toggled.connect(self.MainApp.optionWindow.cb_O_AdvancedMode.setChecked)
+        self.Menu_Options_action_Advanced_Mode.toggled.connect(QtWidgets.QApplication.instance().ToggleAdvancedMode)
+        QtWidgets.QApplication.instance().S_advanced_mode_changed.connect(self.Menu_Options_action_Advanced_Mode.setChecked)
         
         self.MainApp.optionWindow.cb_F_EvalF.toggled.connect(self.Menu_Options_action_Eval_Functions.setChecked)
         self.Menu_Options_action_Eval_Functions.toggled.connect(self.MainApp.optionWindow.cb_F_EvalF.setChecked)

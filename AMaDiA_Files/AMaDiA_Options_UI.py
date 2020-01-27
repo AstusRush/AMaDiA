@@ -65,6 +65,7 @@ class Ui_AMaDiA_Options(object):
         self.line_5.setObjectName("line_5")
         self.gridLayout_4.addWidget(self.line_5, 18, 0, 1, 1)
         self.cb_U_EnableUnits = QtWidgets.QCheckBox(self.L_O)
+        self.cb_U_EnableUnits.setChecked(True)
         self.cb_U_EnableUnits.setObjectName("cb_U_EnableUnits")
         self.gridLayout_4.addWidget(self.cb_U_EnableUnits, 15, 0, 1, 1)
         self.line_17 = QtWidgets.QFrame(self.L_O)
@@ -307,7 +308,7 @@ class Ui_AMaDiA_Options(object):
         AMaDiA_Options.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(AMaDiA_Options)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(AMaDiA_Options)
 
     def retranslateUi(self, AMaDiA_Options):

@@ -1,6 +1,6 @@
 # Astus General Library Main File
 
-Version = "1.0.2"
+Version = "1.0.3"
 Author = "Robin \'Astus\' Albers"
 """
     Copyright (C) 2020  Robin Albers
@@ -22,6 +22,7 @@ import os
 import re
 import traceback
 import pathlib
+import getpass
 
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
@@ -81,7 +82,7 @@ class NC: # Notification Class
     lvl: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification , 10 = Direct Notification  \n
     exc = True or sys.exc_info()
     """
-    def __init__(self, lvl=None, msg=None, time=None, input=None, err=None, tb=None, exc=None, win=None, func=None):
+    def __init__(self, lvl=None, msg=None, time=None, input=None, err=None, tb=None, exc=None, win=None, func=None, DplStr=None):
         """
         Creates a new notification object  \n
         lvl: 0 = Nothing , 1 = Error , 2 = Warning , 3 = Notification , 4 = Advanced Mode Notification , 10 = Direct Notification  \n
@@ -90,14 +91,18 @@ class NC: # Notification Class
         self._time_time = timetime()
         self._init_Values()
         try:
+            self._time = datetime.datetime.now() if time == None else time
+            self.Time = self._time.strftime('%H:%M:%S')
+            self.DplStr = DplStr
+            self.Window = win
+            self.Function = func
+            self.Input = input
             if exc != None:
                 if exc == True:
                     self.exc_type, self.exc_obj, self.exc_tb = sys.exc_info()
                 else:
                     self.exc_type, self.exc_obj, self.exc_tb = exc
                 fName = os.path.split(self.exc_tb.tb_frame.f_code.co_filename)[1]
-                self._time = datetime.datetime.now() if time == None else time
-                self.Time = self._time.strftime('%H:%M:%S')
                 if type(lvl)==str:
                     self.level = 1
                     self.Message = lvl
@@ -106,11 +111,7 @@ class NC: # Notification Class
                 else:
                     self.level = 1 if lvl == None else lvl
                     self.Message = str(msg) if msg!=None else None
-                self.Window = win
-                self.Function = func
-                self.Input = input
                 self.ErrorTraceback = str(self.exc_type)+"  in "+str(fName)+"  line "+str(self.exc_tb.tb_lineno)+"\n\n"+str(traceback.format_exc())#[:-1]) # TODO: Use traceback.format_exc() to get full traceback or something like traceback.extract_stack()[:-1] ([:-1] removes the NC.__init__())
-                self.GenerateLevelName()
                 print(self.Time,":")
                 if len(str(self.exc_obj))<50:
                     self.Error = str(self.exc_type)+": "+str(self.exc_obj)
@@ -128,14 +129,9 @@ class NC: # Notification Class
                 else:
                     self.level = 3 if lvl == None else lvl
                     self.Message = str(msg) if msg!=None else None
-                self._time = datetime.datetime.now() if time == None else time
-                self.Time = self._time.strftime('%H:%M:%S')
-                self.Window = win
-                self.Function = func
-                self.Input = input
                 self.Error = err
                 self.ErrorTraceback = tb
-                self.GenerateLevelName()
+            self.GenerateLevelName()
         except common_exceptions as inst:
             self._init_Values()
             print(cTimeSStr(),": An exception occurred while trying to create a Notification")
@@ -154,7 +150,9 @@ class NC: # Notification Class
         self.Window, self.ErrorTraceback, self.Function = None,None,None
         self.level, self.Level, self.Message = 1,"Notification level 1",None
         self.Input, self.ErrorLongDesc = None,None
+        self.DplStr, self.TTStr = None,None
         self.icon = QtGui.QIcon()
+        self.Flash = QtWidgets.QApplication.instance().NCF_NONE
         self.itemDict = {"Time:\n":self.Time,"Level: ":self.Level,"Message:\n":self.Message,
                         "Error:\n":self.Error,"Error Description:\n":self.ErrorLongDesc,"Error Traceback:\n":self.ErrorTraceback,
                         "Function:\n":self.Function,"Window:\n":self.Window,"Input:\n":self.Input}
@@ -204,6 +202,36 @@ class NC: # Notification Class
             return str(self.Error)
         else:
             return str(self.Message)
+        
+    def DPS(self, DplStr = None):
+        """
+        Returns str(DplStr)  \n
+        DplStr is the string that is intended to be displayed directly   \n
+        A str can be given to change the DplStr
+        """
+        if DplStr != None:
+            self.DplStr = str(DplStr)
+        elif self.DplStr == None:
+            if self.level == 10:
+                self.DplStr = self.m()
+            else:
+                self.DplStr = self.Level + " at " + self.t()
+        return str(self.DplStr)
+        
+    def TTS(self, TTStr = None):
+        """
+        Returns str(TTStr)  \n
+        TTStr is the string that is intended to be displayed as the tool tip   \n
+        A str can be given to change the TTStr
+        """
+        if TTStr != None:
+            self.TTStr = str(TTStr)
+        elif self.TTStr == None:
+            if self.level == 10:
+                self.TTStr = self.Level + " at " + self.t()
+            else:
+                self.TTStr = self.m()
+        return str(self.TTStr)
 
     def t(self, time=None):
         """
@@ -272,23 +300,30 @@ class NC: # Notification Class
         if self.level == 0:
             self.Level = "Empty Notification"
             self.icon = QtGui.QIcon()
+            self.Flash = QtWidgets.QApplication.instance().NCF_NONE
         elif self.level == 1:
             self.Level = "Error"
             self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxCritical)
+            self.Flash = QtWidgets.QApplication.instance().NCF_r
         elif self.level == 2:
             self.Level = "Warning"
             self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning)
+            self.Flash = QtWidgets.QApplication.instance().NCF_y
         elif self.level == 3:
             self.Level = "Notification"
             self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation)
+            self.Flash = QtWidgets.QApplication.instance().NCF_b
         elif self.level == 4:
             self.Level = "Advanced Mode Notification"
             self.icon = QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation)
+            self.Flash = QtWidgets.QApplication.instance().NCF_b
         elif self.level == 10:
             self.Level = "Direct Notification"
             self.icon = QtGui.QIcon()
+            self.Flash = QtWidgets.QApplication.instance().NCF_NONE
         else:
             self.Level = "Notification level "+str(self.level)
+            self.Flash = QtWidgets.QApplication.instance().NCF_b
         return self.Level
   #---------- __...__ ----------#
     def __add__(self,other):
@@ -333,16 +368,16 @@ def cTimeSStr():
     """
     return str(datetime.datetime.now().strftime('%H:%M:%S'))
 
-def cTimeFullStr(seperator = None):
+def cTimeFullStr(separator = None):
     """
     Returns the date and time as a string\n
     If given uses `separator` to separate the values\n
-    %Y.%m.%d-%H:%M:%S or seperator.join(['%Y','%m','%d','%H','%M','%S'])
+    %Y.%m.%d-%H:%M:%S or separator.join(['%Y','%m','%d','%H','%M','%S'])
     """
-    if seperator == None:
+    if separator == None:
         return str(datetime.datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
     else:
-        TheFormat = seperator.join(['%Y','%m','%d','%H','%M','%S'])
+        TheFormat = separator.join(['%Y','%m','%d','%H','%M','%S'])
         return str(datetime.datetime.now().strftime(TheFormat))
 
 #endregion
@@ -356,14 +391,25 @@ ShiftModifier = QtCore.Qt.ShiftModifier
 MetaModifier = QtCore.Qt.MetaModifier
 
 class Main_App(QtWidgets.QApplication):
+    """Standard AGeLib Application"""
  #
     # See:
     # https://doc.qt.io/qt-5/qapplication.html
     # https://doc.qt.io/qt-5/qguiapplication.html
     # https://doc.qt.io/qt-5/qcoreapplication.html
     S_New_Notification = QtCore.pyqtSignal(NC)
+    S_FontChanged = QtCore.pyqtSignal()
+    S_advanced_mode_changed = QtCore.pyqtSignal(bool)
     def __init__(self, args):
         super(Main_App, self).__init__(args)
+        
+        try:
+            msg = "Welcome " + getpass.getuser()
+        except:
+            msg = "Welcome"
+        self.LastNotificationText = msg
+        self.LastNotificationToolTip = msg
+        self.LastNotificationIcon = QtGui.QIcon()
 
         self.installEventFilter(self)
         self.aboutToQuit.connect(self.SaveClipboard)
@@ -371,7 +417,11 @@ class Main_App(QtWidgets.QApplication):
         self.MainWindow = None
         self.Notification_Window = None
         self.exec_Window = None
-        self.optionWindow = None # NEEDS cb_O_AdvancedMode
+        self.optionWindow = None # FEATURE: Standard options window for colour and font
+                                 # The Option tabs from AMaDiA should be made in a way to extend the standard options menu
+                                 # There must be a cool way to make this work
+
+        self.advanced_mode = False
         
         self.setOrganizationName("Robin Albers")
         self.setOrganizationDomain("https://github.com/AstusRush")
@@ -413,10 +463,13 @@ class Main_App(QtWidgets.QApplication):
                 if event.key() == QtCore.Qt.Key_T:
                     self.Show_exec_Window()
                     return True
-            #if event.modifiers() == AltModifier:
-            #    if event.key() == QtCore.Qt.Key_O:
-            #        self.Show_Options()
-            #        return True
+            if event.modifiers() == AltModifier:
+                if event.key() == QtCore.Qt.Key_A:
+                    self.ToggleAdvancedMode(not self.advanced_mode)
+                    return True
+                #elif event.key() == QtCore.Qt.Key_O:
+                #    self.Show_Options()
+                #    return True
         elif event.type() == NotificationEvent.EVENT_TYPE:
             self.NotifyUser(event.N)
             return True
@@ -440,6 +493,17 @@ class Main_App(QtWidgets.QApplication):
             event = QtCore.QEvent(QtCore.QEvent.Clipboard)
             Qt.QApplication.sendEvent(clipboard, event)
             self.processEvents()
+            
+    def ToggleAdvancedMode(self, checked):
+        try:
+            self.advanced_mode = checked
+            for w in self.topLevelWidgets():
+                for i in w.findChildren(TopBar_Widget):
+                    if i.IncludeAdvancedCB:
+                        i.AdvancedCB.setChecked(self.advanced_mode)
+            self.S_advanced_mode_changed.emit(self.advanced_mode)
+        except:
+            NC(1,"Exception while toggling advanced mode",exc=sys.exc_info(),func="Main_App.ToggleAdvancedMode",input="{}: {}".format(str(type(checked)),str(checked))).send()
 
  # ---------------------------------- Colour and Font ----------------------------------
     def Recolour(self, Colour = "Dark"):
@@ -450,7 +514,7 @@ class Main_App(QtWidgets.QApplication):
         self.colour_Pack = (self.Palette , self.BG_Colour , self.TextColour)
         self.setPalette(self.Palette)
         QtWidgets.QToolTip.setPalette(self.Palette)
-        self.init_Notification_Flash()
+        self.init_NCF()
 
         for w in self.topLevelWidgets():
             for i in w.findChildren(MplWidget):
@@ -477,7 +541,7 @@ class Main_App(QtWidgets.QApplication):
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
 
-    def SetFont(self, Family=None, PointSize=0, source=None):
+    def SetFont(self, Family=None, PointSize=0, source=None, emitSignal=True):
         if type(Family) == QtGui.QFont:
             if PointSize==0:
                 PointSize = Family.pointSize()
@@ -512,7 +576,7 @@ class Main_App(QtWidgets.QApplication):
                     if i.IncludeFontSpinBox:
                         # setValue emits ValueChanged and thus calls ChangeFontSize if the new Value is different from the old one.
                         # If the new Value is the same it is NOT emitted.
-                        # To ensure that this behaves correctly either way the signals are blocked while changeing the Value.
+                        # To ensure that this behaves correctly either way the signals are blocked while changing the Value.
                         i.Font_Size_spinBox.blockSignals(True)
                         i.Font_Size_spinBox.setValue(PointSize)
                         i.Font_Size_spinBox.blockSignals(False)
@@ -542,41 +606,45 @@ class Main_App(QtWidgets.QApplication):
                     i.setFont(font)
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
+        if emitSignal:
+            self.S_FontChanged.emit()
 
  # ---------------------------------- Notifications ----------------------------------
 
-    def init_Notification_Flash(self):
-        self.Notification_Flash_Red = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Red.setDuration(1000)
-        self.Notification_Flash_Red.setLoopCount(1)
-        self.Notification_Flash_Red.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Red.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Red.setKeyValueAt(0.5, QtGui.QColor(255, 0, 0))
-        self.Notification_Flash_Red.finished.connect(self.Notification_Flash_Finished)
+    def init_NCF(self): # Notification_Flash
+        self.NCF_NONE = QtCore.QPropertyAnimation(self)
         
-        self.Notification_Flash_Yellow = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Yellow.setDuration(1000)
-        self.Notification_Flash_Yellow.setLoopCount(1)
-        self.Notification_Flash_Yellow.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Yellow.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Yellow.setKeyValueAt(0.5, QtGui.QColor(255, 255, 0))
-        self.Notification_Flash_Yellow.finished.connect(self.Notification_Flash_Finished)
-
-        self.Notification_Flash_Green = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Green.setDuration(1000)
-        self.Notification_Flash_Green.setLoopCount(1)
-        self.Notification_Flash_Green.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Green.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Green.setKeyValueAt(0.5, QtGui.QColor(0, 255, 0))
-        self.Notification_Flash_Green.finished.connect(self.Notification_Flash_Finished)
-
-        self.Notification_Flash_Blue = QtCore.QPropertyAnimation(self,b'FLASH_colour')
-        self.Notification_Flash_Blue.setDuration(1000)
-        self.Notification_Flash_Blue.setLoopCount(1)
-        self.Notification_Flash_Blue.setStartValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Blue.setEndValue(self.Palette.color(QtGui.QPalette.Window))
-        self.Notification_Flash_Blue.setKeyValueAt(0.5, QtGui.QColor(0, 0, 255))
-        self.Notification_Flash_Blue.finished.connect(self.Notification_Flash_Finished)
+        self.NCF_r = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.NCF_r.setDuration(1000)
+        self.NCF_r.setLoopCount(1)
+        self.NCF_r.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_r.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_r.setKeyValueAt(0.5, QtGui.QColor(255, 0, 0))
+        self.NCF_r.finished.connect(self.NCF_Finished)
+        
+        self.NCF_y = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.NCF_y.setDuration(1000)
+        self.NCF_y.setLoopCount(1)
+        self.NCF_y.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_y.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_y.setKeyValueAt(0.5, QtGui.QColor(255, 255, 0))
+        self.NCF_y.finished.connect(self.NCF_Finished)
+        
+        self.NCF_g = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.NCF_g.setDuration(1000)
+        self.NCF_g.setLoopCount(1)
+        self.NCF_g.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_g.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_g.setKeyValueAt(0.5, QtGui.QColor(0, 255, 0))
+        self.NCF_g.finished.connect(self.NCF_Finished)
+        
+        self.NCF_b = QtCore.QPropertyAnimation(self,b'FLASH_colour')
+        self.NCF_b.setDuration(1000)
+        self.NCF_b.setLoopCount(1)
+        self.NCF_b.setStartValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_b.setEndValue(self.Palette.color(QtGui.QPalette.Window))
+        self.NCF_b.setKeyValueAt(0.5, QtGui.QColor(0, 0, 255))
+        self.NCF_b.finished.connect(self.NCF_Finished)
 
     def _set_FLASH_colour(self, col): # Handles changes to the Property FLASH_colour
         palette = self.Palette
@@ -584,7 +652,7 @@ class Main_App(QtWidgets.QApplication):
         self.setPalette(palette)
     FLASH_colour = QtCore.pyqtProperty(QtGui.QColor, fset=_set_FLASH_colour) # Defines the Property FLASH_colour
     
-    def Notification_Flash_Finished(self):
+    def NCF_Finished(self):
         pass#self.TopBar_Error_Label.setFrameShape(QtWidgets.QFrame.NoFrame)
 
     def NotifyUser(self, N):
@@ -593,30 +661,19 @@ class Main_App(QtWidgets.QApplication):
         """
         if N.l() == 0:
             return
-        elif N.l() in [10]:
+        elif N.l()!=4 or self.advanced_mode:
             Error_Text_TT,icon = self.ListVeryRecentNotifications(N)
-            Error_Text_TT = N.Level + " at " + N.t() + Error_Text_TT
+            self.LastNotificationText = N.DPS()
+            self.LastNotificationToolTip = Error_Text_TT
+            self.LastNotificationIcon = icon
             for w in self.topLevelWidgets():
                 for i in w.findChildren(TopBar_Widget):
                     if i.IncludeErrorButton:
-                        i.Error_Label.setText(N.m())
+                        i.Error_Label.setText(N.DPS())
                         i.Error_Label.setToolTip(Error_Text_TT)
                         i.Error_Label.setIcon(icon)
-        elif N.l()!=4 or (self.optionWindow != None and self.optionWindow.cb_O_AdvancedMode.isChecked()):
-            Text = N.Level + " at " + N.t()
-            Error_Text_TT,icon = self.ListVeryRecentNotifications(N)
-            for w in self.topLevelWidgets():
-                for i in w.findChildren(TopBar_Widget):
-                    if i.IncludeErrorButton:
-                        i.Error_Label.setText(Text)
-                        i.Error_Label.setToolTip(Error_Text_TT)
-                        i.Error_Label.setIcon(icon)
-            if N.l() in [1]:
-                self.Notification_Flash_Red.start()
-            elif N.l() in [2]:
-                self.Notification_Flash_Yellow.start()
-            elif N.l() in [3,4]:
-                self.Notification_Flash_Blue.start()
+            if not N.Flash == self.NCF_NONE:
+                N.Flash.start()
         
         self.Notification_List.append(N)
         self.S_New_Notification.emit(N)
@@ -629,16 +686,14 @@ class Main_App(QtWidgets.QApplication):
         
     def ListVeryRecentNotifications(self, N):
         cTime = time.time()
-        Error_Text_TT = N.m() if N.l()!=10 else ""
+        Error_Text_TT = N.TTS()
         level = N.l()
         icon = N.icon
         for i in range(len(self.Notification_List)):
             if i< 10 and cTime - self.Notification_List[-i-1]._time_time < 2 and len(Error_Text_TT.splitlines())<40:
-                if self.Notification_List[-i-1].l()!=0 and (self.Notification_List[-i-1].l()!=4 or (self.optionWindow != None and self.optionWindow.cb_O_AdvancedMode.isChecked())):
+                if self.Notification_List[-i-1].l()!=0 and (self.Notification_List[-i-1].l()!=4 or self.advanced_mode):
                     Error_Text_TT += "\n\n"
-                    if self.Notification_List[-i-1].l() == 10:
-                        Error_Text_TT += "Direct Notification at " + N.t()+" :\n"
-                    Error_Text_TT += self.Notification_List[-i-1].m()
+                    Error_Text_TT += str(self.Notification_List[-i-1])
                     cTime = self.Notification_List[-i-1]._time_time
                     if level > self.Notification_List[-i-1].l():
                         level = self.Notification_List[-i-1].l()
@@ -1324,6 +1379,10 @@ class TableWidget_Delegate(QtWidgets.QStyledItemDelegate):
 
 # -----------------------------------------------------------------------------------------------------------------
 
+#endregion
+
+#region AWWF
+
 class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
     def __init__(self, parent = None, includeTopBar=True, initTopBar=True, includeStatusBar=True):
         super(AWWF, self).__init__(parent)
@@ -1512,21 +1571,24 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         #    QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),source.toolTip(),source)
         return super(AWWF, self).eventFilter(source, event) # let the normal eventFilter handle the event
 
-
-class TopBar_Widget(QtWidgets.QWidget):
-    def __init__(self, parent=None, DoInit=False, IncludeMenu = False, IncludeFontSpinBox = True, IncludeErrorButton = False):
+class TopBar_Widget(QtWidgets.QWidget): # FEATURE: Make an advanced mode checkbox 
+    # Make an advanced mode checkbox with default=False
+    # integrate it with the application using a variable (Main_App: self.advanced_mode), a function in Main_App to set/unset and signals
+    # Update AMaDiA to use this and change the advanced mode to be compatible with the new one
+    # Add an application wide shortcut (alt+A) to toggle the advanced mode
+    def __init__(self, parent=None, DoInit=False, IncludeMenu = False, IncludeFontSpinBox = True, IncludeErrorButton = False, IncludeAdvancedCB = False):
         super(TopBar_Widget, self).__init__(parent)
         self.moving = False
         self.offset = 0
-        self.IncludeMenu, self.IncludeFontSpinBox, self.IncludeErrorButton = IncludeMenu, IncludeFontSpinBox, IncludeErrorButton
+        self.IncludeMenu, self.IncludeFontSpinBox = IncludeMenu, IncludeFontSpinBox
+        self.IncludeErrorButton, self.IncludeAdvancedCB = IncludeErrorButton, IncludeAdvancedCB
         if DoInit:
-            self.init(IncludeMenu, IncludeFontSpinBox, IncludeErrorButton)
+            self.init(IncludeMenu, IncludeFontSpinBox, IncludeErrorButton, IncludeAdvancedCB)
 
-    def init(self, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False):
-        # exTODO: Add a handle to resize the window: Implemented via WindowFrame
-        # TODO: restrict the height and add the option to add a QLabel for the WindowName
-        #   and the Option for a QtWidgets.QSpacerItem to make the horizontal spacing work if not corner widget
-        self.IncludeMenu, self.IncludeFontSpinBox, self.IncludeErrorButton = IncludeMenu, IncludeFontSpinBox, IncludeErrorButton
+    def init(self, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False, IncludeAdvancedCB = False):
+        # TODO: restrict the height and add the Option for a QtWidgets.QSpacerItem to make the horizontal spacing work if not corner widget
+        self.IncludeMenu, self.IncludeFontSpinBox = IncludeMenu, IncludeFontSpinBox
+        self.IncludeErrorButton, self.IncludeAdvancedCB = IncludeErrorButton, IncludeAdvancedCB
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setObjectName("TopBar")
         if self.layout() == None:
@@ -1593,7 +1655,16 @@ class TopBar_Widget(QtWidgets.QWidget):
                 self.Menu.setMenu(self.window().Menu)
                 self.Menu.setSizePolicy(self.ButtonSizePolicy)
         except common_exceptions:
-            pass #ExceptionOutput(sys.exc_info())
+            ExceptionOutput(sys.exc_info())
+        
+        if IncludeAdvancedCB:
+            self.AdvancedCB = QtWidgets.QCheckBox(self)
+            self.AdvancedCB.setText("")
+            self.AdvancedCB.setToolTip("Advanced Mode (alt+A)")
+            self.AdvancedCB.setChecked(QtWidgets.QApplication.instance().advanced_mode)
+            self.AdvancedCB.setObjectName("AdvancedCB")
+            self.layout().addWidget(self.AdvancedCB, 0, 99, 1, 1,QtCore.Qt.AlignRight)
+            self.AdvancedCB.clicked.connect(QtWidgets.QApplication.instance().ToggleAdvancedMode)
 
         if IncludeFontSpinBox:
             self.Font_Size_spinBox = QtWidgets.QSpinBox(self)
@@ -1601,13 +1672,16 @@ class TopBar_Widget(QtWidgets.QWidget):
             self.Font_Size_spinBox.setMaximum(25)
             self.Font_Size_spinBox.setProperty("value", self.font().pointSize())
             self.Font_Size_spinBox.setObjectName("Font_Size_spinBox")
-            self.layout().addWidget(self.Font_Size_spinBox, 0, 99, 1, 1,QtCore.Qt.AlignRight)
+            self.layout().addWidget(self.Font_Size_spinBox, 0, 98, 1, 1,QtCore.Qt.AlignRight)
             self.Font_Size_spinBox.valueChanged.connect(self.ChangeFontSize)
 
         if IncludeErrorButton:
             self.Error_Label = QtWidgets.QPushButton(self)
             self.Error_Label.setObjectName("Error_Label")
-            self.layout().addWidget(self.Error_Label, 0, 98, 1, 1,QtCore.Qt.AlignRight)
+            self.Error_Label.setText(QtWidgets.QApplication.instance().LastNotificationText)
+            self.Error_Label.setToolTip(QtWidgets.QApplication.instance().LastNotificationToolTip)
+            self.Error_Label.setIcon(QtWidgets.QApplication.instance().LastNotificationIcon)
+            self.layout().addWidget(self.Error_Label, 0, 97, 1, 1,QtCore.Qt.AlignRight)
             self.Error_Label.installEventFilter(self)
             self.Error_Label.clicked.connect(QtWidgets.QApplication.instance().Show_Notification_Window)
 
@@ -1648,7 +1722,6 @@ class TopBar_Widget(QtWidgets.QWidget):
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
         
-
     def eventFilter(self, source, event):
         #if event.type() == 5: # QtCore.QEvent.MouseMove
         #    if self.moving: self.window().move(event.globalPos()-self.offset)
@@ -2178,8 +2251,6 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
                 self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             super(MMenuBar, self).mouseMoveEvent(event)
 
-
-
 class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
     def __init__(self, parent=None):
         super(MTabWidget, self).__init__(parent)
@@ -2386,7 +2457,7 @@ class exec_Window(AWWF):
     def __init__(self,parent = None):
         try:
             super(exec_Window, self).__init__(parent, initTopBar=False)
-            self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
+            self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True,IncludeAdvancedCB=True)
             self.setWindowTitle("Code Execution Window")
             self.standardSize = (900, 500)
             self.resize(*self.standardSize)

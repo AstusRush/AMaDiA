@@ -62,16 +62,16 @@ def cTimeSStr():
     """
     return str(datetime.datetime.now().strftime('%H:%M:%S'))
 
-def cTimeFullStr(seperator = None):
+def cTimeFullStr(separator = None):
     """
     Returns the date and time as a string\n
     If given uses `separator` to separate the values\n
-    %Y.%m.%d-%H:%M:%S or seperator.join(['%Y','%m','%d','%H','%M','%S'])
+    %Y.%m.%d-%H:%M:%S or separator.join(['%Y','%m','%d','%H','%M','%S'])
     """
-    if seperator == None:
+    if separator == None:
         return str(datetime.datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
     else:
-        TheFormat = seperator.join(['%Y','%m','%d','%H','%M','%S'])
+        TheFormat = separator.join(['%Y','%m','%d','%H','%M','%S'])
         return str(datetime.datetime.now().strftime(TheFormat))
 
 def takeFirst(elem):
@@ -368,7 +368,7 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     
     
     # Getting rid of not interpretable brackets
-    # string = NonInterpreteableBracketReplace(string)
+    # string = NonInterpretableBracketReplace(string)
     
     
     # Add multiplication signs where a human might leave them out
@@ -421,7 +421,7 @@ def Derivative_and_IndefiniteIntegral_Parser(string):
                     break
     return string
 
-def NonInterpreteableBracketReplace(string):
+def NonInterpretableBracketReplace(string):
     for i in ART.l_pairs_brackets_not_interpretable:
         string = string.replace(i[0],"(")
         string = string.replace(i[1],")")
@@ -480,6 +480,8 @@ def AstusParseInverse(string, Validate=False):
     string = Replace(string,ART.n_standard_integrals)
     string = Replace(string,ART.LIST_r_s_scripts,1,0)
     string = Replace(string,ART.LIST_n_invertable,1,0)
+    for i in ART.n_greek_letters_nospace:
+        string = re.sub(r"(?<!\w){}(?!\w)".format(i[1]),i[0],string) 
         
     #string = string.replace(" * "," · ")
     
@@ -521,8 +523,7 @@ def number_shaver(ch,
                                      else '0' + mat.group(3) ):
     return expr.sub(repl,ch)
 
-#FEATURE: Add decimal seperators to the displayed text in the calculator tab (only the text of the item, not any text of the AMaSObject)
-# Do this by making a RegEx that matches with the end of the number (ANY symbol other than a number) and makes sure that there is no point at the start of the "number"
+
 def Digit_Grouping(text):
     text_org = text
     try:
@@ -538,7 +539,7 @@ def Digit_Grouping(text):
             text = ".".join(textparts)
         return text
     except common_exceptions:
-        NC(4,"Could not apply thousand seperators.",exc=sys.exc_info(),func="Digit_Grouping",input=text_org)
+        NC(4,"Could not apply thousand separators.",exc=sys.exc_info(),func="Digit_Grouping",input=text_org)
         return text_org
 # -----------------------------------------------------------------------------------------------------------------
 
