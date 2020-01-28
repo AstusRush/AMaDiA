@@ -296,11 +296,11 @@ def bode_plot(syslist, omega=None,
                     if Hz:
                         Wcg, Wcp = Wcg/(2*math.pi), Wcp/(2*math.pi)
 
-                    ax_mag.axhline(y=0 if dB else 1, color=gm_color, linestyle=':',
+                    ax_mag.axhline(y=0 if dB else 1, color=pm_color, linestyle=':',
                                    zorder=-20)
                     ax_phase.axhline(y=phase_limit if deg else
                                      math.radians(phase_limit),
-                                     color=pm_color, linestyle=':', zorder=-20)
+                                     color=gm_color, linestyle=':', zorder=-20)
                     mag_ylim = ax_mag.get_ylim()
                     phase_ylim = ax_phase.get_ylim()
 
@@ -308,53 +308,53 @@ def bode_plot(syslist, omega=None,
                         if dB:
                             ax_mag.semilogx(
                                 [Wcp, Wcp], [0., -1e5],
-                                color=gm_color, linestyle=(0, (4, 4)), zorder=-20)
+                                color=pm_color, linestyle=(0, (4, 4)), zorder=-20)
                         else:
                             ax_mag.loglog(
                                 [Wcp, Wcp], [1., 1e-8],
-                                color=gm_color, linestyle=(0, (4, 4)), zorder=-20)
+                                color=pm_color, linestyle=(0, (4, 4)), zorder=-20)
 
                         if deg:
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [1e5, phase_limit+pm],
-                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [phase_limit + pm, phase_limit],
-                                color=gm_color, zorder=-20)
+                                color=pm_color, zorder=-20)
                         else:
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [1e5, math.radians(phase_limit) +
                                              math.radians(pm)],
-                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [math.radians(phase_limit) +
                                              math.radians(pm),
                                              math.radians(phase_limit)],
-                                color=gm_color, zorder=-20)
+                                color=pm_color, zorder=-20)
 
                     if gm != float('inf') and Wcg != float('nan'):
                         if dB:
                             ax_mag.semilogx(
                                 [Wcg, Wcg], [-20.*np.log10(gm), -1e5],
-                                color=pm_color, linestyle=(0, (4, 4)), zorder=-20)
+                                color=gm_color, linestyle=(0, (4, 4)), zorder=-20)
                             ax_mag.semilogx(
                                 [Wcg, Wcg], [0, -20*np.log10(gm)],
-                                color=pm_color, zorder=-20)
+                                color=gm_color, zorder=-20)
                         else:
                             ax_mag.loglog(
-                                [Wcg, Wcg], [1./gm, 1e-8], color=pm_color,
+                                [Wcg, Wcg], [1./gm, 1e-8], color=gm_color,
                                 linestyle=(0, (4, 4)), zorder=-20)
                             ax_mag.loglog(
-                                [Wcg, Wcg], [1., 1./gm], color=pm_color, zorder=-20)
+                                [Wcg, Wcg], [1., 1./gm], color=gm_color, zorder=-20)
 
                         if deg:
                             ax_phase.semilogx(
                                 [Wcg, Wcg], [1e-8, phase_limit],
-                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
                         else:
                             ax_phase.semilogx(
                                 [Wcg, Wcg], [1e-8, math.radians(phase_limit)],
-                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
 
                     ax_mag.set_ylim(mag_ylim)
                     ax_phase.set_ylim(phase_ylim)

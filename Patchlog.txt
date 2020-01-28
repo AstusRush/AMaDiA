@@ -591,3 +591,6 @@ v0.16.4: Negative Exponents in Control TF Input
 ++ This includes inputs like "(1/s+1)(1/s+2)(1/s+3)"
 ++ This does NOT include inputs like "1/(s+2)"
 
+v0.16.4.1: Bode Plot Margin Colour Fix
++ Fixed the colour of the margin annotations in the Bode Plot in the System Control Window
+
