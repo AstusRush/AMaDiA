@@ -210,7 +210,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                     self.ControlSystems_tabWidget.setCurrentIndex(2)
         except common_exceptions as inst:
             if type(inst) != AttributeError:
-                NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_2_Maximize_Axes",win=self.windowTitle()).send()
+                NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_2_Maximize_Axes",win=self.windowTitle()).send()
             self.ControlSystems_tabWidget.setCurrentIndex(1)
         self.ControlSystems_tabWidget.setFocus()
     
@@ -304,7 +304,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                 NameInvalid=True
             
             if NameInvalid:
-                NC(1,"System Name Invalid",func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=Name).send()
+                NC(1,"System Name Invalid",func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=Name).send()
                 return False
             
             
@@ -314,24 +314,66 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                 systemInput = (self.ControlSystems_1_System_4ATF_Ys.text(),self.ControlSystems_1_System_4ATF_Xs.text())
                 s = sympy.symbols("s")
                 try:
-                    Ys_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.ControlSystems_1_System_4ATF_Ys.text())).doit().evalf()),s)
-                    terms = Ys_r.all_terms()
+                    success = False
+                    mult = 0
+                    Yt = "("+self.ControlSystems_1_System_4ATF_Ys.text()+")"
+                    Xt = "("+self.ControlSystems_1_System_4ATF_Xs.text()+")"
+                    termsY,termsX = "Fail","Fail"
+                    while not success:
+                        try:
+                            Ys_s = sympy.expand(parse_expr(AF.AstusParse(Yt)).doit().evalf())
+                            print(type(Ys_s),Ys_s)
+                            if type(Ys_s) == type(parse_expr("1/s")):
+                                pass
+                            Ys_r = sympy.poly(Ys_s,s)
+                            termsY = Ys_r.all_terms()
+                            Xs_s = sympy.expand(parse_expr(AF.AstusParse(Xt)).doit().evalf())
+                            Xs_r = sympy.poly(Xs_s,s)
+                            termsX = Xs_r.all_terms()
+                            success = True
+                        except:
+                            Yt+="*s"
+                            Xt+="*s"
+                            mult+=1
+                            if mult>20:
+                                NC(msg="Could not normalize",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Input:{}\nX:{}\nY:{}".format(self.ControlSystems_1_System_4ATF_Ys.text(),str(termsY),str(termsX))).send()
+                                return False
+                    temp_list_y = []
+                    temp_list_x = []
+                    for i in termsY:
+                        temp_list_y.append(int(i[0][0]))
+                    for i in termsX:
+                        temp_list_x.append(int(i[0][0]))
+                    while min(temp_list_y)<0 or min(temp_list_x)<0:
+                        Yt+="*s"
+                        Xt+="*s"
+                        Ys_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(Yt)).doit().evalf()),s)
+                        termsY = Ys_r.all_terms()
+                        Xs_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(Xt)).doit().evalf()),s)
+                        termsX = Xs_r.all_terms()
+                        temp_list_y = []
+                        temp_list_x = []
+                        for i in termsY:
+                            temp_list_y.append(int(i[0][0]))
+                        for i in termsX:
+                            temp_list_x.append(int(i[0][0]))
+                        mult+=1
+                        if mult>20:
+                            raise Exception("Could not normalize\nX:{}\nY:{}".format(str(termsY),str(termsX)))
                     Ys = []
-                    for i in terms:
+                    for i in termsY:
                         Ys.append(float(i[1]))
                     print(Ys)
                 except common_exceptions:
-                    NC(msg="Error in Y(s)",exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Ys.text()).send()
+                    NC(msg="Error in Y(s)",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Ys.text()).send()
                     return False
                 try:
-                    Xs_r = sympy.poly(sympy.expand(parse_expr(AF.AstusParse(self.ControlSystems_1_System_4ATF_Xs.text())).doit().evalf()),s)
-                    terms = Xs_r.all_terms()
                     Xs = []
-                    for i in terms:
+                    for i in termsX:
                         Xs.append(float(i[1]))
                     print(Xs)
                 except common_exceptions:
-                    NC(msg="Error in X(s)",exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Xs.text()).send()
+                    NC(msg="Error in X(s)",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Xs.text()).send()
                     return False
                 sys1 = control.tf(Ys,Xs)
             elif Tab == 1: #Transfer
@@ -363,7 +405,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                     XsI.append(Xs[j])
                 systemInput = (YsI,XsI,self.ControlSystems_1_System_1TF_tableWidget.columnCount()-1)
                 if MError != "":
-                    NC(2,MError,func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="X(s) = {}\nY(s) = {}".format(str(Xs),str(Ys))).send()
+                    NC(2,MError,func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="X(s) = {}\nY(s) = {}".format(str(Xs),str(Ys))).send()
                 # Remove empty leading entries
                 while Ys[0]==0:
                     Ys.pop(0)
@@ -428,7 +470,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                             D[i].append(0)
                 # Send Errors
                 if MError != "":
-                    NC(2,MError,func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="A:\n{}\n\nB:\n{}\n\nC:\n{}\n\nD:\n{}".format(str(A),str(B),str(C),str(D))).send()
+                    NC(2,MError,func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="A:\n{}\n\nB:\n{}\n\nC:\n{}\n\nD:\n{}".format(str(A),str(B),str(C),str(D))).send()
                 # Creating System
                 systemInput = (A,B,C,D)
                 sys1 = control.ss(A,B,C,D)
@@ -447,7 +489,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             print(sys1)
             return sysObject
         except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Control->Input Tab Number = {}\nSystem: {}".format(str(Tab),str(sys1))).send()
+            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Control->Input Tab Number = {}\nSystem: {}".format(str(Tab),str(sys1))).send()
     
     def ControlSystems_1_System_Plot_and_Save(self):
         sysObject = self.ControlSystems_1_System_Save()
@@ -463,7 +505,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
             self.ControlSystems_3_SingleDisplay.clear()
             self.ControlSystems_tabWidget.setCurrentIndex(1)
         except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Plot",win=self.windowTitle(),input=str(sysObject.sys)).send()
+            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Plot",win=self.windowTitle(),input=str(sysObject.sys)).send()
     
     def ControlSystems_1_System_Display_LaTeX(self,sysObject):
         try:
@@ -472,11 +514,11 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                                             ,QtWidgets.QApplication.instance().MainWindow.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             ).send()
         except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_1_System_Display_LaTeX",win=self.windowTitle(),input=str(sysObject.sys)).send()
+            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Display_LaTeX",win=self.windowTitle(),input=str(sysObject.sys)).send()
     
     def ControlSystems_4_Dirty_Display(self):
         if not QtWidgets.QApplication.instance().advanced_mode:
-            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Main_Window.ControlSystems_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().advanced_mode))).send()
+            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Control_Window.ControlSystems_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().advanced_mode))).send()
         else:
             self.ControlSystems_tabWidget.setCurrentIndex(1)
             input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal u\nu=\"\"\n" + self.ControlSystems_4_Dirty_Input.toPlainText()
@@ -555,5 +597,5 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                                                 ,QtWidgets.QApplication.instance().MainWindow.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                                 )
             except common_exceptions:
-                NC(1,"Could not execute code to generate the system",exc=sys.exc_info(),func="AMaDiA_Main_Window.ControlSystems_4_Dirty_Display",win=self.windowTitle(),input=input_text).send()
+                NC(1,"Could not execute code to generate the system",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_4_Dirty_Display",win=self.windowTitle(),input=input_text).send()
                 self.ControlSystems_tabWidget.setCurrentIndex(3)

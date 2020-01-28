@@ -586,3 +586,8 @@ v0.16.3: Fahrenheit to Celsius
 + Inverse parsing of Greek letters now only converts them if they are not part of another word
 + Fixed some typos
 
+v0.16.4: Negative Exponents in Control TF Input
++ The Transfer tab in the System Control Window can now handle negative exponents for s
+++ This includes inputs like "(1/s+1)(1/s+2)(1/s+3)"
+++ This does NOT include inputs like "1/(s+2)"
+
