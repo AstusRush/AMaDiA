@@ -560,8 +560,8 @@ def _indexes_filt(mymat, tolerance, zoom_xlim=None, zoom_ylim=None):
 
 
 def _break_points(num, den):
-    """Extract break points over real axis and gains given these locations"""
     # type: (np.poly1d, np.poly1d) -> (np.array, np.array)
+    """Extract break points over real axis and gains given these locations"""
     dnum = num.deriv(m=1)
     dden = den.deriv(m=1)
     polynom = den * dnum - num * dden

@@ -1,6 +1,8 @@
 # Astus General Library Main File
 
-Version = "1.0.3"
+Version = "1.1.0"
+# Using Semantic Versioning 2.0.0 https://semver.org/
+version = Version
 Author = "Robin \'Astus\' Albers"
 """
     Copyright (C) 2020  Robin Albers
@@ -382,6 +384,14 @@ def cTimeFullStr(separator = None):
 
 #endregion
 
+#region Shortcut Functions
+
+def advancedMode():
+    """Used to check whether the advanced mode is active in the application"""
+    return QtWidgets.QApplication.instance().advanced_mode
+
+#endregion
+
 #region Application
 # ---------------------------------- Main Application ----------------------------------
 AltModifier = QtCore.Qt.AltModifier
@@ -402,6 +412,7 @@ class Main_App(QtWidgets.QApplication):
     S_advanced_mode_changed = QtCore.pyqtSignal(bool)
     def __init__(self, args):
         super(Main_App, self).__init__(args)
+        self.setStyle("fusion")
         
         try:
             msg = "Welcome " + getpass.getuser()
@@ -776,7 +787,6 @@ class MplWidget_2D_Plot(MplWidget):
     # Inspired by https://stackoverflow.com/questions/43947318/plotting-matplotlib-figure-inside-qwidget-using-qt-designer-form-and-pyqt5?noredirect=1&lq=1 from 10.07.2019
     def __init__(self, parent=None):
         super(MplWidget_2D_Plot, self).__init__(parent)
-        QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
         self.canvas = MplCanvas_2D_Plot()                  # Create canvas object
         self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
         self.vbl.addWidget(self.canvas)
@@ -836,7 +846,6 @@ class MplCanvas_LaTeX(Canvas):
 class MplWidget_LaTeX(MplWidget):
     def __init__(self, parent=None):
         super(MplWidget_LaTeX, self).__init__(parent)
-        QtWidgets.QWidget.__init__(self)           # Inherit from QWidget
         self.canvas = MplCanvas_LaTeX(100,100)                  # Create canvas object
         #self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
         #self.vbl.addWidget(self.canvas)
@@ -1419,7 +1428,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             self.statusbar.setSizeGripEnabled(False)
             self.windowTitleChanged.connect(self.statusbar.setWindowTitle)
 
- #####################
+ ##################### Layout Attempt
   #    def setMenuBar(self, MenuBar):
   #        if MenuBar == None:
   #            try:
@@ -1467,7 +1476,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
   #        return self.AWWF_p_StatusBar
   #
   #
- #####################
+ ##################### Menu/Central/Status/Tool
 
     def setMenuBar(self, MenuBar):
         if MenuBar == None:
@@ -1515,20 +1524,65 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
     def statusBar(self):
         return self.AWWF_CentralWindow.statusBar()
 
+    # ToolBar #TODO:Expand
+    def addToolBar(self, *ToolBar):
+        if ToolBar == None:
+            try:
+                self.AWWF_CentralWindow.addToolBar(None)
+                #self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
+            except common_exceptions:
+                pass
+        else:
+            self.AWWF_CentralWindow.addToolBar(*ToolBar)
+        return True
+
+    def insertToolBar(self, *ToolBar):
+        if ToolBar == None:
+            try:
+                self.AWWF_CentralWindow.insertToolBar(None)
+                #self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
+            except common_exceptions:
+                pass
+        else:
+            self.AWWF_CentralWindow.insertToolBar(*ToolBar)
+        return True
+
+    def toolBarArea(self):
+        return self.AWWF_CentralWindow.toolBarArea()
+
  #####################
 
     def showNormal(self):
         self.AWWF_CentralWidget.showFrame()
+        self.TopBar.MaximizeButton.setText("🗖")
         super(AWWF, self).showNormal()
     def show(self):
-        self.AWWF_CentralWidget.showFrame()
         super(AWWF, self).show()
+        QtWidgets.QApplication.instance().processEvents()
+        if self.isFullScreen() or self.isMaximized():
+            self.AWWF_CentralWidget.hideFrame()
+            self.TopBar.MaximizeButton.setText("🗗")
+        else:
+            self.AWWF_CentralWidget.showFrame()
+            self.TopBar.MaximizeButton.setText("🗖")
     def showMaximized(self):
         self.AWWF_CentralWidget.hideFrame()
+        self.TopBar.MaximizeButton.setText("🗗")
         super(AWWF, self).showMaximized()
     def showFullScreen(self):
         self.AWWF_CentralWidget.hideFrame()
+        self.TopBar.MaximizeButton.setText("🗗")
         super(AWWF, self).showFullScreen()
+        
+    def restoreState(self,state,version=0):
+        super(AWWF, self).restoreState(state,version)
+        QtWidgets.QApplication.instance().processEvents()
+        if self.isFullScreen() or self.isMaximized():
+            self.AWWF_CentralWidget.hideFrame()
+            self.TopBar.MaximizeButton.setText("🗗")
+        else:
+            self.AWWF_CentralWidget.showFrame()
+            self.TopBar.MaximizeButton.setText("🗖")
 
     def eventFilter(self, source, event):
         #if event.type() == 6: # QtCore.QEvent.KeyPress

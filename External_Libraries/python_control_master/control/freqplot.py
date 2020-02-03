@@ -81,8 +81,9 @@ _bode_defaults = {
 
 def bode_plot(syslist, omega=None,
               Plot=True, omega_limits=None, omega_num=None,
-              margins=None,Dense_Phase_Major_Ticks=False, *args, **kwargs):
-    """Bode plot for a system
+              margins=None, Dense_Phase_Major_Ticks=False, *args, **kwargs):
+    """
+    Bode plot for a system
 
     Plots a Bode plot for the system over a (optional) frequency range.
 
@@ -268,7 +269,7 @@ def bode_plot(syslist, omega=None,
                     ax_mag.axvline(nyquistfrq_plot,
                                    color=pltline[0].get_color())
 
-                # Add a grid to the plot + labeling
+                # Add a grid to the plot + labelling
                 ax_mag.grid(grid and not margins, which='both')
                 ax_mag.set_ylabel("Magnitude (dB)" if dB else "Magnitude",color=pltline[0].get_color())
 
@@ -280,7 +281,7 @@ def bode_plot(syslist, omega=None,
                 ax_phase.semilogx(omega_plot, phase_plot,color='orange', *args, **kwargs)
 
                 # Show the phase and gain margins in the plot
-                if margins: # TODO: Make more pretty
+                if margins:
                     gm_color = 'c'
                     pm_color = 'r'
                     margin = stability_margins(sys)

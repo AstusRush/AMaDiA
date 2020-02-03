@@ -5,7 +5,7 @@ Created on Fri Sep 13 12:51:32 2019
 @author: Robin
 """
 
-from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC
+from AGeLib.exc import *
 
 import sys
 sys.path.append('..')

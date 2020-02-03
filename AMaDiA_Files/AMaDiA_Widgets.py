@@ -3,8 +3,7 @@
 # if__name__ == "__main__":
 #     pass
 
-from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC, MplWidget, ListWidget
-from AGeLib import AGeMain
+from AGeLib import *
 
 import sys
 sys.path.append('..')
@@ -44,7 +43,7 @@ def ReloadModules():
 # -----------------------------------------------------------------------------------------------------------------
 
 
-class AMaDiA_TextEdit(AGeMain.TextEdit):
+class AMaDiA_TextEdit(TextEdit):
     def __init__(self, parent=None):
         super(AMaDiA_TextEdit, self).__init__(parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
@@ -62,7 +61,7 @@ class AMaDiA_TextEdit(AGeMain.TextEdit):
         #self.document().contentsChange.emit(curPos,0,0)
 
 
-class AMaDiA_LineEdit(AGeMain.LineEdit):
+class AMaDiA_LineEdit(LineEdit):
     def __init__(self, parent=None):
         super(AMaDiA_LineEdit, self).__init__(parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
@@ -198,13 +197,13 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, perfor
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class AMaDiA_TableWidget(AGeMain.TableWidget):
+class AMaDiA_TableWidget(TableWidget):
     def __init__(self, parent=None):
         super(AMaDiA_TableWidget, self).__init__(parent)
         self.TheDelegate = AMaDiA_TableWidget_Delegate(self)
         self.setItemDelegate(self.TheDelegate)
 
-class AMaDiA_TableWidget_Delegate(AGeMain.TableWidget_Delegate):
+class AMaDiA_TableWidget_Delegate(TableWidget_Delegate):
     def __init__(self, parent=None):
         super(AMaDiA_TableWidget_Delegate, self).__init__(parent)
 

@@ -180,6 +180,12 @@ def Dark():
     brush = QtGui.QBrush(QtGui.QColor(255, 255, 254))
     brush.setStyle(QtCore.Qt.SolidPattern)
     palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
+
+    brush = QtGui.QBrush(QtGui.QColor(150, 150, 255))
+    brush.setStyle(QtCore.Qt.SolidPattern)
+    palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
+    palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
+    palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
     
     #      UI        Special Background Colour  Special Text Colour
     return palette , (54/255, 57/255, 63/255) , (215/255, 213/255, 201/255)

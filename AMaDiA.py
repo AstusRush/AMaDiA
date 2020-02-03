@@ -1,5 +1,17 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.16.4.1"
+Version = "0.16.5"
+# Version should be interpreted as: (MAIN).(TOPIC).(FUNCTION).(BUGFIX)
+# MAIN marks mayor milestones of the project (like the release)
+# TOPIC marks the introduction of
+#       a new functionality like the addition of a new tab or window that can handle a new mathematical topic
+#       major internal changes like the introduction of the custom window class
+#   These introductions are only that: introductions
+#   Further updates complete the TOPIC. These updates may also be part of a different TOPIC version.
+# FUNCTION marks the introduction of new functionality and aim to advance the current TOPIC
+# BUGFIX marks very minor updates that:
+#       fix bugs
+#       optimize (or even add minor) functions by changing a single line
+#       edit text
 Author = "Robin \'Astus\' Albers"
 WindowTitle = "AMaDiA v"
 WindowTitle+= Version
@@ -33,8 +45,8 @@ if __name__ == "__main__":
         except:
             pass
 
-from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC
-from AGeLib import AGeMain
+from AGeLib import *
+import AGeLib
 
 
 # import qt Modules
@@ -147,7 +159,7 @@ def Superscript_Shortcut(Symbol):
         print("Could not load External_Libraries.keyboard_master.keyboard")
 
 #region ---------------------------------- Windows ----------------------------------
-class AMaDiA_Internal_File_Display_Window(AGeMain.AWWF):
+class AMaDiA_Internal_File_Display_Window(AWWF):
     def __init__(self,FileName,parent = None):
         try:
             super(AMaDiA_Internal_File_Display_Window, self).__init__(parent,True)
@@ -184,7 +196,7 @@ class AMaDiA_Internal_File_Display_Window(AGeMain.AWWF):
     def Scroll_To_End(self):
         self.TextBrowser.verticalScrollBar().setValue(self.TextBrowser.verticalScrollBar().maximum())
 
-class AMaDiA_About_Window(AGeMain.AWWF):
+class AMaDiA_About_Window(AWWF):
     def __init__(self,parent = None):
         try:
             super(AMaDiA_About_Window, self).__init__(parent)
@@ -208,16 +220,44 @@ class AMaDiA_About_Window(AGeMain.AWWF):
             #self.setLayout(self.layout)
             self.setCentralWidget(self.centralwidget)
 
-            Text = WindowTitle+"\nWIP: More coming soon"
+            #Text = WindowTitle+"\nWIP: More coming soon"
+            #<p> Send comments, ideas and bug reports to: <a href="mailto:a011235robin@gmail.com">a011235robin@gmail.com</a></p>
+            aboutText = """
+            <p> <b>AMaDiA v%s</b> </p>
+            <p> By Robin \"Astus\" Albers.</p>
+            <p> AMaDiA aims to provide the similar functionality as matlab or mathematica while providing a GUI that is fun to work with.</p>
+            <p> Furthermore the open source nature and the good documentation from SymPy (which is used for most calculations) allow for scientific work as the entire process can be analysed.</p>
+            <p> License is GNU GPLv3.</p>
+            <p> Repo: <a href="https://github.com/AstusRush/AMaDiA">https://github.com/AstusRush/AMaDiA</a></p>
+            <p>This instance of AMaDiA runs thanks to the following external projects:</p>
             
-            self.TextBrowser.setText(Text)
-
+            <ul>
+                    <li><a href="https://www.python.org/">Python %s</a></li>
+                    <li><a href="https://github.com/AstusRush/AGeLib">AGeLib %s</a></li>
+                    <li><a href="https://www.sympy.org/en/index.html">SymPy %s</a></li>
+                    <li><a href="https://numpy.org/">Numpy %s</a></li>
+                    <li><a href="https://matplotlib.org/">MatplotLib %s</a></li>
+                    <li><a href="https://github.com/boppreh/keyboard">keyboard</a></li>
+                    <li><a href="https://github.com/python-control/python-control/">Python-Control</a></li>
+                    <li><a href="https://www.qt.io/">PyQt %s (Qt %s)</a></li>
+            </ul>
+            """ % (Version,
+                "%d.%d" % (sys.version_info.major, sys.version_info.minor),
+                AGeLib.__version__,
+                sympy.__version__,
+                np.__version__,
+                matplotlib.__version__,
+                QtCore.PYQT_VERSION_STR,
+                QtCore.qVersion())
+            
+            self.TextBrowser.setText(aboutText)
+            self.TextBrowser.setOpenExternalLinks(True)
             
             self.setAutoFillBackground(True)
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
 
-class AMaDiA_exec_Window(AGeMain.AWWF):
+class AMaDiA_exec_Window(AWWF):
     def __init__(self,parent = None):
         try:
             super(AMaDiA_exec_Window, self).__init__(parent, initTopBar=False)
@@ -252,14 +292,14 @@ class AMaDiA_exec_Window(AGeMain.AWWF):
         except common_exceptions:
             NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_exec_Window.execute_code",input=input_text).send()
 
-class AMaDiA_options_window(AGeMain.AWWF, Ui_AMaDiA_Options):
+class AMaDiA_options_window(AWWF, Ui_AMaDiA_Options):
     def __init__(self,app,parent = None):
         try:
             super(AMaDiA_options_window, self).__init__(parent, includeTopBar=False, initTopBar=False, includeStatusBar=True)
             self.MainApp = app
             self.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_FileDialogListView))
             self.setupUi(self)
-            self.TopBar = AGeMain.TopBar_Widget(self,False)
+            self.TopBar = TopBar_Widget(self,False)
             self.tabWidget.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
             self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True)
             self.setWindowTitle("Options")
@@ -321,7 +361,7 @@ class AMaDiA_options_window(AGeMain.AWWF, Ui_AMaDiA_Options):
 #endregion
 
 # ---------------------------------- Main Application ----------------------------------
-class AMaDiA_Main_App(AGeMain.Main_App):
+class AMaDiA_Main_App(Main_App):
  #
     # See:
     # https://doc.qt.io/qt-5/qapplication.html
@@ -498,7 +538,7 @@ class AMaDiA_Main_App(AGeMain.Main_App):
 
 
 # ---------------------------------- Main Window ----------------------------------
-class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
+class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
     S_Terminate_Threads = QtCore.pyqtSignal()
     def __init__(self, MainApp, parent = None):
         super(AMaDiA_Main_Window, self).__init__(parent,initTopBar=False)
@@ -750,75 +790,75 @@ class AMaDiA_Main_Window(AGeMain.AWWF, Ui_AMaDiA_Main_Window):
             #self.Menu_Options_MathRemap.setObjectName("Menu_Options_MathRemap")
        # Create Actions
         if FirstTime:
-            self.Menu_Options_action_Options = AGeMain.MenuAction(self)
+            self.Menu_Options_action_Options = MenuAction(self)
             self.Menu_Options_action_Options.setObjectName("Menu_Options_action_Options")
-            self.Menu_Options_action_ToggleCompactMenu = AGeMain.MenuAction(self)
+            self.Menu_Options_action_ToggleCompactMenu = MenuAction(self)
             self.Menu_Options_action_ToggleCompactMenu.setCheckable(True)
             self.Menu_Options_action_ToggleCompactMenu.setObjectName("Menu_Options_action_ToggleCompactMenu")
             self.Menu_Options_action_ToggleCompactMenu.setChecked(False)
-            self.Menu_Options_action_Advanced_Mode = AGeMain.MenuAction(self)
+            self.Menu_Options_action_Advanced_Mode = MenuAction(self)
             self.Menu_Options_action_Advanced_Mode.setCheckable(True)
             self.Menu_Options_action_Advanced_Mode.setObjectName("Menu_Options_action_Advanced_Mode")
-            self.Menu_Options_action_Eval_Functions = AGeMain.MenuAction(self)
+            self.Menu_Options_action_Eval_Functions = MenuAction(self)
             self.Menu_Options_action_Eval_Functions.setCheckable(True)
             self.Menu_Options_action_Eval_Functions.setChecked(True)
             self.Menu_Options_action_Eval_Functions.setObjectName("Menu_Options_action_Eval_Functions")
-            self.Menu_Options_action_Use_Pretty_LaTeX_Display = AGeMain.MenuAction(self)
+            self.Menu_Options_action_Use_Pretty_LaTeX_Display = MenuAction(self)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setCheckable(True)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setEnabled(False)
             self.Menu_Options_action_Use_Pretty_LaTeX_Display.setObjectName("Menu_Options_action_Use_Pretty_LaTeX_Display")
-            self.Menu_Options_action_Syntax_Highlighter = AGeMain.MenuAction(self)
+            self.Menu_Options_action_Syntax_Highlighter = MenuAction(self)
             self.Menu_Options_action_Syntax_Highlighter.setCheckable(True)
             self.Menu_Options_action_Syntax_Highlighter.setChecked(True)
             self.Menu_Options_action_Syntax_Highlighter.setObjectName("Menu_Options_action_Syntax_Highlighter")
-            self.Menu_Options_action_WindowStaysOnTop = AGeMain.MenuAction(self)
+            self.Menu_Options_action_WindowStaysOnTop = MenuAction(self)
             self.Menu_Options_action_WindowStaysOnTop.setCheckable(True)
             self.Menu_Options_action_WindowStaysOnTop.setObjectName("Menu_Options_action_WindowStaysOnTop")
-            #self.Menu_Options_action_Use_Local_Keyboard_Remapper = AGeMain.MenuAction(self)
+            #self.Menu_Options_action_Use_Local_Keyboard_Remapper = MenuAction(self)
             #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setCheckable(True)
             #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setChecked(True)
             #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Local_Keyboard_Remapper")
-            #self.Menu_Options_action_Use_Global_Keyboard_Remapper = AGeMain.MenuAction(self)
+            #self.Menu_Options_action_Use_Global_Keyboard_Remapper = MenuAction(self)
             #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setCheckable(True)
             #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setObjectName("Menu_Options_action_Use_Global_Keyboard_Remapper")
-            self.Menu_Options_action_Highlighter = AGeMain.MenuAction(self)
+            self.Menu_Options_action_Highlighter = MenuAction(self)
             self.Menu_Options_action_Highlighter.setCheckable(True)
             self.Menu_Options_action_Highlighter.setChecked(True)
             self.Menu_Options_action_Highlighter.setObjectName("Menu_Options_action_Highlighter")
 
-            self.Menu_DevOptions_action_Dev_Function = AGeMain.MenuAction(self)
+            self.Menu_DevOptions_action_Dev_Function = MenuAction(self)
             self.Menu_DevOptions_action_Dev_Function.setObjectName("Menu_DevOptions_action_Dev_Function")
-            self.Menu_DevOptions_action_Show_AMaDiA_exec_Window = AGeMain.MenuAction(self)
+            self.Menu_DevOptions_action_Show_AMaDiA_exec_Window = MenuAction(self)
             self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.setObjectName("Menu_DevOptions_action_Show_AMaDiA_exec_Window")
-            self.Menu_DevOptions_action_Use_Threadpool = AGeMain.MenuAction(self)
+            self.Menu_DevOptions_action_Use_Threadpool = MenuAction(self)
             self.Menu_DevOptions_action_Use_Threadpool.setCheckable(True)
             self.Menu_DevOptions_action_Use_Threadpool.setChecked(True)
             self.Menu_DevOptions_action_Use_Threadpool.setObjectName("Menu_DevOptions_action_Use_Threadpool")
-            self.Menu_DevOptions_action_Terminate_All_Threads = AGeMain.MenuAction(self)
+            self.Menu_DevOptions_action_Terminate_All_Threads = MenuAction(self)
             self.Menu_DevOptions_action_Terminate_All_Threads.setObjectName("Menu_DevOptions_action_Terminate_All_Threads")
 
-            self.Menu_Chat_action_Open_Client = AGeMain.MenuAction(self)
+            self.Menu_Chat_action_Open_Client = MenuAction(self)
             self.Menu_Chat_action_Open_Client.setObjectName("Menu_Chat_action_Open_Client")
-            self.Menu_Chat_action_Open_Server = AGeMain.MenuAction(self)
+            self.Menu_Chat_action_Open_Server = MenuAction(self)
             self.Menu_Chat_action_Open_Server.setObjectName("Menu_Chat_action_Open_Server")
 
-            self.Menu_Colour_action_Dark = AGeMain.MenuAction(self)
+            self.Menu_Colour_action_Dark = MenuAction(self)
             self.Menu_Colour_action_Dark.setObjectName("Menu_Colour_action_Dark")
-            self.Menu_Colour_action_Bright = AGeMain.MenuAction(self)
+            self.Menu_Colour_action_Bright = MenuAction(self)
             self.Menu_Colour_action_Bright.setObjectName("Menu_Colour_action_Bright")
             
-            self.Menu_OtherWindows_action_SystemControl = AGeMain.MenuAction(self)
+            self.Menu_OtherWindows_action_SystemControl = MenuAction(self)
             self.Menu_OtherWindows_action_SystemControl.setObjectName("Menu_OtherWindows_action_SystemControl")
 
-            self.Menu_Help_action_Examples = AGeMain.MenuAction(self)
+            self.Menu_Help_action_Examples = MenuAction(self)
             self.Menu_Help_action_Examples.setObjectName("Menu_Help_action_Examples")
-            self.Menu_Help_action_Helpful_Commands = AGeMain.MenuAction(self)
+            self.Menu_Help_action_Helpful_Commands = MenuAction(self)
             self.Menu_Help_action_Helpful_Commands.setObjectName("Menu_Help_action_Helpful_Commands")
-            self.Menu_Help_action_License = AGeMain.MenuAction(self)
+            self.Menu_Help_action_License = MenuAction(self)
             self.Menu_Help_action_License.setObjectName("Menu_Help_action_License")
-            self.Menu_Help_action_About = AGeMain.MenuAction(self)
+            self.Menu_Help_action_About = MenuAction(self)
             self.Menu_Help_action_About.setObjectName("Menu_Help_action_About")
-            self.Menu_Help_action_Patchlog = AGeMain.MenuAction(self)
+            self.Menu_Help_action_Patchlog = MenuAction(self)
             self.Menu_Help_action_Patchlog.setObjectName("Menu_Help_action_Patchlog")
        # Add the Actions to the Submenus
         if FirstTime:
@@ -1865,7 +1905,6 @@ if __name__ == "__main__":
     else: print("latex and dvipng were not detected --> Using standard LaTeX Display (Install both to use the pretty version)")
     print("AMaDiA Startup")
     app = AMaDiA_Main_App([])
-    app.setStyle("fusion")
     window = AMaDiA_Main_Window(app)
     print(datetime.datetime.now().strftime('%H:%M:%S:'),"AMaDiA Started\n")
     window.LastOpenState()

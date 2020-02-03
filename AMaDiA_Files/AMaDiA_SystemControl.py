@@ -1,7 +1,6 @@
 
 
-from AGeLib.AGeMain import common_exceptions, NC, ExceptionOutput, MplWidget
-from AGeLib import AGeMain
+from AGeLib import *
 
 import sys
 sys.path.append('..')
@@ -22,11 +21,11 @@ from AMaDiA_Files.AMaDiA_SystemControl_Widgets import SystemClass
 
 
 # ---------------------------------- Main Window ----------------------------------
-class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
+class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
     def __init__(self, parent = None):
         super(AMaDiA_Control_Window, self).__init__(parent, includeTopBar=False, initTopBar=False, includeStatusBar=True)
         self.setupUi(self)
-        self.TopBar = AGeMain.TopBar_Widget(self,False)
+        self.TopBar = TopBar_Widget(self,False)
         self.ControlSystems_tabWidget.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
         self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True,IncludeAdvancedCB=True)
         
@@ -62,7 +61,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
         # Other things:
         self.ControlSystems_1_System_Set_Order()
         
-        for i in self.findChildren(AGeMain.MplWidget):
+        for i in self.findChildren(MplWidget):
             i.SetColour()
         NC(10,"Welcome to CONTROL (WIP)",win=self.windowTitle(),func="{}.__init__".format(str(self.objectName()))).send()
     
@@ -313,6 +312,7 @@ class AMaDiA_Control_Window(AGeMain.AWWF, Ui_SystemControlWindow):
                 # Parse the input and find out the coefficients of the powers of s
                 systemInput = (self.ControlSystems_1_System_4ATF_Ys.text(),self.ControlSystems_1_System_4ATF_Xs.text())
                 s = sympy.symbols("s")
+                # FEATURE: check if s or z is in systemInput and create a time discrete system if it is z and add a field to THIS TAB to set the Abtastzeit
                 try:
                     success = False
                     mult = 0

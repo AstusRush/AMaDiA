@@ -20,4 +20,20 @@ v1.0.3: Top Bar Improvements
 ++ The top bar widget has an optional checkbox
 + The top bar widget error button now loads the last notifications on init
 ++ If there was no previous notification the user is greeted by username
++ A Signal is now emitted after the font size has changed
+
+v1.1.0: Import Improvements
++ Added an __init__ to allow for:
+++ Import AGeLib
++++ Does the same as importing AGeMain
+++ from AGeLib import *
++++ Imports the most important things from AGeMain
+++ from AGeLib.exc import *
++++ Imports NC, common_exceptions and ExceptionOutput to allow for exception handling
++ advancedMode() can now be used to check if the advanced mode is active
++ The application now sets the style to fusion
++ AWWF now redirects most tool bar functions as it does with the menu bar
++ The Maximize Button of the TopBarWidget now changes its icon in more cases
++ AWWF now reimplements restoreState to set the frame and Maximize Button icon accordingly
++ AGeColour dark theme now has a colour for links that is more readable
 

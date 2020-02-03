@@ -594,3 +594,14 @@ v0.16.4: Negative Exponents in Control TF Input
 v0.16.4.1: Bode Plot Margin Colour Fix
 + Fixed the colour of the margin annotations in the Bode Plot in the System Control Window
 
+v0.16.5: Control SingelPlot Axis Ratio Check Box
++ Updates AGeLib to v1.1.0
+++ Improved the code to make use of the new features and behaviour
++ Overhauled the About window to provide useful information and links
++ Control Window: Improved the single plot view to include a working 1:1 axis ratio checkbox
++ Adds a comment that describes the versioning method that AMaDiA uses
+++ After some research into common versioning methods I have concluded that none of them are useful for AMaDiA
++++ They all seem good but none of them adequately describe the difference between two versions when it comes to functionality
++++ The system I have invented seems to be the best way to describe the version of AMaDiA thus I will stick with it for AMaDiA
++++ AGeLib from now on uses semantic versioning 2.0 as it seems to be a good system for libraries
+

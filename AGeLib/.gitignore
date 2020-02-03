@@ -1,0 +1,24 @@
+
+*.driveupload
+*.bat
+*.log
+.spyproject
+__pycache__
+*.pyproject*
+exit
+Git console commands
+GIT console commands
+.directory
+.tmp.drivedownload
+TestCode
+Plots
+Config
+Screenshots
+*.code-workspace
+.vscode
+Test.py
+ChatHistory.txt
+ClientChatHistory.txt
+
+!WINDOWS-INSTALL/**
+

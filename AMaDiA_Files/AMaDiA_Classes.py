@@ -8,7 +8,7 @@ Created on Wed Sep  4 14:55:31 2019
 # if__name__ == "__main__":
 #     pass
 
-from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC
+from AGeLib.exc import *
 
 import sys
 sys.path.append('..')

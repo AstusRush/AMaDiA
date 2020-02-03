@@ -3,7 +3,7 @@
 # if__name__ == "__main__":
 #     pass
 
-from AGeLib.AGeMain import common_exceptions, ExceptionOutput, NC
+from AGeLib.exc import *
 
 import sys 
 sys.path.append('..')

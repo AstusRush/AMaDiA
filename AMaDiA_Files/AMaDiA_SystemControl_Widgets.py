@@ -1,5 +1,4 @@
-
-from AGeLib.AGeMain import common_exceptions, NC, ExceptionOutput, MplWidget
+from AGeLib import *
 
 import sys
 sys.path.append('..')
@@ -39,7 +38,7 @@ class MplCanvas_CONTROL(Canvas):
     def __init__(self):
         #self.fig = Figure()
         self.fig = plt.figure(num="CONTROL",constrained_layout =True)
-        self.fig.set_facecolor(AF.background_Colour)
+        self.fig.set_facecolor(QtWidgets.QApplication.instance().BG_Colour)
 
         combined = True # should Phase and Magnitude of the Bodeplot share a plot?
         if combined:
@@ -76,7 +75,7 @@ class MplCanvas_CONTROL(Canvas):
                             self.p_root_locus, self.p_LaTeX_Display]
         
         for i,p in enumerate(self.p_plot_LIST):
-            p.set_facecolor(AF.background_Colour)
+            p.set_facecolor(QtWidgets.QApplication.instance().BG_Colour)
             if self.Titles[i] == "BODE_PLOT_2":
                 p.set_title("  ")
             elif self.Titles[i] != 'LaTeX-Display':
@@ -301,8 +300,8 @@ class MplWidget_CONTROL(MplWidget):
 class MplCanvas_CONTROL_single_plot(Canvas):
     def __init__(self):
         #self.fig = Figure()
-        self.fig = plt.figure(constrained_layout =True)
-        self.fig.set_facecolor(AF.background_Colour)
+        self.fig = plt.figure(constrained_layout = True)
+        self.fig.set_facecolor(QtWidgets.QApplication.instance().BG_Colour)
         
         self.ax = self.fig.add_subplot(111)
         self.ax1 = self.ax.twinx()
@@ -352,7 +351,18 @@ class MplWidget_CONTROL_single_plot(MplWidget):
         self.y_from_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
         self.y_to_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
         self.y_checkbox = QtWidgets.QCheckBox(self.ScrollWidgetContents)
+        self.ratio_checkbox = QtWidgets.QCheckBox(self.ScrollWidgetContents)
         self.apply_zoom_button = QtWidgets.QPushButton(self.ScrollWidgetContents)
+        
+        self.lim_scale_setting = False
+        self.lim_y_0 = None
+        self.lim_y_1 = None
+        self.lim_x_0 = None
+        self.lim_x_1 = None
+        self.scale_y_0 = None
+        self.scale_y_1 = None
+        self.scale_x_0 = None
+        self.scale_x_1 = None
 
         self.x_from_input.setDecimals(5)
         self.x_from_input.setMinimum(-1000000.0)
@@ -372,6 +382,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
         self.y_to_input.setMaximum(1000000.0)
         self.y_to_input.setProperty("value", 5.0)
         self.y_checkbox.setText("Limit y")
+        self.ratio_checkbox.setText("1:1 axis ratio")
         self.apply_zoom_button.setText("Apply Limits")
         
         #self.ScrollWidget.setWidget(self.ScrollWidgetContents)
@@ -382,11 +393,18 @@ class MplWidget_CONTROL_single_plot(MplWidget):
         self.ScrollGrid.addWidget(self.y_from_input,1,3)
         self.ScrollGrid.addWidget(self.y_to_input,1,4)
         self.ScrollGrid.addWidget(self.y_checkbox,1,5)
-        self.ScrollGrid.addWidget(self.apply_zoom_button,1,6)
+        self.ScrollGrid.addWidget(self.ratio_checkbox,1,6)
+        self.ScrollGrid.addWidget(self.apply_zoom_button,1,7)
 
         ##self.ScrollWidgetCGrid.addWidget(self.ScrollWidget,1,0)
 
-        self.Grid.addWidget(self.canvas,0,0)
+        self.vbl = QtWidgets.QVBoxLayout()         # Set box for plotting
+        self.vbl.addWidget(self.canvas)
+        self.plotW = QtWidgets.QWidget(self)
+        self.plotW.setLayout(self.vbl)
+        self.plotW.layout().setContentsMargins(0,0,0,0)
+        
+        self.Grid.addWidget(self.plotW,0,0)
         self.Grid.addWidget(self.ScrollWidgetContents,1,0)#self.Grid.addWidget(self.ScrollWidget,1,0)#C
         
         self.setLayout(self.Grid)
@@ -408,16 +426,44 @@ class MplWidget_CONTROL_single_plot(MplWidget):
                 ymax , ymin = ymin , ymax
             ylims = (ymin , ymax)
             
-            self.canvas.ax.relim()
-            self.canvas.ax1.relim()
-            self.canvas.ax.autoscale()
-            self.canvas.ax1.autoscale()
+            if self.lim_scale_setting:
+                try:
+                    self.canvas.ax.set_ylim(self.lim_y_0)
+                    if self.Bode: self.canvas.ax1.set_ylim(self.lim_y_1)
+                    self.canvas.ax.set_xlim(self.lim_x_0)
+                    if self.Bode: self.canvas.ax1.set_xlim(self.lim_x_1)
+                    self.canvas.ax.set_yscale(self.scale_y_0)
+                    if self.Bode: self.canvas.ax1.set_yscale(self.scale_y_1)
+                    self.canvas.ax.set_xscale(self.scale_x_0)
+                    if self.Bode: self.canvas.ax1.set_xscale(self.scale_x_1)
+                except:
+                    self.canvas.ax.relim()
+                    if self.Bode: self.canvas.ax1.relim()
+                    self.canvas.ax.autoscale()
+                    if self.Bode: self.canvas.ax1.autoscale()
+            else:
+                self.canvas.ax.relim()
+                if self.Bode: self.canvas.ax1.relim()
+                self.canvas.ax.autoscale()
+                if self.Bode: self.canvas.ax1.autoscale()
+            
+            if self.ratio_checkbox.isChecked():
+                self.canvas.ax.set_aspect('equal')
+                if self.Bode: self.canvas.ax1.set_aspect('equal')
+                # self.canvas.ax.relim()
+                # if self.Bode: self.canvas.ax1.relim()
+                # self.canvas.ax.autoscale()
+                # if self.Bode: self.canvas.ax1.autoscale()
+            else:
+                self.canvas.ax.set_aspect('auto')
+                if self.Bode: self.canvas.ax1.set_aspect('auto')
+            
             if self.x_checkbox.isChecked():
                 self.canvas.ax.set_xlim(xlims)
-                self.canvas.ax1.set_xlim(xlims)
+                if self.Bode: self.canvas.ax1.set_xlim(xlims)
             if self.y_checkbox.isChecked():
                 self.canvas.ax.set_ylim(ylims)
-                self.canvas.ax1.set_ylim(ylims)
+                if self.Bode: self.canvas.ax1.set_ylim(ylims)
             
             try:
                 self.canvas.draw()
@@ -479,12 +525,22 @@ class MplWidget_CONTROL_single_plot(MplWidget):
 
     def clear(self):
         self.Title = "Doubleclick on a control plot to display it here"
+        self.lim_scale_setting = False
+        self.lim_y_0 = None
+        self.lim_y_1 = None
+        self.lim_x_0 = None
+        self.lim_x_1 = None
+        self.scale_y_0 = None
+        self.scale_y_1 = None
+        self.scale_x_0 = None
+        self.scale_x_1 = None
         try:
             self.canvas.ax.remove()
         except common_exceptions:
             pass
         try:
-            self.canvas.ax1.remove()
+            if self.Bode:
+                self.canvas.ax1.remove()
         except common_exceptions:
             pass
         try:
@@ -493,8 +549,6 @@ class MplWidget_CONTROL_single_plot(MplWidget):
             pass
         try:
             self.canvas.ax = self.canvas.fig.add_subplot(111)
-            self.canvas.ax1 = self.canvas.ax.twinx()
-            self.canvas.ax1.axis('off')
         except common_exceptions:
             pass
         self.Bode = False
@@ -575,6 +629,8 @@ class MplWidget_CONTROL_single_plot(MplWidget):
                 self.canvas.ax.plot(T,U,label="Input Function: u(s) = "+Ufunc)
             elif PlotName == Titles[3] or PlotName == Titles[4] or PlotName == "  ":
                 self.Bode = True
+                self.canvas.ax1 = self.canvas.ax.twinx()
+                self.canvas.ax1.axis('off')
                 self.canvas.ax1.axis('on')
                 self.canvas.ax.set_label('control-bode-magnitude')
                 self.canvas.ax1.set_label('control-bode-phase')
@@ -612,6 +668,21 @@ class MplWidget_CONTROL_single_plot(MplWidget):
 
             #Colour everything and draw it
             ret = self.SetColour()
+            self.lim_y_0 = self.canvas.ax.get_ylim()
+            self.lim_x_0 = self.canvas.ax.get_xlim()
+            self.scale_y_0 = self.canvas.ax.get_yscale()
+            self.scale_x_0 = self.canvas.ax.get_xscale()
+            if self.Bode:
+                self.lim_y_1 = self.canvas.ax1.get_ylim()
+                self.lim_x_1 = self.canvas.ax1.get_xlim()
+                self.scale_y_1 = self.canvas.ax1.get_yscale()
+                self.scale_x_1 = self.canvas.ax1.get_xscale()
+            else:
+                self.lim_y_1 = None
+                self.lim_x_1 = None
+                self.scale_y_1 = None
+                self.scale_x_1 = None
+            self.lim_scale_setting = True
         except common_exceptions:
             NC(1,"Could not plot {}".format(str(PlotName)),exc=sys.exc_info(),input="System:\n{}\n\nPlot: {}".format(str(sys1),str(PlotName)),win=self.window().windowTitle(),func=str(self.objectName())+".Plot").send()
             self.UseTeX(False)
