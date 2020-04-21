@@ -211,7 +211,7 @@ def root_locus(sys, kvect=None, xlim=None, ylim=None,
 
 # Main function: compute a root locus diagram
 def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
-               plotstr=None, Plot=True, PrintGain=None, grid=None, **kwargs):
+               plotstr=None, Plot=True, PrintGain=None, grid=None, App=None, **kwargs):
 
     """Root locus plot
 
@@ -291,21 +291,21 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
 
             # plot open loop poles
             poles = array(denp.r)
-            ax.plot(real(poles), imag(poles), 'x', c="red")
+            ax.plot(real(poles), imag(poles), 'x', c="red" if App == None else App.PenColours["Red"].color().name(0))
 
             # plot open loop zeros
             zeros = array(nump.r)
             if zeros.size > 0:
-                ax.plot(real(zeros), imag(zeros), 'o', c="orange")
+                ax.plot(real(zeros), imag(zeros), 'o', c="orange" if App == None else App.PenColours["Orange"].color().name(0))
 
             # Now plot the loci
             setLabel = True
             for index, col in enumerate(mymat.T):
                 if setLabel:
-                    ax.plot(real(col), imag(col), plotstr, label='V>0', c="m")
+                    ax.plot(real(col), imag(col), plotstr, label='V>0', c="m" if App == None else App.PenColours["Magenta"].color().name(0))
                     setLabel = False
                 else:
-                    ax.plot(real(col), imag(col), plotstr, c="m")
+                    ax.plot(real(col), imag(col), plotstr, c="m" if App == None else App.PenColours["Magenta"].color().name(0))
 
             # Set up plot axes and labels
             if xlim:
@@ -320,8 +320,8 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
             elif grid:
                 _sgrid_func()
             else:
-                ax.axhline(0., linestyle=':', color='k', zorder=-20)
-                ax.axvline(0., linestyle=':', color='k')
+                ax.axhline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), zorder=-20)
+                ax.axvline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0))
         r_mymat, r_kvect = mymat, kvect
     except:
         r_mymat, r_kvect = None, None
@@ -381,10 +381,10 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
             setLabel = True
             for index, col in enumerate(mymat.T):
                 if setLabel:
-                    ax.plot(real(col), imag(col), plotstr, label='V<0', c="g")
+                    ax.plot(real(col), imag(col), plotstr, label='V<0', c="g" if App == None else App.PenColours["Green"].color().name(0))
                     setLabel = False
                 else:
-                    ax.plot(real(col), imag(col), plotstr, c="g")
+                    ax.plot(real(col), imag(col), plotstr, c="g" if App == None else App.PenColours["Green"].color().name(0))
 
 
             ax.set_xlabel('Real')
@@ -394,8 +394,8 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
             elif grid:
                 _sgrid_func()
             else:
-                ax.axhline(0., linestyle=':', color='k', zorder=-20)
-                ax.axvline(0., linestyle=':', color='k')
+                ax.axhline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), zorder=-20)
+                ax.axvline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0))
     except:
         pass
     if Plot:

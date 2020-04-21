@@ -37,3 +37,40 @@ v1.1.0: Import Improvements
 + AWWF now reimplements restoreState to set the frame and Maximize Button icon accordingly
 + AGeColour dark theme now has a colour for links that is more readable
 
+v2.0.0: Colours!
++ Added a documentation for most classes/methods/functions. More to come!
++ Reworked the colour System
+++ There are now 3 QPalettes and 3 additional dicts for special colours
++++ The dicts are extendable without risking crashes due to a special class that provides for missing keywords
++++ The dicts are already connected to the matplotlib colour cycler and the AGeLib Notification blinks
+++ Overhauled all functions regarding colours
+++ Added 2 new colour schemes and reworked the old ones
++ Added a standard options menu accessible via alt+O
+++ This window allows the user to change the font and the colour palette
+++ It also allows to create and save new colour schemes
+++ Custom option windows should include the appearance widget which provides the aforementioned features
++ Reworked the Notification Class
+++ Notification are now send automatically without the need to use .send()
++++ This can be suppressed with a variable in the init of the NC object
++ The new function App() now gives easy access to the active QApplication!
++ Added a global screenshot hotkey (F12)
++ AGeLib now has its own folder in the users home directory to save config files and screenshots
+++ Applications using AGeLib are encouraged to use this folder
+++ Smaller Applications using AGeLib are encouraged to use the AGeLib ProgramFiles folder to install themselves
++ Completely overhauled the LaTeX widget
+++ Canvas is only as big as it needs to be
+++ Better multiline handling and prettier formatting
+++ Takes less arguments to make usage simpler (Advanced usage ist still available)
+++ Started work on a new LaTeX widget. Do NOT use it. It is WIP and will change drastically without warning!
++ Improved the Text widgets
+++ Improved arrow key navigation
+++ Made copying text which include linebreaks into LineEdit more secure. It should now be (near) impossible to create linebreaks.
++ AWWF Improvements:
+++ The Top-, Menu- and Statusbar can now be hidden in fullscreen
+++ The new method positionReset can now reset a windows position and size (standard size can be set with the attribute standardSize)
+++ alt+T now tries to keep the window in the foreground
+++ F11 now activates the fullscreen mode
++ MenuAction Improvements:
+++ The init now takes more arguments to make the setup of menuactions much more easy and take less lines
++ There are many more minor improvements/fixes/adjustments
+

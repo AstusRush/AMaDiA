@@ -70,17 +70,48 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item row="4" column="0">
-            <widget class="Line" name="line">
+           <item row="15" column="0">
+            <widget class="QCheckBox" name="cb_U_EnableUnits">
+             <property name="toolTip">
+              <string>If checked the calculator is sensitive for units.&lt;br&gt;
+For example m is no longer a variable but instead &quot;meter&quot;.</string>
+             </property>
+             <property name="text">
+              <string>Enable Units</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QCheckBox" name="cb_O_AdvancedMode">
+             <property name="toolTip">
+              <string>If checked more notifications are displayed, more context menu options are displayed and various other functions become available.&lt;br&gt;
+This can clutter the context menus, flood you with neglectable errors and unlock dangerous functions that should only be used if you know what you are doing.</string>
+             </property>
+             <property name="text">
+              <string>Advanced Mode</string>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="0">
+            <widget class="Line" name="line_17">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
-           <item row="10" column="0">
-            <widget class="Line" name="line_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="5" column="0">
+            <widget class="QCheckBox" name="cb_O_Remapper_local">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;For a Remapping that works on all applications use the Global Remapper in the Options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Local Keyboard Remapper</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -101,56 +132,21 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QCheckBox" name="cb_O_AdvancedMode">
+           <item row="8" column="0">
+            <widget class="QCheckBox" name="cb_O_PairHighlighter">
              <property name="toolTip">
-              <string>If checked more notifications are displayed, more context menu options are displayed and various other functions become available.&lt;br&gt;
-This can clutter the context menus, flood you with neglectable errors and unlock dangerous functions that should only be used if you know what you are doing.</string>
+              <string>Syntax highlighter for brackets, Integrals, etc.</string>
              </property>
              <property name="text">
-              <string>Advanced Mode</string>
-             </property>
-            </widget>
-           </item>
-           <item row="19" column="0">
-            <widget class="QFontComboBox" name="fontComboBox"/>
-           </item>
-           <item row="5" column="0">
-            <widget class="QCheckBox" name="cb_O_Remapper_local">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use (Shift+)AltGr+Key to type Mathematical Symbols.&lt;br/&gt;Refer to AMaDiA_ReplacementTables for mapping.&lt;br/&gt;For a Remapping that works on all applications use the Global Remapper in the Options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Local Keyboard Remapper</string>
+              <string>Pair Highlighter</string>
              </property>
              <property name="checked">
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="18" column="0">
-            <widget class="Line" name="line_5">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="15" column="0">
-            <widget class="QCheckBox" name="cb_U_EnableUnits">
-             <property name="toolTip">
-              <string>If checked the calculator is sensitive for units.&lt;br&gt;
-For example m is no longer a variable but instead &quot;meter&quot;.</string>
-             </property>
-             <property name="text">
-              <string>Enable Units</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="14" column="0">
-            <widget class="Line" name="line_17">
+           <item row="4" column="0">
+            <widget class="Line" name="line">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -206,6 +202,20 @@ For example m is no longer a variable but instead &quot;meter&quot;.</string>
              </layout>
             </widget>
            </item>
+           <item row="10" column="0">
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="0">
+            <widget class="Line" name="line_19">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
            <item row="17" column="0">
             <spacer name="verticalSpacer_2">
              <property name="orientation">
@@ -219,28 +229,33 @@ For example m is no longer a variable but instead &quot;meter&quot;.</string>
              </property>
             </spacer>
            </item>
-           <item row="8" column="0">
-            <widget class="QCheckBox" name="cb_O_PairHighlighter">
-             <property name="toolTip">
-              <string>Syntax highlighter for brackets, Integrals, etc.</string>
-             </property>
-             <property name="text">
-              <string>Pair Highlighter</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="16" column="0">
-            <widget class="Line" name="line_19">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_Appearance">
+       <attribute name="title">
+        <string>Appearance</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_13">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="OptionsWidget_1_Appearance" name="ColourPicker" native="true"/>
         </item>
        </layout>
       </widget>
@@ -752,6 +767,12 @@ Sympy's &quot;with sympy.evaluate(False)&quot; is currently experimental anyways
   <customwidget>
    <class>MTabWidget</class>
    <extends>QTabWidget</extends>
+   <header location="global">AGeLib.AGeMain</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>OptionsWidget_1_Appearance</class>
+   <extends>QWidget</extends>
    <header location="global">AGeLib.AGeMain</header>
    <container>1</container>
   </customwidget>

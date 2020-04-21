@@ -63,7 +63,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
         
         for i in self.findChildren(MplWidget):
             i.SetColour()
-        NC(10,"Welcome to CONTROL (WIP)",win=self.windowTitle(),func="{}.__init__".format(str(self.objectName()))).send()
+        NC(10,"Welcome to CONTROL (WIP)",win=self.windowTitle(),func="{}.__init__".format(str(self.objectName())))
     
  # ---------------------------------- Init and Maintenance ----------------------------------
     
@@ -90,24 +90,24 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
     
     def eventFilter(self, source, event):
         #print(event.type())
-        if event.type() == 6: # QtCore.QEvent.KeyPress
-         # ---------------------------------- Full Screen ----------------------------------
-            if event.key() == QtCore.Qt.Key_F11 and source is self: # F11 to toggle Fullscreen
-                if not self.isFullScreen():
-                    if self.isMaximized():
-                        self.LastOpenState = self.showMaximized
-                        self.TopBar.MaximizeButton.setText("🗖")
-                    else:
-                        self.LastOpenState = self.showNormal
-                        self.TopBar.MaximizeButton.setText("🗗")
-                    self.showFullScreen()
-                else:
-                    if self.LastOpenState == self.showMaximized:
-                        self.TopBar.MaximizeButton.setText("🗗")
-                    else:
-                        self.TopBar.MaximizeButton.setText("🗖")
-                    self.LastOpenState()
-        elif event.type() == 82: # QtCore.QEvent.ContextMenu
+        #if event.type() == 6: # QtCore.QEvent.KeyPress
+        # # ---------------------------------- Full Screen ----------------------------------
+        #    if event.key() == QtCore.Qt.Key_F11 and source is self: # F11 to toggle Fullscreen
+        #        if not self.isFullScreen():
+        #            if self.isMaximized():
+        #                self.LastOpenState = self.showMaximized
+        #                self.TopBar.MaximizeButton.setText("🗖")
+        #            else:
+        #                self.LastOpenState = self.showNormal
+        #                self.TopBar.MaximizeButton.setText("🗗")
+        #            self.showFullScreen()
+        #        else:
+        #            if self.LastOpenState == self.showMaximized:
+        #                self.TopBar.MaximizeButton.setText("🗗")
+        #            else:
+        #                self.TopBar.MaximizeButton.setText("🗖")
+        #            self.LastOpenState()
+        if event.type() == 82: # QtCore.QEvent.ContextMenu
          # ---------------------------------- Tab_4 Matrix List Context Menu ----------------------------------
             if (source is self.ControlSystems_1_SystemList) and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
@@ -209,7 +209,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                     self.ControlSystems_tabWidget.setCurrentIndex(2)
         except common_exceptions as inst:
             if type(inst) != AttributeError:
-                NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_2_Maximize_Axes",win=self.windowTitle()).send()
+                NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_2_Maximize_Axes",win=self.windowTitle())
             self.ControlSystems_tabWidget.setCurrentIndex(1)
         self.ControlSystems_tabWidget.setFocus()
     
@@ -303,7 +303,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                 NameInvalid=True
             
             if NameInvalid:
-                NC(1,"System Name Invalid",func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=Name).send()
+                NC(1,"System Name Invalid",func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=Name)
                 return False
             
             
@@ -336,7 +336,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                             Xt+="*s"
                             mult+=1
                             if mult>20:
-                                NC(msg="Could not normalize",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Input:{}\nX:{}\nY:{}".format(self.ControlSystems_1_System_4ATF_Ys.text(),str(termsY),str(termsX))).send()
+                                NC(msg="Could not normalize",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Input:{}\nX:{}\nY:{}".format(self.ControlSystems_1_System_4ATF_Ys.text(),str(termsY),str(termsX)))
                                 return False
                     temp_list_y = []
                     temp_list_x = []
@@ -365,7 +365,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                         Ys.append(float(i[1]))
                     print(Ys)
                 except common_exceptions:
-                    NC(msg="Error in Y(s)",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Ys.text()).send()
+                    NC(msg="Error in Y(s)",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Ys.text())
                     return False
                 try:
                     Xs = []
@@ -373,7 +373,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                         Xs.append(float(i[1]))
                     print(Xs)
                 except common_exceptions:
-                    NC(msg="Error in X(s)",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Xs.text()).send()
+                    NC(msg="Error in X(s)",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input=self.ControlSystems_1_System_4ATF_Xs.text())
                     return False
                 sys1 = control.tf(Ys,Xs)
             elif Tab == 1: #Transfer
@@ -405,7 +405,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                     XsI.append(Xs[j])
                 systemInput = (YsI,XsI,self.ControlSystems_1_System_1TF_tableWidget.columnCount()-1)
                 if MError != "":
-                    NC(2,MError,func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="X(s) = {}\nY(s) = {}".format(str(Xs),str(Ys))).send()
+                    NC(2,MError,func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="X(s) = {}\nY(s) = {}".format(str(Xs),str(Ys)))
                 # Remove empty leading entries
                 while Ys[0]==0:
                     Ys.pop(0)
@@ -470,7 +470,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                             D[i].append(0)
                 # Send Errors
                 if MError != "":
-                    NC(2,MError,func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="A:\n{}\n\nB:\n{}\n\nC:\n{}\n\nD:\n{}".format(str(A),str(B),str(C),str(D))).send()
+                    NC(2,MError,func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="A:\n{}\n\nB:\n{}\n\nC:\n{}\n\nD:\n{}".format(str(A),str(B),str(C),str(D)))
                 # Creating System
                 systemInput = (A,B,C,D)
                 sys1 = control.ss(A,B,C,D)
@@ -489,7 +489,8 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
             print(sys1)
             return sysObject
         except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Control->Input Tab Number = {}\nSystem: {}".format(str(Tab),str(sys1))).send()
+            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Save",win=self.windowTitle(),input="Control->Input Tab Number = {}\nSystem: {}".format(str(Tab),str(sys1)))
+            return False
     
     def ControlSystems_1_System_Plot_and_Save(self):
         sysObject = self.ControlSystems_1_System_Save()
@@ -505,20 +506,20 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
             self.ControlSystems_3_SingleDisplay.clear()
             self.ControlSystems_tabWidget.setCurrentIndex(1)
         except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Plot",win=self.windowTitle(),input=str(sysObject.sys)).send()
+            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Plot",win=self.windowTitle(),input=str(sysObject.sys))
     
     def ControlSystems_1_System_Display_LaTeX(self,sysObject):
         try:
-            self.ControlSystems_1_Output_2L_LaTeXDisplay.Display(sysObject.Sys_LaTeX_L,sysObject.Sys_LaTeX_N
+            self.ControlSystems_1_Output_2L_LaTeXDisplay.DisplayRaw(sysObject.Sys_LaTeX_L,sysObject.Sys_LaTeX_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,QtWidgets.QApplication.instance().MainWindow.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
-                                            ).send()
+                                            )
         except common_exceptions:
-            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Display_LaTeX",win=self.windowTitle(),input=str(sysObject.sys)).send()
+            NC(exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_1_System_Display_LaTeX",win=self.windowTitle(),input=str(sysObject.sys))
     
     def ControlSystems_4_Dirty_Display(self):
         if not QtWidgets.QApplication.instance().advanced_mode:
-            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Control_Window.ControlSystems_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().advanced_mode))).send()
+            NC(3,"This is the \"danger zone\"!\nPlease activate Advanced Mode to confirm that you know what you are doing!",func="AMaDiA_Control_Window.ControlSystems_4_Dirty_Display",win=str(self.windowTitle()),input="Advanced Mode: {}".format(str(QtWidgets.QApplication.instance().advanced_mode)))
         else:
             self.ControlSystems_tabWidget.setCurrentIndex(1)
             input_text = "from External_Libraries.python_control_master.control import * \nglobal sys1\nglobal u\nu=\"\"\n" + self.ControlSystems_4_Dirty_Input.toPlainText()
@@ -592,10 +593,10 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                 # Display LaTeX:
                 Sys_LaTeX_L = "From Code Input:\nTransfer Function:\n" + Sys_Gs_LaTeX_L + "\nState Space:\n" + Sys_SS_LaTeX_L
                 Sys_LaTeX_N = "From Code Input:\nTransfer Function:\n" + Sys_Gs_LaTeX_N + "\nState Space:\n" + Sys_SS_LaTeX_N
-                self.ControlSystems_1_Output_2L_LaTeXDisplay.Display(Sys_LaTeX_L,Sys_LaTeX_N
+                self.ControlSystems_1_Output_2L_LaTeXDisplay.DisplayRaw(Sys_LaTeX_L,Sys_LaTeX_N
                                                 ,self.TopBar.Font_Size_spinBox.value()
                                                 ,QtWidgets.QApplication.instance().MainWindow.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                                 )
             except common_exceptions:
-                NC(1,"Could not execute code to generate the system",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_4_Dirty_Display",win=self.windowTitle(),input=input_text).send()
+                NC(1,"Could not execute code to generate the system",exc=sys.exc_info(),func="AMaDiA_Control_Window.ControlSystems_4_Dirty_Display",win=self.windowTitle(),input=input_text)
                 self.ControlSystems_tabWidget.setCurrentIndex(3)

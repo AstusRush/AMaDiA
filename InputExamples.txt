@@ -3,11 +3,13 @@ Calculator Examples:
 		s^3+5s^2+8s+4=0
 			To get the multiplicity of the solutions use: roots(s^3+5s^2+8s+4)
 		x²+3x-4=0
+		x^20+5·x^19-3·x^18+2·x^17+18·x^17+2·x^16+19·x^15+2·x^14-19·x^13-99·x^12+x^11-14·x^10+3·x^9-15·x^8-12·x^7+70·x^6-104·x^5+x^4-3·x^3+x²+2·x-5=0
+			WARNING: This one will take a while... You do not want to input this on a slow PC
 	Integrals:
 		integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))),(x,0,pi/2))
 			Alternatively:	integrate{(0)(pi/2)} sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))) dx
 			Or with Unicode Symbols:	∫{(0)(π/2)} √(sin(x))/(√(sin(x))+√(cos(x))) dx
-		int {(0)(3)}int {(0)(x)}a^2da+xdx + int {(0)(3)}x^2*dx
+		int {(0)(3)}int {(0)(x)}a^2da+x dx + int {(0)(3)}x^2*dx
 			Interpretable by WolframAlpha  (but not by AMaDiA, yet):
 					(integrate (integrate x^2 dx , x=0..y) + y dy, y=0..3 )+ integrate x^2 dx , x=0..3
 		((3)(∫ d(x²)/dx+x dx)(2))/6
@@ -17,7 +19,7 @@ Calculator Examples:
 			∫x² dx - ∫sin(t+0.2)dt
 			This solves the (Differential) Equation x²dx=sin(t+0.2)dt if you rearrange the solution to x=...
 			(Automatic rearranging equations is on the TODO List)
-		∫1dy+∫7xdx=0
+		∫1dy+∫7x*dx=0
 		y''(x) = 0 , y(4)=1 , y'(1)=2
 		d(x(t))/dt = 5x(t)-3 , x(2)=1
 		y(x)·(2x^4+y(x))·y'(x)=(1-4·x·(y(x))^2)·x^2
@@ -32,6 +34,7 @@ Calculator Examples:
 		z**6 = 1
 		z**3 = -2+2*I
 	Set Theory:
+		4 in ImageSet(Lambda(x, x**2), S.Naturals) # Checks if 4 is a square number
 		1 if 4 in [1,2,3,5,6]+[4,8] else 0
 		1 if 4 in [1,2,3,4,5,6] and 4 not in [4,8] else 0
 	Conditional:

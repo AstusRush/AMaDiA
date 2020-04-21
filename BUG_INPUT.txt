@@ -1,12 +1,11 @@
 Calculator:
-	Sum(1/(n·ln(n)),(n,2,oo))	Outputs: 6.5	Should Output: ...the series diverges... it should not output anything? It should output NaN
-	x^20+5·x^19-3·x^18+2·x^17+18·x^17+2·x^16+19·x^15+2·x^14-19·x^13-99·x^12+x^11-14·x^10+3·x^9-15·x^8-12·x^7+70·x^6-104·x^5+x^4-3·x^3+x²+2·x-5=0 Does return a dict but does not solve the entries
-	roots(3·x^3+x²+2·x+5)  Does return a dict with solutions but does not evaluate the entries when eval is activated
+
 	
 LaTeX:
 	
 	
 Plot:
+
 
 MultiDim:
 	

@@ -29,7 +29,7 @@ from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 from AMaDiA_Files import AMaDiA_Widgets as AW
 # -----------------------------------------------------------------------------------------------------------------
-
+#FEATURE: Try to use pyqtgraph for the plots to greatly increase performance
 class MplCanvas_CONTROL(Canvas):
     Titles = ['Step Response','Impulse Response','Forced Response',
                         'Bode Plot','BODE_PLOT_2',
@@ -112,7 +112,7 @@ class MplWidget_CONTROL(MplWidget):
         self.LastCall = False
         self.Curr_Sys_LaTeX = ""
         
-    def SetColour(self,BG=None,FG=None):
+    def SetColour(self,BG=None,FG=None,Cycler=None):
         try:
             if BG != None and FG != None:
                 self.background_Colour = BG
@@ -146,11 +146,11 @@ class MplWidget_CONTROL(MplWidget):
             if self.Curr_Sys[4] != "" and False: # Disabled since the Legend covers the entire axes when Window not fullscreen
                 self.canvas.p_forced_response.legend(["Input Function: "+self.Curr_Sys[4]])#,color=self.TextColour)
         except common_exceptions:
-            NC(2,"Could not set all colours for the system plots",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour").send()
+            NC(2,"Could not set all colours for the system plots",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour")
         try:
             self.canvas.draw()
         except common_exceptions:
-            NC(1,"Could not draw system plots",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour").send()
+            NC(1,"Could not draw system plots",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour")
         
         #if self.LastCall != False:
         #    self.Display(self.LastCall[0],self.LastCall[1],self.LastCall[2],self.LastCall[3])
@@ -209,12 +209,12 @@ class MplWidget_CONTROL(MplWidget):
                             if U.shape != T.shape:
                                 raise Exception("Dimensions do not match")
                         except common_exceptions:
-                            NC(2,"Could not interpret u(s)",exc=sys.exc_info(),input=Ufunc,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+                            NC(2,"Could not interpret u(s)",exc=sys.exc_info(),input=Ufunc,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
                             Ufunc = ""
                     if Ufunc == "":
                         Ufunc = "0"
             except common_exceptions:
-                NC(1,"Could not calculate time steps",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+                NC(1,"Could not calculate time steps",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
 
 
             self.Curr_Sys_LaTeX = str(sys1) #TODO: MAKE PROPER LaTeX
@@ -225,70 +225,70 @@ class MplWidget_CONTROL(MplWidget):
             self.canvas.p_bode_plot_2.set_label('control-bode-phase')
             
         except common_exceptions:
-            NC(1,"Could not prepare the control display",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not prepare the control display",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.UseTeX(False)
             return
         
         try: # 0
             oT,y = control.step_response(sys1, number_of_samples=500, T=T, X0 = X0)
-            self.canvas.p_step_response.plot(oT,y)
+            self.canvas.p_step_response.plot(oT,y,c=App().PenColours["Red"].color().name(0))
         except common_exceptions:
-            NC(1,"Could not plot step response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not plot step response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_step_response.set_title("N/A")
 
         try: # 1
             oT,y = control.impulse_response(sys1, number_of_samples=500, T=T, X0 = X0)
-            self.canvas.p_impulse_response.plot(oT,y)
+            self.canvas.p_impulse_response.plot(oT,y,c=App().PenColours["Red"].color().name(0))
         except common_exceptions:
-            NC(1,"Could not plot impulse response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not plot impulse response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_impulse_response.set_title("N/A")
 
         try: # 2
             oT,y, xout = control.forced_response(sys1, T=T, X0 = X0, U=U) # pylint: disable=unused-variable
-            self.canvas.p_forced_response.plot(oT,y)
+            self.canvas.p_forced_response.plot(oT,y,c=App().PenColours["Red"].color().name(0))
         except common_exceptions:
-            NC(1,"Could not plot forced response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not plot forced response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_forced_response.set_title("N/A")
 
         try: # 3+4
             plt.figure(self.canvas.fig.number) # set figure to current that .gfc() in control.bode_plot can find it
-            control.bode_plot(sys1, dB=True, omega_num=500)
+            control.bode_plot(sys1, dB=True, omega_num=500, App=App())
         except common_exceptions:
-            NC(1,"Could not generate Bode plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not generate Bode plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_bode_plot_1.set_title("N/A")
 
         try: # 5
             plt.sca(self.canvas.p_nyquist_plot)
-            control.nyquist_plot(sys1,number_of_samples=500)
+            control.nyquist_plot(sys1,number_of_samples=500,App=App())
         except common_exceptions:
-            NC(1,"Could not generate Nyquist plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not generate Nyquist plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_nyquist_plot.set_title("N/A")
 
         try: # 6
             plt.sca(self.canvas.p_nichols_plot)
             control.nichols_plot(sys1, number_of_samples=500)
         except common_exceptions:
-            NC(1,"Could not generate Nichols plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not generate Nichols plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_nichols_plot.set_title("N/A")
 
         try: # 7
             poles,zeros = control.pzmap(sys1,Plot=False)
             if len(poles) > 0:
-                self.canvas.p_pzmap.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c="red")
+                self.canvas.p_pzmap.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c=App().PenColours["Red"].color().name(0))
             if len(zeros) > 0:
-                self.canvas.p_pzmap.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c="orange")
+                self.canvas.p_pzmap.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c=App().PenColours["Orange"].color().name(0))
             self.canvas.p_pzmap.grid(True)
         except common_exceptions:
-            NC(1,"Could not generate pole-zero-map",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not generate pole-zero-map",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_pzmap.set_title("N/A")
 
         try: # 8
             #plt.sca(self.canvas.p_root_locus)
             #control.rlocus(sys1)
-            control.root_locus_AMaDiA(sys1,self.canvas.p_root_locus)
+            control.root_locus_AMaDiA(sys1,self.canvas.p_root_locus, App=App())
             self.canvas.p_root_locus.grid(True)
         except common_exceptions:
-            NC(1,"Could not generate root locus plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display").send()
+            NC(1,"Could not generate root locus plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.canvas.p_root_locus.set_title("N/A")
 
         # 9 + Plot
@@ -476,9 +476,9 @@ class MplWidget_CONTROL_single_plot(MplWidget):
             Error = ExceptionOutput(sys.exc_info())
             self.window().NotifyUser(1,Error)
         
-    def SetColour(self,BG=None,FG=None):
+    def SetColour(self,BG=None,FG=None,Cycler=None):
         if BG != None and FG != None:
-            super(MplWidget_CONTROL_single_plot, self).SetColour(BG,FG)
+            super(MplWidget_CONTROL_single_plot, self).SetColour(BG,FG,Cycler)
         try:
             self.canvas.ax.set_facecolor(self.background_Colour)
             self.canvas.ax.spines['bottom'].set_color(self.TextColour)
@@ -495,20 +495,21 @@ class MplWidget_CONTROL_single_plot(MplWidget):
                 self.canvas.ax1.spines['left'].set_color(self.TextColour)
                 self.canvas.ax1.tick_params(axis='x', colors=self.TextColour)
                 self.canvas.ax1.tick_params(axis='y', colors=self.TextColour)
-                self.canvas.ax.grid( c='C0',ls=(0, (4, 6)), linewidth=1  ,which='major')
-                self.canvas.ax.grid( c='C0',ls=(0, (2, 8)), linewidth=0.5,which='minor',axis='x')
-                self.canvas.ax1.grid(c='C1',ls=(0, (2, 8)), linewidth=1)
+                self.canvas.ax.grid( c=App().PenColours["Cyan"].color().name(0),ls=(0, (4, 6)),  linewidth=1  ,which='major',axis='y')
+                self.canvas.ax.grid( c=App().MiscColours["Broken"].color().name(0), ls=(0, (4, 6)), linewidth=1   ,which='major',axis='x')
+                self.canvas.ax.grid( c=App().MiscColours["Broken"].color().name(0), ls=(0, (2, 8)), linewidth=0.5 ,which='minor',axis='x')
+                self.canvas.ax1.grid(c=App().PenColours["Orange"].color().name(0),ls=(0, (2, 8)), linewidth=1 ,axis='y')
                 self.canvas.ax.spines['right'].set_color(self.TextColour)
                 self.canvas.ax1.spines['right'].set_color(self.TextColour)
             if self.FuncLabel != "":
                 self.canvas.ax.legend()
         except common_exceptions:
-            NC(2,"Could not set all colours for the single system plot",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour").send()
+            NC(2,"Could not set all colours for the single system plot",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour")
         try:
             self.canvas.draw()
             return True
         except common_exceptions:
-            NC(1,"Could not draw the single system plot",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour").send()
+            NC(1,"Could not draw the single system plot",exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".SetColour")
             return False
     
     def UseTeX(self,TheBool):
@@ -618,7 +619,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
                             if U.shape != T.shape:
                                 raise Exception("Dimensions do not match")
                         except common_exceptions:
-                            NC(2,"Could not interpret u(s)",exc=sys.exc_info(),input=Ufunc,win=self.window().windowTitle(),func=str(self.objectName())+".Plot").send()
+                            NC(2,"Could not interpret u(s)",exc=sys.exc_info(),input=Ufunc,win=self.window().windowTitle(),func=str(self.objectName())+".Plot")
                             Ufunc = ""
                     if Ufunc == "":
                         Ufunc = "0"
@@ -635,10 +636,10 @@ class MplWidget_CONTROL_single_plot(MplWidget):
                 self.canvas.ax.set_label('control-bode-magnitude')
                 self.canvas.ax1.set_label('control-bode-phase')
                 plt.figure(self.canvas.fig.number)
-                control.bode_plot(sys1, dB=True, omega_num=5000,Dense_Phase_Major_Ticks=True, margins=True)
+                control.bode_plot(sys1, dB=True, omega_num=5000,Dense_Phase_Major_Ticks=True, margins=True, App=App())
             elif PlotName == Titles[5]:
                 plt.sca(self.canvas.ax)
-                control.nyquist_plot(sys1, number_of_samples=5000)
+                control.nyquist_plot(sys1, number_of_samples=5000,App=App())
                 self.FuncLabel = "Nyquist"
             elif PlotName == Titles[6]:
                 plt.sca(self.canvas.ax)
@@ -646,16 +647,16 @@ class MplWidget_CONTROL_single_plot(MplWidget):
             elif PlotName == Titles[7]:
                 poles,zeros = control.pzmap(sys1,Plot=False)
                 if len(poles) > 0:
-                    self.canvas.ax.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c="red")
+                    self.canvas.ax.scatter(np.real(poles), np.imag(poles), s=50, marker='x', c=App().PenColours["Red"].color().name(0))
                 if len(zeros) > 0:
-                    self.canvas.ax.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c="orange")
+                    self.canvas.ax.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c=App().PenColours["Orange"].color().name(0))
                 self.canvas.ax.grid(True)
             elif PlotName == Titles[8]:
-                control.root_locus_AMaDiA(sys1,self.canvas.ax)
+                control.root_locus_AMaDiA(sys1,self.canvas.ax, App=App())
                 self.canvas.ax.grid(True)
                 self.canvas.ax.legend()
             else: # LaTeX Display (Uses Title as display string) # This can currently not occur
-                #NC(2,"The system display can not be magnified yet",input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Plot").send()
+                #NC(2,"The system display can not be magnified yet",input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Plot")
                 return False
             
 
@@ -684,7 +685,7 @@ class MplWidget_CONTROL_single_plot(MplWidget):
                 self.scale_x_1 = None
             self.lim_scale_setting = True
         except common_exceptions:
-            NC(1,"Could not plot {}".format(str(PlotName)),exc=sys.exc_info(),input="System:\n{}\n\nPlot: {}".format(str(sys1),str(PlotName)),win=self.window().windowTitle(),func=str(self.objectName())+".Plot").send()
+            NC(1,"Could not plot {}".format(str(PlotName)),exc=sys.exc_info(),input="System:\n{}\n\nPlot: {}".format(str(sys1),str(PlotName)),win=self.window().windowTitle(),func=str(self.objectName())+".Plot")
             self.UseTeX(False)
             return False
         self.UseTeX(False)
@@ -738,23 +739,30 @@ class SystemClass():
         self.Sys_Gs_LaTeX_N += "$"
         
         # Generate LaTeX of ss:
-        A,B,C,D = control.ssdata(self.sys)
-        self.Order = A.shape[0]
-        x_vec = []
-        x_vec_diff = []
-        i=1
-        while i <= self.Order:
-            x_vec.append("x_{}(t)".format(i))
-            x_vec_diff.append("diff(x_{}(t),t)".format(i))
-            i+=1
-        x_vec = str(sympy.Matrix(x_vec))
-        x_vec_diff = str(sympy.Matrix(x_vec_diff))
-        A,B = AF.number_shaver(str(sympy.Matrix(A))) , AF.number_shaver(str(sympy.Matrix(B)))
-        C,D = AF.number_shaver(str(sympy.Matrix(C))) , AF.number_shaver(str(sympy.Matrix(D)))
-        self.SSx_LaTeX = AF.LaTeX("Eq("+x_vec_diff+","+A+"*"+x_vec+"+"+B+"*u(t))")
-        self.SSy_LaTeX = AF.LaTeX("Eq(y(t),"+C+"*"+x_vec+"+"+D+"*u(t))")
-        self.Sys_SS_LaTeX_L = r"$\displaystyle " + self.SSx_LaTeX + "$\n" + r"$\displaystyle " + self.SSy_LaTeX + "$"
-        self.Sys_SS_LaTeX_N = "$" + self.SSx_LaTeX + "$\n$" + self.SSy_LaTeX + "$"
+        try:
+            A,B,C,D = control.ssdata(self.sys)
+            self.Order = A.shape[0]
+            x_vec = []
+            x_vec_diff = []
+            i=1
+            while i <= self.Order:
+                x_vec.append("x_{}(t)".format(i))
+                x_vec_diff.append("diff(x_{}(t),t)".format(i))
+                i+=1
+            x_vec = str(sympy.Matrix(x_vec))
+            x_vec_diff = str(sympy.Matrix(x_vec_diff))
+            A,B = AF.number_shaver(str(sympy.Matrix(A))) , AF.number_shaver(str(sympy.Matrix(B)))
+            C,D = AF.number_shaver(str(sympy.Matrix(C))) , AF.number_shaver(str(sympy.Matrix(D)))
+            self.SSx_LaTeX = AF.LaTeX("Eq("+x_vec_diff+","+A+"*"+x_vec+"+"+B+"*u(t))")
+            self.SSy_LaTeX = AF.LaTeX("Eq(y(t),"+C+"*"+x_vec+"+"+D+"*u(t))")
+            self.Sys_SS_LaTeX_L = r"$\displaystyle " + self.SSx_LaTeX + "$\n" + r"$\displaystyle " + self.SSy_LaTeX + "$"
+            self.Sys_SS_LaTeX_N = "$" + self.SSx_LaTeX + "$\n$" + self.SSy_LaTeX + "$"
+        except common_exceptions:
+            NC(lvl=2,msg="Could not create LaTeX for state space",exc=sys.exc_info(),input=self.sys,func="SystemClass.__init__",win="System Control Window")
+            self.SSx_LaTeX = "ERROR"
+            self.SSy_LaTeX = "ERROR"
+            self.Sys_SS_LaTeX_L = "ERROR"
+            self.Sys_SS_LaTeX_N = "ERROR"
         
         
         # Combine LaTeX of ss and tf:
@@ -763,7 +771,7 @@ class SystemClass():
             self.Sys_LaTeX_L = "System: ${}$ \nBIBO-Stable: ${}$\nTransfer Function:\n".format(AF.LaTeX(AF.AstusParse(self.Name)),self.BIBOStabel) + self.Sys_Gs_LaTeX_L + "\nState Space:\n" + self.Sys_SS_LaTeX_L
             self.Sys_LaTeX_N = "System: ${}$ \nBIBO-Stable: ${}$\nTransfer Function:\n".format(AF.LaTeX(AF.AstusParse(self.Name)),self.BIBOStabel) + self.Sys_Gs_LaTeX_N + "\nState Space:\n" + self.Sys_SS_LaTeX_N
         except common_exceptions:
-            NC(1,"Invalid Name (Could not convert name to LaTeX)",exc=sys.exc_info(),func="SystemClass.__init__",input=self.Name,win="System Control Window").send()
+            NC(1,"Invalid Name (Could not convert name to LaTeX)",exc=sys.exc_info(),func="SystemClass.__init__",input=self.Name,win="System Control Window")
             raise Exception("Invalid Name (Could not convert name to LaTeX)")
 
     def Item(self):
@@ -780,11 +788,15 @@ class SystemClass():
         return item
 
     def CheckStability(self):
-        self.BIBOStabel = True
-        #A = sympy.Matrix(control.ssdata(self.sys)[0])
-        #eigenvals = A.eigenvals()
-        poles = self.sys.pole()
-        for i in poles:
-            if np.real(i) >= 0:
-                self.BIBOStabel = False
-                break
+        try:
+            self.BIBOStabel = True
+            #A = sympy.Matrix(control.ssdata(self.sys)[0])
+            #eigenvals = A.eigenvals()
+            poles = self.sys.pole()
+            for i in poles:
+                if np.real(i) >= 0:
+                    self.BIBOStabel = False
+                    break
+        except common_exceptions:
+            NC(lvl=2,msg="Could not check BIBO stability! Setting stability to False",exc=sys.exc_info(),input=self.sys,func="SystemClass.CheckStability",win="System Control Window")
+            self.BIBOStabel = False

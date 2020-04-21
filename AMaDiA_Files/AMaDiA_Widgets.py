@@ -42,6 +42,9 @@ def ReloadModules():
 
 # -----------------------------------------------------------------------------------------------------------------
 
+#FEATURE: Add autocomplete for AMaDiA_TextEdit and AMaDiA_LineEdit. For Example:
+#       "sq" should suggest "√(*)" with * being the cursor position
+#       "int" should suggest "∫{(*)()}dx" or "∫{(*From*)(To)} f(x) dx" with "*From*" being selected or even fancier
 
 class AMaDiA_TextEdit(TextEdit):
     def __init__(self, parent=None):
@@ -50,15 +53,12 @@ class AMaDiA_TextEdit(TextEdit):
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
 
     def CursorPositionChanged(self):
+        self.Highlighter.blockSignals(True) #block signals because rehighlight might trigger the change signal? but this blocking might also be unnecessary
+        self.Highlighter.rehighlight()
+        self.Highlighter.blockSignals(False)
         cursor = self.textCursor()
         curPos = cursor.position()
         self.document().contentsChange.emit(curPos,0,0)
-        #theformat = QtGui.QTextBlockFormat()
-        #theformat.setForeground(QtGui.QColor('green'))
-        #for i in range(0,self.document().blockCount()):
-        #    cursor2 = QtGui.QTextCursor(self.document().findBlockByNumber(i))
-        #    cursor2.setBlockFormat(theformat)
-        #self.document().contentsChange.emit(curPos,0,0)
 
 
 class AMaDiA_LineEdit(LineEdit):
@@ -71,16 +71,10 @@ class AMaDiA_LineEdit(LineEdit):
         cursor = self.textCursor()
         curPos = cursor.position()
         self.document().contentsChange.emit(curPos,0,0)
-        #theformat = QtGui.QTextBlockFormat()
-        #theformat.setForeground(QtGui.QColor('green'))
-        #for i in range(0,self.document().blockCount()):
-        #    cursor2 = QtGui.QTextCursor(self.document().findBlockByNumber(i))
-        #    cursor2.setBlockFormat(theformat)
-        #self.document().contentsChange.emit(curPos,0,0)
 
 
 
-class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, performance, Fix FindPair
+class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix FindPair
     def __init__(self, document, Widget):
         QtGui.QSyntaxHighlighter.__init__(self, document)
         self.Widget = Widget
@@ -95,8 +89,17 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, perfor
         rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
         self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
 
+        App().S_ColourChanged.connect(self.UpdateFormats)
+
     def ToggleActive(self,Active):
         self.enabled = Active
+
+    def UpdateFormats(self):
+        self.RedFormat.setForeground(App().PenColours["Red"].color())
+        self.GreenFormat.setForeground(App().PenColours["Green"].color())
+        self.BlueFormat.setForeground(App().PenColours["Blue"].color())
+        self.CyanFormat.setForeground(App().PenColours["Cyan"].color())
+        self.MagentaFormat.setForeground(App().PenColours["Magenta"].color())
 
     def init_Styles(self):
         # init Lists
@@ -118,11 +121,13 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, perfor
         self.STYLES = {'brace': self.RedFormat,'pair': self.RedFormat}
 
     def highlightBlock(self, text):
-        # TODO: Unhighlight all other blocks
         if not self.enabled:
             self.setCurrentBlockState(0)
             return
         cursor = self.Widget.textCursor()
+        if not cursor.block() == self.currentBlock():
+            #self.setCurrentBlockState(0)
+            return
         curPos = cursor.positionInBlock()
         pattern = ""
         TheList = []
@@ -178,14 +183,18 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: Unhighlight, perfor
                             Pair2 = AF.Counterpart(Element2, ListOfLists=ART.LIST_l_normal_pairs, Both=True)
                         except Exception:
                             ExceptionOutput(sys.exc_info())#break
-                        k=0
-                        while k < len(Pair2):
-                            a,b = AF.FindPair(text,Pair2.List[k],j[0])
-                            if b == i[0] and Pair2.List[k][1] == Element:
-                                c,d = a, len(Pair2.List[k][0])
-                                found = True
-                                break
-                            k+=1
+                        else: #VALIDATE: This "else" was added to ensure that Pair2 exists but this code ran without problems before...
+                            #               (previously the following code was always executed)
+                            #               What did I think when I wrote this?
+                            #               Why did I use the ExceptionOutput? Why did I want to use "break" instead of "continue"?
+                            k=0
+                            while k < len(Pair2):
+                                a,b = AF.FindPair(text,Pair2.List[k],j[0])
+                                if b == i[0] and Pair2.List[k][1] == Element:
+                                    c,d = a, len(Pair2.List[k][0])
+                                    found = True
+                                    break
+                                k+=1
                     if found:
                         self.setFormat(c, d, self.STYLES['pair'])
 
@@ -239,15 +248,15 @@ class HistoryWidget(ListWidget):
                     elif QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Text":
                         Qt.QApplication.clipboard().setText(item.data(100).Text)
                     elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="LaTeX"
-                            and item.data(100).LaTeX != "Not converted yet"
-                            and item.data(100).LaTeX != "Could not convert"):
+                            and item.data(100).LaTeX != r"\text{Not converted yet}"
+                            and item.data(100).LaTeX != r"\text{Could not convert}"):
                         Qt.QApplication.clipboard().setText(item.data(100).LaTeX)
                     elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="LaTeX Equation"
-                            and item.data(100).LaTeX_E != "Not converted yet"
-                            and item.data(100).LaTeX_E != "Could not convert"):
+                            and item.data(100).LaTeX_E != r"\text{Not converted yet}"
+                            and item.data(100).LaTeX_E != r"\text{Could not convert}"):
                         Qt.QApplication.clipboard().setText(item.data(100).LaTeX_E)
                     else:
-                        NC(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode",win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=item.text()).send()
+                        NC(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode",win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=item.text())
                         Qt.QApplication.clipboard().setText(item.text())
                     event.accept()
                     return
@@ -261,68 +270,75 @@ class HistoryWidget(ListWidget):
                     return
             super(HistoryWidget, self).keyPressEvent(event)
         except common_exceptions:
-            NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=str(event)).send()
+            NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=str(event))
             super(HistoryWidget, self).keyPressEvent(event)
 
-    def eventFilter(self, source, event):
-        if event.type() == 82: # QtCore.QEvent.ContextMenu
-         # ---------------------------------- History Context Menu ----------------------------------
-            if source.itemAt(event.pos()):
-                menu = QtWidgets.QMenu()
-                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
-                    action = menu.addAction('Copy Solution')
-                    action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
-                    action = menu.addAction('Copy Equation')
-                    action.triggered.connect(lambda: self.action_H_Copy_Equation(source,event))
-                action = menu.addAction('Copy Text')
-                action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
-                action = menu.addAction('Copy LaTeX')
-                action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
-                if source.itemAt(event.pos()).data(100).LaTeX_E != "Not converted yet" and source.itemAt(event.pos()).data(100).LaTeX_E != "Could not convert":
-                    action = menu.addAction('Copy LaTeX Equation')
-                    action.triggered.connect(lambda: self.action_H_Copy_LaTeX_E(source,event))
-                if QtWidgets.QApplication.instance().advanced_mode:
-                    action = menu.addAction('+ Copy Input')
-                    action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
-                    action = menu.addAction('+ Copy cString')
-                    action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
-                menu.addSeparator()
-                # MAYBE: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
-                # It currently is handy to have it always because of the EvalF thing...
-                action = menu.addAction('Calculate')
-                action.triggered.connect(lambda: self.action_H_Calculate(source,event))
-                action = menu.addAction('Display LaTeX')
-                action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
-                if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
-                    action = menu.addAction('Display LaTeX Equation')
-                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
-                    action = menu.addAction('Display LaTeX Solution')
-                    action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
-                menu.addSeparator()
-                if source.itemAt(event.pos()).data(100).plot_data_exists :
-                    action = menu.addAction('Load Plot')
-                    action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
-                if source.itemAt(event.pos()).data(100).plottable :
-                    action = menu.addAction('New Plot')
-                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                elif QtWidgets.QApplication.instance().advanced_mode :
-                    action = menu.addAction('+ New Plot')
-                    action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
-                if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().advanced_mode:
+    def eventFilter(self, source, event): #TODO: Add Tooltips for the Actions! These should also specify whether the action will be executed on all selected items or only the right-clicked-one! "Delete" should also mention "Del" as the hotkey!
+        try:
+            if event.type() == 82: # QtCore.QEvent.ContextMenu
+            # ---------------------------------- History Context Menu ----------------------------------
+                if source.itemAt(event.pos()):
+                    menu = QtWidgets.QMenu()
+                    if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
+                        action = menu.addAction('Copy Solution')
+                        action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
+                        action = menu.addAction('Copy Equation')
+                        action.triggered.connect(lambda: self.action_H_Copy_Equation(source,event))
+                    action = menu.addAction('Copy Text')
+                    action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
+                    action = menu.addAction('Copy LaTeX')
+                    action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+                    if source.itemAt(event.pos()).data(100).LaTeX_E != r"\text{Not converted yet}" and source.itemAt(event.pos()).data(100).LaTeX_E != r"\text{Could not convert}":
+                        action = menu.addAction('Copy LaTeX Equation')
+                        action.triggered.connect(lambda: self.action_H_Copy_LaTeX_E(source,event))
+                    if QtWidgets.QApplication.instance().advanced_mode:
+                        action = menu.addAction('+ Copy Input')
+                        action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
+                        action = menu.addAction('+ Copy cString')
+                        action.triggered.connect(lambda: self.action_H_Copy_cstr(source,event))
                     menu.addSeparator()
-                    action = menu.addAction('+ Copy x Values')
-                    action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
-                    action = menu.addAction('+ Copy y Values')
-                    action.triggered.connect(lambda: self.action_H_Copy_y_Values(source,event))
-                menu.addSeparator()
-                action = menu.addAction('Delete')
-                action.triggered.connect(lambda: self.action_H_Delete(source,event))
-                menu.setPalette(self.palette())
-                menu.setFont(self.font())
-                menu.exec_(event.globalPos())
-                return True
+                    # MAYBE: Only "Calculate" if the equation has not been evaluated yet or if in Advanced Mode? Maybe? Maybe not?
+                    # It currently is handy to have it always because of the EvalF thing...
+                    action = menu.addAction('Calculate')
+                    action.triggered.connect(lambda: self.action_H_Calculate(source,event))
+                    action = menu.addAction('Display LaTeX')
+                    action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
+                    if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
+                        action = menu.addAction('Display LaTeX Equation')
+                        action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
+                        action = menu.addAction('Display LaTeX Solution')
+                        action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
+                    menu.addSeparator()
+                    if source.itemAt(event.pos()).data(100).plot_data_exists :
+                        action = menu.addAction('Load Plot')
+                        action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
+                    if source.itemAt(event.pos()).data(100).plottable :
+                        action = menu.addAction('New Plot')
+                        action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+                    elif QtWidgets.QApplication.instance().advanced_mode :
+                        action = menu.addAction('+ New Plot')
+                        action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
+                    if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().advanced_mode:
+                        menu.addSeparator()
+                        action = menu.addAction('+ Copy x Values')
+                        action.triggered.connect(lambda: self.action_H_Copy_x_Values(source,event))
+                        action = menu.addAction('+ Copy y Values')
+                        action.triggered.connect(lambda: self.action_H_Copy_y_Values(source,event))
+                    menu.addSeparator()
+                    action = menu.addAction('Delete')
+                    action.triggered.connect(lambda: self.action_H_Delete(source,event))
+                    menu.setPalette(self.palette())
+                    menu.setFont(self.font())
+                    menu.exec_(event.globalPos())
+                    return True
+            elif event.type() == 6: # QtCore.QEvent.KeyPress
+                if event.key() == QtCore.Qt.Key_Delete:
+                    self.action_H_Delete(source,event)
 
-        return super(HistoryWidget, self).eventFilter(source, event)
+            return super(HistoryWidget, self).eventFilter(source, event)
+        except common_exceptions:
+            NC(lvl=1,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).eventFilter",input=str(event))
+            return super(HistoryWidget, self).eventFilter(source, event)
  # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
   # ----------------
          
@@ -361,7 +377,7 @@ class HistoryWidget(ListWidget):
         self.window().tabWidget.setCurrentIndex(0)
         self.window().Tab_1_F_Calculate(item.data(100))
         
-    def action_H_Display_LaTeX(self,source,event):
+    def action_H_Display_LaTeX(self,source,event): #TODO: Move all selected items to the LaTeX Tab History but only display LaTeX of the right-clicked-one (and update the tooltip for this action)
         item = source.itemAt(event.pos())
         self.window().tabWidget.setCurrentIndex(1)
         self.window().Tab_2_F_Display(item.data(100))
@@ -425,7 +441,7 @@ class HistoryWidget(ListWidget):
             Text += " ]"
             Qt.QApplication.clipboard().setText(Text)
         except common_exceptions:
-            NC(lvl=2,msg="Could not copy x values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_x_Values",win=self.window().windowTitle(),input=item.data(100).Input).send()
+            NC(lvl=2,msg="Could not copy x values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_x_Values",win=self.window().windowTitle(),input=item.data(100).Input)
         
     def action_H_Copy_y_Values(self,source,event):
         try:
@@ -438,7 +454,7 @@ class HistoryWidget(ListWidget):
             Text += " ]"
             Qt.QApplication.clipboard().setText(Text)
         except common_exceptions:
-            NC(lvl=2,msg="Could not copy y values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_y_Values",win=self.window().windowTitle(),input=item.data(100).Input).send()
+            NC(lvl=2,msg="Could not copy y values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_y_Values",win=self.window().windowTitle(),input=item.data(100).Input)
  
   # ----------------
          

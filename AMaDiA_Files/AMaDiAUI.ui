@@ -136,10 +136,7 @@
             </property>
            </widget>
            <widget class="QWidget" name="layoutWidget">
-            <layout class="QVBoxLayout" name="Tab_2_verticalLayout">
-             <property name="spacing">
-              <number>0</number>
-             </property>
+            <layout class="QGridLayout" name="gridLayout_13">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -152,15 +149,25 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item>
-              <widget class="MplWidget_LaTeX" name="Tab_2_Viewer" native="true"/>
-             </item>
-             <item>
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item row="1" column="0">
               <widget class="QLineEdit" name="Tab_2_LaTeXOutput">
                <property name="toolTip">
-                <string>Only First line of Input!</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This is only a preview! All linebreaks are removed!&lt;/p&gt;&lt;p&gt;Rightklick on the &lt;span style=&quot; text-decoration: underline;&quot;&gt;formula&lt;/span&gt; in the display above or cklick the button to the right to copy the LaTeX!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="Tab_2_LaTeXCopyButton">
+               <property name="text">
+                <string>Copy LaTeX</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="MplWidget_LaTeX" name="Tab_2_Viewer" native="true"/>
              </item>
             </layout>
            </widget>
@@ -397,8 +404,8 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>221</width>
-                           <height>269</height>
+                           <width>260</width>
+                           <height>311</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_11">
@@ -503,21 +510,21 @@
                            </spacer>
                           </item>
                           <item row="2" column="0">
-                           <widget class="QComboBox" name="Tab_3_1_Steps_comboBox">
+                           <widget class="QComboBox" name="Tab_3_1_Points_comboBox">
                             <property name="currentText">
-                             <string>Steps total</string>
+                             <string>Points total</string>
                             </property>
                             <property name="currentIndex">
                              <number>0</number>
                             </property>
                             <item>
                              <property name="text">
-                              <string>Steps total</string>
+                              <string>Points total</string>
                              </property>
                             </item>
                             <item>
                              <property name="text">
-                              <string>Steps per Unit</string>
+                              <string>Points per Unit</string>
                              </property>
                             </item>
                            </widget>
@@ -608,9 +615,9 @@
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QSpinBox" name="Tab_3_1_Steps_Spinbox">
+                           <widget class="QSpinBox" name="Tab_3_1_Points_Spinbox">
                             <property name="minimum">
-                             <number>1</number>
+                             <number>2</number>
                             </property>
                             <property name="maximum">
                              <number>100000</number>
@@ -1027,8 +1034,8 @@ p, li { white-space: pre-wrap; }
   <tabstop>Tab_3_1_tab_2_Config_scrollArea</tabstop>
   <tabstop>Tab_3_1_From_Spinbox</tabstop>
   <tabstop>Tab_3_1_To_Spinbox</tabstop>
-  <tabstop>Tab_3_1_Steps_comboBox</tabstop>
-  <tabstop>Tab_3_1_Steps_Spinbox</tabstop>
+  <tabstop>Tab_3_1_Points_comboBox</tabstop>
+  <tabstop>Tab_3_1_Points_Spinbox</tabstop>
   <tabstop>Tab_3_1_Draw_Grid_Checkbox</tabstop>
   <tabstop>Tab_3_1_Axis_ratio_Checkbox</tabstop>
   <tabstop>Tab_3_1_XLim_Check</tabstop>

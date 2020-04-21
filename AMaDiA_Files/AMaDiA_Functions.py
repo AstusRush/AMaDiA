@@ -107,8 +107,11 @@ def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs):
     Apos = string.find(AB[0], start, end)
     if Apos==-1:
         return(-1,-1)
-    if end < 0 or string.find(AB[1], Apos, end) == -1:
-        return(Apos,-1)
+    try:
+        if end < 0 or ( AB[1] != "d" and string.find(AB[1], Apos, end) == -1 ) or ( AB[1] == "d" and re.search(r"(?<![^\W\d])d(?=[^\W\d](?![^\W\d]))",string[Apos:end-1]) == None ):
+            return(Apos,-1)
+    except:
+        pass
     tApos = -1
     for k in listlist:
         for o in k:
@@ -117,13 +120,26 @@ def FindPair(string, AB, start=0, end=0, listlist=ART.LIST_l_normal_pairs):
                 tApos = index
     if tApos == -1:
         #return FindPair_simple(string,AB,start,end)
-        Bpos = string.find(AB[1], Apos+len(AB[0]), end)
+        #Bpos = string.find(AB[1], Apos+len(AB[0]), end)
+        if AB[1] == "d":
+            try:
+                Bpos = re.search(r"(?<![^\W\d])d(?=[^\W\d](?![^\W\d]))", string[Apos+len(AB[0]):end-1] ).start() + Apos + len(AB[0])
+            except:
+                Bpos = string.find(AB[1], Apos+len(AB[0]), end)
+        else:
+            Bpos = string.find(AB[1], Apos+len(AB[0]), end)
         return(Apos, Bpos)
     
     BlockEnd = FindEndOfBlock(string, AB[1], listlist, Apos+len(AB[0]), end)
     if BlockEnd <= start or BlockEnd <= 0 or BlockEnd >= end or BlockEnd==-1:
         return(Apos, -1)
-    Bpos = string.find(AB[1], BlockEnd, end)
+    if AB[1] == "d":
+        try:
+            Bpos = re.search(r"(?<![^\W\d])d(?=[^\W\d](?![^\W\d]))", string[BlockEnd:end-1] ).start() + BlockEnd
+        except:
+            Bpos = string.find(AB[1], BlockEnd, end)
+    else:
+        Bpos = string.find(AB[1], BlockEnd, end)
     return(Apos, Bpos)
 
 def FindEndOfBlock(string, Target, listlist, start=0, end=0):
@@ -131,7 +147,13 @@ def FindEndOfBlock(string, Target, listlist, start=0, end=0):
         end = len(string)+1
     if start >= end:
         return start
-    tApos = string.find(Target, start, end)
+    if Target == "d":
+        try:
+            tApos = re.search(r"(?<![^\W\d])d(?=[^\W\d](?![^\W\d]))",string[start:end-1]).start() + start
+        except:
+            tApos = string.find(Target, start, end)
+    else:
+        tApos = string.find(Target, start, end)
     isEnd = True
     for k in listlist:
         for o in k:
@@ -235,7 +257,6 @@ def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
 
 def LaTeX(expr,local_dict=None,evalf=1):
     """This function parses a string into a sympy construct without evaluating anything!"""
-    
     global_dict = {}
     exec('from sympy import *', global_dict)
     if QtWidgets.QApplication.instance().optionWindow.cb_U_EnableUnits.isChecked():
@@ -244,7 +265,44 @@ def LaTeX(expr,local_dict=None,evalf=1):
         expr = Matrix_Encaser(expr)
     except common_exceptions:
         ExceptionOutput(sys.exc_info())
+    
+    sl = expr.split(",")
+    l = []
+    c = ""
+    for i in sl:
+        if c.count("(")+i.count("(")==c.count(")")+i.count(")") and c.count("[")+i.count("[")==c.count("]")+i.count("]"):
+            if c.strip()=="":
+                isl = i.split("=")
+            else:
+                isl = (c+","+i).split("=")
+            il = []
+            ic = ""
+            for j in isl:
+                if ic.count("(")+j.count("(")==ic.count(")")+j.count(")") and ic.count("[")+j.count("[")==ic.count("]")+j.count("]"):
+                    if ic.strip() == "":
+                        il.append(_LaTeX_helper(j.strip(),local_dict,global_dict,evalf))
+                    else:
+                        il.append(_LaTeX_helper(ic+"="+j.strip(),local_dict,global_dict,evalf))
+                    ic = ""
+                else:
+                    if ic.strip() != "":
+                        ic = ic + "=" + j
+                    else:
+                        ic = j
+            l.append("=".join(il))
+            c = ""
+        else:
+            if c.strip() != "":
+                c = c + "," + i
+            else:
+                c = i
+    
+    rtnexpr = ",".join(l)
+    
+    return rtnexpr # _LaTeX_helper(expr,local_dict,global_dict,evalf)
 
+def _LaTeX_helper(expr,local_dict,global_dict,evalf):
+    if expr.strip() == "": return expr
     try:
         if evalf == 2 or type(evalf)==bool and evalf == True:
             if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("True")
@@ -293,17 +351,39 @@ def LaTeX(expr,local_dict=None,evalf=1):
                     rtnexpr = sympy.latex(rtnexpr)
     except common_exceptions:
         ExceptionOutput(sys.exc_info())
-        if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("Failed-->True")
-        sympy.evaluate(True)
-        rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
-        rtnexpr = sympy.latex(rtnexpr)
-        try:
-            if parse_expr(expr,local_dict=local_dict) - sympy.parsing.latex.parse_latex(rtnexpr) != 0:
+        if "=" in expr:
+            if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("Failed--> = detected --> Special Treatment")
+            try:
                 rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
                 rtnexpr = sympy.latex(rtnexpr)
-        except common_exceptions:
+                try:
+                    if parse_expr(expr,local_dict=local_dict) - sympy.parsing.latex.parse_latex(rtnexpr) != 0:
+                        rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                        rtnexpr = sympy.latex(rtnexpr)
+                except common_exceptions:
+                    rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                    rtnexpr = sympy.latex(rtnexpr)
+            except:
+                eq = expr.split("=",1)
+                c = eq[0].rsplit("(",1) + eq[1].split(")",1)
+                rtnexpr = sympy.latex(parse_expr(c[0],evaluate=False,local_dict=local_dict,global_dict=global_dict)) + "(" + \
+                          sympy.latex(parse_expr(c[1],evaluate=False,local_dict=local_dict,global_dict=global_dict)) + "=" + \
+                          sympy.latex(parse_expr(c[2],evaluate=False,local_dict=local_dict,global_dict=global_dict)) + ")"
+                if len(c) == 4:
+                    if c[3].strip() != "":
+                        rtnexpr += sympy.latex(parse_expr(c[3],evaluate=False,local_dict=local_dict,global_dict=global_dict))
+        else:
+            if QtWidgets.QApplication.instance().optionWindow.cb_D_NoEvalFile.isChecked(): print("Failed-->True")
+            sympy.evaluate(True)
             rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
             rtnexpr = sympy.latex(rtnexpr)
+            try:
+                if parse_expr(expr,local_dict=local_dict) - sympy.parsing.latex.parse_latex(rtnexpr) != 0:
+                    rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                    rtnexpr = sympy.latex(rtnexpr)
+            except common_exceptions:
+                rtnexpr = parse_expr(expr,evaluate=True,local_dict=local_dict)
+                rtnexpr = sympy.latex(rtnexpr)
     
     return rtnexpr
 
@@ -336,27 +416,39 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     # Then search with re for the LocalVars
     # Then Parse the multiplication signs in accordance to the position of the LocalVars
     
-    string = re.sub(r"√(\w)",r"sqrt(\1)",string)
-    string = re.sub(r"(\w*)\'\'\'\'\'\((\w)\)",r"diff(diff(diff(diff(diff(\1(\2),\2),\2),\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\"\"\'\((\w)\)"  ,  r"diff(diff(diff(diff(diff(\1(\2),\2),\2),\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\'\'\'\'\((\w)\)",r"diff(diff(diff(diff(\1(\2),\2),\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\"\"\((\w)\)"  ,  r"diff(diff(diff(diff(\1(\2),\2),\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\'\'\'\((\w)\)",r"diff(diff(diff(\1(\2),\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\"\'\((\w)\)" , r"diff(diff(diff(\1(\2),\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\'\'\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\"\((\w)\)" , r"diff(diff(\1(\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\'\((\w)\)",r"diff(\1(\2),\2)",string)
-    string = re.sub(r"(\w*)\'\'\'\'",r"diff(diff(diff(diff(\1(x),x),x),x),x)",string)
-    string = re.sub(r"(\w*)\"\""  ,  r"diff(diff(diff(diff(\1(x),x),x),x),x)",string)
-    string = re.sub(r"(\w*)\'\'\'",r"diff(diff(diff(\1(x),x),x),x)",string)
-    string = re.sub(r"(\w*)\"\'" , r"diff(diff(diff(\1(x),x),x),x)",string)
-    string = re.sub(r"(\w*)\'\'",r"diff(diff(\1(x),x),x)",string)
-    string = re.sub(r"(\w*)\"",r"diff(diff(\1(x),x),x)",string)
-    string = re.sub(r"(\w*)\'",r"diff(\1(x),x)",string)
-    string = re.sub(r"(\w*)\u0308\((\w)\)",r"diff(diff(\1(\2),\2),\2)",string)
-    string = re.sub(r"(\w*)\u0307\((\w)\)",r"diff(\1(\2),\2)",string)
-    string = re.sub(r"(\w*)\u0308",r"diff(diff(\1(t),t),t)",string)
-    string = re.sub(r"(\w*)\u0307",r"diff(\1(t),t)",string)
+    string = re.sub(r"√(\w+)",r"sqrt(\1)",string)
+    string = re.sub(r"(\w+)\'\'\'\'\'\(([^\W\dπ])\)",r"diff(diff(diff(diff(diff(\1(\2),\2),\2),\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\"\"\'\(([^\W\dπ])\)"  ,  r"diff(diff(diff(diff(diff(\1(\2),\2),\2),\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\'\'\'\'\(([^\W\dπ])\)",r"diff(diff(diff(diff(\1(\2),\2),\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\"\"\(([^\W\dπ])\)"  ,  r"diff(diff(diff(diff(\1(\2),\2),\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\'\'\'\(([^\W\dπ])\)",r"diff(diff(diff(\1(\2),\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\"\'\(([^\W\dπ])\)" , r"diff(diff(diff(\1(\2),\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\'\'\(([^\W\dπ])\)",r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\"\(([^\W\dπ])\)" , r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\'\(([^\W\dπ])\)",r"diff(\1(\2),\2)",string)
+    string = re.sub(r"(\w+)\'\'\'\'\'\(\d\)",r"diff(diff(diff(diff(diff(\1(x),x),x),x),x),x)",string)
+    string = re.sub(r"(\w+)\"\"\'\(\d\)"  ,  r"diff(diff(diff(diff(diff(\1(x),x),x),x),x),x)",string)
+    string = re.sub(r"(\w+)\'\'\'\'\(\d\)",r"diff(diff(diff(diff(\1(x),x),x),x),x)",string)
+    string = re.sub(r"(\w+)\"\"\(\d\)"  ,  r"diff(diff(diff(diff(\1(x),x),x),x),x)",string)
+    string = re.sub(r"(\w+)\'\'\'\(\d\)",r"diff(diff(diff(\1(x),x),x),x)",string)
+    string = re.sub(r"(\w+)\"\'\(\d\)" , r"diff(diff(diff(\1(x),x),x),x)",string)
+    string = re.sub(r"(\w+)\'\'\(\d\)",r"diff(diff(\1(x),x),x)",string)
+    string = re.sub(r"(\w+)\"\(\d\)" , r"diff(diff(\1(x),x),x)",string)
+    string = re.sub(r"(\w+)\'\(\d\)",r"diff(\1(x),x)",string)
+    string = re.sub(r"(\w+)\'\'\'\'",r"diff(diff(diff(diff(\1(x),x),x),x),x)",string)
+    string = re.sub(r"(\w+)\"\""  ,  r"diff(diff(diff(diff(\1(x),x),x),x),x)",string)
+    string = re.sub(r"(\w+)\'\'\'",r"diff(diff(diff(\1(x),x),x),x)",string)
+    string = re.sub(r"(\w+)\"\'" , r"diff(diff(diff(\1(x),x),x),x)",string)
+    string = re.sub(r"(\w+)\'\'",r"diff(diff(\1(x),x),x)",string)
+    string = re.sub(r"(\w+)\"",r"diff(diff(\1(x),x),x)",string)
+    string = re.sub(r"(\w+)\'",r"diff(\1(x),x)",string)
+    string = re.sub(r"(\w+)\u0308\(([^\W\dπ])\)",r"diff(diff(\1(\2),\2),\2)",string)
+    string = re.sub(r"(\w+)\u0307\(([^\W\dπ])\)",r"diff(\1(\2),\2)",string)
+    string = re.sub(r"(\w+)\u0308\(\d\)",r"diff(diff(\1(t),t),t)",string)
+    string = re.sub(r"(\w+)\u0307\(\d\)",r"diff(\1(t),t)",string)
+    string = re.sub(r"(\w+)\u0308\u0307",r"diff(diff(diff(\1(t),t),t),t)",string)
+    string = re.sub(r"(\w+)\u0308",r"diff(diff(\1(t),t),t)",string)
+    string = re.sub(r"(\w+)\u0307",r"diff(\1(t),t)",string)
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
     #----
@@ -386,9 +478,13 @@ def IntegralParser_Astus(string):
         From,To = From.split(")(",1)
         To,Func = To.split(")}",1)
         Func = IntegralParser_Astus(Func) # Find other integrals if there are any and handle them
-        Func,After = Func.split("d",1)
-        if Func[-1]=="*":
-            Func = Func[:-1]
+        #Func,After = Func.split("d",1)
+        Func,After = re.split(r"(?<![^\W\d])d(?=[^\W\d](?![^\W\d]))",Func,1)
+        try:
+            if Func[-1]=="*":
+                Func = Func[:-1]
+        except:
+            pass
         x = After[0]
         After = After[1:]
         string = Before + " Integral(" + Func + ",("+x+","+From+","+To+"))" + After
@@ -409,7 +505,9 @@ def Derivative_and_IndefiniteIntegral_Parser(string):
                 if not Pair[0] == -1 and not Pair[1] == -1:
                     A,B,C = string[:Pair[0]] , string[Pair[0]:Pair[1]] , string[Pair[1]:]
                     B = B.replace(i[0],i[2],1)
-                    x,C = C[len(i[1]):len(i[1])+1],C[len(i[1])+1:]
+                    if B[-1] == "*":
+                        B = B[:-1]
+                    x , C = C[len(i[1]):len(i[1])+1] , C[len(i[1])+1:]
                     B += "," 
                     B += x
                     B += ")"

@@ -54,10 +54,9 @@ IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_ODE, Iam_Multi_Dim]
 
 #parse_expr\((.*),evaluate=False,local_dict=self.Variables,global_dict=self.global_dict()\)
 #
-warningMutex = QtCore.QMutex()
 
 class AMaS: # Astus' Mathematical Structure
-
+    warningMutex = QtCore.QMutex()
  # ---------------------------------- INIT ----------------------------------
     def __init__(self, string, Iam, EvalL = 1):
         self.Input = string
@@ -76,14 +75,14 @@ class AMaS: # Astus' Mathematical Structure
             self.NotificationList = []
         
         if string == "":
-            N = NC(1,"ERROR: No input",func="AMaS.__init__",DplStr="Please give an input")
+            N = NC(1,"ERROR: No input",func="AMaS.__init__",DplStr="Please give an input",send=False)
             self.Notify(N)
             self.Exists = False
         else:
             try:
                 self.INIT_WhatAmI(string)
             except common_exceptions :
-                self.Notify(NC(1,"Could not create AMaS object",func="AMaS.__init__",exc=sys.exc_info(),input=string))
+                self.Notify(NC(1,"Could not create AMaS object",func="AMaS.__init__",exc=sys.exc_info(),send=False))
                 self.Exists = False
             else:
                 self.Exists = True
@@ -92,6 +91,7 @@ class AMaS: # Astus' Mathematical Structure
         self.multiline = False
         self.Plot_is_initialized = False
         self.plot_data_exists = False
+        self.disable_units = False
         self.init_history()
 
     def INIT_WhatAmI(self,string):
@@ -139,6 +139,7 @@ class AMaS: # Astus' Mathematical Structure
         self.init_Critical()
 
     def init_Critical(self):
+        self.Separator = " = "
         self.Text = AF.AstusParseInverse(self.string)
         self.Solution = "Not evaluated yet"
         self.EquationReverse = "? = " + self.Text
@@ -148,18 +149,10 @@ class AMaS: # Astus' Mathematical Structure
             self.cstrList = []
             for i in self.stringList:
                 self.cstrList.append(AF.AstusParse(i,False))
-        self.LaTeX = "Not converted yet"
-        self.LaTeX_L = "Not converted yet" #For display if in LaTeX-Mode
-        self.LaTeX_N = "Not converted yet" #For display if in Not-LaTeX-Mode
-        self.LaTeX_S = "Not converted yet" #For display of the Solution
-        self.LaTeX_S_L = "Not converted yet" #For display if in LaTeX-Mode
-        self.LaTeX_S_N = "Not converted yet" #For display if in Not-LaTeX-Mode
-        self.LaTeX_E = "Not converted yet" #For display of the Equation
-        self.LaTeX_E_L = "Not converted yet" #For display if in LaTeX-Mode
-        self.LaTeX_E_N = "Not converted yet" #For display if in Not-LaTeX-Mode
-        self.LaTeX_ER = "Not converted yet" #For display of the Equation
-        self.LaTeX_ER_L = "Not converted yet" #For display if in LaTeX-Mode
-        self.LaTeX_ER_N = "Not converted yet" #For display if in Not-LaTeX-Mode
+        self.LaTeX    = r"\text{Not converted yet}" # LaTeX of the input
+        self.LaTeX_S  = r"\text{Not converted yet}" # LaTeX of the Solution
+        self.LaTeX_E  = r"\text{Not converted yet}" # LaTeX of the Equation
+        self.LaTeX_ER = r"\text{Not converted yet}" # LaTeX of the Equation in Reverse order
         self.Am_I_Plottable()
         self.ConvertToLaTeX()
         
@@ -193,7 +186,7 @@ class AMaS: # Astus' Mathematical Structure
         self.plot_xlim_vals = (-5, 5)
         self.plot_ylim = False
         self.plot_ylim_vals = (-5, 5)
-        self.plot_steps = 1000
+        self.plot_points = 1000
         self.plot_per_unit = False
         self.plot_x_vals = np.arange(10)
         self.plot_y_vals = np.zeros_like(self.plot_x_vals)
@@ -242,58 +235,70 @@ class AMaS: # Astus' Mathematical Structure
         #self.f_ = False
 
     def ExecuteFlags(self,expr):
-        try:
-            if self.f_eval:
-                expr = expr.evalf()
-        except common_exceptions :
-            pass#ExceptionOutput(sys.exc_info())
-        try:
-            if self.f_simplify == True or self.f_simplify == None and QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked():
-                expr = sympy.simplify(expr)
-        except common_exceptions :
-            ExceptionOutput(sys.exc_info())
-        try:
-            if self.f_powsimp == True or self.f_powsimp == None and QtWidgets.QApplication.instance().optionWindow.cb_F_powsimp.isChecked():
-                if type(expr) == sympy.Equality:
-                    expr = sympy.Eq(sympy.powsimp(expr.lhs),sympy.powsimp(expr.rhs))
-                else:
-                    expr = sympy.powsimp(expr)
-        except common_exceptions :
-            ExceptionOutput(sys.exc_info())
-        try:
-            if self.f_expand == True or self.f_expand == None and QtWidgets.QApplication.instance().optionWindow.cb_F_expand.isChecked():
-                expr = sympy.expand(expr)
-        except common_exceptions :
-            ExceptionOutput(sys.exc_info())
-        try:
-            if self.f_factor == True or self.f_factor == None and QtWidgets.QApplication.instance().optionWindow.cb_F_factor.isChecked():
-                expr = sympy.factor(expr)
-        except common_exceptions :
-            ExceptionOutput(sys.exc_info())
-        try:
-            if self.f_collect == True:
-                expr = sympy.collect(expr,AF.parse(self.f_collect_arg))
-            elif self.f_collect == None and QtWidgets.QApplication.instance().optionWindow.cb_F_collect.isChecked():
-                expr = sympy.collect(expr,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_collect.text()))
-        except common_exceptions :
-            self.Notify(NC(2,"Could not collect term",exc=sys.exc_info(),func="AMaS.ExecuteFlags",input=self.Input))
-        try:
-            if self.f_cancel == True or self.f_cancel == None and QtWidgets.QApplication.instance().optionWindow.cb_F_cancel.isChecked():
-                expr = sympy.cancel(expr)
-        except common_exceptions :
-            ExceptionOutput(sys.exc_info())
-        try:
-            if self.f_apart == True or self.f_apart == None and QtWidgets.QApplication.instance().optionWindow.cb_F_apart.isChecked():
-                expr = sympy.apart(expr)
-        except common_exceptions :
-            ExceptionOutput(sys.exc_info())
-        try:
-            if self.f_expand_trig == True or self.f_expand_trig == None and QtWidgets.QApplication.instance().optionWindow.cb_F_expand_trig.isChecked():
-                expr = sympy.expand_trig(expr)
-                print(expr)
-        except common_exceptions :
-            ExceptionOutput(sys.exc_info())
-        # TODO : Add the others
+        if type(expr) == dict:
+            temp_dict = {}
+            for k,v in expr.items():
+                try:
+                    if type(k) in [int,str,float,bool]:
+                        temp_dict[k] = self.ExecuteFlags(v)
+                    else:
+                        temp_dict[self.ExecuteFlags(k)] = self.ExecuteFlags(v)
+                except common_exceptions:
+                    ExceptionOutput(sys.exc_info())
+                    temp_dict[k] = v
+            expr = temp_dict
+        else:
+            try:
+                if self.f_eval:
+                    expr = expr.evalf()
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            try:
+                if self.f_simplify == True or self.f_simplify == None and QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked():
+                    expr = sympy.simplify(expr)
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            try:
+                if self.f_powsimp == True or self.f_powsimp == None and QtWidgets.QApplication.instance().optionWindow.cb_F_powsimp.isChecked():
+                    if type(expr) == sympy.Equality:
+                        expr = sympy.Eq(sympy.powsimp(expr.lhs),sympy.powsimp(expr.rhs))
+                    else:
+                        expr = sympy.powsimp(expr)
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            try:
+                if self.f_expand == True or self.f_expand == None and QtWidgets.QApplication.instance().optionWindow.cb_F_expand.isChecked():
+                    expr = sympy.expand(expr)
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            try:
+                if self.f_factor == True or self.f_factor == None and QtWidgets.QApplication.instance().optionWindow.cb_F_factor.isChecked():
+                    expr = sympy.factor(expr)
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            try:
+                if self.f_collect == True:
+                    expr = sympy.collect(expr,AF.parse(self.f_collect_arg))
+                elif self.f_collect == None and QtWidgets.QApplication.instance().optionWindow.cb_F_collect.isChecked():
+                    expr = sympy.collect(expr,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_collect.text()))
+            except common_exceptions :
+                self.Notify(NC(2,"Could not collect term",exc=sys.exc_info(),func="AMaS.ExecuteFlags",send=False))
+            try:
+                if self.f_cancel == True or self.f_cancel == None and QtWidgets.QApplication.instance().optionWindow.cb_F_cancel.isChecked():
+                    expr = sympy.cancel(expr)
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            try:
+                if self.f_apart == True or self.f_apart == None and QtWidgets.QApplication.instance().optionWindow.cb_F_apart.isChecked():
+                    expr = sympy.apart(expr)
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            try:
+                if self.f_expand_trig == True or self.f_expand_trig == None and QtWidgets.QApplication.instance().optionWindow.cb_F_expand_trig.isChecked():
+                    expr = sympy.expand_trig(expr)
+            except common_exceptions :
+                ExceptionOutput(sys.exc_info())
+            # TODO : Add the others
         return expr
         """
         try:
@@ -304,7 +309,7 @@ class AMaS: # Astus' Mathematical Structure
         """ # pylint: disable=unreachable
 
     def global_dict(self):
-        if QtWidgets.QApplication.instance().optionWindow.cb_U_EnableUnits.isChecked():
+        if QtWidgets.QApplication.instance().optionWindow.cb_U_EnableUnits.isChecked() and not self.disable_units:
             global_dict = {}
             exec('from sympy import *', global_dict)
             exec('from sympy.physics.units import *', global_dict)
@@ -324,314 +329,215 @@ class AMaS: # Astus' Mathematical Structure
                     i.w(win)
             for i in self.NotificationList:
                 i.send()
+                QtWidgets.QApplication.instance().processEvents()
             self.NotificationList = []
 
     def Notify(self,Notification):
         """Used to add Notifications"""
         with QtCore.QMutexLocker(self.NotificationMutex):
-            if Notification.i() == "None":
-                Notification.i(self.Input)
-            elif Notification.i()!=self.Input:
-                In = Notification.i()
-                Notification.i("    self.Input: "+self.Input+"\nSpecific Input: "+In)
+            In = ""
+            if Notification.i()!=self.Input:
+                In += "Specific Input:\n"
+                try:
+                    In += Notification.i()
+                except:
+                    In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+                In += "\n\n"
+            In += "The state of the object while the notification was triggered (not final state):\nself.Input:\n"
+            try:
+                In += self.Input
+            except:
+                In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+            In += "\n\nself.cstr:\n"
+            try:
+                In += self.cstr
+            except:
+                In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+            In += "\n\nself.TimeStampFull (time of creation of the AMaS object):\n"
+            try:
+                In += self.TimeStampFull
+            except:
+                In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+            In += "\n\nself.Name (Usually: No Name Given):\n"
+            try:
+                In += self.Name
+            except:
+                In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+            In += "\n\nself.Iam:\n"
+            try:
+                In += self.Iam
+            except:
+                In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+            In += "\n\nself.LaTeX:\n"
+            try:
+                In += self.LaTeX
+            except:
+                In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+            In += "\n\nself.Solution:\n"
+            try:
+                In += self.Solution
+            except:
+                In += "ERROR: ATTRIBUTE DOES NOT EXIST"
+            Notification.i(In)
+            #Notification.i("    self.Input: "+self.Input+"\nSpecific Input: "+In)
             self.NotificationList.append(Notification)
 
     def NotifyFromNumpy(self,text,flag=""):
         """Used to add Notifications from Numpy and scipy"""
         print(text,flag)
         text += flag
-        self.Notify(NC(3,text))
+        self.Notify(NC(3,text,send=False))
 
     def NotifyWarning(self, message, category, filename, lineno, file=None, line=None):
         TheWarning = warnings.formatwarning(message, category, filename, lineno, line)
         print("Warning in AMaS for",self.Input,"\n",TheWarning)
-        self.Notify(NC(2,TheWarning,err=message,tb="filename: {}\nlineno: {}".format(str(filename),str(lineno))))
+        self.Notify(NC(2,TheWarning,err=message,tb="filename: {}\nlineno: {}".format(str(filename),str(lineno)),send=False))
 
  # ---------------------------------- LaTeX Converter ----------------------------------
-
+    # MAYBE: set a time limit for conversions that can be disabled in the options (if this is even possible)
+    
     def ConvertToLaTeX(self):
-        """Create the string that the user can copy"""
-        try:
-            if "=" in self.cstr:
-                parts = self.cstr.split("=")
-                self.LaTeX = ""
-                for i in parts:
-                    if len(i)>0:
-                        #self.LaTeX += sympy.latex( sympy.S(i,evaluate=False))
-                        #with sympy.evaluate(False): # Breaks The calculator
-                        #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
-                        #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                        #self.LaTeX += sympy.latex(expr)
-                        self.LaTeX += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                    self.LaTeX += " = "
-                self.LaTeX = self.LaTeX[:-3]
-            else:
-                #self.LaTeX = sympy.latex( sympy.S(self.cstr,evaluate=False))
-                #expr = parse_expr(self.cstr,evaluate=False,local_dict=self.VariablesUnev)
-                #expr = AF.SPParseNoEval(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                #self.LaTeX = sympy.latex(expr)
-                self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-        except common_exceptions:
-            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert to LaTeX",input=self.Input,func="AMaS.ConvertToLaTeX"))
-            #error = ExceptionOutput(sys.exc_info())
-            #ErrTxt = "Could not convert to LaTeX: " + error
-            #self.Notify(2,ErrTxt)
-            self.LaTeX = "Could not convert"
-        
-        # Set up the strings that are used in the LaTeX Displays
+        """
+        Converts the Input into LaTeX.
+        """
         if self.multiline:
-            self.ConvertToLaTeX_Multiline()
-        elif self.LaTeX == "Could not convert":
-            self.LaTeX_L = self.cstr
-            self.LaTeX_N = self.cstr
-        else:
-            self.LaTeX_L = r"$\displaystyle "
-            self.LaTeX_N = "$"
-            self.LaTeX_L += self.LaTeX
-            self.LaTeX_N += self.LaTeX
-            self.LaTeX_L += "$"
-            self.LaTeX_N += "$"
-
-            
-    def ConvertToLaTeX_Equation(self):
-        """Convert the entire Equation to LaTeX"""
-        try:
-            temp = AF.AstusParse(self.Equation,False)
-            if "==>" in temp:
-                parts = temp.split("==>")
-                self.LaTeX_E = ""
-                for i in parts:
-                    if len(i)>0:
-                        if "=" in i:
-                            ip = i.split("=")
-                            for j in ip:
-                                if len(j)>0:
-                                    #self.LaTeX_E += sympy.latex( sympy.S(j,evaluate=False))
-                                    #with sympy.evaluate(False): # Breaks The calculator
-                                    #expr = parse_expr(j,evaluate=False,local_dict=self.VariablesUnev)
-                                    #expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                                    #self.LaTeX_E += sympy.latex(expr)
-                                    self.LaTeX_E += AF.LaTeX(j,local_dict=self.VariablesUnev,evalf=1)
-                                self.LaTeX_E += " = "
-                            self.LaTeX_E = self.LaTeX_E[:-3]
-                        else:
-                            #self.LaTeX_E = sympy.latex( sympy.S(i,evaluate=False))
-                            #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
-                            #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                            #self.LaTeX_E = sympy.latex(expr)
-                            self.LaTeX_E += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=1)
-                    self.LaTeX_E += r" \Longrightarrow "
-                self.LaTeX_E = self.LaTeX_E[:-len(r" \Longrightarrow ")]
-            elif "=" in temp:
-                parts = temp.split("=")
-                self.LaTeX_E = ""
-                for i in parts:
-                    if len(i)>0:
-                        #self.LaTeX_E += sympy.latex( sympy.S(i,evaluate=False))
-                        #with sympy.evaluate(False): # Breaks The calculator
-                        #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
-                        #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                        #self.LaTeX_E += sympy.latex(expr)
-                        self.LaTeX_E += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=1)
-                    self.LaTeX_E += " = "
-                self.LaTeX_E = self.LaTeX_E[:-3]
-            else:
-                #self.LaTeX_E = sympy.latex( sympy.S(temp,evaluate=False))
-                #expr = parse_expr(temp,evaluate=False,local_dict=self.VariablesUnev)
-                #expr = AF.SPParseNoEval(temp,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                #self.LaTeX_E = sympy.latex(expr)
-                self.LaTeX_E = AF.LaTeX(temp,local_dict=self.VariablesUnev,evalf=1)
-        except common_exceptions:
-            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Equation to LaTeX",input=self.Equation,func="AMaS.ConvertToLaTeX_Equation"))
-            #error = ExceptionOutput(sys.exc_info())
-            #ErrTxt = "Could not convert Equation to LaTeX: " + error
-            #self.Notify(2,ErrTxt)
-            self.LaTeX_E = "Could not convert"
-        
-        # Set up the strings that are used in the LaTeX Displays
-        if self.LaTeX_E == "Could not convert":
-            self.LaTeX_E_L = temp
-            self.LaTeX_E_N = temp
-        else:
-            self.LaTeX_E_L = r"$\displaystyle "
-            self.LaTeX_E_N = "$"
-            self.LaTeX_E_L += self.LaTeX_E
-            self.LaTeX_E_N += self.LaTeX_E
-            self.LaTeX_E_L += "$"
-            self.LaTeX_E_N += "$"
-        #Reverse Equation:
-        try:
-            temp = AF.AstusParse(self.EquationReverse,False)
-            if "<==" in temp:
-                parts = temp.split("<==")
-                self.LaTeX_ER = ""
-                for i in parts:
-                    if len(i)>0:
-                        if "=" in i:
-                            ip = i.split("=")
-                            for j in ip:
-                                if len(j)>0:
-                                    #self.LaTeX_ER += sympy.latex( sympy.S(j,evaluate=False))
-                                    #with sympy.evaluate(False): # Breaks The calculator
-                                    #expr = parse_expr(j,evaluate=False,local_dict=self.VariablesUnev)
-                                    #expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                                    #self.LaTeX_ER += sympy.latex(expr)
-                                    self.LaTeX_ER += AF.LaTeX(j,local_dict=self.VariablesUnev,evalf=1)
-                                self.LaTeX_ER += " = "
-                            self.LaTeX_ER = self.LaTeX_ER[:-3]
-                        else:
-                            #self.LaTeX_ER = sympy.latex( sympy.S(i,evaluate=False))
-                            #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
-                            #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                            #self.LaTeX_ER = sympy.latex(expr)
-                            self.LaTeX_ER += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=1)
-                    self.LaTeX_ER += r" \Longleftarrow "
-                self.LaTeX_ER = self.LaTeX_ER[:-len(r" \Longleftarrow ")]
-            elif "=" in temp:
-                parts = temp.split("=")
-                self.LaTeX_ER = ""
-                for i in parts:
-                    if len(i)>0:
-                        #self.LaTeX_ER += sympy.latex( sympy.S(i,evaluate=False))
-                        #with sympy.evaluate(False): # Breaks The calculator
-                        #expr = parse_expr(i,evaluate=False,local_dict=self.VariablesUnev)
-                        #expr = AF.SPParseNoEval(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                        #self.LaTeX_ER += sympy.latex(expr)
-                        self.LaTeX_ER += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=1)
-                    self.LaTeX_ER += " = "
-                self.LaTeX_ER = self.LaTeX_ER[:-3]
-            else:
-                #self.LaTeX_ER = sympy.latex( sympy.S(temp,evaluate=False))
-                #expr = parse_expr(temp,evaluate=False,local_dict=self.VariablesUnev)
-                #expr = AF.SPParseNoEval(temp,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                #self.LaTeX_ER = sympy.latex(expr)
-                self.LaTeX_ER = AF.LaTeX(temp,local_dict=self.VariablesUnev,evalf=1)
-        except common_exceptions:
-            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Reverse Equation to LaTeX",input=self.EquationReverse,func="AMaS.ConvertToLaTeX_Equation"))
-            #error = ExceptionOutput(sys.exc_info())
-            #ErrTxt = "Could not convert Reverse Equation to LaTeX: " + error
-            #self.Notify(2,ErrTxt)
-            self.LaTeX_ER = "Could not convert"
-        
-        # Set up the strings that are used in the LaTeX Displays
-        if self.LaTeX_ER == "Could not convert":
-            self.LaTeX_ER_L = temp
-            self.LaTeX_ER_N = temp
-        else:
-            self.LaTeX_ER_L = r"$\displaystyle "
-            self.LaTeX_ER_N = "$"
-            self.LaTeX_ER_L += self.LaTeX_ER
-            self.LaTeX_ER_N += self.LaTeX_ER
-            self.LaTeX_ER_L += "$"
-            self.LaTeX_ER_N += "$"
-        
-    def ConvertToLaTeX_Multiline(self):
-        self.LaTeX_L = ""
-        self.LaTeX_N = ""
-        n = len(self.cstrList)
-        for i,e in enumerate(self.cstrList):
-            n -= 1
-            LineText = ""
-            try:
-                if e.strip() == "":
-                    LineText += "-"
+            self.LaTeX = ""
+            n = len(self.cstrList)
+            for i,e in enumerate(self.cstrList):
+                n -= 1
+                LineText = ""
+                try:
+                    #if e.strip() == "":
+                    #    #LineText += "-"
+                    #    if n > 0:
+                    #        LineText += "\n"
+                    #        #self.LaTeX_L += "$\displaystyle"
+                    #        #self.LaTeX_N += "$"
+                    #    self.LaTeX += LineText
+                    #    continue
+                    #if "=" in e:
+                    #    parts = self.cstrList[i].split("=")
+                    #    conv = ""
+                    #    for j in parts:
+                    #        if len(j)>0:
+                    #            conv += AF.LaTeX(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                    #        conv += " = "
+                    #    LineText += conv[:-3]
+                    #else:
+                    LineText = AF.LaTeX(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                except common_exceptions: #as inst:
+                    ExceptionOutput(sys.exc_info())
+                    # LineText += AF.AstusParseInverse(e) #MAYBE: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
+                    LineText += e
+                    LineText = r" \text{ " + LineText.replace("\t",r" \qquad ") + " } "
                     if n > 0:
                         LineText += "\n"
-                        #self.LaTeX_L += "$\displaystyle"
-                        #self.LaTeX_N += "$"
-                    self.LaTeX_L += LineText
-                    self.LaTeX_N += LineText
-                    continue
-                if "=" in e :
-                    parts = self.cstrList[i].split("=")
-                    conv = ""
-                    for j in parts:
-                        if len(j)>0:
-                            #conv += sympy.latex( sympy.S(j,evaluate=False))
-                            #expr = parse_expr(j,evaluate=False,local_dict=self.VariablesUnev)
-                            #expr = AF.SPParseNoEval(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                            conv += AF.LaTeX(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)#sympy.latex(expr)
-                        conv += " = "
-                    LineText += conv[:-3]
+                    self.LaTeX += LineText
                 else:
-                    #LineText += sympy.latex( sympy.S(e,evaluate=False))
-                    #expr = parse_expr(e,evaluate=False,local_dict=self.VariablesUnev)
-                    #expr = AF.SPParseNoEval(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                    LineText = AF.LaTeX(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)#sympy.latex(expr)
-            except common_exceptions: #as inst:
-                ExceptionOutput(sys.exc_info())
-                # LineText += AF.AstusParseInverse(e) #MAYBE: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
-                LineText += e
-                if n > 0:
-                    LineText += "\n"
-                self.LaTeX_L += LineText
-                self.LaTeX_N += LineText
-            else:
-                LineText += "$"
-                if n > 0:
-                    LineText += "\n"
-                self.LaTeX_L += r"$\displaystyle "
-                self.LaTeX_N += "$"
-                self.LaTeX_L += LineText
-                self.LaTeX_N += LineText
-
-
+                    #LineText += "$"
+                    if "#" in e:
+                        LineText += r" \qquad \text{ " + e.split("#",1)[1] + " } "
+                    if n > 0:
+                        LineText += "\n"
+                    #self.LaTeX_L += r"$\displaystyle "
+                    #self.LaTeX_N += "$"
+                    #self.LaTeX_L += LineText
+                    self.LaTeX += r" \qquad "*e.count("\t") + LineText
+        else:
+            try:
+                #if "=" in self.cstr:
+                #    parts = self.cstr.split("=")
+                #    self.LaTeX = ""
+                #    for i in parts:
+                #        if len(i)>0:
+                #            self.LaTeX += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                #        self.LaTeX += " = "
+                #    self.LaTeX = self.LaTeX[:-3]
+                #else:
+                self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                if "#" in self.cstr:
+                    self.LaTeX += r" \qquad \text{ " + self.cstr.split("#",1)[1] + " } "
+            except common_exceptions:
+                self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert input to LaTeX",func="AMaS.ConvertToLaTeX",send=False))
+                self.LaTeX = r"\text{Could not convert}"
+    
     def ConvertToLaTeX_Solution(self, expr=None):
         """
+        Converts the solution into LaTeX and creates a LaTeX version of the equation. \n
+        Handles ``self.LaTeX_S``, ``self.LaTeX_E`` and ``self.LaTeX_ER``. \n
         expr must be a Sympy Expression (NOT A STRING!)   \n
         If not given or not convertable try to convert self.Solution
         """
-        # TODO: Add support for dicts inside dicts
         try:
             if expr != None:
                 try:
                     self.LaTeX_S = sympy.latex(expr)
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
-                    self.LaTeX_S = "Could not convert"
+                    self.LaTeX_S = r"\text{Could not convert}"
+                    self.LaTeX_E = r"\text{Could not convert}"
+                    self.LaTeX_ER = r"\text{Could not convert}"
                     expr = None
             if expr == None:
                 try:
                     if self.Solution == "Not evaluated yet":
                         raise Exception("Equation has not been evaluated yet")
-                    if "=" in self.Solution:
-                        parts = self.Solution.split("=")
-                        self.LaTeX_S = ""
-                        for i in parts:
-                            if len(i)>0:
-                                #self.LaTeX_S += sympy.latex( sympy.S(i,evaluate=False))
-                                expr = parse_expr(i,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
-                                self.LaTeX_S += sympy.latex(expr)
-                            self.LaTeX_S += " = "
-                        self.LaTeX_S = self.LaTeX_S[:-3]
-                    else:
-                        #self.LaTeX_S = sympy.latex( sympy.S(self.Solution,evaluate=False))
-                        expr = parse_expr(self.Solution,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
-                        self.LaTeX_S = sympy.latex(expr)
+                    #if "=" in self.Solution:
+                    #    parts = self.Solution.split("=")
+                    #    self.LaTeX_S = ""
+                    #    for i in parts:
+                    #        if len(i)>0:
+                    #            #self.LaTeX_S += sympy.latex( sympy.S(i,evaluate=False))
+                    #            expr = parse_expr(i,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
+                    #            self.LaTeX_S += sympy.latex(expr)
+                    #        self.LaTeX_S += " = "
+                    #    self.LaTeX_S = self.LaTeX_S[:-3]
+                    #else:
+                    #    #self.LaTeX_S = sympy.latex( sympy.S(self.Solution,evaluate=False))
+                    #    expr = parse_expr(self.Solution,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
+                    #    self.LaTeX_S = sympy.latex(expr)
+                    self.LaTeX_S = AF.LaTeX(self.Solution,local_dict=self.VariablesUnev,evalf=1)
                 except common_exceptions:
                     if expr==None: expr=self.Solution
-                    self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Solution"))
-                    self.LaTeX_S = "Could not convert"
-                    self.LaTeX_S_L = self.Solution
-                    self.LaTeX_S_N = self.Solution
+                    self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Solution",send=False))
                     return False
-            self.LaTeX_S_L = r"$\displaystyle "
-            self.LaTeX_S_N = "$"
-            self.LaTeX_S_L += self.LaTeX_S
-            self.LaTeX_S_N += self.LaTeX_S
-            self.LaTeX_S_L += "$"
-            self.LaTeX_S_N += "$"
         except common_exceptions:
-            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Solution"))
+            self.LaTeX_S = r"\text{Could not convert}"
+            self.LaTeX_E = r"\text{Could not convert}"
+            self.LaTeX_ER = r"\text{Could not convert}"
+            self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Solution to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Solution",send=False))
             return False
         else:
-            return True
-        
-
+            try:
+                LaTeX = self.LaTeX
+                if LaTeX == r"\text{Could not convert}":
+                    LaTeX = r"\text{" + self.Text + "}"
+                self.LaTeX_S = AF.number_shaver(self.LaTeX_S)
+                if self.Separator == " = ":
+                    self.LaTeX_E  = LaTeX + " = " + self.LaTeX_S
+                    self.LaTeX_ER = self.LaTeX_S + " = " + LaTeX
+                elif self.Separator == "   ==>   ":
+                    self.LaTeX_E  = LaTeX + r" \Longrightarrow " + self.LaTeX_S
+                    self.LaTeX_ER = self.LaTeX_S + r" \Longleftarrow " + LaTeX
+                else:
+                    self.LaTeX_E  = LaTeX + r" \Longrightarrow " + self.LaTeX_S
+                    self.LaTeX_ER = self.LaTeX_S + r" \Longleftarrow " + LaTeX
+            except common_exceptions:
+                self.LaTeX_E = r"\text{Could not convert}"
+                self.LaTeX_ER = r"\text{Could not convert}"
+                self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert Equation to LaTeX",input=expr,func="AMaS.ConvertToLaTeX_Solution",send=False))
+                return False
+            else:
+                return True
+    
  # ---------------------------------- Calculator Methods ----------------------------------
+    # MAYBE: set a time limit for evaluations that can be disabled in the options (if this is even possible)
 
 
     def Evaluate(self, Method=1):
+        """
+        This method redirects to the various solver methods
+        """
         if QtWidgets.QApplication.instance().optionWindow.cb_D_NewSolver.isChecked():
             return self.Evaluate_SymPy()
         elif Method==0:
@@ -639,13 +545,46 @@ class AMaS: # Astus' Mathematical Structure
         elif Method==1:
             return self.Evaluate_SymPy_old()
         else:
-            self.Notify(NC(2,"Invalid evaluate method number. Using standard method instead.",func="AMaS.Evaluate",input=self.Input))
+            self.Notify(NC(2,"Invalid evaluate method number. Using standard method instead.",func="AMaS.Evaluate",send=False))
             return self.Evaluate_SymPy_old()
-
+        
+    def CheckForNonesense(self,expr): #REMINDER: check for more dangerous things
+        """
+        This method searches for mathematical "nonesense" and warns the user. \n
+        It currently searches for: \n
+        Sums that don't converge.
+        """
+        try:
+            if type(expr) in [str,int,float,complex,bool]:
+                return
+            elif type(expr) == dict:
+                for k,i in expr.items():
+                    self.CheckForNonesense(k)
+                    self.CheckForNonesense(i)
+            elif type(expr) == list:
+                for i in expr:
+                    self.CheckForNonesense(i)
+            else:
+                if expr.func in [sympy.Sum, sympy.Product]:
+                    if expr.func == sympy.Sum:
+                        f_s = "Sum"
+                    elif expr.func == sympy.Product:
+                        f_s = "Product"
+                    try:
+                        if not expr.is_convergent():
+                            self.Notify(NC(2,"The input contains a {} that does NOT converge! The result is not to be trusted!".format(f_s),func="AMaS.Evaluate",input="{}:\n{}".format(f_s,str(expr)),send=False))
+                    except NotImplementedError:
+                        self.Notify(NC(2,"The input contains a {} that can not be checked for convergence! The result is not to be trusted!".format(f_s),func="AMaS.Evaluate",input="{}:\n{}".format(f_s,str(expr)),send=False))
+                # CHECK HERE
+                for arg in expr.args:
+                    self.CheckForNonesense(arg)
+        except AttributeError:
+            pass
+        except:
+            self.Notify(NC(2,"The input could not be completely scanned for \"nonesense\"",func="AMaS.Evaluate",input="Expression: "+str(expr),exc=sys.exc_info(),send=False))
 
     def Evaluate_SymPy(self):
-        separator = " = "
-        Notification = NC(0)
+        Notification = NC(0,send=False)
         
         try:
             if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
@@ -658,13 +597,13 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 pass #TODO: Try to solve it
             except common_exceptions:
-                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy",exc=sys.exc_info())
-            # TODO: reimplement the two solvers from the old one (one equalsign or none) but make the code less redundant and deal with dicts better... See BUG_INPUT.txt
+                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy",exc=sys.exc_info(),send=False)
+            # TODO: reimplement the two solvers from the old one (one equalsign or none) but make the code less redundant and cleaner and handle dicts even better
         except common_exceptions:
-            Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy",exc=sys.exc_info())
+            Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy",exc=sys.exc_info(),send=False)
             self.Solution = "Fail"
         
-        self.Equation = self.Solution + separator
+        self.Equation = self.Solution + self.Separator
         self.Equation += self.Text
         
         self.init_Flags() # Reset All Flags
@@ -680,11 +619,14 @@ class AMaS: # Astus' Mathematical Structure
         return True
 
     def Evaluate_SymPy_old(self):
-        #TODO: CALCULATE EVEN MORE STUFF
+        #TODO: CALCULATE EVEN MORE STUFF (how can solveset be used?)
+        #TODO: Dirac does not work... what does the sympy documentation say to dirac...?
+        #TODO: If a Sum is involved it should be checked for convergence with https://docs.sympy.org/latest/modules/concrete.html#sympy.concrete.summations.Sum.is_convergent
+        #      If it is not convergent the user should be notified that the solution can not be trusted!
         # https://docs.sympy.org/latest/modules/evalf.html
         # https://docs.sympy.org/latest/modules/solvers/solvers.html
         
-        Notification = NC(0)
+        Notification = NC(0,send=False)
         ODE = False
         if self.Input.count("=") >= 1 and self.Input.count(",") >= 1:
             try:
@@ -696,7 +638,7 @@ class AMaS: # Astus' Mathematical Structure
             self.init_Flags() # Reset All Flags
             return ODE
         
-        if self.cstr.count("=") == 1 :
+        if self.cstr.count("=") == 1 and self.cstr.split("=")[0].count("(")==self.cstr.split("=")[0].count(")"):
             try:
                 temp = self.cstr
                 #if Eval:
@@ -707,6 +649,7 @@ class AMaS: # Astus' Mathematical Structure
                 temp = AF.UnpackDualOperators(temp,Brackets=("[","]"))
                 print(temp)
                 ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
+                self.CheckForNonesense(ans)
                 ParsedInput = ans
                 try:
                     ans = ans.doit()
@@ -719,9 +662,9 @@ class AMaS: # Astus' Mathematical Structure
                         ans = sympy.dsolve(ans,simplify=self.f_simplify)
                     try:
                         classification = sympy.classify_ode(ParsedInput)
-                        self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",input=self.Input))
+                        self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",send=False))
                     except common_exceptions:
-                        Notification = NC(1,"Could not classify ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
+                        Notification = NC(1,"Could not classify ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info(),send=False)
                     try:
                         ansF = self.ExecuteFlags(ans)
                         self.Solution = str(ansF.lhs) + " = "
@@ -732,9 +675,9 @@ class AMaS: # Astus' Mathematical Structure
                         self.Solution = str(ansF)
                         self.ConvertToLaTeX_Solution(ansF)
                 except common_exceptions:
-                    Notification = NC(1,"Could not solve as ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
+                    Notification = NC(1,"Could not solve as ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info(),send=False)
                     if type(ans)==list:
-                        self.Solution = "{ "
+                        self.Solution = "[ " if len(ans)>1 else ""
                         for ji in ans:
                             if QtWidgets.QApplication.instance().optionWindow.cb_F_solveFor.isChecked():
                                 try:
@@ -743,7 +686,7 @@ class AMaS: # Astus' Mathematical Structure
                                     else:
                                         j = sympy.solve(ji,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
                                 except common_exceptions:
-                                    self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input))
+                                    self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",send=False))
                                     if self.f_simplify==None:
                                         j = sympy.solve(ji,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                                     else:
@@ -753,18 +696,17 @@ class AMaS: # Astus' Mathematical Structure
                                     j = sympy.solve(ji,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                                 else:
                                     j = sympy.solve(ji,dict=True,simplify=self.f_simplify)
-                            self.Solution += "{ "
+                            self.Solution += "[ " if len(ji)>1 else ""
                             le = len(self.Solution)
                             for i in j:
-                                if not type(i) == dict:
-                                    i = self.ExecuteFlags(i)
+                                i = self.ExecuteFlags(i)
                                 i_temp = str(i)
                                 #i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #CLEANUP: Delete this, Already implemented
                                 self.Solution += i_temp
                                 self.Solution += " , "
                             if len(self.Solution) > le:
                                 self.Solution = self.Solution[:-3]
-                                self.Solution += " }"
+                                self.Solution += " ]" if len(ji)>1 else ""
                             else:
                                 self.Solution = self.Solution[:-2]
                                 j = parse_expr(str(ji),local_dict=self.Variables,global_dict=self.global_dict())
@@ -776,10 +718,21 @@ class AMaS: # Astus' Mathematical Structure
                                     if self.f_eval: j = j.evalf()
                                 except common_exceptions:
                                     ExceptionOutput(sys.exc_info())
-                                self.Solution += "True" if j == 0 else "False: right side deviates by "+str(j)
+                                #j = self.ExecuteFlags(j) #MAYBE: Should this be done?
+                                #self.Solution = "True" if j == 0 else "False: right side deviates by "+str(j)
+                                try:
+                                    if j == 0 or str(j) == "0":
+                                        self.Solution = "True"
+                                    elif sympy.cancel(j) == 0 or str(sympy.cancel(j)) == "0":
+                                        self.Solution = "True"
+                                        self.Notify(NC(3,"True in the sense that the terms cancel. Without cancling the right side deviates by "+str(j),func="AMaS.Evaluate_SymPy_old",send=False))
+                                    else:
+                                        self.Solution = "False: right side deviates by "+str(j)
+                                except common_exceptions:
+                                    self.Solution = "True" if j == 0 or str(j) == "0" else "False: right side deviates by "+str(j)
                             self.Solution += " , "
                         self.Solution = self.Solution[:-3]
-                        self.Solution += " }"
+                        self.Solution += " ]" if len(ans)>1 else ""
                     else:
                         if QtWidgets.QApplication.instance().optionWindow.cb_F_solveFor.isChecked():
                             try:
@@ -788,7 +741,7 @@ class AMaS: # Astus' Mathematical Structure
                                 else:
                                     ans = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
                             except common_exceptions:
-                                self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input))
+                                self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",send=False))
                                 if self.f_simplify==None:
                                     ans = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                                 else:
@@ -798,17 +751,16 @@ class AMaS: # Astus' Mathematical Structure
                                 ans = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                             else:
                                 ans = sympy.solve(ans,dict=True,simplify=self.f_simplify)
-                        self.Solution = "{ "
+                        self.Solution = "[ " if len(ans)>1 else ""
                         for i in ans:
-                            if not type(i) == dict:
-                                i = self.ExecuteFlags(i)
+                            i = self.ExecuteFlags(i)
                             i_temp = str(i)
                             #i_temp = i_temp.rstrip('0').rstrip('.') if '.' in i_temp else i_temp #CLEANUP: Delete this, Already implemented
                             self.Solution += i_temp
                             self.Solution += " , "
                         self.Solution = self.Solution[:-3]
                         if len(self.Solution) > 0:
-                            self.Solution += " }"
+                            self.Solution += " ]" if len(ans)>1 else ""
                         else:
                             ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
                             try:
@@ -819,15 +771,27 @@ class AMaS: # Astus' Mathematical Structure
                                 if self.f_eval: ans = ans.evalf()
                             except common_exceptions:
                                 ExceptionOutput(sys.exc_info())
-                            self.Solution = "True" if ans == 0 else "False: right side deviates by "+str(ans)
+                            #ans = self.ExecuteFlags(ans) #MAYBE: Should this be done?
+                            #self.Solution = "True" if ans == 0 else "False: right side deviates by "+str(ans)
+                            try:
+                                if ans == 0 or str(ans) == "0":
+                                    self.Solution = "True"
+                                elif sympy.cancel(ans) == 0 or str(sympy.cancel(ans)) == "0":
+                                    self.Solution = "True"
+                                    self.Notify(NC(3,"True in the sense that the terms cancel. Without cancling the right side deviates by "+str(ans),func="AMaS.Evaluate_SymPy_old",send=False))
+                                else:
+                                    self.Solution = "False: right side deviates by "+str(ans)
+                            except common_exceptions:
+                                self.Solution = "True" if ans == 0 or str(ans) == "0" else "False: right side deviates by "+str(ans)
                     self.ConvertToLaTeX_Solution()
                     
             except common_exceptions: #as inst:
-                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
+                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info(),send=False)
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
                 self.Solution = "Fail"
+            self.Separator = "   ==>   "
             self.EquationReverse = AF.AstusParseInverse(self.Solution, True) + "   <==   "
             self.EquationReverse += self.Text
             self.Equation = self.Text + "   ==>   "
@@ -836,7 +800,9 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 temp = AF.UnpackDualOperators(self.cstr,Brackets=("{","}"))
                 ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
+                self.CheckForNonesense(ans)
                 separator = "   <==   "
+                self.Separator = "   ==>   "
                 ParsedInput = ans
                 if type(ans) == bool:
                     self.Solution = str(ans)
@@ -854,9 +820,9 @@ class AMaS: # Astus' Mathematical Structure
                             ans = sympy.dsolve(ans,simplify=self.f_simplify)
                         try:
                             classification = sympy.classify_ode(ParsedInput)
-                            self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",input=self.Input))
+                            self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Evaluate_SymPy_old",send=False))
                         except common_exceptions:
-                            Notification = NC(1,"Could not classify ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
+                            Notification = NC(1,"Could not classify ODE",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info(),send=False)
                         ansF = self.ExecuteFlags(ans)
                         try:
                             self.Solution = str(ansF.lhs) + " = "
@@ -866,7 +832,8 @@ class AMaS: # Astus' Mathematical Structure
                             self.Solution = str(ansF)
                             self.ConvertToLaTeX_Solution(ansF)
                     except common_exceptions:
-                        separator = " = "
+                        separator = " = " #TODO: inequalities should use the other separator
+                        self.Separator = " = "
                         if self.f_eval:
                             try:
                                 ans = ans.evalf()
@@ -879,7 +846,7 @@ class AMaS: # Astus' Mathematical Structure
                                             else:
                                                 ans_S = sympy.solve(ans,AF.parse(QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text()),dict=True,simplify=self.f_simplify)
                                         except common_exceptions:
-                                            self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",input=self.Input))
+                                            self.Notify(NC(2,"Could not solve for "+QtWidgets.QApplication.instance().optionWindow.tf_F_solveFor.text(),exc=sys.exc_info(),func="AMaS.Evaluate_SymPy_old",send=False))
                                             if self.f_simplify==None:
                                                 ans_S = sympy.solve(ans,dict=True,simplify=QtWidgets.QApplication.instance().optionWindow.cb_F_simplify.isChecked())
                                             else:
@@ -901,12 +868,13 @@ class AMaS: # Astus' Mathematical Structure
                         self.ConvertToLaTeX_Solution(ansF)
                     #self.Solution = self.Solution.rstrip('0').rstrip('.') if '.' in self.Solution else self.Solution #CLEANUP: Delete this, Already implemented
             except common_exceptions: #as inst:
-                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info())
+                Notification = NC(1,"Could not solve",func="AMaS.Evaluate_SymPy_old",exc=sys.exc_info(),send=False)
                 #print(inst.args)
                 #if callable(inst.args):
                 #    print(inst.args())
                 self.Solution = "Fail"
                 separator = "   <==   "
+                self.Separator = "   ==>   "
             self.EquationReverse = AF.AstusParseInverse(self.Solution, True) + separator
             self.EquationReverse += self.Text
             if separator == "   <==   ":
@@ -919,17 +887,24 @@ class AMaS: # Astus' Mathematical Structure
         self.Equation = AF.number_shaver(self.Equation)
         self.EquationReverse = AF.number_shaver(self.EquationReverse)
         self.Solution = AF.number_shaver(self.Solution)
-        self.ConvertToLaTeX_Equation()
+        #self.ConvertToLaTeX_Equation()
 
         #self.Solution = AF.AstusParseInverse(self.Solution, True) # TODO: Inverse Parse the solution.
                                         # This currently breaks everything with E notation and probably much more when working with "ans".
-                                        # The way of only converting the displayed Equation works does not have this problem.
+                                        # The current way of only converting the displayed Equation works and does not have this problem.
                                         # The reason the Solution should be inverse-parsed is to give the user a prettier solution to copy.
         
         
         if self.Solution == "Fail":
-            self.Notify(Notification)
-            return False
+            if QtWidgets.QApplication.instance().optionWindow.cb_U_EnableUnits.isChecked() and not self.disable_units:
+                self.disable_units = True
+                Notification.m("Could not solve. Trying to solve without units...\n(Units can be turned off in the options.)")
+                Notification.l(3)
+                self.Notify(Notification)
+                return self.Evaluate(1)
+            else:
+                self.Notify(Notification)
+                return False
         else:
             return True
         
@@ -942,7 +917,7 @@ class AMaS: # Astus' Mathematical Structure
         temp = temp + ")"
         return True
         
-    def EvaluateEquation_2(self): #IMPROVE: This might be better BUT: This is weired and does not always work and needs a lot of reprogramming and testing...
+    def EvaluateEquation_2(self): #IMPROVE: This might be better BUT: This is weird and does not always work and needs a lot of reprogramming and testing...
         temp = self.cstr
         temp1 , temp2 = self.cstr.split("=",1)
         temp = "Eq("+temp1
@@ -958,13 +933,13 @@ class AMaS: # Astus' Mathematical Structure
             ans = ans.evalf()
             self.Solution = str(ans)
         except common_exceptions: #as inst:
-            self.Notify(NC(1,"Could not solve",func="AMaS.EvaluateLaTeX",exc=sys.exc_info()))
+            self.Notify(NC(1,"Could not solve",func="AMaS.EvaluateLaTeX",exc=sys.exc_info(),send=False))
             self.Solution = "Fail"
             return False
         return True
 
     def Solve_ODE_Version_1(self):
-        Notification = NC(0)
+        Notification = NC(0,send=False)
         try:
             Input = self.Input
             Input = Input.split(",")
@@ -981,7 +956,7 @@ class AMaS: # Astus' Mathematical Structure
             equation = parse_expr(equation,local_dict=self.Variables,global_dict=self.global_dict())
             classification = sympy.classify_ode(equation)
             print("ODE Classification:\n",classification)
-            self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Solve_ODE_Version_1",input=self.Input))
+            self.Notify(NC(3,"ODE Classification:\n"+str.join("\n",classification),func="AMaS.Solve_ODE_Version_1",send=False))
             ics = {}
             for i in Input:
                 f,y=i.split("=")
@@ -1012,14 +987,15 @@ class AMaS: # Astus' Mathematical Structure
                 self.ConvertToLaTeX_Solution(equation)
 
         except common_exceptions:
-            Notification = NC(1,"Could not solve ODE",func="AMaS.Solve_ODE_Version_1",exc=sys.exc_info())
+            Notification = NC(1,"Could not solve ODE",func="AMaS.Solve_ODE_Version_1",exc=sys.exc_info(),send=False)
             self.Solution = "Fail"
         
+        self.Separator = "   ==>   "
         self.EquationReverse = AF.AstusParseInverse(self.Solution, True) + "   <==   "
         self.EquationReverse += self.Text
         self.Equation = self.Text + "   ==>   "
         self.Equation += AF.AstusParseInverse(self.Solution, True)
-        self.ConvertToLaTeX_Equation()
+        #self.ConvertToLaTeX_Equation()
             
         if self.Solution == "Fail":
             return Notification
@@ -1062,7 +1038,7 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
             except common_exceptions: #as inst:
-                self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
+                self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info(),send=False))
                 self.plottable = False
                 np.seterrcall(oldErrCall)
                 scipy.seterrcall(oldErrCall_sp)
@@ -1076,11 +1052,12 @@ class AMaS: # Astus' Mathematical Structure
                 self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax
             
             if self.plot_per_unit:
-                steps = 1/self.plot_steps
+                step_size = 1/(self.plot_points-1)
             else:
-                steps = (self.plot_xmax - self.plot_xmin)/self.plot_steps
+                step_size = (self.plot_xmax - self.plot_xmin)/(self.plot_points-1)
                 
-            self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+steps, steps)
+            #                                 from     up to (excluding the last!) step size
+            self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+step_size, step_size)
 
             try:
                 evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy'])
@@ -1102,7 +1079,7 @@ class AMaS: # Astus' Mathematical Structure
                 # This occurs, for example, when trying to plot integrate(sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x))))
                 # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
                 try:
-                    warningMutex.lock()
+                    self.warningMutex.lock()
                     oldNPWarn = np.warnings.showwarning
                     oldWarn = warnings.showwarning
                     np.warnings.showwarning = self.NotifyWarning
@@ -1117,7 +1094,7 @@ class AMaS: # Astus' Mathematical Structure
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             print(self.plot_y_vals.shape)
                             raise Exception("Dimensions do not match")
-                        self.Notify(NC(3,msg="Could not calculate plot with sympy.\nUsing numpy instead.",exc=TheException,func="AMaS.Plot_2D_Calc_Values"))
+                        self.Notify(NC(3,msg="Could not calculate plot with sympy.\nUsing numpy instead.",exc=TheException,func="AMaS.Plot_2D_Calc_Values",send=False))
                     elif self.cstr.count("Integral") == 1 and( ( re.fullmatch(r"Integral\((.(?<!Integral))+,x\)",self.cstr) and self.cstr.count(",x)") == 1 ) or ( re.fullmatch(r"Integral\((.(?<!Integral))+\)",self.cstr) and self.cstr.count(",x)") == 0 )):
                         temp_Text = self.cstr
                         temp_Text = temp_Text.replace("Integral","")
@@ -1139,18 +1116,18 @@ class AMaS: # Astus' Mathematical Structure
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             raise Exception("Dimensions do not match")
                         self.Notify(NC(2,msg="Could not calculate plot with sympy.\nInstead using numpy to generate the data for the function and scipy to generate the integral of this data."
-                                                +"\nWARNING: The displayed plot is not the plot of the input integral but of the integral of the plot of the function.",exc=TheException,func="AMaS.Plot_2D_Calc_Values"))
+                                                +"\nWARNING: The displayed plot is not the plot of the input integral but of the integral of the plot of the function.",exc=TheException,func="AMaS.Plot_2D_Calc_Values",send=False))
                     else:
                         raise Exception("Can not calculate plot data")
                 except common_exceptions: #as inst:
-                    self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info()))
+                    self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info(),send=False))
                     np.seterrcall(oldErrCall)
                     scipy.seterrcall(oldErrCall_sp)
                     return False
                 finally:
                     np.warnings.showwarning = oldNPWarn
                     warnings.showwarning = oldWarn
-                    warningMutex.unlock()
+                    self.warningMutex.unlock()
                     
             self.plot_data_exists = True
             np.seterrcall(oldErrCall)
@@ -1188,7 +1165,7 @@ class AMaS: # Astus' Mathematical Structure
             self.ConvertToLaTeX()
             return True
         except common_exceptions:
-            self.Notify(NC(lvl=1,msg="Could not update Equation",exc=sys.exc_info(),func="AMaS.UpdateEquation"))
+            self.Notify(NC(lvl=1,msg="Could not update Equation",exc=sys.exc_info(),func="AMaS.UpdateEquation",send=False))
             return False
 
 

@@ -81,7 +81,7 @@ _bode_defaults = {
 
 def bode_plot(syslist, omega=None,
               Plot=True, omega_limits=None, omega_num=None,
-              margins=None, Dense_Phase_Major_Ticks=False, *args, **kwargs):
+              margins=None, Dense_Phase_Major_Ticks=False, App=None, *args, **kwargs):
     """
     Bode plot for a system
 
@@ -260,10 +260,10 @@ def bode_plot(syslist, omega=None,
 
                 # Magnitude plot
                 if dB:
-                    pltline = ax_mag.semilogx(omega_plot, 20 * np.log10(mag),
+                    pltline = ax_mag.semilogx(omega_plot, 20 * np.log10(mag), color='blue' if App == None else App.PenColours["Light Blue"].color().name(0),
                                               *args, **kwargs)
                 else:
-                    pltline = ax_mag.loglog(omega_plot, mag, *args, **kwargs)
+                    pltline = ax_mag.loglog(omega_plot, mag, color='blue' if App == None else App.PenColours["Light Blue"].color().name(0), *args, **kwargs)
 
                 if nyquistfrq_plot:
                     ax_mag.axvline(nyquistfrq_plot,
@@ -278,12 +278,12 @@ def bode_plot(syslist, omega=None,
                     phase_plot = phase * 180. / math.pi
                 else:
                     phase_plot = phase
-                ax_phase.semilogx(omega_plot, phase_plot,color='orange', *args, **kwargs)
+                ax_phase.semilogx(omega_plot, phase_plot, color='orange' if App == None else App.PenColours["Orange"].color().name(0), *args, **kwargs)
 
                 # Show the phase and gain margins in the plot
                 if margins:
-                    gm_color = 'c'
-                    pm_color = 'r'
+                    gm_color = 'c' if App == None else App.PenColours["Cyan"].color().name(0)
+                    pm_color = 'r' if App == None else App.PenColours["Red"].color().name(0)
                     margin = stability_margins(sys)
                     gm, pm, Wcg, Wcp = \
                         margin[0], margin[1], margin[3], margin[4]
@@ -309,53 +309,53 @@ def bode_plot(syslist, omega=None,
                         if dB:
                             ax_mag.semilogx(
                                 [Wcp, Wcp], [0., -1e5],
-                                color=pm_color, linestyle=(0, (4, 4)), zorder=-20)
+                                color=pm_color, linestyle=(0, (4, 4)),linewidth=0.5, zorder=-20)
                         else:
                             ax_mag.loglog(
                                 [Wcp, Wcp], [1., 1e-8],
-                                color=pm_color, linestyle=(0, (4, 4)), zorder=-20)
+                                color=pm_color, linestyle=(0, (4, 4)),linewidth=0.5, zorder=-20)
 
                         if deg:
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [1e5, phase_limit+pm],
-                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=pm_color, linestyle=(0, (2, 6)),linewidth=0.5, zorder=-20)
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [phase_limit + pm, phase_limit],
-                                color=pm_color, zorder=-20)
+                                color=pm_color, linewidth=2, zorder=-20)
                         else:
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [1e5, math.radians(phase_limit) +
                                              math.radians(pm)],
-                                color=pm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=pm_color, linestyle=(0, (2, 6)),linewidth=0.5, zorder=-20)
                             ax_phase.semilogx(
                                 [Wcp, Wcp], [math.radians(phase_limit) +
                                              math.radians(pm),
                                              math.radians(phase_limit)],
-                                color=pm_color, zorder=-20)
+                                color=pm_color, linewidth=2, zorder=-20)
 
                     if gm != float('inf') and Wcg != float('nan'):
                         if dB:
                             ax_mag.semilogx(
                                 [Wcg, Wcg], [-20.*np.log10(gm), -1e5],
-                                color=gm_color, linestyle=(0, (4, 4)), zorder=-20)
+                                color=gm_color, linestyle=(0, (4, 4)),linewidth=0.5, zorder=-20)
                             ax_mag.semilogx(
                                 [Wcg, Wcg], [0, -20*np.log10(gm)],
-                                color=gm_color, zorder=-20)
+                                color=gm_color, linewidth=2, zorder=-20)
                         else:
                             ax_mag.loglog(
                                 [Wcg, Wcg], [1./gm, 1e-8], color=gm_color,
-                                linestyle=(0, (4, 4)), zorder=-20)
+                                linestyle=(0, (4, 4)),linewidth=0.5, zorder=-20)
                             ax_mag.loglog(
-                                [Wcg, Wcg], [1., 1./gm], color=gm_color, zorder=-20)
+                                [Wcg, Wcg], [1., 1./gm], color=gm_color, linewidth=2, zorder=-20)
 
                         if deg:
                             ax_phase.semilogx(
                                 [Wcg, Wcg], [1e-8, phase_limit],
-                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=gm_color, linestyle=(0, (2, 6)),linewidth=0.5, zorder=-20)
                         else:
                             ax_phase.semilogx(
                                 [Wcg, Wcg], [1e-8, math.radians(phase_limit)],
-                                color=gm_color, linestyle=(0, (2, 6)), zorder=-20)
+                                color=gm_color, linestyle=(0, (2, 6)),linewidth=0.5, zorder=-20)
 
                     ax_mag.set_ylim(mag_ylim)
                     ax_phase.set_ylim(phase_ylim)
@@ -466,7 +466,7 @@ def bode_plot(syslist, omega=None,
 #
 
 def nyquist_plot(syslist, omega=None, Plot=True, color=None,
-                 labelFreq=0, number_of_samples=50, *args, **kwargs):
+                 labelFreq=0, number_of_samples=50,App=None, *args, **kwargs):
     """
     Nyquist plot for a system
 
@@ -536,14 +536,14 @@ def nyquist_plot(syslist, omega=None, Plot=True, color=None,
 
             if Plot:
                 # Plot the primary curve and mirror image
-                p = plt.plot(x, y, '-',label="Primary" , *args, **kwargs)# color="blue",
+                p = plt.plot(x, y, '-',label="Primary", color="c" if App == None else App.PenColours["Light Blue"].color().name(0) , *args, **kwargs)
                 c = p[0].get_color()
                 ax = plt.gca()
                 # Plot arrow to indicate Nyquist encirclement orientation
                 ax.arrow(x[0], y[0], (x[1]-x[0])/2, (y[1]-y[0])/2, fc=c, ec=c,
                          head_width=0.2, head_length=0.2)
 
-                p2 = plt.plot(x, -y, '-', color="orange",label="Mirror", *args, **kwargs)
+                p2 = plt.plot(x, -y, '-', color="orange" if App == None else App.PenColours["Orange"].color().name(0), label="Mirror", *args, **kwargs)
                 c = p2[0].get_color()
                 ax.arrow(
                     x[-1], -y[-1], (x[-1]-x[-2])/2, (y[-1]-y[-2])/2,
@@ -580,7 +580,7 @@ def nyquist_plot(syslist, omega=None, Plot=True, color=None,
         ax = plt.gca()
         ax.set_xlabel("Real axis")
         ax.set_ylabel("Imaginary axis")
-        ax.grid(color="lightgray")
+        ax.grid(color=App.MiscColours["Broken"].color().name(0))
 
     return x, y, omega
 

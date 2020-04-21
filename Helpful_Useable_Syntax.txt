@@ -1,3 +1,5 @@
+Olease note: Implicit multiplication will not be given precedence in the order of operations. (Thus 8 ÷ 2x ≠ 8 ÷ (2x) )
+
 Hint: These functions are especially useful in the LaTeX Tab as they allow you to use it as a calculator with LaTeX output
 "exp" is the expression on witch you want to use the function
 
@@ -9,6 +11,7 @@ roots(exp)		# solve exp for unknown variables and show the multiplicity of each 
 
 laplace_transform(exp,x,s)[0]		# Laplace transformation of exp
 inverse_laplace_transform(exp,s,x)	# inverse Laplace transformation of exp
+	# If you have variables it can improve the result by explicitly making them real ("re(a)" instead of "a")
 
 linsolve(exp)	# If exp is a  n x n+1  Matrix than this solves the linear system of equations
 
