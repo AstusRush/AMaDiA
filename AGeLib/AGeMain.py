@@ -2703,7 +2703,7 @@ class TopBar_Widget(QtWidgets.QWidget):
 
         self.CloseButton = QtWidgets.QToolButton(self)
         self.CloseButton.setObjectName("CloseButton")
-        self.layout().addWidget(self.CloseButton, 0, 104, 1, 1,QtCore.Qt.AlignRight)
+        self.layout().addWidget(self.CloseButton, 0, 105, 1, 1,QtCore.Qt.AlignRight)
         self.CloseButton.setText("🗙")
 
         self.RedHighlightPalette = QtGui.QPalette()
@@ -2719,7 +2719,7 @@ class TopBar_Widget(QtWidgets.QWidget):
 
         self.MaximizeButton = QtWidgets.QToolButton(self)
         self.MaximizeButton.setObjectName("MaximizeButton")
-        self.layout().addWidget(self.MaximizeButton, 0, 103, 1, 1,QtCore.Qt.AlignRight)
+        self.layout().addWidget(self.MaximizeButton, 0, 104, 1, 1,QtCore.Qt.AlignRight)
         self.MaximizeButton.setText("🗖")
         self.MaximizeButton.installEventFilter(self)
         self.MaximizeButton.setAutoRaise(True)
@@ -2727,11 +2727,20 @@ class TopBar_Widget(QtWidgets.QWidget):
 
         self.MinimizeButton = QtWidgets.QToolButton(self)
         self.MinimizeButton.setObjectName("MinimizeButton")
-        self.layout().addWidget(self.MinimizeButton, 0, 102, 1, 1,QtCore.Qt.AlignRight)
+        self.layout().addWidget(self.MinimizeButton, 0, 103, 1, 1,QtCore.Qt.AlignRight)
         self.MinimizeButton.setText("🗕")
         self.MinimizeButton.installEventFilter(self)
         self.MinimizeButton.setAutoRaise(True)
         self.MinimizeButton.setSizePolicy(self.ButtonSizePolicy)
+
+        self.OptionsButton = QtWidgets.QToolButton(self)
+        self.OptionsButton.setObjectName("OptionsButton")
+        self.layout().addWidget(self.OptionsButton, 0, 102, 1, 1,QtCore.Qt.AlignRight)
+        self.OptionsButton.setText("⚙")
+        self.OptionsButton.setToolTip("Show the options window")
+        self.OptionsButton.installEventFilter(self)
+        self.OptionsButton.setAutoRaise(True)
+        self.OptionsButton.setSizePolicy(self.ButtonSizePolicy)
 
         self.MoveMe = QtWidgets.QLabel(self)
         self.MoveMe.setObjectName("MoveMe")
@@ -2742,6 +2751,7 @@ class TopBar_Widget(QtWidgets.QWidget):
         self.CloseButton.clicked.connect(self.Exit)
         self.MaximizeButton.clicked.connect(self.ToggleMinMax)
         self.MinimizeButton.clicked.connect(self.Minimize)
+        self.OptionsButton.clicked.connect(App().Show_Options)
 
         try:
             #self.window().menuBar().installEventFilter(self)

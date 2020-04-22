@@ -1,4 +1,4 @@
-cd "C:\Users\%USERNAME%\AMaDiA"
+cd "C:\Users\%USERNAME%\AGeLib\ProgramFiles\AMaDiA"
 git pull
 %@Try%
   call "C:\Users\%USERNAME%\Anaconda3\Scripts\activate.bat"
