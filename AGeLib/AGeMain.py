@@ -1,6 +1,6 @@
 # Astus General Library Main File
 
-Version = "2.0.0"
+Version = "2.0.1"
 # Using Semantic Versioning 2.0.0 https://semver.org/
 version = Version
 Author = "Robin \'Astus\' Albers"
@@ -527,6 +527,7 @@ class Main_App(QtWidgets.QApplication):
         self.enableHotkeys = True
         super(Main_App, self).__init__(args)
         self.setStyle("fusion")
+        self.setAttribute(QtCore.Qt.AA_DontUseNativeMenuBar) #Fixes to bar widget on MacOS/OSX/darwin/Apples OS
         sys.excepthook = trap_exc_during_debug
         try:
             msg = "Welcome " + getpass.getuser()
