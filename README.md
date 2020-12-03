@@ -55,13 +55,16 @@ Screenshot Version 0.15.7.1<br/>
 <img src="/AMaDiA v0.15.7.1 Demo.png" alt="Demo Picture"/>
 <br/><br/>
 # Short Term Roadmap
-Planned features for (near) future (order reflects priority):<br/>
-- Improve System Control Window<br/>
-- Make Tab 4 even easier to use<br/>
+Planned features for near future (order reflects priority):<br/>
 - Plot 3D and complex functions<br/>
+- Improve System Control Window<br/>
 - (Continuous:) Better parser to allow a more flexible input<br/>
+<br/><br/>
+# Long Term Roadmap
+Planned features for future (order reflects priority):<br/>
+- Make Tab 4 even easier to use<br/>
 - Simple Texteditor<br/>
 - better unit handling (like automatic simplification)<br/>
 - Automatic recognition for PDEs so that the user no longer has to put them in "pdsolve(...)"<br/>
-- PDF-Viewer<br/>
 - Save/load the history<br/>
+- PDF-Viewer<br/>
