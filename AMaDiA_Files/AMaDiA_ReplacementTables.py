@@ -4,7 +4,10 @@ Created on Thu Sep  5 16:22:05 2019
 
 @author: Robin
 """
-from PyQt5.QtCore import Qt # pylint: disable=no-name-in-module
+import sys
+sys.path.append('..')
+from AGeLib import *
+Qt = QtCore.Qt
 
 # ---------------------------------- Keyboard Remapper KR_ ----------------------------------
 
@@ -34,41 +37,41 @@ KR_Map = [
     ["´","`","≤","≥"," ",Qt.Key_acute],
     # Line 2 (QWERTZ...)
     ["q","Q","@","±"," ",Qt.Key_Q],
-    ["w","W",r" ",r"ħ"," ",Qt.Key_W],
-    ["e","E","ε","∈"," ",Qt.Key_E],
-    ["r","R","ρ","ℝ"," ",Qt.Key_R],
-    ["t","T","θ","Θ"," ",Qt.Key_T],
-    ["z","Z","ζ","τ"," ",Qt.Key_Z],
-    ["u","U","\u0332","\u0305"," ",Qt.Key_U],
-    ["i","I","ψ","Ψ"," ",Qt.Key_I],
-    ["o","O","ω","Ω"," ",Qt.Key_O],
-    ["p","P","π","Π"," ",Qt.Key_P],
-    ["ü","Ü","\u0307","\u0308"," ",Qt.Key_Udiaeresis],
+    ["w","W",r" ",r"ħ","ʷ",Qt.Key_W],
+    ["e","E","ε","∈","ᵉ",Qt.Key_E],
+    ["r","R","ρ","ℝ","ʳ",Qt.Key_R],
+    ["t","T","θ","Θ","ᵗ",Qt.Key_T],
+    ["z","Z","ζ","τ","ᶻ",Qt.Key_Z],
+    ["u","U","\u0332","\u0305","ᵘ",Qt.Key_U],
+    ["i","I","ψ","Ψ","ⁱ",Qt.Key_I],
+    ["o","O","ω","Ω","ᵒ",Qt.Key_O],
+    ["p","P","π","Π","ᵖ",Qt.Key_P],
+    ["ü","Ü","\u0307","\u0308","ᵞ",Qt.Key_Udiaeresis],
     ["plus","*"," "," ","⁺",Qt.Key_Plus],
     # Line 3 (ASD...)
-    ["a","A","α","∂"," ",Qt.Key_A],
-    ["s","S","σ","Σ"," ",Qt.Key_S],
-    ["d","D","δ","Δ"," ",Qt.Key_D],
-    ["f","F","φ","Φ"," ",Qt.Key_F],
-    ["g","G","γ","Γ"," ",Qt.Key_G],
-    ["h","H","↑","↓"," ",Qt.Key_H],
-    ["j","J","→","←"," ",Qt.Key_J],
-    ["k","K","κ","∞"," ",Qt.Key_K],
-    ["l","L","λ","Λ"," ",Qt.Key_L],
-    ["ö","Ö","\u005E"," "," ",Qt.Key_Odiaeresis],
-    ["ä","Ä","↳","\u0303"," ",Qt.Key_Adiaeresis],
-    ["#",r"'","’"," "," ",Qt.Key_NumberSign],
+    ["a","A","α","∂","ᵃ",Qt.Key_A],
+    ["s","S","σ","Σ","ˢ",Qt.Key_S],
+    ["d","D","δ","Δ","ᵈ",Qt.Key_D],
+    ["f","F","φ","Φ","ᶠ",Qt.Key_F],
+    ["g","G","γ","Γ","ᵍ",Qt.Key_G],
+    ["h","H","↑","↓","ʰ",Qt.Key_H],
+    ["j","J","→","←","ʲ",Qt.Key_J],
+    ["k","K","κ","∞","ᵏ",Qt.Key_K],
+    ["l","L","λ","Λ","ˡ",Qt.Key_L],
+    ["ö","Ö","\u005E"," ","ᵝ",Qt.Key_Odiaeresis],
+    ["ä","Ä","↳","\u0303","ᵅ",Qt.Key_Adiaeresis],
+    ["#",r"'","’"," ","ᵟ",Qt.Key_NumberSign],
     # Line 4 (YXC...)
     ["<",">","|","⇔"," ",Qt.Key_Less],                  [" ",">","|","⇔"," ",Qt.Key_Greater],
-    ["y","Y","⇒","⇐"," ",Qt.Key_Y],
-    ["x","X","ξ","Ξ"," ",Qt.Key_X],
-    ["c","C","ℂ","ⁿ"," ",Qt.Key_C],
-    ["v","V","\u20D7","ₙ"," ",Qt.Key_V],
-    ["b","B","β"," "," ",Qt.Key_B],
+    ["y","Y","⇒","⇐","ʸ",Qt.Key_Y],
+    ["x","X","ξ","Ξ","ˣ",Qt.Key_X],
+    ["c","C","ℂ","ⁿ","ᶜ",Qt.Key_C],
+    ["v","V","\u20D7","ₙ","ᵛ",Qt.Key_V],
+    ["b","B","β"," ","ᵇ",Qt.Key_B],
     ["n","N","ν","η","ⁿ",Qt.Key_N],
-    ["m","M","\u03bc"," "," ",Qt.Key_M],                [" ","M","\u03bc"," "," ",Qt.Key_mu],
-    ["comma",";","\u00B7","\u00D7"," ",Qt.Key_Comma],   [" ",";","\u00B7","\u00D7"," ",Qt.Key_Semicolon],
-    [".",":","…","÷"," ",Qt.Key_Period],                [" ",":","…","÷"," ",Qt.Key_Colon],
+    ["m","M","\u03bc"," ","ᵐ",Qt.Key_M],                [" ","M","\u03bc"," "," ",Qt.Key_mu],
+    ["comma",";","\u22C5","\u00D7","⁽",Qt.Key_Comma],   [" ",";","\u22C5","\u00D7","⁽",Qt.Key_Semicolon],
+    [".",":","…","÷","⁾",Qt.Key_Period],                [" ",":","…","÷","⁾",Qt.Key_Colon],
     ["-","_","–","—","⁻",Qt.Key_Minus],                 [" ","_","–","—","⁻",Qt.Key_Underscore]]
 
 # ---------------------------------- Lists l_ ----------------------------------
@@ -147,9 +150,9 @@ n_greek_letters_nospace = [["\u0391","Alpha"],["\u03b1","alpha"],
                    ["\u03a9","Omega"],["\u03c9","omega"]
                    ]
 n_constants = [["\u03c0"," pi "],["∞"," oo "]]
-n_operators = [["^","**"],["·","*"]]
+n_operators = [["^","**"],["\u22C5","*"]]
 n_operators_special = [["√","sqrt"],["∫","Integral"]]
-n_operators_notinv = [["–","-"],["—","-"],["×","*"],["÷","/"],["°C","degC"],["°F","*5/9*degC-32*5/9*degC"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
+n_operators_notinv = [["–","-"],["—","-"],["\u00B7","*"],["×","*"],["÷","/"],["°C","degC"],["°F","*5/9*degC-32*5/9*degC"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
 n_operators_dual = [["±","+","-"],["∓","-","+"]]
 n_space = [[" "," "]]
 
@@ -191,7 +194,7 @@ r_c_operators_4 = [
 
 PYTHON_TO_LATEX_simple_replacements = [
                         ['**', '^'],
-                        ['*', ' \\cdot '], ['·', ' \\cdot '],
+                        ['*', ' \\cdot '], ['·', ' \\cdot '], ['\u22C5', ' \\cdot '],
                         ['math.', ''], ['np.', ''],
                         ['pi', '\\pi'] , ['π', '\\pi'],
                         ['tan', '\\tan'], ['cos', '\\cos'], ['sin', '\\sin'], ['sec', '\\sec'], ['csc', '\\csc']]

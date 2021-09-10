@@ -6,2219 +6,1039 @@
 
 # https://doc.qt.io/qt-5/qpalette.html#ColorRole-enum
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from .AGeQt import * #QtCore, QtGui, QtWidgets, pyqtSignal, pyqtProperty
+try:
+    import typing
+except:
+    pass
+from packaging.version import parse as versionParser #CRITICAL: This is not a build-in module! Use the new function from _AGeFunctions instead!
 
-def Dark():
-    palette1 = QtGui.QPalette()
-    palette2 = QtGui.QPalette()
-    palette3 = QtGui.QPalette()
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    PenColours = {
-		"Red":QtGui.QBrush(QtGui.QColor(255,0,0)),
-		"Green":QtGui.QBrush(QtGui.QColor(0,255,0)),
-		"Blue":QtGui.QBrush(QtGui.QColor(55,55,255)),
-		"Yellow":QtGui.QBrush(QtGui.QColor(255,255,0)),
-		"Cyan":QtGui.QBrush(QtGui.QColor(0,255,234)),
-		"Magenta":QtGui.QBrush(QtGui.QColor(255,0,234)),
-		"Orange":QtGui.QBrush(QtGui.QColor(255,119,0)),
-		"Light Blue":QtGui.QBrush(QtGui.QColor(0,170,255)),
-		"White":QtGui.QBrush(QtGui.QColor(255,255,255)),
-    	"Black":QtGui.QBrush(QtGui.QColor(0,0,0))}
-    NotificationColours = {
-		"Error":QtGui.QBrush(QtGui.QColor(255,0,0)),
-		"Warning":QtGui.QBrush(QtGui.QColor(255,255,0)),
-		"Notification":QtGui.QBrush(QtGui.QColor(0,0,255)),
-		"Message":QtGui.QBrush(QtGui.QColor(0,255,0))}
-    MiscColours = {
-		"Friendly":QtGui.QBrush(QtGui.QColor(0,255,21)),
-		"Hostile":QtGui.QBrush(QtGui.QColor(255,0,0)),
-		"Neutral":QtGui.QBrush(QtGui.QColor(209,255,203)),
-		"Ally":QtGui.QBrush(QtGui.QColor(0,136,255)),
-		"Self":QtGui.QBrush(QtGui.QColor(81,0,255)),
-		"Common":QtGui.QBrush(QtGui.QColor(255,255,255)),
-		"Uncommon":QtGui.QBrush(QtGui.QColor(148,144,255)),
-		"Rare":QtGui.QBrush(QtGui.QColor(17,255,0)),
-		"Legendary":QtGui.QBrush(QtGui.QColor(115,0,255)),
-		"Mythical":QtGui.QBrush(QtGui.QColor(255,42,227)),
-		"Artefact":QtGui.QBrush(QtGui.QColor(255,255,0)),
-		"Broken":QtGui.QBrush(QtGui.QColor(181,181,181)),
-		"Magical":QtGui.QBrush(QtGui.QColor(255,46,49)),
-		"Important":QtGui.QBrush(QtGui.QColor(255,183,0)),
-		"Gradient1":QtGui.QBrush(QtGui.QColor(0,0,0)),
-		"Gradient2":QtGui.QBrush(QtGui.QColor(0,0,127)),
-		"Gradient3":QtGui.QBrush(QtGui.QColor(127,0,255))}
-    return palette1 , palette2 , palette3 , PenColours , NotificationColours , MiscColours
+def loadQPalette(l):
+    # type: (typing.List[typing.Tuple[QtGui.QBrush,int,int]]) -> QtGui.QPalette
+    # Takes list of tuples with (QtGui.QBrush, ColorRole, ColorGroup)
+    Palette = QtGui.QPalette()
+    for i in l:
+        if i[1] == 20:
+            if versionParser(QtCore.qVersion())>=versionParser("5.12"):
+                Palette.setBrush(i[2],QtGui.QPalette.PlaceholderText,i[0])
+        else:
+            Palette.setBrush(i[2],i[1],i[0])
+    return Palette
 
-def Bright():
-    palette1 = QtGui.QPalette()
-    palette2 = QtGui.QPalette()
-    palette3 = QtGui.QPalette()
-    brush = QtGui.QBrush(QtGui.QColor(247,247,247))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,246))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,246))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,247))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,246))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,246))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,247))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,246))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(247,247,246))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,159))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,159))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,159))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,159))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,159))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,159))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,197))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,197))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,197))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,184))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,184))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,183))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,184))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,184))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,183))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,184))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,184))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(184,184,183))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,203))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,203))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,204))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,203))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,203))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,204))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,203))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,203))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(203,203,204))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,118))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,117))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,117))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,118))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,117))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,117))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,118))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,117))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(118,118,117))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,219))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,219))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,219))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,219))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,219))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,219))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,239))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(239,239,238))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(159,159,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    PenColours = {
-        "Red":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Green":QtGui.QBrush(QtGui.QColor(0,255,0)),
-        "Blue":QtGui.QBrush(QtGui.QColor(55,55,255)),
-        "Yellow":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Cyan":QtGui.QBrush(QtGui.QColor(0,255,234)),
-        "Magenta":QtGui.QBrush(QtGui.QColor(255,0,234)),
-        "Orange":QtGui.QBrush(QtGui.QColor(255,119,0)),
-        "Light Blue":QtGui.QBrush(QtGui.QColor(0,170,255)),
-        "White":QtGui.QBrush(QtGui.QColor(211,211,211)),
-        "Black":QtGui.QBrush(QtGui.QColor(0,0,0))}
-    NotificationColours = {
-        "Error":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Warning":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Notification":QtGui.QBrush(QtGui.QColor(0,0,255)),
-        "Message":QtGui.QBrush(QtGui.QColor(0,255,0))}
-    MiscColours = {
-        "Friendly":QtGui.QBrush(QtGui.QColor(0,255,21)),
-        "Hostile":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Neutral":QtGui.QBrush(QtGui.QColor(209,255,203)),
-        "Ally":QtGui.QBrush(QtGui.QColor(0,136,255)),
-        "Self":QtGui.QBrush(QtGui.QColor(81,0,255)),
-        "Common":QtGui.QBrush(QtGui.QColor(0,0,0)),
-        "Uncommon":QtGui.QBrush(QtGui.QColor(148,144,255)),
-        "Rare":QtGui.QBrush(QtGui.QColor(17,255,0)),
-        "Legendary":QtGui.QBrush(QtGui.QColor(115,0,255)),
-        "Mythical":QtGui.QBrush(QtGui.QColor(255,42,227)),
-        "Artefact":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Broken":QtGui.QBrush(QtGui.QColor(181,181,181)),
-        "Magical":QtGui.QBrush(QtGui.QColor(255,46,49)),
-        "Important":QtGui.QBrush(QtGui.QColor(255,183,0)),
-		"Gradient1":QtGui.QBrush(QtGui.QColor(0,0,0)),
-		"Gradient2":QtGui.QBrush(QtGui.QColor(255,100,0)),
-		"Gradient3":QtGui.QBrush(QtGui.QColor(255,255,127))}
-    return palette1 , palette2 , palette3 , PenColours , NotificationColours , MiscColours
+Dark = {
+    "Palette 1" : loadQPalette([
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(159,157,148,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(159,157,148,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+        ]) ,
+    "Palette 2" : loadQPalette([
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(159,157,148,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(159,157,148,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+        ]) ,
+    "Palette 3" : loadQPalette([
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+            ( QtGui.QBrush(QtGui.QColor(159,157,148,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+            ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+            ( QtGui.QBrush(QtGui.QColor(159,157,148,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+        ]) ,
+    "Pen Colours" : {
+            "Red" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+            "Green" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+            "Blue" : QtGui.QBrush(QtGui.QColor(55,55,255,255),QtCore.Qt.SolidPattern) ,
+            "Yellow" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+            "Cyan" : QtGui.QBrush(QtGui.QColor(0,255,234,255),QtCore.Qt.SolidPattern) ,
+            "Magenta" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
+            "Orange" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "Light Blue" : QtGui.QBrush(QtGui.QColor(0,170,255,255),QtCore.Qt.SolidPattern) ,
+            "White" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+            "Black" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+        } ,
+    "Notification Colours" : {
+            "Error" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+            "Warning" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+            "Notification" : QtGui.QBrush(QtGui.QColor(0,0,255,255),QtCore.Qt.SolidPattern) ,
+            "Message" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        } ,
+    "Misc Colours" : {
+            "Friendly" : QtGui.QBrush(QtGui.QColor(0,255,21,255),QtCore.Qt.SolidPattern) ,
+            "Hostile" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+            "Neutral" : QtGui.QBrush(QtGui.QColor(209,255,203,255),QtCore.Qt.SolidPattern) ,
+            "Ally" : QtGui.QBrush(QtGui.QColor(0,136,255,255),QtCore.Qt.SolidPattern) ,
+            "Self" : QtGui.QBrush(QtGui.QColor(81,0,255,255),QtCore.Qt.SolidPattern) ,
+            "Common" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+            "Uncommon" : QtGui.QBrush(QtGui.QColor(148,144,255,255),QtCore.Qt.SolidPattern) ,
+            "Rare" : QtGui.QBrush(QtGui.QColor(17,255,0,255),QtCore.Qt.SolidPattern) ,
+            "Legendary" : QtGui.QBrush(QtGui.QColor(115,0,255,255),QtCore.Qt.SolidPattern) ,
+            "Mythical" : QtGui.QBrush(QtGui.QColor(255,42,227,255),QtCore.Qt.SolidPattern) ,
+            "Artefact" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+            "Broken" : QtGui.QBrush(QtGui.QColor(181,181,181,255),QtCore.Qt.SolidPattern) ,
+            "Magical" : QtGui.QBrush(QtGui.QColor(255,46,49,255),QtCore.Qt.SolidPattern) ,
+            "Important" : QtGui.QBrush(QtGui.QColor(255,183,0,255),QtCore.Qt.SolidPattern) ,
+            "Gradient1" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+            "Gradient2" : QtGui.QBrush(QtGui.QColor(0,0,127,255),QtCore.Qt.SolidPattern) ,
+            "Gradient3" : QtGui.QBrush(QtGui.QColor(127,0,255,255),QtCore.Qt.SolidPattern) ,
+        } ,
+    "Python Lexer Colours" : {
+            "Default" : QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) ,
+            "Comment" : QtGui.QBrush(QtGui.QColor(0,186,0,255),QtCore.Qt.SolidPattern) ,
+            "Number" : QtGui.QBrush(QtGui.QColor(195,255,169,255),QtCore.Qt.SolidPattern) ,
+            "DoubleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "SingleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "Keyword" : QtGui.QBrush(QtGui.QColor(86,156,214,255),QtCore.Qt.SolidPattern) ,
+            "TripleSingleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "TripleDoubleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "ClassName" : QtGui.QBrush(QtGui.QColor(0,251,255,255),QtCore.Qt.SolidPattern) ,
+            "FunctionMethodName" : QtGui.QBrush(QtGui.QColor(255,251,127,255),QtCore.Qt.SolidPattern) ,
+            "Operator" : QtGui.QBrush(QtGui.QColor(211,255,164,255),QtCore.Qt.SolidPattern) ,
+            "Identifier" : QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) ,
+            "CommentBlock" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+            "UnclosedString" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
+            "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+            "Decorator" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        } ,
+}
 
-def DeepSea():
-    palette1 = QtGui.QPalette()
-    palette2 = QtGui.QPalette()
-    palette3 = QtGui.QPalette()
-    brush = QtGui.QBrush(QtGui.QColor(0,0,100))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,100))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,100))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,100))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,100))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,100))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,48))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,48))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,48))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,48))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,48))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,48))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,79))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,44))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,79))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,44))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,79))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,44))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,43))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,43))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,43))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,43))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,43))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,43))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(34,94,172))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(13,30,107))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(34,94,172))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(13,30,107))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(34,94,172))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(13,30,107))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,57,84))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,57,84))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,57,84))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,57,84))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,57,84))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,57,84))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(114,178,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(114,178,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(114,178,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(114,178,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(114,178,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(114,178,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,33))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,33))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,33))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,33))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,33))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,33))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    PenColours = {
-        "Red":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Green":QtGui.QBrush(QtGui.QColor(0,255,0)),
-        "Blue":QtGui.QBrush(QtGui.QColor(55,55,255)),
-        "Yellow":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Cyan":QtGui.QBrush(QtGui.QColor(0,255,234)),
-        "Magenta":QtGui.QBrush(QtGui.QColor(255,0,234)),
-        "Orange":QtGui.QBrush(QtGui.QColor(255,119,0)),
-        "Light Blue":QtGui.QBrush(QtGui.QColor(0,170,255)),
-        "White":QtGui.QBrush(QtGui.QColor(255,255,255)),
-        "Black":QtGui.QBrush(QtGui.QColor(68,68,68))}
-    NotificationColours = {
-        "Error":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Warning":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Notification":QtGui.QBrush(QtGui.QColor(0,0,255)),
-        "Message":QtGui.QBrush(QtGui.QColor(0,255,0))}
-    MiscColours = {
-        "Friendly":QtGui.QBrush(QtGui.QColor(0,255,21)),
-        "Hostile":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Neutral":QtGui.QBrush(QtGui.QColor(209,255,203)),
-        "Ally":QtGui.QBrush(QtGui.QColor(0,136,255)),
-        "Self":QtGui.QBrush(QtGui.QColor(178,111,255)),
-        "Common":QtGui.QBrush(QtGui.QColor(255,255,255)),
-        "Uncommon":QtGui.QBrush(QtGui.QColor(148,144,255)),
-        "Rare":QtGui.QBrush(QtGui.QColor(17,255,0)),
-        "Legendary":QtGui.QBrush(QtGui.QColor(226,0,255)),
-        "Mythical":QtGui.QBrush(QtGui.QColor(37,255,255)),
-        "Artefact":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Broken":QtGui.QBrush(QtGui.QColor(152,152,152)),
-        "Magical":QtGui.QBrush(QtGui.QColor(255,46,49)),
-        "Important":QtGui.QBrush(QtGui.QColor(255,183,0)),
-		"Gradient1":QtGui.QBrush(QtGui.QColor(0,0,0)),
-		"Gradient2":QtGui.QBrush(QtGui.QColor(0,0,127)),
-		"Gradient3":QtGui.QBrush(QtGui.QColor(0,255,255))}
-    return palette1 , palette2 , palette3 , PenColours , NotificationColours , MiscColours
 
-def BloodMoon():
-    palette1 = QtGui.QPalette()
-    palette2 = QtGui.QPalette()
-    palette3 = QtGui.QPalette()
-    brush = QtGui.QBrush(QtGui.QColor(130,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(130,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(130,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(130,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(130,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(130,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(74,77,83))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(85,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(85,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(85,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(85,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(85,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(85,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,252,218))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(88,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(63,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(88,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(63,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(88,0,1))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(63,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(30,30,30))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(176,176,176))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(60,60,60))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(40,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(40,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(40,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(40,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(40,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(40,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(48,140,198))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(53,68,97))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(145,145,145))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,254))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(177,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(138,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(177,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(138,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(177,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(138,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(81,85,94))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(150,150,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.LinkVisited, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(36,38,42))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,0,255))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(67,71,78))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(0,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-    brush = QtGui.QBrush(QtGui.QColor(52,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(52,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(52,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(52,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(52,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(52,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(54,57,63))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,169,169))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,158,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,169,169))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,158,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,169,169))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,158,158))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(255,255,220))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(50,0,0))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette1.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette2.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(215,213,201))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-    brush = QtGui.QBrush(QtGui.QColor(27,28,31))
-    brush.setStyle(QtCore.Qt.SolidPattern)
-    palette3.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-    PenColours = {
-        "Red":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Green":QtGui.QBrush(QtGui.QColor(0,255,0)),
-        "Blue":QtGui.QBrush(QtGui.QColor(55,55,255)),
-        "Yellow":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Cyan":QtGui.QBrush(QtGui.QColor(0,255,234)),
-        "Magenta":QtGui.QBrush(QtGui.QColor(255,0,234)),
-        "Orange":QtGui.QBrush(QtGui.QColor(255,119,0)),
-        "Light Blue":QtGui.QBrush(QtGui.QColor(0,170,255)),
-        "White":QtGui.QBrush(QtGui.QColor(255,255,255)),
-        "Black":QtGui.QBrush(QtGui.QColor(0,0,0))}
-    NotificationColours = {
-        "Error":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Warning":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Notification":QtGui.QBrush(QtGui.QColor(0,0,255)),
-        "Message":QtGui.QBrush(QtGui.QColor(0,255,0))}
-    MiscColours = {
-        "Friendly":QtGui.QBrush(QtGui.QColor(0,255,21)),
-        "Hostile":QtGui.QBrush(QtGui.QColor(255,0,0)),
-        "Neutral":QtGui.QBrush(QtGui.QColor(209,255,203)),
-        "Ally":QtGui.QBrush(QtGui.QColor(0,136,255)),
-        "Self":QtGui.QBrush(QtGui.QColor(178,111,255)),
-        "Common":QtGui.QBrush(QtGui.QColor(255,255,255)),
-        "Uncommon":QtGui.QBrush(QtGui.QColor(148,144,255)),
-        "Rare":QtGui.QBrush(QtGui.QColor(17,255,0)),
-        "Legendary":QtGui.QBrush(QtGui.QColor(149,0,255)),
-        "Mythical":QtGui.QBrush(QtGui.QColor(255,80,255)),
-        "Artefact":QtGui.QBrush(QtGui.QColor(255,255,0)),
-        "Broken":QtGui.QBrush(QtGui.QColor(152,152,152)),
-        "Magical":QtGui.QBrush(QtGui.QColor(255,111,113)),
-        "Important":QtGui.QBrush(QtGui.QColor(255,183,0)),
-		"Gradient1":QtGui.QBrush(QtGui.QColor(0,0,0)),
-		"Gradient2":QtGui.QBrush(QtGui.QColor(85,0,0)),
-		"Gradient3":QtGui.QBrush(QtGui.QColor(255,0,0))}
-    return palette1 , palette2 , palette3 , PenColours , NotificationColours , MiscColours
+Bright = {
+    "Palette 1" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,203,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,204,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,203,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,159,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,159,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,184,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,183,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,184,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,118,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,117,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,117,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,197,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,247,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,246,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,246,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,219,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,219,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Palette 2" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,203,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,204,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,203,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,159,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,159,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,184,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,183,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,184,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,118,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,117,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,117,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,197,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,247,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,246,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,246,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,219,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,219,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Palette 3" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,203,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,204,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(203,203,203,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,159,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,159,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,184,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,183,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(184,184,184,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(159,159,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,239,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(239,239,238,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,118,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,117,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(118,118,117,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,197,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,247,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,246,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(247,247,246,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,219,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,219,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Pen Colours" : {
+        "Red" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Green" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Blue" : QtGui.QBrush(QtGui.QColor(55,55,255,255),QtCore.Qt.SolidPattern) ,
+        "Yellow" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Cyan" : QtGui.QBrush(QtGui.QColor(0,255,234,255),QtCore.Qt.SolidPattern) ,
+        "Magenta" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
+        "Orange" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+        "Light Blue" : QtGui.QBrush(QtGui.QColor(0,170,255,255),QtCore.Qt.SolidPattern) ,
+        "White" : QtGui.QBrush(QtGui.QColor(211,211,211,255),QtCore.Qt.SolidPattern) ,
+        "Black" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Notification Colours" : {
+        "Error" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Warning" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Notification" : QtGui.QBrush(QtGui.QColor(0,0,255,255),QtCore.Qt.SolidPattern) ,
+        "Message" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Misc Colours" : {
+        "Friendly" : QtGui.QBrush(QtGui.QColor(0,255,21,255),QtCore.Qt.SolidPattern) ,
+        "Hostile" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Neutral" : QtGui.QBrush(QtGui.QColor(209,255,203,255),QtCore.Qt.SolidPattern) ,
+        "Ally" : QtGui.QBrush(QtGui.QColor(0,136,255,255),QtCore.Qt.SolidPattern) ,
+        "Self" : QtGui.QBrush(QtGui.QColor(81,0,255,255),QtCore.Qt.SolidPattern) ,
+        "Common" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Uncommon" : QtGui.QBrush(QtGui.QColor(148,144,255,255),QtCore.Qt.SolidPattern) ,
+        "Rare" : QtGui.QBrush(QtGui.QColor(17,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Legendary" : QtGui.QBrush(QtGui.QColor(115,0,255,255),QtCore.Qt.SolidPattern) ,
+        "Mythical" : QtGui.QBrush(QtGui.QColor(255,42,227,255),QtCore.Qt.SolidPattern) ,
+        "Artefact" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Broken" : QtGui.QBrush(QtGui.QColor(181,181,181,255),QtCore.Qt.SolidPattern) ,
+        "Magical" : QtGui.QBrush(QtGui.QColor(255,46,49,255),QtCore.Qt.SolidPattern) ,
+        "Important" : QtGui.QBrush(QtGui.QColor(255,183,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient1" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient2" : QtGui.QBrush(QtGui.QColor(255,100,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient3" : QtGui.QBrush(QtGui.QColor(255,255,127,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Python Lexer Colours" : {
+        "Default" : QtGui.QBrush(QtGui.QColor(128,128,128,255),QtCore.Qt.SolidPattern) ,
+        "Comment" : QtGui.QBrush(QtGui.QColor(0,127,0,255),QtCore.Qt.SolidPattern) ,
+        "Number" : QtGui.QBrush(QtGui.QColor(0,127,127,255),QtCore.Qt.SolidPattern) ,
+        "DoubleQuotedString" : QtGui.QBrush(QtGui.QColor(127,0,127,255),QtCore.Qt.SolidPattern) ,
+        "SingleQuotedString" : QtGui.QBrush(QtGui.QColor(127,0,127,255),QtCore.Qt.SolidPattern) ,
+        "Keyword" : QtGui.QBrush(QtGui.QColor(0,0,127,255),QtCore.Qt.SolidPattern) ,
+        "TripleSingleQuotedString" : QtGui.QBrush(QtGui.QColor(127,0,0,255),QtCore.Qt.SolidPattern) ,
+        "TripleDoubleQuotedString" : QtGui.QBrush(QtGui.QColor(127,0,0,255),QtCore.Qt.SolidPattern) ,
+        "ClassName" : QtGui.QBrush(QtGui.QColor(0,0,255,255),QtCore.Qt.SolidPattern) ,
+        "FunctionMethodName" : QtGui.QBrush(QtGui.QColor(0,127,127,255),QtCore.Qt.SolidPattern) ,
+        "Operator" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Identifier" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+        "CommentBlock" : QtGui.QBrush(QtGui.QColor(127,127,127,255),QtCore.Qt.SolidPattern) ,
+        "UnclosedString" : QtGui.QBrush(QtGui.QColor(183,0,3,255),QtCore.Qt.SolidPattern) ,
+        "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(64,112,144,255),QtCore.Qt.SolidPattern) ,
+        "Decorator" : QtGui.QBrush(QtGui.QColor(128,80,0,255),QtCore.Qt.SolidPattern) ,
+    } ,
+}
+
+DeepSea = {
+    "Palette 1" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,79,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,44,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(34,94,172,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(13,30,107,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,43,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,43,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,48,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,48,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,33,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,33,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,100,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,100,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,57,84,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,57,84,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(114,178,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(114,178,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Palette 2" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,79,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,44,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(34,94,172,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(13,30,107,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,43,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,43,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,48,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,48,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,33,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,33,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,100,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,100,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,57,84,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,57,84,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(114,178,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(114,178,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Palette 3" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,79,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,44,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(34,94,172,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(13,30,107,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,43,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,43,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,48,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,48,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,33,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,33,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,100,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,100,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,57,84,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,57,84,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(114,178,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(114,178,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Pen Colours" : {
+        "Red" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Green" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Blue" : QtGui.QBrush(QtGui.QColor(55,55,255,255),QtCore.Qt.SolidPattern) ,
+        "Yellow" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Cyan" : QtGui.QBrush(QtGui.QColor(0,255,234,255),QtCore.Qt.SolidPattern) ,
+        "Magenta" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
+        "Orange" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+        "Light Blue" : QtGui.QBrush(QtGui.QColor(0,170,255,255),QtCore.Qt.SolidPattern) ,
+        "White" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+        "Black" : QtGui.QBrush(QtGui.QColor(68,68,68,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Notification Colours" : {
+        "Error" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Warning" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Notification" : QtGui.QBrush(QtGui.QColor(0,0,255,255),QtCore.Qt.SolidPattern) ,
+        "Message" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Misc Colours" : {
+        "Friendly" : QtGui.QBrush(QtGui.QColor(0,255,21,255),QtCore.Qt.SolidPattern) ,
+        "Hostile" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Neutral" : QtGui.QBrush(QtGui.QColor(209,255,203,255),QtCore.Qt.SolidPattern) ,
+        "Ally" : QtGui.QBrush(QtGui.QColor(0,136,255,255),QtCore.Qt.SolidPattern) ,
+        "Self" : QtGui.QBrush(QtGui.QColor(178,111,255,255),QtCore.Qt.SolidPattern) ,
+        "Common" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+        "Uncommon" : QtGui.QBrush(QtGui.QColor(148,144,255,255),QtCore.Qt.SolidPattern) ,
+        "Rare" : QtGui.QBrush(QtGui.QColor(17,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Legendary" : QtGui.QBrush(QtGui.QColor(226,0,255,255),QtCore.Qt.SolidPattern) ,
+        "Mythical" : QtGui.QBrush(QtGui.QColor(37,255,255,255),QtCore.Qt.SolidPattern) ,
+        "Artefact" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Broken" : QtGui.QBrush(QtGui.QColor(152,152,152,255),QtCore.Qt.SolidPattern) ,
+        "Magical" : QtGui.QBrush(QtGui.QColor(255,46,49,255),QtCore.Qt.SolidPattern) ,
+        "Important" : QtGui.QBrush(QtGui.QColor(255,183,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient1" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient2" : QtGui.QBrush(QtGui.QColor(0,0,127,255),QtCore.Qt.SolidPattern) ,
+        "Gradient3" : QtGui.QBrush(QtGui.QColor(0,255,255,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Python Lexer Colours" : {
+            "Default" : QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) ,
+            "Comment" : QtGui.QBrush(QtGui.QColor(0,186,0,255),QtCore.Qt.SolidPattern) ,
+            "Number" : QtGui.QBrush(QtGui.QColor(195,255,169,255),QtCore.Qt.SolidPattern) ,
+            "DoubleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "SingleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "Keyword" : QtGui.QBrush(QtGui.QColor(86,156,214,255),QtCore.Qt.SolidPattern) ,
+            "TripleSingleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "TripleDoubleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "ClassName" : QtGui.QBrush(QtGui.QColor(0,251,255,255),QtCore.Qt.SolidPattern) ,
+            "FunctionMethodName" : QtGui.QBrush(QtGui.QColor(255,251,127,255),QtCore.Qt.SolidPattern) ,
+            "Operator" : QtGui.QBrush(QtGui.QColor(211,255,164,255),QtCore.Qt.SolidPattern) ,
+            "Identifier" : QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) ,
+            "CommentBlock" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+            "UnclosedString" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
+            "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+            "Decorator" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        } ,
+}
+
+
+BloodMoon = {
+    "Palette 1" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(88,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(63,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(177,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(138,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(40,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(40,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(85,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(85,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(130,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(130,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(52,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(52,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,169,169,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,158,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Palette 2" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(88,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(63,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(177,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(138,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(40,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(40,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(85,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(85,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(130,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(130,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(52,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(52,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,169,169,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,158,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Palette 3" : loadQPalette([
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.WindowText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(88,0,1,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(30,30,30,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(63,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Button , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(177,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(81,85,94,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(138,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Light , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(67,71,78,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Midlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(40,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(40,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Dark , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(36,38,42,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Mid , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Text , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,252,218,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.BrightText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(60,60,60,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(176,176,176,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ButtonText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(85,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(85,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Base , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(50,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Window , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Shadow , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(48,140,198,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(145,145,145,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(53,68,97,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Highlight , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,254,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.HighlightedText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(150,150,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.Link , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,0,255,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.LinkVisited , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(130,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(74,77,83,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(130,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.AlternateBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.NoBrush) , QtGui.QPalette.NoRole , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(52,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(54,57,63,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(52,0,0,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipBase , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(255,169,169,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(255,255,220,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(255,158,158,255),QtCore.Qt.SolidPattern) , QtGui.QPalette.ToolTipText , QtGui.QPalette.Inactive ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Active ),
+        ( QtGui.QBrush(QtGui.QColor(27,28,31,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Disabled ),
+        ( QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) , 20 , QtGui.QPalette.Inactive ),
+    ]) ,
+    "Pen Colours" : {
+        "Red" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Green" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Blue" : QtGui.QBrush(QtGui.QColor(55,55,255,255),QtCore.Qt.SolidPattern) ,
+        "Yellow" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Cyan" : QtGui.QBrush(QtGui.QColor(0,255,234,255),QtCore.Qt.SolidPattern) ,
+        "Magenta" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
+        "Orange" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+        "Light Blue" : QtGui.QBrush(QtGui.QColor(0,170,255,255),QtCore.Qt.SolidPattern) ,
+        "White" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+        "Black" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Notification Colours" : {
+        "Error" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Warning" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Notification" : QtGui.QBrush(QtGui.QColor(0,0,255,255),QtCore.Qt.SolidPattern) ,
+        "Message" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Misc Colours" : {
+        "Friendly" : QtGui.QBrush(QtGui.QColor(0,255,21,255),QtCore.Qt.SolidPattern) ,
+        "Hostile" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Neutral" : QtGui.QBrush(QtGui.QColor(209,255,203,255),QtCore.Qt.SolidPattern) ,
+        "Ally" : QtGui.QBrush(QtGui.QColor(0,136,255,255),QtCore.Qt.SolidPattern) ,
+        "Self" : QtGui.QBrush(QtGui.QColor(178,111,255,255),QtCore.Qt.SolidPattern) ,
+        "Common" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+        "Uncommon" : QtGui.QBrush(QtGui.QColor(148,144,255,255),QtCore.Qt.SolidPattern) ,
+        "Rare" : QtGui.QBrush(QtGui.QColor(17,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Legendary" : QtGui.QBrush(QtGui.QColor(149,0,255,255),QtCore.Qt.SolidPattern) ,
+        "Mythical" : QtGui.QBrush(QtGui.QColor(255,80,255,255),QtCore.Qt.SolidPattern) ,
+        "Artefact" : QtGui.QBrush(QtGui.QColor(255,255,0,255),QtCore.Qt.SolidPattern) ,
+        "Broken" : QtGui.QBrush(QtGui.QColor(152,152,152,255),QtCore.Qt.SolidPattern) ,
+        "Magical" : QtGui.QBrush(QtGui.QColor(255,111,113,255),QtCore.Qt.SolidPattern) ,
+        "Important" : QtGui.QBrush(QtGui.QColor(255,183,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient1" : QtGui.QBrush(QtGui.QColor(0,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient2" : QtGui.QBrush(QtGui.QColor(85,0,0,255),QtCore.Qt.SolidPattern) ,
+        "Gradient3" : QtGui.QBrush(QtGui.QColor(255,0,0,255),QtCore.Qt.SolidPattern) ,
+    } ,
+    "Python Lexer Colours" : {
+            "Default" : QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) ,
+            "Comment" : QtGui.QBrush(QtGui.QColor(0,186,0,255),QtCore.Qt.SolidPattern) ,
+            "Number" : QtGui.QBrush(QtGui.QColor(195,255,169,255),QtCore.Qt.SolidPattern) ,
+            "DoubleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "SingleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "Keyword" : QtGui.QBrush(QtGui.QColor(86,156,214,255),QtCore.Qt.SolidPattern) ,
+            "TripleSingleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "TripleDoubleQuotedString" : QtGui.QBrush(QtGui.QColor(255,119,0,255),QtCore.Qt.SolidPattern) ,
+            "ClassName" : QtGui.QBrush(QtGui.QColor(0,251,255,255),QtCore.Qt.SolidPattern) ,
+            "FunctionMethodName" : QtGui.QBrush(QtGui.QColor(255,251,127,255),QtCore.Qt.SolidPattern) ,
+            "Operator" : QtGui.QBrush(QtGui.QColor(211,255,164,255),QtCore.Qt.SolidPattern) ,
+            "Identifier" : QtGui.QBrush(QtGui.QColor(215,213,201,255),QtCore.Qt.SolidPattern) ,
+            "CommentBlock" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+            "UnclosedString" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
+            "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
+            "Decorator" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        } ,
+}
+
 
 
 #----------------- Special -----------------
@@ -2282,28 +1102,4 @@ def Red_ERROR():
     return palette , (54/255, 57/255, 63/255) , (215/255, 213/255, 201/255)
 
 
-PaletteElements = {"AlternateBase" : QtGui.QPalette.AlternateBase,
-                   "Base" : QtGui.QPalette.Base,
-                   "BrightText" : QtGui.QPalette.BrightText,
-                   "Button" : QtGui.QPalette.Button,
-                   "ButtonText" : QtGui.QPalette.ButtonText,
-                   "Dark" : QtGui.QPalette.Dark,
-                   "Highlight" : QtGui.QPalette.Highlight,
-                   "HighlightedText" : QtGui.QPalette.HighlightedText,
-                   "Light" : QtGui.QPalette.Light,
-                   "Link" : QtGui.QPalette.Link,
-                   "LinkVisited" : QtGui.QPalette.LinkVisited,
-                   "Mid" : QtGui.QPalette.Mid,
-                   "Midlight" : QtGui.QPalette.Midlight,
-                   #"PlaceholderText" : QtGui.QPalette.PlaceholderText, # requires Qt 5.12 but is not necessary (see https://doc.qt.io/qt-5/qpalette.html#placeholderText)
-                   "Shadow" : QtGui.QPalette.Shadow,
-                   "Text" : QtGui.QPalette.Text,
-                   "ToolTipBase" : QtGui.QPalette.ToolTipBase,
-                   "ToolTipText" : QtGui.QPalette.ToolTipText,
-                   "Window" : QtGui.QPalette.Window,
-                   "WindowText" : QtGui.QPalette.WindowText}
-PaletteStates = {"Active Version 1":QtGui.QPalette.Active , "Inactive Version 1":QtGui.QPalette.Inactive , "Disabled Version 1":QtGui.QPalette.Disabled,
-                 "Active Version 2":QtGui.QPalette.Active , "Inactive Version 2":QtGui.QPalette.Inactive , "Disabled Version 2":QtGui.QPalette.Disabled,
-                 "Active Version 3":QtGui.QPalette.Active , "Inactive Version 3":QtGui.QPalette.Inactive , "Disabled Version 3":QtGui.QPalette.Disabled}
-
-Colours = {"Dark":Dark, "Bright":Bright, "Deep Sea":DeepSea, "Blood Moon":BloodMoon}
+Colours = {"Dark":Dark, "Deep Sea":DeepSea, "Blood Moon":BloodMoon, "Bright":Bright}

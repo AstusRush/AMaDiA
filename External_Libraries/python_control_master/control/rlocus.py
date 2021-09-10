@@ -133,7 +133,7 @@ def root_locus(sys, kvect=None, xlim=None, ylim=None,
         else:
             figure_number = pylab.get_fignums()
             figure_title = [
-                pylab.figure(numb).canvas.get_window_title()
+                pylab.figure(numb).Canvas.get_window_title()
                 for numb in figure_number]
             new_figure_name = "Root Locus"
             rloc_num = 1
@@ -144,7 +144,7 @@ def root_locus(sys, kvect=None, xlim=None, ylim=None,
             ax = pylab.axes()
 
         if PrintGain and not sisotool:
-            f.canvas.mpl_connect(
+            f.Canvas.mpl_connect(
                 'button_release_event',
                 partial(_RLClickDispatcher, sys=sys, fig=f,
                         ax_rlocus=f.axes[0], plotstr=plotstr))
@@ -159,7 +159,7 @@ def root_locus(sys, kvect=None, xlim=None, ylim=None,
                 (start_mat[0][0].real, start_mat[0][0].imag,
                  1, -1 * start_mat[0][0].real / abs(start_mat[0][0])),
                 fontsize=12 if int(matplotlib.__version__[0]) == 1 else 10)
-            f.canvas.mpl_connect(
+            f.Canvas.mpl_connect(
                 'button_release_event',
                 partial(_RLClickDispatcher, sys=sys, fig=f,
                         ax_rlocus=f.axes[1], plotstr=plotstr,
@@ -271,7 +271,7 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
         if Plot:
             figure_number = pylab.get_fignums()
             figure_title = [
-                pylab.figure(numb).canvas.get_window_title()
+                pylab.figure(numb).Canvas.get_window_title()
                 for numb in figure_number]
             new_figure_name = "Root Locus"
             rloc_num = 1
@@ -350,7 +350,7 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
         if Plot:
             figure_number = pylab.get_fignums()
             figure_title = [
-                pylab.figure(numb).canvas.get_window_title()
+                pylab.figure(numb).Canvas.get_window_title()
                 for numb in figure_number]
             new_figure_name = "Root Locus"
             rloc_num = 1
@@ -725,8 +725,8 @@ def _RLClickDispatcher(event, sys, fig, ax_rlocus, plotstr, sisotool=False,
         if sisotool and K is not None:
             _SisotoolUpdate(sys, fig, K, bode_plot_params, tvect)
 
-    # Update the canvas
-    fig.canvas.draw()
+    # Update the Canvas
+    fig.Canvas.draw()
 
 
 def _RLFeedbackClicksPoint(event, sys, fig, ax_rlocus, sisotool=False):

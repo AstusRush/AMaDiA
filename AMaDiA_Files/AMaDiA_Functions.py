@@ -3,12 +3,11 @@
 # if__name__ == "__main__":
 #     pass
 
-from AGeLib.exc import *
 
 import sys 
 sys.path.append('..')
+from AGeLib import *
 import subprocess
-from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
 import socket
 import datetime
 import time
@@ -18,6 +17,7 @@ import errno
 import os
 import sympy
 import re
+common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
 import traceback
 
 
@@ -266,6 +266,10 @@ def LaTeX(expr,local_dict=None,evalf=1):
     except common_exceptions:
         ExceptionOutput(sys.exc_info())
     
+    expr = re.sub(r"\u20D7",r"VECTORARROWPLACEHOLDER",expr)
+    expr = re.sub(r"\u0332",r"UNDERLINEPLACEHOLDER",expr)
+    expr = re.sub(r"\u0305",r"OVERLINEPLACEHOLDER",expr)
+    
     sl = expr.split(",")
     l = []
     c = ""
@@ -298,8 +302,11 @@ def LaTeX(expr,local_dict=None,evalf=1):
                 c = i
     
     rtnexpr = ",".join(l)
+    rtnexpr = re.sub(r"(\w+)VECTORARROWPLACEHOLDER(\w*)",r"\\vec{\1\2}",rtnexpr)
+    rtnexpr = re.sub(r"(\w+)UNDERLINEPLACEHOLDER(\w*)",r"\\underline{\1\2}",rtnexpr)
+    rtnexpr = re.sub(r"(\w+)OVERLINEPLACEHOLDER(\w*)",r"\\overline{\1\2}",rtnexpr)
     
-    return rtnexpr # _LaTeX_helper(expr,local_dict,global_dict,evalf)
+    return rtnexpr
 
 def _LaTeX_helper(expr,local_dict,global_dict,evalf):
     if expr.strip() == "": return expr

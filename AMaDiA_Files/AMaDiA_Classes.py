@@ -8,11 +8,10 @@ Created on Wed Sep  4 14:55:31 2019
 # if__name__ == "__main__":
 #     pass
 
-from AGeLib.exc import *
 
 import sys
 sys.path.append('..')
-from PyQt5 import QtWidgets,QtCore,QtGui # Maybe Needs a change of the interpreter of Qt Creator to work there
+from AGeLib import *
 import socket
 import datetime
 import platform
@@ -20,9 +19,8 @@ import errno
 import os
 import sympy
 import re
+common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
 import warnings
-
-from PyQt5 import QtCore
 
 from sympy.parsing.latex import parse_latex
 from sympy.parsing.sympy_parser import parse_expr
@@ -47,9 +45,11 @@ def ReloadModules():
 Iam_Lost = "Lost"
 Iam_Normal = "Normal"
 Iam_2D_plot = "2D-plot"
+Iam_3D_plot = "3D-plot"
+Iam_complex_plot = "Complex-plot"
 Iam_ODE = "ODE"
 Iam_Multi_Dim = "Multi-Dim"
-IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_ODE, Iam_Multi_Dim]
+IamList = [Iam_Lost, Iam_Normal, Iam_2D_plot, Iam_3D_plot, Iam_complex_plot, Iam_ODE, Iam_Multi_Dim]
 
 
 #parse_expr\((.*),evaluate=False,local_dict=self.Variables,global_dict=self.global_dict()\)
@@ -74,7 +74,7 @@ class AMaS: # Astus' Mathematical Structure
         with QtCore.QMutexLocker(self.NotificationMutex):
             self.NotificationList = []
         
-        if string == "":
+        if string.strip() == "":
             N = NC(1,"ERROR: No input",func="AMaS.__init__",DplStr="Please give an input",send=False)
             self.Notify(N)
             self.Exists = False
@@ -90,6 +90,8 @@ class AMaS: # Astus' Mathematical Structure
     def init_bools(self):
         self.multiline = False
         self.Plot_is_initialized = False
+        self.Plot_is_initialized_3D = False #TODO: 3D-Plot
+        self.Plot_is_initialized_complex = False
         self.plot_data_exists = False
         self.disable_units = False
         self.init_history()
@@ -99,6 +101,13 @@ class AMaS: # Astus' Mathematical Structure
             self.INIT_Normal(string)
         elif self.Iam == Iam_2D_plot:
             self.INIT_2D_plot(string)
+        elif self.Iam == Iam_3D_plot: #TODO: 3D-Plot
+            print("AMaS Object: I am Lost! I don't know who I am! "+self.Iam+" is not known to me! I'm gonna pretend I am normal!")
+            self.Iam = Iam_Lost
+            self.INIT_Normal(string)
+            #self.INIT_3D_plot(string)
+        elif self.Iam == Iam_complex_plot: #TODO: Complex-Plot
+            self.INIT_complex_plot(string)
         elif self.Iam == Iam_ODE:
             self.INIT_ODE(string)
         elif self.Iam == Iam_Multi_Dim:
@@ -126,6 +135,11 @@ class AMaS: # Astus' Mathematical Structure
         self.string = string
         self.init_Critical()
         self.init_2D_plot()
+
+    def INIT_complex_plot(self,string):
+        self.string = string
+        self.init_Critical()
+        self.init_complex_plot()
 
     def INIT_ODE(self,string):
         #FEATURE: INIT_ODE
@@ -172,6 +186,7 @@ class AMaS: # Astus' Mathematical Structure
         self.tab_2_ref = None
         self.Tab_3_1_is = False
         self.Tab_3_1_ref = None
+        #TODO: Complex-Plot needs is and ref
         self.Tab_4_is = False
         self.Tab_4_ref = None
                 
@@ -190,6 +205,24 @@ class AMaS: # Astus' Mathematical Structure
         self.plot_per_unit = False
         self.plot_x_vals = np.arange(10)
         self.plot_y_vals = np.zeros_like(self.plot_x_vals)
+                
+    def init_complex_plot(self): #TODO: Complex-Plot
+        self.Plot_is_initialized_complex = True
+        #self.current_ax_complex = None
+        #self.plotC_ratio = False
+        #self.plotC_grid = True
+        self.plotC_r_min = -5
+        self.plotC_r_max = 5
+        self.plotC_i_min = -5
+        self.plotC_i_max = 5
+        #self.plotC_xlim = False
+        #self.plotC_xlim_vals = (-5, 5)
+        #self.plotC_ylim = False
+        #self.plotC_ylim_vals = (-5, 5)
+        self.plotC_points = 400
+        self.plotC_vals = np.zeros((10,10))
+        self.plotC_vals_in = np.linspace(np.linspace(self.plotC_r_min+self.plotC_i_max*1j,self.plotC_r_max+self.plotC_i_max*1j,self.plotC_points),
+					                     np.linspace(self.plotC_r_min+self.plotC_i_min*1j,self.plotC_r_max+self.plotC_i_min*1j,self.plotC_points),self.plotC_points)
         
 
     
@@ -328,9 +361,9 @@ class AMaS: # Astus' Mathematical Structure
                 for i in self.NotificationList:
                     i.w(win)
             for i in self.NotificationList:
-                i.send()
-                QtWidgets.QApplication.instance().processEvents()
+                i.send(processEvents=False) # This is necessary to avoid a lock up for example does " 1 (+-) 1 " pretty reliable lock up the program
             self.NotificationList = []
+        QtWidgets.QApplication.instance().processEvents()
 
     def Notify(self,Notification):
         """Used to add Notifications"""
@@ -379,7 +412,6 @@ class AMaS: # Astus' Mathematical Structure
             except:
                 In += "ERROR: ATTRIBUTE DOES NOT EXIST"
             Notification.i(In)
-            #Notification.i("    self.Input: "+self.Input+"\nSpecific Input: "+In)
             self.NotificationList.append(Notification)
 
     def NotifyFromNumpy(self,text,flag=""):
@@ -395,6 +427,8 @@ class AMaS: # Astus' Mathematical Structure
 
  # ---------------------------------- LaTeX Converter ----------------------------------
     # MAYBE: set a time limit for conversions that can be disabled in the options (if this is even possible)
+    # CRITICAL: When a line begins with "#" it should be interpreted as a text
+    #               Currently lines starting with "#" cause an error (The ENTIRE message can not be displayed thus it is a critical exception that MUST be fixed!!!)
     
     def ConvertToLaTeX(self):
         """
@@ -403,29 +437,12 @@ class AMaS: # Astus' Mathematical Structure
         if self.multiline:
             self.LaTeX = ""
             n = len(self.cstrList)
-            for i,e in enumerate(self.cstrList):
+            for e in self.cstrList:
                 n -= 1
                 LineText = ""
                 try:
-                    #if e.strip() == "":
-                    #    #LineText += "-"
-                    #    if n > 0:
-                    #        LineText += "\n"
-                    #        #self.LaTeX_L += "$\displaystyle"
-                    #        #self.LaTeX_N += "$"
-                    #    self.LaTeX += LineText
-                    #    continue
-                    #if "=" in e:
-                    #    parts = self.cstrList[i].split("=")
-                    #    conv = ""
-                    #    for j in parts:
-                    #        if len(j)>0:
-                    #            conv += AF.LaTeX(j,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                    #        conv += " = "
-                    #    LineText += conv[:-3]
-                    #else:
                     LineText = AF.LaTeX(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                except common_exceptions: #as inst:
+                except common_exceptions:
                     ExceptionOutput(sys.exc_info())
                     # LineText += AF.AstusParseInverse(e) #MAYBE: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
                     LineText += e
@@ -434,26 +451,13 @@ class AMaS: # Astus' Mathematical Structure
                         LineText += "\n"
                     self.LaTeX += LineText
                 else:
-                    #LineText += "$"
                     if "#" in e:
                         LineText += r" \qquad \text{ " + e.split("#",1)[1] + " } "
                     if n > 0:
                         LineText += "\n"
-                    #self.LaTeX_L += r"$\displaystyle "
-                    #self.LaTeX_N += "$"
-                    #self.LaTeX_L += LineText
                     self.LaTeX += r" \qquad "*e.count("\t") + LineText
         else:
             try:
-                #if "=" in self.cstr:
-                #    parts = self.cstr.split("=")
-                #    self.LaTeX = ""
-                #    for i in parts:
-                #        if len(i)>0:
-                #            self.LaTeX += AF.LaTeX(i,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
-                #        self.LaTeX += " = "
-                #    self.LaTeX = self.LaTeX[:-3]
-                #else:
                 self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
                 if "#" in self.cstr:
                     self.LaTeX += r" \qquad \text{ " + self.cstr.split("#",1)[1] + " } "
@@ -482,20 +486,6 @@ class AMaS: # Astus' Mathematical Structure
                 try:
                     if self.Solution == "Not evaluated yet":
                         raise Exception("Equation has not been evaluated yet")
-                    #if "=" in self.Solution:
-                    #    parts = self.Solution.split("=")
-                    #    self.LaTeX_S = ""
-                    #    for i in parts:
-                    #        if len(i)>0:
-                    #            #self.LaTeX_S += sympy.latex( sympy.S(i,evaluate=False))
-                    #            expr = parse_expr(i,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
-                    #            self.LaTeX_S += sympy.latex(expr)
-                    #        self.LaTeX_S += " = "
-                    #    self.LaTeX_S = self.LaTeX_S[:-3]
-                    #else:
-                    #    #self.LaTeX_S = sympy.latex( sympy.S(self.Solution,evaluate=False))
-                    #    expr = parse_expr(self.Solution,evaluate=False,local_dict=self.Variables,global_dict=self.global_dict())
-                    #    self.LaTeX_S = sympy.latex(expr)
                     self.LaTeX_S = AF.LaTeX(self.Solution,local_dict=self.VariablesUnev,evalf=1)
                 except common_exceptions:
                     if expr==None: expr=self.Solution
@@ -799,6 +789,7 @@ class AMaS: # Astus' Mathematical Structure
         else:
             try:
                 temp = AF.UnpackDualOperators(self.cstr,Brackets=("{","}"))
+                print(temp)
                 ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
                 self.CheckForNonesense(ans)
                 separator = "   <==   "
@@ -1138,6 +1129,82 @@ class AMaS: # Astus' Mathematical Structure
             scipy.seterrcall(oldErrCall_sp)
             return False
 
+
+ # ---------------------------------- 3D Plotter Methods ----------------------------------
+            
+    def Plot_3D_Calc_Values(self): #TODO: 3D-Plot
+        pass
+  
+ # ---------------------------------- Complex Plotter Methods ----------------------------------
+            
+    def Plot_Complex_Calc_Values(self): #TODO: Complex-Plot
+        oldErrCall = np.seterrcall(self.NotifyFromNumpy)
+        oldErrCall_sp = scipy.seterrcall(self.NotifyFromNumpy)
+        if self.cstr.count("=")>=1: #CRITICAL: Complex-Plot This has not been adapted and will crash
+            try:
+                temp_line_split = self.cstr.split("=",1)
+                temp_line_split[0] = temp_line_split[0].strip()
+                if temp_line_split[0] in ["x","z"]:
+                    temp_line_x_val = parse_expr(temp_line_split[1],local_dict=self.Variables,global_dict=self.global_dict())
+                    temp_line_x_val = float(temp_line_x_val.evalf())
+                    if type(temp_line_x_val) == int or type(temp_line_x_val) == float :
+                        self.plot_x_vals = temp_line_x_val
+                        self.plot_data_exists = True
+                        np.seterrcall(oldErrCall)
+                        scipy.seterrcall(oldErrCall_sp)
+                        return True
+            except common_exceptions:
+                pass
+        
+        
+        if True : #self.plottable: #IMPROVE: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
+            x = sympy.symbols('x') # pylint: disable=unused-variable
+            z = sympy.symbols('z') # pylint: disable=unused-variable
+            n = sympy.symbols('n') # pylint: disable=unused-variable
+            try:
+                Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
+            except common_exceptions: #as inst:
+                self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_Complex_Calc_Values",exc=sys.exc_info(),send=False))
+                self.plottable = False
+                np.seterrcall(oldErrCall)
+                scipy.seterrcall(oldErrCall_sp)
+                return False
+            try:
+                Function = Function.doit()
+            except common_exceptions: #as inst:
+                ExceptionOutput(sys.exc_info())
+                
+            if self.plotC_r_max < self.plotC_r_min:
+                self.plotC_r_max , self.plotC_r_min = self.plotC_r_min , self.plotC_r_max
+            if self.plotC_i_max < self.plotC_i_min:
+                self.plotC_i_max , self.plotC_i_min = self.plotC_i_min , self.plotC_i_max
+            
+            self.plotC_vals_in = np.linspace(np.linspace(self.plotC_r_min+self.plotC_i_max*1j,self.plotC_r_max+self.plotC_i_max*1j,self.plotC_points),
+                                             np.linspace(self.plotC_r_min+self.plotC_i_min*1j,self.plotC_r_max+self.plotC_i_min*1j,self.plotC_points),self.plotC_points)
+
+            try:
+                evalfunc = sympy.lambdify(z, Function, modules=['numpy','sympy'])
+                self.plotC_vals = evalfunc(self.plotC_vals_in)
+                
+                
+                #if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == (): #This also catches the case exp(x)
+                #    self.plotC_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
+                
+            except common_exceptions: #as inst:
+                #TheException = sys.exc_info()
+                self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_Complex_Calc_Values",exc=sys.exc_info(),send=False))
+                np.seterrcall(oldErrCall)
+                scipy.seterrcall(oldErrCall_sp)
+                return False
+                    
+            self.plot_data_exists = True
+            np.seterrcall(oldErrCall)
+            scipy.seterrcall(oldErrCall_sp)
+            return True
+        else:
+            np.seterrcall(oldErrCall)
+            scipy.seterrcall(oldErrCall_sp)
+            return False
 
  # ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------
 

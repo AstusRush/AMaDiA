@@ -662,7 +662,7 @@ v0.17.0: Big Overhaul!
 +++ Made copying text which include linebreaks into LineEdit more secure. It should now be (near) impossible to create linebreaks.
 ++ AWWF Improvements:
 +++ The Top-, Menu- and Statusbar can now be hidden in fullscreen
-+++ The new method positionReset can now reset a windows position and size (standard size can be set with the attribute standardSize)
++++ The new method positionReset can now reset a windows position and size (standard size can be set with the attribute StandardSize)
 +++ alt+T now tries to keep the window in the foreground
 +++ F11 now activates the fullscreen mode
 ++ MenuAction Improvements:

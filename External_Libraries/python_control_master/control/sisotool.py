@@ -64,10 +64,10 @@ def sisotool(sys, kvect = None, xlim_rlocus = None, ylim_rlocus = None,
 
     # Setup sisotool figure or superimpose if one is already present
     fig = plt.gcf()
-    if fig.canvas.get_window_title() != 'Sisotool':
+    if fig.Canvas.get_window_title() != 'Sisotool':
         plt.close(fig)
         fig,axes = plt.subplots(2, 2)
-        fig.canvas.set_window_title('Sisotool')
+        fig.Canvas.set_window_title('Sisotool')
 
     # Extract bode plot parameters
     bode_plot_params = {
@@ -142,7 +142,7 @@ def _SisotoolUpdate(sys,fig,K,bode_plot_params,tvect=None):
     ax_step.plot(tvect, yout)
     ax_step.axhline(1.,linestyle=':',color='k',zorder=-20)
 
-    # Manually adjust the spacing and draw the canvas
+    # Manually adjust the spacing and draw the Canvas
     fig.subplots_adjust(top=0.9,wspace = 0.3,hspace=0.35)
-    fig.canvas.draw()
+    fig.Canvas.draw()
 

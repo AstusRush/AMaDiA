@@ -1,5 +1,6 @@
 Calculator:
-
+s^3+7·s^2+14·s+8 = 8·(0.25·s + 1)·(0.5·s + 1)·(1·s + 1) should return True but returns False
+	(s^3+7·s^2+14·s+8 )-( 8·(0.25·s + 1)·(0.5·s + 1)·(1·s + 1)) successfully returns 0
 	
 LaTeX:
 	
@@ -8,7 +9,10 @@ Plot:
 
 
 MultiDim:
-	
+	Matrix([[0], [1]]).T can not be displayed with mpl 
+		MathJax can display it so the problem is probably in the formatter
+		Matrix([[0], [1]]).transpose() can be displayed by both
+	subscripts can not be displayed with mpl but with MathJax ...
 	
 Control:
 	

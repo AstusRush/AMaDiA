@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="MTabWidget" name="tabWidget">
+     <widget class="MTabWidget" name="TabWidget">
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -767,13 +767,13 @@ Sympy's &quot;with sympy.evaluate(False)&quot; is currently experimental anyways
   <customwidget>
    <class>MTabWidget</class>
    <extends>QTabWidget</extends>
-   <header location="global">AGeLib.AGeMain</header>
+   <header location="global">AGeLib.AGeWidgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>OptionsWidget_1_Appearance</class>
    <extends>QWidget</extends>
-   <header location="global">AGeLib.AGeMain</header>
+   <header location="global">AGeLib.AGeSpecialWidgets</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

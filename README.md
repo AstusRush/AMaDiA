@@ -41,13 +41,29 @@ On Windows:<br/>
 
    On Linux [WIP]:<br/>
  * sudo apt-install git<br/>
- * Install https://www.anaconda.com/distribution/ or sudo apt-install ...<br/>
- * [Console commands for installation and Alias for Update/Start coming soon(ish?)]<br/>
+ * Install https://www.anaconda.com/distribution/ or sudo apt-install or use:<br/>
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+sudo chmod +x Anaconda3-2020.02-Linux-x86_64.sh
+./Anaconda3-2020.02-Linux-x86_64.sh
+```
+ * to run AMaDiA open a console, go to the installation directory and run<br/>
+```
+conda activate root
+python3 AMaDiA.py
+```
+ * instead of writing `conda activate root` one can activate the environment permanently with `source ~/anaconda3/bin/activate root`<br/>
 <br/>
 
    On OSX [???]:<br/>
- * I don't have access to OSX and am not even sure how good AMaDiA runs on it (it should work flawlessy?)... Sorry but I can not help you...<br/>
+ * Apparently Apple messes around with the menu bar of all windows which destroys my window frame... I will try to fix it...<br/>
  * If anyone has a good description how to easily install/update+run a python script on OSX feel free to inform me so I can add it here<br/>
+<br/>
+
+   I already have a different python distribution installed:<br/>
+ * Great! requirements.txt contains a list with all required modules. Simply install them and you are ready to go!<br/>
+<br/>
+
 
 <br/><br/>
 # Screenshot

@@ -113,7 +113,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
         self.ConnectCheckBox.clicked.connect(self.on_ConnectBoxChanged) 
         self.SendButton.clicked.connect(self.on_sendButtonClicked)
         self.InputField.returnPressed.connect(self.on_sendButtonClicked)
-        #self.FontSizeBox.valueChanged.connect(self.ChangeFontSize) #TODO
+        #self.FontSizeBox.valueChanged.connect(self.changeFontSize) #TODO
         self.FontSizeBox.setVisible(False)
         self.FontText.setVisible(False)
         
@@ -203,7 +203,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
     def UpdateUserList(self, msg):
         self.OnlineList.setPlainText(msg)
         
-    #def ChangeFontSize(self): #TODO
+    #def changeFontSize(self): #TODO
     #    Size = self.FontSizeBox.value()
     #    newFont = QtGui.QFont()
     #    newFont.setFamily(self.FontFamily)
@@ -220,7 +220,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ClientInterface):
     #        #self.print_message(str(modifiers))
     #        if self.FontSizeBox.value() + numSteps <= self.FontSizeBox.maximum() and self.FontSizeBox.value() + numSteps >= self.FontSizeBox.minimum() :
     #            self.FontSizeBox.setValue(self.FontSizeBox.value() + numSteps)
-    #            self.ChangeFontSize()
+    #            self.changeFontSize()
     #            #self.print_message(str(self.FontSizeBox.value() + numSteps))
 
  

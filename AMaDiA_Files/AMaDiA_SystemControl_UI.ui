@@ -569,7 +569,7 @@
   <customwidget>
    <class>MplWidget_LaTeX</class>
    <extends>QWidget</extends>
-   <header location="global">AGeLib.AGeMain</header>
+   <header location="global">AGeLib.AGeGW</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -587,18 +587,18 @@
   <customwidget>
    <class>TableWidget</class>
    <extends>QTableWidget</extends>
-   <header location="global">AGeLib.AGeMain</header>
+   <header location="global">AGeLib.AGeWidgets</header>
   </customwidget>
   <customwidget>
    <class>MTabWidget</class>
    <extends>QTabWidget</extends>
-   <header location="global">AGeLib.AGeMain</header>
+   <header location="global">AGeLib.AGeWidgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ListWidget</class>
    <extends>QListWidget</extends>
-   <header location="global">AGeLib.AGeMain</header>
+   <header location="global">AGeLib.AGeWidgets</header>
   </customwidget>
   <customwidget>
    <class>AMaDiA_LineEdit</class>

@@ -3,13 +3,11 @@
 # if__name__ == "__main__":
 #     pass
 
-from AGeLib import *
 
 import sys
 sys.path.append('..')
-from PyQt5 import QtWidgets,QtCore,QtGui,Qt#,QtQuick
-#QtQuick.
-#from PyQt5.QtQuick import Controls as QtControls
+from AGeLib import *
+
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas #CLEANUP: Delete this line?
@@ -22,8 +20,9 @@ from mpl_toolkits.axes_grid1.mpl_axes import Axes
 import numpy as np
 import scipy
 import sympy
-from sympy.parsing.sympy_parser import parse_expr
 import re
+common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
+from sympy.parsing.sympy_parser import parse_expr
 import time
 
 import warnings
@@ -46,7 +45,7 @@ def ReloadModules():
 #       "sq" should suggest "√(*)" with * being the cursor position
 #       "int" should suggest "∫{(*)()}dx" or "∫{(*From*)(To)} f(x) dx" with "*From*" being selected or even fancier
 
-class AMaDiA_TextEdit(TextEdit):
+class AMaDiA_TextEdit(AGeWidgets.TextEdit):
     def __init__(self, parent=None):
         super(AMaDiA_TextEdit, self).__init__(parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
@@ -61,7 +60,7 @@ class AMaDiA_TextEdit(TextEdit):
         self.document().contentsChange.emit(curPos,0,0)
 
 
-class AMaDiA_LineEdit(LineEdit):
+class AMaDiA_LineEdit(AGeWidgets.LineEdit):
     def __init__(self, parent=None):
         super(AMaDiA_LineEdit, self).__init__(parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
@@ -71,6 +70,8 @@ class AMaDiA_LineEdit(LineEdit):
         cursor = self.textCursor()
         curPos = cursor.position()
         self.document().contentsChange.emit(curPos,0,0)
+
+    # TODO: Make an option that creates a vector instead of adding everything when a multiline text is pasted into a AMaDiA_LineEdit
 
 
 
@@ -85,9 +86,9 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
             self.enabled = True
         QtWidgets.QApplication.instance().S_Highlighter.connect(self.ToggleActive)
 
-        # init the rules # Currently Unused...
-        rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
-        self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+        ## init the rules # Currently Unused...
+        #rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
+        #self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules] #REMINDER: QtCore.QRegExp has been replaced by QtCore.QRegularExpression in Qt6
 
         App().S_ColourChanged.connect(self.UpdateFormats)
 
@@ -160,7 +161,7 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
                     self.setFormat(b, len(Pair[1]), self.STYLES['pair'])
                 else:
                     # IMPROVE: Opening pair finder
-
+                    
                     #---------method1----------
                     # FIXME: Does not work!!!!!!!!!!!!!! NEEDS FIX OF AF.FindPair ???
                         #k=0
@@ -173,8 +174,8 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
                         #    k+=1
                     #if found:
                     #    self.setFormat(c, d, self.STYLES['pair'])
-
-
+                    
+                    
                     #---------method2----------
                     found = False
                     for j in braces_list:
@@ -197,8 +198,8 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
                                 k+=1
                     if found:
                         self.setFormat(c, d, self.STYLES['pair'])
-
-
+                
+                
                 break
         
         self.setCurrentBlockState(0)
@@ -206,23 +207,23 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class AMaDiA_TableWidget(TableWidget):
+class AMaDiA_TableWidget(AGeWidgets.TableWidget):
     def __init__(self, parent=None):
         super(AMaDiA_TableWidget, self).__init__(parent)
         self.TheDelegate = AMaDiA_TableWidget_Delegate(self)
         self.setItemDelegate(self.TheDelegate)
 
-class AMaDiA_TableWidget_Delegate(TableWidget_Delegate):
+class AMaDiA_TableWidget_Delegate(AGeWidgets.TableWidget_Delegate):
     def __init__(self, parent=None):
         super(AMaDiA_TableWidget_Delegate, self).__init__(parent)
-
+    
     def createEditor(self, parent, options, index):
         return AMaDiA_LineEdit(parent)
 
 
 # -----------------------------------------------------------------------------------------------------------------
 
-class HistoryWidget(ListWidget):
+class HistoryWidget(AGeWidgets.ListWidget):
     def __init__(self, parent=None):
         super(HistoryWidget, self).__init__(parent)
         self.installEventFilter(self)
@@ -236,28 +237,28 @@ class HistoryWidget(ListWidget):
                     if QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Normal":
                         if (self == QtWidgets.QApplication.instance().MainWindow.Tab_1_History 
                                 or self == QtWidgets.QApplication.instance().MainWindow.Tab_4_History) and item.data(100).Solution != "Not evaluated yet":
-                            Qt.QApplication.clipboard().setText(item.data(100).Equation)
+                            QtWidgets.QApplication.clipboard().setText(item.data(100).Equation)
                         else:
-                            Qt.QApplication.clipboard().setText(item.text())
+                            QtWidgets.QApplication.clipboard().setText(item.text())
                     elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Solution"
                             and item.data(100).Solution != "Not evaluated yet"):
-                        Qt.QApplication.clipboard().setText(item.data(100).Solution)
+                        QtWidgets.QApplication.clipboard().setText(item.data(100).Solution)
                     elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Equation"
                             and item.data(100).Solution != "Not evaluated yet"):
-                        Qt.QApplication.clipboard().setText(item.data(100).Equation)
+                        QtWidgets.QApplication.clipboard().setText(item.data(100).Equation)
                     elif QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Text":
-                        Qt.QApplication.clipboard().setText(item.data(100).Text)
+                        QtWidgets.QApplication.clipboard().setText(item.data(100).Text)
                     elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="LaTeX"
                             and item.data(100).LaTeX != r"\text{Not converted yet}"
                             and item.data(100).LaTeX != r"\text{Could not convert}"):
-                        Qt.QApplication.clipboard().setText(item.data(100).LaTeX)
+                        QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX)
                     elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="LaTeX Equation"
                             and item.data(100).LaTeX_E != r"\text{Not converted yet}"
                             and item.data(100).LaTeX_E != r"\text{Could not convert}"):
-                        Qt.QApplication.clipboard().setText(item.data(100).LaTeX_E)
+                        QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX_E)
                     else:
                         NC(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode",win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=item.text())
-                        Qt.QApplication.clipboard().setText(item.text())
+                        QtWidgets.QApplication.clipboard().setText(item.text())
                     event.accept()
                     return
                 elif self == QtWidgets.QApplication.instance().MainWindow.Tab_1_History:
@@ -265,7 +266,7 @@ class HistoryWidget(ListWidget):
                     for i in SelectedItems:
                         string += i.data(100).Equation
                         string += "\n"
-                    Qt.QApplication.clipboard().setText(string)
+                    QtWidgets.QApplication.clipboard().setText(string)
                     event.accept()
                     return
             super(HistoryWidget, self).keyPressEvent(event)
@@ -273,7 +274,10 @@ class HistoryWidget(ListWidget):
             NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=str(event))
             super(HistoryWidget, self).keyPressEvent(event)
 
-    def eventFilter(self, source, event): #TODO: Add Tooltips for the Actions! These should also specify whether the action will be executed on all selected items or only the right-clicked-one! "Delete" should also mention "Del" as the hotkey!
+    def eventFilter(self, source, event):
+        #TODO: Add Tooltips for the Actions! These should also specify whether the action will be executed on all selected items or only the right-clicked-one! "Delete" should also mention "Del" as the hotkey!
+        #FEATURE: When multiple items are selected the context menu should be different: instead of the usual options there should be options to format the selected items in a specific way and copy the result to the clipboard
+        #FEATURE: The comma separation every 3 digits is cool! There should be a way to copy the solution or the equation including this separation
         try:
             if event.type() == 82: # QtCore.QEvent.ContextMenu
             # ---------------------------------- History Context Menu ----------------------------------
@@ -310,13 +314,13 @@ class HistoryWidget(ListWidget):
                         action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
                     menu.addSeparator()
                     if source.itemAt(event.pos()).data(100).plot_data_exists :
-                        action = menu.addAction('Load Plot')
+                        action = menu.addAction('Reload Plot') #TODO: Add tooltip
                         action.triggered.connect(lambda: self.action_H_Load_Plot(source,event))
                     if source.itemAt(event.pos()).data(100).plottable :
-                        action = menu.addAction('New Plot')
+                        action = menu.addAction('New Plot') #TODO: Add tooltip
                         action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
                     elif QtWidgets.QApplication.instance().advanced_mode :
-                        action = menu.addAction('+ New Plot')
+                        action = menu.addAction('+ New Plot') #TODO: Add tooltip
                         action.triggered.connect(lambda: self.action_H_New_Plot(source,event))
                     if source.itemAt(event.pos()).data(100).plot_data_exists and QtWidgets.QApplication.instance().advanced_mode:
                         menu.addSeparator()
@@ -344,52 +348,52 @@ class HistoryWidget(ListWidget):
          
     def action_H_Copy_Solution(self,source,event):
         item = source.itemAt(event.pos())
-        Qt.QApplication.clipboard().setText(item.data(100).Solution)
+        QtWidgets.QApplication.clipboard().setText(item.data(100).Solution)
          
     def action_H_Copy_Equation(self,source,event):
         item = source.itemAt(event.pos())
-        Qt.QApplication.clipboard().setText(item.data(100).Equation)
+        QtWidgets.QApplication.clipboard().setText(item.data(100).Equation)
          
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
-        Qt.QApplication.clipboard().setText(item.data(100).Text)
+        QtWidgets.QApplication.clipboard().setText(item.data(100).Text)
         
     def action_H_Copy_LaTeX(self,source,event):
         item = source.itemAt(event.pos())
-        Qt.QApplication.clipboard().setText(item.data(100).LaTeX)
+        QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX)
         
     def action_H_Copy_LaTeX_E(self,source,event):
         item = source.itemAt(event.pos())
-        Qt.QApplication.clipboard().setText(item.data(100).LaTeX_E)
+        QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX_E)
         
     def action_H_Copy_Input(self,source,event):
         item = source.itemAt(event.pos())
-        Qt.QApplication.clipboard().setText(item.data(100).Input)
+        QtWidgets.QApplication.clipboard().setText(item.data(100).Input)
         
     def action_H_Copy_cstr(self,source,event):
         item = source.itemAt(event.pos())
-        Qt.QApplication.clipboard().setText(item.data(100).cstr)
+        QtWidgets.QApplication.clipboard().setText(item.data(100).cstr)
         
   # ----------------
          
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
-        self.window().tabWidget.setCurrentIndex(0)
+        self.window().TabWidget.setCurrentIndex(0)
         self.window().Tab_1_F_Calculate(item.data(100))
         
     def action_H_Display_LaTeX(self,source,event): #TODO: Move all selected items to the LaTeX Tab History but only display LaTeX of the right-clicked-one (and update the tooltip for this action)
         item = source.itemAt(event.pos())
-        self.window().tabWidget.setCurrentIndex(1)
+        self.window().TabWidget.setCurrentIndex(1)
         self.window().Tab_2_F_Display(item.data(100))
 
     def action_H_Display_LaTeX_Equation(self,source,event):
         item = source.itemAt(event.pos())
-        self.window().tabWidget.setCurrentIndex(1)
+        self.window().TabWidget.setCurrentIndex(1)
         self.window().Tab_2_F_Display(item.data(100),part="Equation")
 
     def action_H_Display_LaTeX_Solution(self,source,event):
         item = source.itemAt(event.pos())
-        self.window().tabWidget.setCurrentIndex(1)
+        self.window().TabWidget.setCurrentIndex(1)
         self.window().Tab_2_F_Display(item.data(100),part="Solution")
          
   # ----------------
@@ -402,7 +406,7 @@ class HistoryWidget(ListWidget):
         else:
             listItems = [TheItem]
         for item in listItems:
-            self.window().tabWidget.setCurrentIndex(2)
+            self.window().TabWidget.setCurrentIndex(2)
             if not item.data(100).Plot_is_initialized:
                 item.data(100).init_2D_plot()
             if item.data(100).current_ax != None:
@@ -419,7 +423,7 @@ class HistoryWidget(ListWidget):
         else:
             listItems = [TheItem]
         for item in listItems:
-            self.window().tabWidget.setCurrentIndex(2)
+            self.window().TabWidget.setCurrentIndex(2)
             if not item.data(100).Plot_is_initialized:
                 item.data(100).init_2D_plot()
             if item.data(100).current_ax != None:
@@ -439,7 +443,7 @@ class HistoryWidget(ListWidget):
                 Text += " , "
             Text = Text[:-3]
             Text += " ]"
-            Qt.QApplication.clipboard().setText(Text)
+            QtWidgets.QApplication.clipboard().setText(Text)
         except common_exceptions:
             NC(lvl=2,msg="Could not copy x values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_x_Values",win=self.window().windowTitle(),input=item.data(100).Input)
         
@@ -452,13 +456,14 @@ class HistoryWidget(ListWidget):
                 Text += " , "
             Text = Text[:-3]
             Text += " ]"
-            Qt.QApplication.clipboard().setText(Text)
+            QtWidgets.QApplication.clipboard().setText(Text)
         except common_exceptions:
             NC(lvl=2,msg="Could not copy y values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_y_Values",win=self.window().windowTitle(),input=item.data(100).Input)
  
   # ----------------
          
     def action_H_Delete(self,source,event):
+        #FEATURE: Paperbin for items: When items are deleted save them temporarily and add an "undo last deletion" context menu action
         listItems=source.selectedItems()
         if not listItems: return        
         for item in listItems:
@@ -483,3 +488,92 @@ class HistoryWidget(ListWidget):
                 else:
                     item.data(100).Tab_4_is = False
                     item.data(100).Tab_4_ref = None
+
+
+#region 3DPlotWidget ----------------------------------------------------------------------------------------------
+
+class AMaDiA_3DPlotWidget(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super(AMaDiA_3DPlotWidget, self).__init__(parent)
+
+#endregion 3DPlotWidget -------------------------------------------------------------------------------------------
+#region ComplexPlotWidget -----------------------------------------------------------------------------------------
+
+class AMaDiA_ComplexPlotWidget(QtWidgets.QWidget):
+    S_Plot = QtCore.pyqtSignal() # The Plot Signal
+    def __init__(self, parent=None):
+        super(AMaDiA_ComplexPlotWidget, self).__init__(parent)
+        
+        self.setLayout(QtWidgets.QGridLayout())
+        self.layout().setContentsMargins(0,0,0,0)
+        self.layout().setSpacing(3)
+        
+        self.Display = AGeGW.GWidget_ComplexPlot(self)
+        self.layout().addWidget(self.Display,0,0)
+        #
+        self.SettingsArea = QtWidgets.QWidget(self)
+        self.SettingsArea.setLayout(QtWidgets.QHBoxLayout())
+        self.SettingsArea.layout().setContentsMargins(0,0,0,0)
+        self.SBFromR = QtWidgets.QDoubleSpinBox(self)
+        self.SBFromI = QtWidgets.QDoubleSpinBox(self)
+        self.SBToR = QtWidgets.QDoubleSpinBox(self)
+        self.SBToI = QtWidgets.QDoubleSpinBox(self)
+        self.SBFromRLabel = QtWidgets.QLabel("From",self)
+        self.SBFromILabel = QtWidgets.QLabel("+ i ·",self)
+        self.SBToRLabel = QtWidgets.QLabel("to",self)
+        self.SBToILabel = QtWidgets.QLabel("+ i ·",self)
+        for i in [self.SBFromR,self.SBFromI,self.SBToR,self.SBToI]:
+            i.setRange(-10000,10000)
+            i.setStepType(QtWidgets.QDoubleSpinBox.AdaptiveDecimalStepType)
+        self.SBFromR.setValue(-5)
+        self.SBFromI.setValue(-5)
+        self.SBToR.setValue(5)
+        self.SBToI.setValue(5)
+        for i in [self.SBFromRLabel,self.SBFromR,self.SBFromILabel,self.SBFromI,self.SBToRLabel,self.SBToR,self.SBToILabel,self.SBToI]:
+            self.SettingsArea.layout().addWidget(i)
+        self.SettingsArea.layout().insertStretch(-1)
+        self.layout().addWidget(self.SettingsArea,1,0)
+        #
+        self.InputField = AMaDiA_LineEdit(self)
+        self.InputField.returnPressed.connect(self.S_Plot.emit)
+        self.InputField.returnCtrlPressed.connect(self.S_Plot.emit)
+        self.layout().addWidget(self.InputField,2,0)
+
+    def plot(self, AMaS_Object):
+        self.lastInput = AMaS_Object
+        self.Display.plot(AMaS_Object.plotC_vals, (AMaS_Object.plotC_r_min, AMaS_Object.plotC_r_max, AMaS_Object.plotC_i_min, AMaS_Object.plotC_i_max))
+
+    def applySettings(self, AMaS_Object):
+        AMaS_Object.plotC_r_min = self.SBFromR.value()
+        AMaS_Object.plotC_i_min = self.SBFromI.value()
+        AMaS_Object.plotC_r_max = self.SBToR.value()
+        AMaS_Object.plotC_i_max = self.SBToI.value()
+        return AMaS_Object
+        ##
+        #AMaS_Object.plot_ratio = self.Tab_3_1_Axis_ratio_Checkbox.isChecked()
+        #AMaS_Object.plot_grid = self.Tab_3_1_Draw_Grid_Checkbox.isChecked()
+        #AMaS_Object.plot_xmin = self.Tab_3_1_From_Spinbox.value()
+        #AMaS_Object.plot_xmax = self.Tab_3_1_To_Spinbox.value()
+        #AMaS_Object.plot_points = self.Tab_3_1_Points_Spinbox.value()
+        
+        #if self.Tab_3_1_Points_comboBox.currentIndex() == 0:
+        #    AMaS_Object.plot_per_unit = False
+        #elif self.Tab_3_1_Points_comboBox.currentIndex() == 1:
+        #    AMaS_Object.plot_per_unit = True
+        
+        #AMaS_Object.plot_xlim = self.Tab_3_1_XLim_Check.isChecked()
+        #if AMaS_Object.plot_xlim:
+        #    xmin , xmax = self.Tab_3_1_XLim_min.value(), self.Tab_3_1_XLim_max.value()
+        #    if xmax < xmin:
+        #        xmax , xmin = xmin , xmax
+        #    AMaS_Object.plot_xlim_vals = (xmin , xmax)
+        #AMaS_Object.plot_ylim = self.Tab_3_1_YLim_Check.isChecked()
+        #if AMaS_Object.plot_ylim:
+        #    ymin , ymax = self.Tab_3_1_YLim_min.value(), self.Tab_3_1_YLim_max.value()
+        #    if ymax < ymin:
+        #        ymax , ymin = ymin , ymax
+        #    AMaS_Object.plot_ylim_vals = (ymin , ymax)
+
+        
+#endregion ComplexPlotWidget --------------------------------------------------------------------------------------
+

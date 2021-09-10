@@ -868,7 +868,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
         self.BanButton.clicked.connect(self.Ban)
         self.KickButton.clicked.connect(self.Kick)
         self.InputField.returnPressed.connect(self.on_sendButtonClicked)
-        #self.FontSizeBox.valueChanged.connect(self.ChangeFontSize) #TODO
+        #self.FontSizeBox.valueChanged.connect(self.changeFontSize) #TODO
         self.FontSizeBox.setVisible(False)
         self.FontText.setVisible(False)
         
@@ -1116,7 +1116,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ServerInterface):
             except:
                 pass
         
-    #def ChangeFontSize(self): #TODO
+    #def changeFontSize(self): #TODO
     #    Size = self.FontSizeBox.value()
     #    newFont = QtGui.QFont()
     #    newFont.setFamily(self.FontFamily)

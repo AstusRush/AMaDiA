@@ -1,13 +1,13 @@
 
 
-from AGeLib import *
 
 import sys
 sys.path.append('..')
-from PyQt5.Qt import QApplication, QClipboard # pylint: disable=no-name-in-module
-from PyQt5 import QtWidgets,QtCore,QtGui,Qt
+from AGeLib import *
 
 import sympy
+import re
+common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
 from sympy.parsing.sympy_parser import parse_expr
 
 from External_Libraries.python_control_master import control
@@ -22,15 +22,20 @@ from AMaDiA_Files.AMaDiA_SystemControl_Widgets import SystemClass
 
 # ---------------------------------- Main Window ----------------------------------
 class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
+    #FEATURE: Totzeit. Formel ist hier: https://de.wikipedia.org/wiki/Totzeit_(Regelungstechnik)#Ann%C3%A4herung_an_das_Verhalten_eines_Totzeitgliedes_durch_Allpass-Glieder_als_Ersatztotzeit
+    #       Simply make 2 fields to input delay (T_t) and steps for the approximation (n). Then multiply Y(s) with (1-T_t/(2*n)*s)^n and X(s) with (1+T_t/(2*n)*s)^n
+    #FEATURE: Timedescrete systems. Should be straight foreward. Simply replace the control calls with the time descrete ones. The detection could be based on whether the variable is s or z
+    #FEATURE: Allow the user to set plot parameters
+    #TODO: Doubleclicking on an item in the history should display it in the LaTeX display
     def __init__(self, parent = None):
-        super(AMaDiA_Control_Window, self).__init__(parent, includeTopBar=False, initTopBar=False, includeStatusBar=True)
+        super(AMaDiA_Control_Window, self).__init__(parent, IncludeTopBar=False, initTopBar=False, IncludeStatusBar=True)
         self.setupUi(self)
-        self.TopBar = TopBar_Widget(self,False)
+        self.TopBar = AGeWidgets.TopBar_Widget(self,False)
         self.ControlSystems_tabWidget.setCornerWidget(self.TopBar, QtCore.Qt.TopRightCorner)
         self.TopBar.init(IncludeFontSpinBox=True,IncludeErrorButton=True,IncludeAdvancedCB=True)
         
-        self.standardSize = (906, 634)
-        self.resize(*self.standardSize)
+        self.StandardSize = (906, 634)
+        self.resize(*self.StandardSize)
         
         self.ControlSystems_tabWidget.setCurrentIndex(0)
         self.ControlSystems_1_Output_tabWidget.removeTab(1)
@@ -61,8 +66,8 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
         # Other things:
         self.ControlSystems_1_System_Set_Order()
         
-        for i in self.findChildren(MplWidget):
-            i.SetColour()
+        for i in self.findChildren(AGeGW.MplWidget):
+            i.setColour()
         NC(10,"Welcome to CONTROL (WIP)",win=self.windowTitle(),func="{}.__init__".format(str(self.objectName())))
     
  # ---------------------------------- Init and Maintenance ----------------------------------
@@ -82,7 +87,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
         self.ControlSystems_1_NameInput.returnPressed.connect(self.ControlSystems_1_System_Plot_and_Save)
         
         
-        self.ControlSystems_2_Display.canvas.mpl_connect('button_press_event', self.ControlSystems_2_Maximize_Axes)
+        self.ControlSystems_2_Display.Canvas.mpl_connect('button_press_event', self.ControlSystems_2_Maximize_Axes)
         
         self.ControlSystems_4_Dirty_Input.returnCtrlPressed.connect(self.ControlSystems_4_Dirty_Display)
     
@@ -108,7 +113,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
         #                self.TopBar.MaximizeButton.setText("🗖")
         #            self.LastOpenState()
         if event.type() == 82: # QtCore.QEvent.ContextMenu
-         # ---------------------------------- Tab_4 Matrix List Context Menu ----------------------------------
+         # ---------------------------------- List Context Menu ----------------------------------
             if (source is self.ControlSystems_1_SystemList) and source.itemAt(event.pos()):
                 menu = QtWidgets.QMenu()
                 action = menu.addAction('Load to Editor')
@@ -129,7 +134,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                 return True
         #elif...
         return super(AMaDiA_Control_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
- # ---------------------------------- Tab_4_Matrix_List Context Menu Actions/Functions ----------------------------------
+ # ---------------------------------- List Context Menu Actions/Functions ----------------------------------
     def action_SystemList_Load_into_Editor(self,source,event):
         item = source.itemAt(event.pos())
         system = item.data(100)
@@ -144,11 +149,11 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
             Ys, Xs, Order = system.systemInput
             self.ControlSystems_1_System_Set_Order(Order)
             for j in range(self.ControlSystems_1_System_1TF_tableWidget.columnCount()):
-                item = Qt.QTableWidgetItem()
+                item = QtCore.Qt.QTableWidgetItem()
                 t = AF.number_shaver(str(Ys[j])) if AF.number_shaver(str(Ys[j])) != "0" else ""
                 item.setText(t)
                 self.ControlSystems_1_System_1TF_tableWidget.setItem(0,j,item)
-                item = Qt.QTableWidgetItem()
+                item = QtCore.Qt.QTableWidgetItem()
                 t = AF.number_shaver(str(Xs[j])) if AF.number_shaver(str(Xs[j])) != "0" else ""
                 item.setText(t)
                 self.ControlSystems_1_System_1TF_tableWidget.setItem(1,j,item)
@@ -156,16 +161,16 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
             A,B,C,D = system.systemInput
             for i in range(system.Order):
                 for j in range(system.Order):
-                    item = Qt.QTableWidgetItem()
+                    item = QtCore.Qt.QTableWidgetItem()
                     item.setText(AF.number_shaver(str(A[i][j])))
                     self.ControlSystems_1_System_2SS_A_tableWidget.setItem(i,j,item)
-                item = Qt.QTableWidgetItem()
+                item = QtCore.Qt.QTableWidgetItem()
                 item.setText(AF.number_shaver(str(B[i][0])))
                 self.ControlSystems_1_System_2SS_B_tableWidget.setItem(i,0,item)
-                item = Qt.QTableWidgetItem()
+                item = QtCore.Qt.QTableWidgetItem()
                 item.setText(AF.number_shaver(str(C[i])))
                 self.ControlSystems_1_System_2SS_C_tableWidget.setItem(0,i,item)
-            item = Qt.QTableWidgetItem()
+            item = QtCore.Qt.QTableWidgetItem()
             t = AF.number_shaver(str(D[0][0])) if AF.number_shaver(str(D[0][0])) != "0" else ""
             item.setText(t)
             self.ControlSystems_1_System_2SS_D_tableWidget.setItem(0,0,item)
@@ -173,7 +178,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
     def action_SystemList_Copy_string(self,source,event):
         item = source.itemAt(event.pos())
         system = item.data(100)
-        QApplication.clipboard().setText(str(system.sys))
+        QtWidgets.QApplication.clipboard().setText(str(system.sys))
     
     def action_SystemList_Display(self,source,event):
         item = source.itemAt(event.pos())
@@ -195,7 +200,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
         self.ControlSystems_1_System_Plot(closed_system)
     
     def action_SystemList_Delete(self,source,event):
-        # FEATURE: Paperbin for matrices: If only one item was deleted save it in a temporary List item (The same as the duplicate item from the save function)
+        # FEATURE: Paperbin for Systems: When items are deleted save them temporarily and add an "undo last deletion" context menu action
         listItems=source.selectedItems()
         if not listItems: return        
         for item in listItems:
@@ -501,7 +506,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
     
     def ControlSystems_1_System_Plot(self,sysObject):
         try:
-            self.ControlSystems_2_Display.Display(sysObject.sys, Ufunc=self.ControlSystems_1_Input_InputFunction.text())
+            self.ControlSystems_2_Display.display(sysObject.sys, Ufunc=self.ControlSystems_1_Input_InputFunction.text())
             self.ControlSystems_tabWidget.setFocus()
             self.ControlSystems_3_SingleDisplay.clear()
             self.ControlSystems_tabWidget.setCurrentIndex(1)
@@ -510,7 +515,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
     
     def ControlSystems_1_System_Display_LaTeX(self,sysObject):
         try:
-            self.ControlSystems_1_Output_2L_LaTeXDisplay.DisplayRaw(sysObject.Sys_LaTeX_L,sysObject.Sys_LaTeX_N
+            self.ControlSystems_1_Output_2L_LaTeXDisplay.displayRaw(sysObject.Sys_LaTeX_L,sysObject.Sys_LaTeX_N
                                             ,self.TopBar.Font_Size_spinBox.value()
                                             ,QtWidgets.QApplication.instance().MainWindow.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                             )
@@ -528,7 +533,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                 g,l = dict(),dict()
                 exec(input_text,g,l)
                 print(g["sys1"])
-                self.ControlSystems_2_Display.Display(g["sys1"],Ufunc=g["u"])
+                self.ControlSystems_2_Display.display(g["sys1"],Ufunc=g["u"])
                 self.ControlSystems_tabWidget.setFocus()
                 self.ControlSystems_3_SingleDisplay.clear()
                 # Generate LaTeX of tf:
@@ -593,7 +598,7 @@ class AMaDiA_Control_Window(AWWF, Ui_SystemControlWindow):
                 # Display LaTeX:
                 Sys_LaTeX_L = "From Code Input:\nTransfer Function:\n" + Sys_Gs_LaTeX_L + "\nState Space:\n" + Sys_SS_LaTeX_L
                 Sys_LaTeX_N = "From Code Input:\nTransfer Function:\n" + Sys_Gs_LaTeX_N + "\nState Space:\n" + Sys_SS_LaTeX_N
-                self.ControlSystems_1_Output_2L_LaTeXDisplay.DisplayRaw(Sys_LaTeX_L,Sys_LaTeX_N
+                self.ControlSystems_1_Output_2L_LaTeXDisplay.displayRaw(Sys_LaTeX_L,Sys_LaTeX_N
                                                 ,self.TopBar.Font_Size_spinBox.value()
                                                 ,QtWidgets.QApplication.instance().MainWindow.Menu_Options_action_Use_Pretty_LaTeX_Display.isChecked()
                                                 )

@@ -5,18 +5,18 @@ Created on Fri Sep 13 12:51:32 2019
 @author: Robin
 """
 
-from AGeLib.exc import *
 
 import sys
 sys.path.append('..')
-from PyQt5 import QtWidgets,QtCore,QtGui
-from PyQt5.Qt import QApplication, QClipboard # pylint: disable=no-name-in-module
+from AGeLib import *
 import socket
 import datetime
 import platform
 import errno
 import os
 import sympy
+import re
+common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
 from sympy.parsing.sympy_parser import parse_expr
 import importlib
 import types
@@ -78,7 +78,7 @@ class AMaS_Creator(QtCore.QRunnable):
         self.signals = WorkerSignals()
         self.Thread = None
 
-    @QtCore.pyqtSlot()
+    #@QtCore.pyqtSlot()
     def run(self):
         self.Thread = QtCore.QThread.currentThread()
         self.AMaS_Object = AC.AMaS(self.Text, self.Iam, EvalL=self.EvalL)
