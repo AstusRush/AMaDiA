@@ -372,11 +372,11 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
                 w, h = scale*w, scale*h
         if h == None:
             if type(w) in [list,tuple]:
-                super(AWWF, self).resize(w[0],w[1])
+                super(AWWF, self).resize(int(w[0]),int(w[1]))
             else:
                 super(AWWF, self).resize(w)
         else:
-            super(AWWF, self).resize(w,h)
+            super(AWWF, self).resize(int(w),int(h))
 
  ##################### eventFilter
     def eventFilter(self, source, event):

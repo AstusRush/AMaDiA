@@ -660,8 +660,12 @@ class BaseSH(QtGui.QSyntaxHighlighter):
 #==============================================================================
 # Python syntax highlighter
 #==============================================================================
-def make_python_patterns(additional_keywords=[], additional_builtins=[]):
+def make_python_patterns(additional_keywords=None, additional_builtins=None):
     "Strongly inspired from idlelib.ColorDelegator.make_pat"
+    if additional_keywords is None:
+        additional_keywords = []
+    if additional_builtins is None:
+        additional_builtins = []
     kwlist = keyword.kwlist + additional_keywords
     builtinlist = [str(name) for name in dir(builtins)
                    if not name.startswith('_')] + additional_builtins
@@ -755,7 +759,9 @@ class PythonSH(BaseSH):
     # Comments suitable for Outline Explorer
     OECOMMENT = re.compile(r'^(# ?--[-]+|##[#]+ )[ -]*[^- ]+')
 
-    def __init__(self, parent, font=None, additionalKeywords=[]):
+    def __init__(self, parent, font=None, additionalKeywords=None):
+        if additionalKeywords is None:
+            additionalKeywords = []
         additionalKeywords.append('async')
         additionalKeywords.append('await')
         self.PROG = re.compile(make_python_patterns(additional_keywords=additionalKeywords), re.S)
@@ -1240,7 +1246,9 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
 #  https://docs.huihoo.com/pyqt/QScintilla2/classQsciLexerCustom.html
 if QSciImported:
     class PythonLexerQsci(Qsci.QsciLexerPython):
-        def __init__(self, parent = None, additionalKeywords = []):
+        def __init__(self, parent = None, additionalKeywords = None):
+            if additionalKeywords is None:
+                additionalKeywords = []
             super(PythonLexerQsci, self).__init__(parent)
             self.Styles = {
                 "Default"                  : Qsci.QsciLexerPython.Default,
@@ -1288,11 +1296,15 @@ if QSciImported:
                 return self.otherKeywords4 + keywords
             return keywords
 
-        def __setAdditionalKeywords(self,words1=[],words2=[],words3=[],words4=[]):
+        def __setAdditionalKeywords(self,words1=None,words2=None,words3=None,words4=None):
             """
             Set additional keywords for highlighting. \n
             Must be called in the `__init__` to be recognized.
             """
+            if words1 is None: words1 = []
+            if words2 is None: words2 = []
+            if words3 is None: words3 = []
+            if words4 is None: words4 = []
             if type(words1)==str:
                 self.otherKeywords1 = words1
             else:
@@ -1492,7 +1504,9 @@ class _Highlighter_Wrapper():
             self.QSciSH.recolour()
 
 class Highlighter_Python_SpyderAndQSci(_Highlighter_Wrapper):
-    def __init__(self, QtEditor, QSciEditor, additionalKeywords=[]):
+    def __init__(self, QtEditor, QSciEditor, additionalKeywords=None):
+        if additionalKeywords is None:
+            additionalKeywords = []
         self.QSciImported = QSciImported
         self.QtSH_Class, self.QSciSH_Class = PythonSH, PythonLexerQsci
         self.QtEditor, self.QSciEditor = QtEditor, QSciEditor
@@ -1817,7 +1831,9 @@ else:
     Highlighter_Python_AGe_QSci = False
 
 class Highlighter_Python_AGeSimple(_Highlighter_Wrapper):
-    def __init__(self, QtEditor, QSciEditor, additionalKeywords=[]):
+    def __init__(self, QtEditor, QSciEditor, additionalKeywords=None):
+        if additionalKeywords is None:
+            additionalKeywords = []
         self.QSciImported = QSciImported
         self.QtSH_Class, self.QSciSH_Class = Highlighter_Python_AGeSimple_Qt, Highlighter_Python_AGeSimple_QSci
         self.QtEditor, self.QSciEditor = QtEditor, QSciEditor

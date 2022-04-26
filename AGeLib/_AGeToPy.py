@@ -324,7 +324,7 @@ def topy(value, name="", indent=0, indentstr="    ", ignoreNotImplemented = Fals
     and a dictionary that uses the names of the required modules as keys and code to import these modules as values
     (if Qt is a required module AGeLib must have been imported before executing/importing the code as the import relies on it). \n
     Raises `NotImplementedError` if the datatype is not supported. \n
-    If `ignoreNotImplemented` is True, 
+    If `ignoreNotImplemented` is True, not supported datatypes will be ignored. \n
     If `name` is given the returned code will begin with `name = `, otherwise the code will not assign the value to a variable. \n
     `indent` is the indentationlevel at which the code should be and `indentstr` is the string that is used for each indentationlevel (should be either 4 spaces (default) or `\\t`). \n
     NOTE: matplotlib.pyplot.Axes will be saved as a function that takes an axes as an argument and plots the stored content on the axes. (It does not clear the Axes.) \n

@@ -76,6 +76,6 @@ def QuickSetup(window_class,window_name,app_class=None):
         pass
     try:
         sys.exit(app.exec())
-    except:
+    except Exception:
         sys.exit(app.exec_())
 #endregion

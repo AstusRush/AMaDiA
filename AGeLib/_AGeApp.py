@@ -80,7 +80,9 @@ class AGeApp(QtWidgets.QApplication):
     except:
         pass
         
-    def __init__(self, args = [], useExcepthook = True):
+    def __init__(self, args = None, useExcepthook = True):
+        if args is None:
+            args = []
         print("Starting App")
         self.enableHotkeys = True
         super(AGeApp, self).__init__(args)
