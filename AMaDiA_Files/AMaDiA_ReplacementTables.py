@@ -164,8 +164,8 @@ n_constants_nospace = [["π"," pi "]]
 LIST_n_invertable = [n_priority_Invertable , n_operators , n_operators_special]
 # ---------------------------------- Special Replacements s_ ----------------------------------
 
-s_constants_math = [["i"," I "],["e"," E "]]
-s_constants_engineering = [["j"," I "],["e"," E "]]
+s_constants_math = [["i","I"],["e","E"]]
+s_constants_engineering = [["j","I"],["e","E"]]
 
 # ---------------------------------- Replacements Simple to Python r_s_ ----------------------------------
 

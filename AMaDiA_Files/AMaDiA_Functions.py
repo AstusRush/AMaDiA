@@ -458,6 +458,7 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     string = re.sub(r"(\w+)\u0307",r"diff(\1(t),t)",string)
     string = Replace(string,ART.LIST_n_all)
     string = Replace(string,ART.LIST_r_s_scripts)
+    string = changeImagAndEuler(string)
     #----
     #---- Temporary Integral Handling for Astus' Integral Syntax
     string = IntegralParser_Astus(string)
@@ -586,8 +587,13 @@ def AstusParseInverse(string, Validate=False):
     string = Replace(string,ART.LIST_r_s_scripts,1,0)
     string = Replace(string,ART.LIST_n_invertable,1,0)
     for i in ART.n_greek_letters_nospace:
-        string = re.sub(r"(?<!\w){}(?!\w)".format(i[1]),i[0],string) 
-        
+        string = re.sub(r"(?<!\w){}(?!\w)".format(i[1]),i[0],string)
+    
+    #CRITICAL: this needs to be toggleable in the options (including the option to use i for I)
+    replaceWith = ART.s_constants_engineering
+    for i in replaceWith:
+        string = re.sub(f"(?<![a-zA-Z]){i[1]}(?![a-zA-Z])",i[0],string)
+    
     #string = string.replace(" * "," · ")
     
     
@@ -598,7 +604,7 @@ def AstusParseInverse(string, Validate=False):
         return string_i
 
 
-def Replace(string,List,a=0,b=1):
+def Replace(string,List,a=0,b=1): #CRITICAL: use isinstance
     """
     Replaces everything in string that is in List[][a] with List[][b]\n
     The List must only contain lists with that all contain at least two strings or Lists that contain such lists\n
@@ -614,6 +620,18 @@ def Replace(string,List,a=0,b=1):
         elif type(List[0][0]) == str:
             for i in List:
                 string = string.replace(i[a],i[b])
+    return string
+
+
+def changeImagAndEuler(string): #CRITICAL: this needs to be toggleable in the options (including the option to use i for I)
+    replaceWith = ART.s_constants_engineering
+    for i in replaceWith:
+        #NC(3,"Before: "+string)
+        string = re.sub(f"(?<![a-zA-Z]){i[0]}(?=\d)",i[1]+"*",string)
+        string = re.sub(f"(?<=\d){i[0]}(?![a-zA-Z])","*"+i[1],string)
+        string = re.sub(f"(?<![a-zA-Z]){i[0]}(?![a-zA-Z])",i[1],string)
+        #string = re.sub(f"(?<![a-zA-Z]){i[0]}(?![a-zA-Z])",i[1],string)
+        #NC(3,"After: "+string)
     return string
 
 # -----------------------------------------------------------------------------------------------------------------

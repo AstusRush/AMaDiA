@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.18.dev-1"
+Version = "0.18.dev-2"
 # Version should be interpreted as: (MAIN).(TOPIC).(FUNCTION).(BUGFIX)
 # MAIN marks mayor milestones of the project (like the release)
 # TOPIC marks the introduction of
@@ -801,6 +801,9 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_4_2_New_Equation_Button.clicked.connect(lambda: self.Tab_4_F_New_Equation())
         self.Tab_4_2_New_Equation_Name_Input.returnPressed.connect(lambda: self.Tab_4_F_New_Equation())
         self.Tab_4_2_Load_Selected_Button.clicked.connect(lambda: self.Tab_4_F_Load_Selected_Equation())
+        
+        #TODO: This is temporary:
+        self.Tab_4_DirectInput.returnCtrlPressed.connect(lambda: self.Tab_4_F_Text_to_Equations())
     
     def init_Menu(self,FirstTime=True):
         if FirstTime:
@@ -1829,7 +1832,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             Name = AF.AstusParse(self.Tab_4_1_Name_Input.text()).strip()
             if Name == "" or " " in Name: #IMPROVE: Better checks for Matrix Names!!!
                 NameInvalid=True
-
+            
             if NameInvalid:
                 NC(1,"Matrix Name Invalid",func="AMaDiA_Main_Window.Tab_4_F_Save_Matrix",win=self.windowTitle(),input=Name)
                 return False
@@ -1867,7 +1870,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             item.setData(100,Name)
             item.setData(101,Matrix)
             SearchFor = Name+" "
-
+            
             #Remove Duplicates
             # VALIDATE: Ensure that this works correctly in all cases!
             # FEATURE: Save the first duplicate in a temporary List item!
@@ -1876,14 +1879,40 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
                 for i in FoundItems:
                     index = self.Tab_4_Matrix_List.indexFromItem(i)
                     self.Tab_4_Matrix_List.takeItem(index.row())
-
+            
             # Add to the Matrix List
             self.Tab_4_Matrix_List.addItem(item)
             # Display the Matrix
             self.Tab_4_F_Display_Matrix(Name,Matrix)
         except common_exceptions:
             NC(1,"Could not save matrix!",exc=sys.exc_info(),func="AMaDiA_Main_Window.Tab_4_F_Save_Matrix",win=self.windowTitle())
-        
+    
+    def Tab_4_F_Text_to_Equations(self): #TODO: Do this more properly. This MEthod is just a quick tool that I need right now
+        #MAYBE: this could be implemented as a right-click action to the matrix list, too, but it also needs to get its own widget to be more obvious for the user.
+        text:str = self.Tab_4_DirectInput.text()
+        lines = text.splitlines()
+        variables = [i.split("=") for i in lines]
+        #
+        h,w = 1,1
+        try:
+            h = int(h) if int(h) > 0 else 1
+            self.Tab_4_1_Matrix_Input.setRowCount(h)
+        except common_exceptions:
+            pass
+        try:
+            w = int(w)
+            self.Tab_4_1_Matrix_Input.setColumnCount(w)
+        except common_exceptions:
+            pass
+        for i in range(self.Tab_4_1_Matrix_Input.columnCount()):
+            self.Tab_4_1_Matrix_Input.setColumnWidth(i,75)
+        #
+        self.Tab_4_1_Matrix_Input.setItem(0,0,QtWidgets.QTableWidgetItem("="))
+        for name, value in variables:
+            self.Tab_4_1_Name_Input.setText(name.strip())
+            self.Tab_4_1_Matrix_Input.item(0,0).setText(value.strip())
+            self.Tab_4_F_Save_Matrix()
+    
     def Tab_4_F_Update_Equation(self):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ControlModifier:
