@@ -235,7 +235,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
                 if len(SelectedItems)==1:
                     item = SelectedItems[0]
                     if QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Normal":
-                        if (self == QtWidgets.QApplication.instance().MainWindow.Tab_1_History 
+                        if (self == QtWidgets.QApplication.instance().MainWindow.Tab_1.History 
                                 or self == QtWidgets.QApplication.instance().MainWindow.Tab_4_History) and item.data(100).Solution != "Not evaluated yet":
                             QtWidgets.QApplication.clipboard().setText(item.data(100).Equation)
                         else:
@@ -261,7 +261,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
                         QtWidgets.QApplication.clipboard().setText(item.text())
                     event.accept()
                     return
-                elif self == QtWidgets.QApplication.instance().MainWindow.Tab_1_History:
+                elif self == QtWidgets.QApplication.instance().MainWindow.Tab_1.History:
                     string = ""
                     for i in SelectedItems:
                         string += i.data(100).Equation
@@ -379,7 +379,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(0)
-        self.window().Tab_1_F_Calculate(item.data(100))
+        self.window().Tab_1.calculate(item.data(100))
         
     def action_H_Display_LaTeX(self,source,event): #TODO: Move all selected items to the LaTeX Tab History but only display LaTeX of the right-clicked-one (and update the tooltip for this action)
         item = source.itemAt(event.pos())
@@ -469,7 +469,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
         for item in listItems:
             source.takeItem(source.row(item))
             # The cleanup below is apparently unnecessary but it is cleaner to do it anyways...
-            if source is self.window().Tab_1_History:
+            if source is self.window().Tab_1.History:
                 item.data(100).tab_1_is = False
                 item.data(100).tab_1_ref = None
             elif source is self.window().Tab_2_History:

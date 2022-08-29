@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-Version = "0.18.dev-2"
+Version = "0.18.dev-3"
 # Version should be interpreted as: (MAIN).(TOPIC).(FUNCTION).(BUGFIX)
 # MAIN marks mayor milestones of the project (like the release)
 # TOPIC marks the introduction of
@@ -92,6 +92,7 @@ from AMaDiA_Files import AMaDiA_Functions as AF
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
 from AMaDiA_Files import AMaDiA_Threads as AT
+from AMaDiA_Files import AMaDiA_Tabs
 from AMaDiA_Files import AstusChat_Client
 from AMaDiA_Files import AstusChat_Server
 from AMaDiA_Files.Test_Input import Test_Input
@@ -127,6 +128,10 @@ except: #TODO The check whether Slycot is installed should not be in AMaDiA's ma
     slycot_Installed = False
 else:
     slycot_Installed = True
+
+if typing.TYPE_CHECKING:
+    def App() -> "AMaDiA_Main_App":
+        return AGeCore.App()
 
 np.set_printoptions(threshold=100)
 
@@ -412,7 +417,7 @@ class AMaDiA_Main_App(AGeApp):
     def __init__(self, args):
         super(AMaDiA_Main_App, self).__init__(args)
         self.installEventFilter(self)
-        self.MainWindow = None
+        self.MainWindow:AMaDiA_Main_Window = None
         self.setApplicationName("AMaDiA")
         self.setApplicationVersion(Version)
         
@@ -445,7 +450,7 @@ class AMaDiA_Main_App(AGeApp):
                 if event.modifiers() == ControlModifier:
                     if event.key() == QtCore.Qt.Key_1:
                         self.MainWindow.TabWidget.setCurrentIndex(0)
-                        self.MainWindow.Tab_1_InputField.setFocus()
+                        self.MainWindow.Tab_1.InputField.setFocus()
                         return True
                     elif event.key() == QtCore.Qt.Key_2:
                         self.MainWindow.TabWidget.setCurrentIndex(1)
@@ -521,7 +526,7 @@ class AMaDiA_Main_App(AGeApp):
                 for i in range(self.MainWindow.Tab_3_1_History.count()):
                     if self.MainWindow.Tab_3_1_History.item(i).data(100).current_ax == None:
                         self.MainWindow.Tab_3_1_History.item(i).setForeground(brush)
-                self.MainWindow.Tab_1_InputField.setPalette(self.Palette2)
+                self.MainWindow.Tab_1.InputField.setPalette(self.Palette2)
                 self.MainWindow.Tab_2_InputField.setPalette(self.Palette2)
                 self.MainWindow.Tab_3_1_Formula_Field.setPalette(self.Palette2)
                 self.MainWindow.Tab_4_FormulaInput.setPalette(self.Palette2)
@@ -577,7 +582,27 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         
        # Build the UI
         self.init_Menu()
+        
+        ###
+        self.setObjectName("AMaDiA_Main_Window")
+        self.resize(906, 634)
+        self.setAutoFillBackground(True)
+        self.centralwidget = QtWidgets.QWidget(self)
+        self.centralwidget.setAutoFillBackground(True)
+        self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setSpacing(0)
+        self.gridLayout.setObjectName("gridLayout")
+        self.TabWidget = AGeWidgets.MTabWidget(self.centralwidget)
+        self.TabWidget.setAutoFillBackground(True)
+        self.TabWidget.setUsesScrollButtons(False)
+        self.TabWidget.setObjectName("TabWidget")
+        self.Tab_1 = AMaDiA_Tabs.Tab_Calculator(self)
+        self.TabWidget.addTab(self.Tab_1, "")
         self.setupUi(self)
+        ###
+        
         self.TopBar.init(True,True,True)
         self.TopBar.setObjectName("TopBar")
         #self.TopBarGridLayout = QtWidgets.QGridLayout(self.TopBar)
@@ -700,7 +725,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             # If the first is False and the second True then clear when the plot button is pressed and change the variables to ensure that this only happens once
             #       to not accidentally erase the plots of the user as this would be really bad...
         
-        self.Tab_1_InputField.setFocus()
+        self.Tab_1.InputField.setFocus()
         
        # Welcome Message and preload LaTeX
         msg = ""
@@ -774,9 +799,6 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         self.Menu_Help_action_Helpful_Commands.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Helpful_Useable_Syntax.txt"))
         self.Menu_Help_action_Patchlog.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Patchlog.txt"))
         self.Menu_Help_action_About.triggered.connect(lambda: self.Show_About())
-        
-        self.Tab_1_History.itemDoubleClicked.connect(self.Tab_1_F_Item_doubleClicked)
-        self.Tab_1_InputField.returnPressed.connect(lambda: self.Tab_1_F_Calculate_Field_Input())
         
         self.Tab_2_History.itemDoubleClicked.connect(self.Tab_2_F_Item_doubleClicked)
         self.Tab_2_LaTeXCopyButton.clicked.connect(lambda: self.Tab_2_Viewer.action_Copy_LaTeX())
@@ -995,7 +1017,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         App().setTheme(Colour)
         
     def InstallSyntaxHighlighter(self):
-        #self.Tab_1_InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1_InputField.document())
+        #self.Tab_1.InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1.InputField.document())
         pass
 
     def INIT_Animation(self):
@@ -1067,11 +1089,11 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             
     def RUNTEST(self):
         for i in Test_Input:
-            self.Tab_1_InputField.setText(i)
-            self.Tab_1_F_Calculate_Field_Input()
+            self.Tab_1.InputField.setText(i)
+            self.Tab_1.calculateFieldInput()
         Text = "Expected Entries after all calculations: "+str(len(Test_Input))
         print(Text)
-        self.Tab_1_InputField.setText(Text)
+        self.Tab_1.InputField.setText(Text)
 
     def ToggleThreadMode(self):
         if self.Menu_DevOptions_action_Use_Threadpool.isChecked():
@@ -1242,15 +1264,15 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
                 item.setData(100,AMaS_Object)
                 item.setText(AF.Digit_Grouping(AMaS_Object.EquationReverse))
                 
-                self.Tab_1_History.addItem(item)
+                self.Tab_1.History.addItem(item)
                 AMaS_Object.tab_1_is = True
                 AMaS_Object.tab_1_ref = item
             else:
-                self.Tab_1_History.takeItem(self.Tab_1_History.row(AMaS_Object.tab_1_ref))
+                self.Tab_1.History.takeItem(self.Tab_1.History.row(AMaS_Object.tab_1_ref))
                 AMaS_Object.tab_1_ref.setText(AF.Digit_Grouping(AMaS_Object.EquationReverse))
-                self.Tab_1_History.addItem(AMaS_Object.tab_1_ref)
+                self.Tab_1.History.addItem(AMaS_Object.tab_1_ref)
 
-            self.Tab_1_History.scrollToBottom()
+            self.Tab_1.History.scrollToBottom()
         
         elif Tab == 2:
             if AMaS_Object.tab_2_is != True:
@@ -1313,7 +1335,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
     def TR(self, AMaS_Object , Function , ID=-1 , Eval = -1): # Thread Return: Threads report back here when they are done
         self.Function = Function
         
-        if Function == self.Tab_1_F_Calculate:
+        if Function == self.Tab_1.calculate:
             if Eval == 0 : Eval = True
             elif Eval == 1 : Eval = False
             else: Eval = None
@@ -1410,62 +1432,14 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
     def workingThreadsDisplay(self,pm):
         self.workingThreads += pm
         self.Statusbar.showMessage("Currently working on {} {}".format(self.workingThreads,"equation" if self.workingThreads==1 else "equations"))
-
+    
     def TerminateAllThreads(self):
         self.S_Terminate_Threads.emit()
         self.threadpool.clear()
         if self.threadpool.activeThreadCount() >= 1:
             self.oldThreadpools.append(self.threadpool)
             self.threadpool = QtCore.QThreadPool()
- 
- # ---------------------------------- Tab_1_ Calculator ----------------------------------
-    def Tab_1_F_Calculate_Field_Input(self):
-        modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if modifiers == QtCore.Qt.ControlModifier:
-            Eval = not App().optionWindow.cb_F_EvalF.isChecked()
-        else:
-            Eval = App().optionWindow.cb_F_EvalF.isChecked()
-        TheInput = self.Tab_1_InputField.text()
-        if TheInput == "RUNTEST":
-            self.RUNTEST()
-        else:
-            if self.Tab_1_History.count() >= 1:
-                TheInput = re.sub(r"(?<!\w)ans(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-1).data(100).Solution),TheInput)
-                TheInput = re.sub(r"(?<!\w)ans1(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-1).data(100).Solution),TheInput)
-                if self.Tab_1_History.count() >= 2:
-                    TheInput = re.sub(r"(?<!\w)ans2(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-2).data(100).Solution),TheInput)
-                    if self.Tab_1_History.count() >= 3:
-                        TheInput = re.sub(r"(?<!\w)ans3(?!\w)","({})".format(self.Tab_1_History.item(self.Tab_1_History.count()-3).data(100).Solution),TheInput)
-                    else:
-                        TheInput = re.sub(r"(?<!\w)ans3(?!\w)","(1)",TheInput)
-                else:
-                    TheInput = re.sub(r"(?<!\w)ans2(?!\w)","(1)",TheInput)
-                    TheInput = re.sub(r"(?<!\w)ans3(?!\w)","(0)",TheInput)
-            else:
-                TheInput = re.sub(r"(?<!\w)ans(?!\w)","(1)",TheInput)
-                TheInput = re.sub(r"(?<!\w)ans1(?!\w)","(1)",TheInput)
-                TheInput = re.sub(r"(?<!\w)ans2(?!\w)","(0)",TheInput)
-                TheInput = re.sub(r"(?<!\w)ans3(?!\w)","(0)",TheInput)
-            
-            if TheInput == "len()":
-                TheInput = str(len(self.ThreadList))
-            #self.TC(lambda ID: AT.AMaS_Creator(TheInput,self.Tab_1_F_Calculate,ID=ID,Eval=Eval))
-            self.TC("NEW",TheInput,self.Tab_1_F_Calculate,Eval=Eval)
-        
-    def Tab_1_F_Calculate(self,AMaS_Object,Eval = None):
-        if Eval == None:
-            Eval = App().optionWindow.cb_F_EvalF.isChecked()
-        self.Set_AMaS_Flags(AMaS_Object,f_eval = Eval)
-        #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display , ID))
-        self.TC("WORK", AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.Tab_1_F_Calculate_Display)
-        
-    def Tab_1_F_Calculate_Display(self,AMaS_Object):
-        self.HistoryHandler(AMaS_Object,1)
-         
-    def Tab_1_F_Item_doubleClicked(self,item):
-        self.Tab_1_InputField.selectAll()
-        self.Tab_1_InputField.insertPlainText(item.data(100).Input)
-
+    
  # ---------------------------------- Tab_2_ LaTeX ----------------------------------
     def Tab_2_F_Convert(self, Text=None):
         EvalL = self.Tab_2_Eval_checkBox.checkState()#isChecked()
@@ -1986,7 +1960,7 @@ if __name__ == "__main__":
         if lastVersion != Version:
             window.LastOpenState()
             window.positionReset()
-            window.Tab_1_InputField.setFocus()
+            window.Tab_1.InputField.setFocus()
             window.Show_AMaDiA_Text_File("Patchlog.txt")
             #TODO: If the file did not exist before but creating it works without problems AMaDiA was probably installed for the first time and not updated. In this case the behaviour should be different.
             #       It would also be cool if the message would include what the previous installed version was
@@ -2001,12 +1975,12 @@ if __name__ == "__main__":
         else:
             window.LastOpenState()
             window.positionReset()
-            window.Tab_1_InputField.setFocus()
+            window.Tab_1.InputField.setFocus()
             window.activateWindow()
     else:
         window.LastOpenState()
         window.positionReset()
-        window.Tab_1_InputField.setFocus()
+        window.Tab_1.InputField.setFocus()
         window.activateWindow()
     sys.exit(app.exec())
 
