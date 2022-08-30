@@ -236,7 +236,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
                     item = SelectedItems[0]
                     if QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="Normal":
                         if (self == QtWidgets.QApplication.instance().MainWindow.Tab_1.History 
-                                or self == QtWidgets.QApplication.instance().MainWindow.Tab_4_History) and item.data(100).Solution != "Not evaluated yet":
+                                or self == QtWidgets.QApplication.instance().MainWindow.Tab_4.History) and item.data(100).Solution != "Not evaluated yet":
                             QtWidgets.QApplication.clipboard().setText(item.data(100).Equation)
                         else:
                             QtWidgets.QApplication.clipboard().setText(item.text())
@@ -384,23 +384,23 @@ class HistoryWidget(AGeWidgets.ListWidget):
     def action_H_Display_LaTeX(self,source,event): #TODO: Move all selected items to the LaTeX Tab History but only display LaTeX of the right-clicked-one (and update the tooltip for this action)
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(1)
-        self.window().Tab_2_F_Display(item.data(100))
+        self.window().Tab_2.displayLaTeX(item.data(100))
 
     def action_H_Display_LaTeX_Equation(self,source,event):
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(1)
-        self.window().Tab_2_F_Display(item.data(100),part="Equation")
+        self.window().Tab_2.displayLaTeX(item.data(100),part="Equation")
 
     def action_H_Display_LaTeX_Solution(self,source,event):
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(1)
-        self.window().Tab_2_F_Display(item.data(100),part="Solution")
+        self.window().Tab_2.displayLaTeX(item.data(100),part="Solution")
          
   # ----------------
          
     def action_H_Load_Plot(self,source,event):
         TheItem = source.itemAt(event.pos())
-        if source is self.window().Tab_3_1_History:
+        if source is self.window().Tab_3.Tab_2D_History:
             listItems=source.selectedItems()
             if not listItems: return
         else:
@@ -412,12 +412,12 @@ class HistoryWidget(AGeWidgets.ListWidget):
             if item.data(100).current_ax != None:
                 item.data(100).current_ax.remove()
                 item.data(100).current_ax = None
-                self.window().Tab_3_1_F_RedrawPlot()
-            self.window().Tab_3_1_F_Plot(item.data(100))
+                self.window().Tab_3.Tab_2D_F_RedrawPlot()
+            self.window().Tab_3.Tab_2D_F_Plot(item.data(100))
         
     def action_H_New_Plot(self,source,event):
         TheItem = source.itemAt(event.pos())
-        if source is self.window().Tab_3_1_History:
+        if source is self.window().Tab_3.Tab_2D_History:
             listItems=source.selectedItems()
             if not listItems: return
         else:
@@ -429,8 +429,8 @@ class HistoryWidget(AGeWidgets.ListWidget):
             if item.data(100).current_ax != None:
                 item.data(100).current_ax.remove()
                 item.data(100).current_ax = None
-                self.window().Tab_3_1_F_RedrawPlot()
-            self.window().Tab_3_1_F_Plot_init(item.data(100))
+                self.window().Tab_3.Tab_2D_F_RedrawPlot()
+            self.window().Tab_3.Tab_2D_F_Plot_init(item.data(100))
          
   # ----------------
         
@@ -472,19 +472,19 @@ class HistoryWidget(AGeWidgets.ListWidget):
             if source is self.window().Tab_1.History:
                 item.data(100).tab_1_is = False
                 item.data(100).tab_1_ref = None
-            elif source is self.window().Tab_2_History:
+            elif source is self.window().Tab_2.History:
                 item.data(100).tab_2_is = False
                 item.data(100).tab_2_ref = None
-            elif source is self.window().Tab_3_1_History:
+            elif source is self.window().Tab_3.Tab_2D_History:
                 item.data(100).Tab_3_1_is = False
                 item.data(100).Tab_3_1_ref = None
                 if item.data(100).current_ax != None:
                     item.data(100).current_ax.remove()
                     item.data(100).current_ax = None
-                    self.window().Tab_3_1_F_RedrawPlot()
-            elif source is self.window().Tab_4_History:
-                if item.data(100) == self.window().Tab_4_Active_Equation:
-                    self.window().Tab_4_History.addItem(item)
+                    self.window().Tab_3.Tab_2D_F_RedrawPlot()
+            elif source is self.window().Tab_4.History:
+                if item.data(100) == self.window().Tab_4.Active_Equation:
+                    self.window().Tab_4.History.addItem(item)
                 else:
                     item.data(100).Tab_4_is = False
                     item.data(100).Tab_4_ref = None
@@ -539,37 +539,37 @@ class AMaDiA_ComplexPlotWidget(QtWidgets.QWidget):
         self.InputField.returnCtrlPressed.connect(self.S_Plot.emit)
         self.layout().addWidget(self.InputField,2,0)
 
-    def plot(self, AMaS_Object):
+    def plot(self, AMaS_Object:"AC.AMaS"):
         self.lastInput = AMaS_Object
         self.Display.plot(AMaS_Object.plotC_vals, (AMaS_Object.plotC_r_min, AMaS_Object.plotC_r_max, AMaS_Object.plotC_i_min, AMaS_Object.plotC_i_max))
 
-    def applySettings(self, AMaS_Object):
+    def applySettings(self, AMaS_Object:"AC.AMaS"):
         AMaS_Object.plotC_r_min = self.SBFromR.value()
         AMaS_Object.plotC_i_min = self.SBFromI.value()
         AMaS_Object.plotC_r_max = self.SBToR.value()
         AMaS_Object.plotC_i_max = self.SBToI.value()
         return AMaS_Object
         ##
-        #AMaS_Object.plot_ratio = self.Tab_3_1_Axis_ratio_Checkbox.isChecked()
-        #AMaS_Object.plot_grid = self.Tab_3_1_Draw_Grid_Checkbox.isChecked()
-        #AMaS_Object.plot_xmin = self.Tab_3_1_From_Spinbox.value()
-        #AMaS_Object.plot_xmax = self.Tab_3_1_To_Spinbox.value()
-        #AMaS_Object.plot_points = self.Tab_3_1_Points_Spinbox.value()
+        #AMaS_Object.plot_ratio = self.Tab_3.Tab_2D_Axis_ratio_Checkbox.isChecked()
+        #AMaS_Object.plot_grid = self.Tab_3.Tab_2D_Draw_Grid_Checkbox.isChecked()
+        #AMaS_Object.plot_xmin = self.Tab_3.Tab_2D_From_Spinbox.value()
+        #AMaS_Object.plot_xmax = self.Tab_3.Tab_2D_To_Spinbox.value()
+        #AMaS_Object.plot_points = self.Tab_3.Tab_2D_Points_Spinbox.value()
         
-        #if self.Tab_3_1_Points_comboBox.currentIndex() == 0:
+        #if self.Tab_3.Tab_2D_Points_comboBox.currentIndex() == 0:
         #    AMaS_Object.plot_per_unit = False
-        #elif self.Tab_3_1_Points_comboBox.currentIndex() == 1:
+        #elif self.Tab_3.Tab_2D_Points_comboBox.currentIndex() == 1:
         #    AMaS_Object.plot_per_unit = True
         
-        #AMaS_Object.plot_xlim = self.Tab_3_1_XLim_Check.isChecked()
+        #AMaS_Object.plot_xlim = self.Tab_3.Tab_2D_XLim_Check.isChecked()
         #if AMaS_Object.plot_xlim:
-        #    xmin , xmax = self.Tab_3_1_XLim_min.value(), self.Tab_3_1_XLim_max.value()
+        #    xmin , xmax = self.Tab_3.Tab_2D_XLim_min.value(), self.Tab_3.Tab_2D_XLim_max.value()
         #    if xmax < xmin:
         #        xmax , xmin = xmin , xmax
         #    AMaS_Object.plot_xlim_vals = (xmin , xmax)
-        #AMaS_Object.plot_ylim = self.Tab_3_1_YLim_Check.isChecked()
+        #AMaS_Object.plot_ylim = self.Tab_3.Tab_2D_YLim_Check.isChecked()
         #if AMaS_Object.plot_ylim:
-        #    ymin , ymax = self.Tab_3_1_YLim_min.value(), self.Tab_3_1_YLim_max.value()
+        #    ymin , ymax = self.Tab_3.Tab_2D_YLim_min.value(), self.Tab_3.Tab_2D_YLim_max.value()
         #    if ymax < ymin:
         #        ymax , ymin = ymin , ymax
         #    AMaS_Object.plot_ylim_vals = (ymin , ymax)

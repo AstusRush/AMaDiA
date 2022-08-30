@@ -1,5 +1,3 @@
-
-
 import sys
 sys.path.append('..')
 from AGeLib import *
@@ -94,7 +92,7 @@ class Tab_Calculator(QtWidgets.QWidget):
         #self.TC(lambda ID: AT.AMaS_Worker(AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.calculateDisplay , ID))
         self.AMaDiA.TC("WORK", AMaS_Object, lambda:AC.AMaS.Evaluate(AMaS_Object), self.calculateDisplay)
     
-    def calculateDisplay(self,AMaS_Object):
+    def calculateDisplay(self,AMaS_Object:"AC.AMaS"):
         self.AMaDiA.HistoryHandler(AMaS_Object,1)
     
     def handleItemDoubleClicked(self,item):
