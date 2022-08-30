@@ -46,22 +46,15 @@ if __name__ == "__main__":
             pass
 
 from AGeLib import *
-import AGeLib
-
-# import qt Modules
 
 # import standard modules
 from distutils.spawn import find_executable
 import sys
-import socket
 import time
-import errno
 import os
 import pathlib
-import importlib
 import re
 import getpass
-import traceback
 
 try:
     import typing
@@ -71,14 +64,8 @@ except:
 # import Maths modules
 import matplotlib
 import sympy
-from sympy.parsing.sympy_parser import parse_expr
 common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
 import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib import colors
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
 
 # Import AMaDiA Core Modules
 # To Convert ui to py: (Commands for Anaconda Prompt)
@@ -96,16 +83,6 @@ from AMaDiA_Files import AMaDiA_Tabs
 from AMaDiA_Files import AstusChat_Client
 from AMaDiA_Files import AstusChat_Server
 from AMaDiA_Files.Test_Input import Test_Input
-
-
-
-# To limit the length of output (Currently used to reduce the length of the y vector when an error in the plotter occurs)
-import reprlib
-r = reprlib.Repr()
-r.maxlist = 20       # max elements displayed for lists
-r.maxarray = 20       # max elements displayed for arrays
-r.maxother = 500       # max elements displayed for other including np.ndarray
-r.maxstring = 40    # max characters displayed for strings
 
 # Load External Libraries
 # These are not part of the standard Anaconda package and thus are already part of AMaDiA to make installation easy
@@ -285,7 +262,7 @@ class AMaDiA_About_Window(AWWF):
                     <li><a href="https://github.com/python-control/python-control/">Python-Control</a></li>
             """ % (Version,
                 "%d.%d" % (sys.version_info.major, sys.version_info.minor),
-                AGeLib.AGeLibVersion,
+                AGeCore.AGeLibVersion,
                 sympy.__version__,
                 np.__version__,
                 matplotlib.__version__)

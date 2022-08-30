@@ -4,24 +4,11 @@ from AGeLib import *
 
 import typing
 
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas #CLEANUP: Delete this line?
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import matplotlib
-import matplotlib.pyplot as plt
-#matplotlib.use('Qt5Agg')
-from mpl_toolkits.axes_grid1 import Divider, Size
-from mpl_toolkits.axes_grid1.mpl_axes import Axes
-import numpy as np
-import scipy
 import sympy
 import re
 common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
 from sympy.parsing.sympy_parser import parse_expr
 import time
-
-import warnings
 
 from AMaDiA_Files import AMaDiA_Functions as AF
 from AMaDiA_Files import AMaDiA_Classes as AC
@@ -32,6 +19,7 @@ if typing.TYPE_CHECKING:
     from AMaDiA import App, AMaDiA_Main_Window
 
 
+# To limit the length of output (Currently used to reduce the length of the y vector when an error in the plotter occurs)
 import reprlib
 formatArray = reprlib.Repr()
 formatArray.maxlist = 20       # max elements displayed for lists

@@ -32,13 +32,6 @@ if typing.TYPE_CHECKING:
     from AMaDiA import App, AMaDiA_Main_Window
 
 
-import reprlib
-formatArray = reprlib.Repr()
-formatArray.maxlist = 20       # max elements displayed for lists
-formatArray.maxarray = 20       # max elements displayed for arrays
-formatArray.maxother = 500       # max elements displayed for other including np.ndarray
-formatArray.maxstring = 40    # max characters displayed for strings
-
 class Tab_MultiDim(QtWidgets.QWidget):
     def __init__(self, parent: typing.Optional['QtWidgets.QWidget']) -> None:
         self.AMaDiA: AMaDiA_Main_Window = parent
