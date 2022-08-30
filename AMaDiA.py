@@ -436,7 +436,7 @@ class AMaDiA_Main_App(AGeApp):
                     elif event.key() == QtCore.Qt.Key_3:
                         self.MainWindow.TabWidget.setCurrentIndex(2)
                         if self.MainWindow.Tab_3.TabWidget.currentIndex() == 0:
-                            self.MainWindow.Tab_3.Tab_2D_Formula_Field.setFocus()
+                            self.MainWindow.Tab_3.Tab_2D.Formula_Field.setFocus()
                         return True
                     elif event.key() == QtCore.Qt.Key_4:
                         self.MainWindow.TabWidget.setCurrentIndex(3)
@@ -489,9 +489,9 @@ class AMaDiA_Main_App(AGeApp):
     #        try:
     #            self.MainWindow.init_Animations_With_Colour()
     #            brush = self.Palette.text()
-    #            for i in range(self.MainWindow.Tab_3.Tab_2D_History.count()):
-    #                if self.MainWindow.Tab_3.Tab_2D_History.item(i).data(100).current_ax == None:
-    #                    self.MainWindow.Tab_3.Tab_2D_History.item(i).setForeground(brush)
+    #            for i in range(self.MainWindow.Tab_3.Tab_2D.History.count()):
+    #                if self.MainWindow.Tab_3.Tab_2D.History.item(i).data(100).current_ax == None:
+    #                    self.MainWindow.Tab_3.Tab_2D.History.item(i).setForeground(brush)
     #        except common_exceptions:
     #            ExceptionOutput(sys.exc_info())
                 
@@ -500,12 +500,12 @@ class AMaDiA_Main_App(AGeApp):
             try:
                 self.MainWindow.init_Animations_With_Colour()
                 brush = self.Palette.text()
-                for i in range(self.MainWindow.Tab_3.Tab_2D_History.count()):
-                    if self.MainWindow.Tab_3.Tab_2D_History.item(i).data(100).current_ax == None:
-                        self.MainWindow.Tab_3.Tab_2D_History.item(i).setForeground(brush)
+                for i in range(self.MainWindow.Tab_3.Tab_2D.History.count()):
+                    if self.MainWindow.Tab_3.Tab_2D.History.item(i).data(100).current_ax == None:
+                        self.MainWindow.Tab_3.Tab_2D.History.item(i).setForeground(brush)
                 self.MainWindow.Tab_1.InputField.setPalette(self.Palette2)
                 self.MainWindow.Tab_2.InputField.setPalette(self.Palette2)
-                self.MainWindow.Tab_3.Tab_2D_Formula_Field.setPalette(self.Palette2)
+                self.MainWindow.Tab_3.Tab_2D.Formula_Field.setPalette(self.Palette2)
                 self.MainWindow.Tab_4.FormulaInput.setPalette(self.Palette2)
             except common_exceptions:
                 ExceptionOutput(sys.exc_info())
@@ -622,7 +622,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         #To configure use:
         #print(self.Tab_2.UpperSplitter.sizes())
         #print(self.Tab_2.LowerSplitter.sizes())
-        #print(self.Tab_3.Tab_2D_splitter.sizes())
+        #print(self.Tab_3.Tab_2D.splitter.sizes())
         
         
        # Initialize subwindow variables
@@ -683,7 +683,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         self.Tab_4.init_Equation()
         
         # VALIDATE: Check if this fixes the bug on the Laptop --> The Bug is fixed but the question remains wether this is what fixed it
-        self.Tab_3.Tab_2D_F_Clear()
+        self.Tab_3.Tab_2D.F_Clear()
         #One Little Bug Fix:
             #If using LaTeX Display in LaTeX Mode before using the Plotter for the first time it can happen that the plotter is not responsive until cleared.
             #Thus the plotter is now cleared on program start to **hopefully** fix this...
@@ -733,7 +733,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
                 NC(1,"Could not determine user name thus Dave was chosen.",DplStr="Welcome Dave",exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_Main_Window.__init__")
     
  # ---------------------------------- Init and Maintenance ----------------------------------
-
+    
     def ConnectSignals(self):
         self.Menu_Options_action_ToggleCompactMenu.changed.connect(lambda: self.ToggleCompactMenu())
         #self.Menu_Options_action_Use_Global_Keyboard_Remapper.toggled.connect(self.ToggleRemapper)
@@ -744,16 +744,16 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         
         App().optionWindow.cb_F_EvalF.toggled.connect(self.Menu_Options_action_Eval_Functions.setChecked)
         self.Menu_Options_action_Eval_Functions.toggled.connect(App().optionWindow.cb_F_EvalF.setChecked)
-
+        
         App().optionWindow.cb_O_PairHighlighter.toggled.connect(self.Menu_Options_action_Highlighter.setChecked)
         self.Menu_Options_action_Highlighter.toggled.connect(App().optionWindow.cb_O_PairHighlighter.setChecked)
         self.Menu_Options_action_Highlighter.toggled.connect(App().S_Highlighter.emit)
-
+        
         self.Menu_DevOptions_action_Dev_Function.triggered.connect(self.Dev_Function)
         self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.triggered.connect(App().showWindow_IDE)
         self.Menu_DevOptions_action_Use_Threadpool.changed.connect(self.ToggleThreadMode)
         self.Menu_DevOptions_action_Terminate_All_Threads.triggered.connect(self.TerminateAllThreads)
-
+        
         self.Menu_Chat_action_Open_Client.triggered.connect(self.OpenClient)
         self.Menu_Chat_action_Open_Server.triggered.connect(self.OpenServer)
         
@@ -761,7 +761,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         #self.Menu_Colour_action_Bright.triggered.connect(lambda: self.setTheme("Bright"))
         
         self.Menu_OtherWindows_action_SystemControl.triggered.connect(lambda: self.OpenControlWindow())
-
+        
         self.Menu_Help_action_Examples.triggered.connect(lambda: self.Show_AMaDiA_Text_File("InputExamples.txt"))
         self.Menu_Help_action_Helpful_Commands.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Helpful_Useable_Syntax.txt"))
         self.Menu_Help_action_Patchlog.triggered.connect(lambda: self.Show_AMaDiA_Text_File("Patchlog.txt"))
@@ -823,7 +823,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_Options_action_Highlighter.setCheckable(True)
             self.Menu_Options_action_Highlighter.setChecked(True)
             self.Menu_Options_action_Highlighter.setObjectName("Menu_Options_action_Highlighter")
-
+            
             self.Menu_DevOptions_action_Dev_Function = AGeWidgets.MenuAction(self)
             self.Menu_DevOptions_action_Dev_Function.setObjectName("Menu_DevOptions_action_Dev_Function")
             self.Menu_DevOptions_action_Show_AMaDiA_exec_Window = AGeWidgets.MenuAction(self)
@@ -834,12 +834,12 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             self.Menu_DevOptions_action_Use_Threadpool.setObjectName("Menu_DevOptions_action_Use_Threadpool")
             self.Menu_DevOptions_action_Terminate_All_Threads = AGeWidgets.MenuAction(self)
             self.Menu_DevOptions_action_Terminate_All_Threads.setObjectName("Menu_DevOptions_action_Terminate_All_Threads")
-
+            
             self.Menu_Chat_action_Open_Client = AGeWidgets.MenuAction(self)
             self.Menu_Chat_action_Open_Client.setObjectName("Menu_Chat_action_Open_Client")
             self.Menu_Chat_action_Open_Server = AGeWidgets.MenuAction(self)
             self.Menu_Chat_action_Open_Server.setObjectName("Menu_Chat_action_Open_Server")
-
+            
             #self.Menu_Colour_action_Dark = AGeWidgets.MenuAction(self)
             #self.Menu_Colour_action_Dark.setObjectName("Menu_Colour_action_Dark")
             #self.Menu_Colour_action_Bright = AGeWidgets.MenuAction(self)
@@ -847,7 +847,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             
             self.Menu_OtherWindows_action_SystemControl = AGeWidgets.MenuAction(self)
             self.Menu_OtherWindows_action_SystemControl.setObjectName("Menu_OtherWindows_action_SystemControl")
-
+            
             self.Menu_Help_action_Examples = AGeWidgets.MenuAction(self)
             self.Menu_Help_action_Examples.setObjectName("Menu_Help_action_Examples")
             self.Menu_Help_action_Helpful_Commands = AGeWidgets.MenuAction(self)
@@ -910,7 +910,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             #self.Menu_Colour.setTitle(_translate("AMaDiA_Main_Window", "Colour"))
             self.Menu_OtherWindows.setTitle(_translate("AMaDiA_Main_Window", "More Windows"))
             self.Menu_Help.setTitle(_translate("AMaDiA_Main_Window", "Help"))
-
+            
             self.Menu_Options_action_Options.setText(_translate("AMaDiA_Main_Window", "&Options"))
             self.Menu_Options_action_Options.setShortcut(_translate("AMaDiA_Main_Window", "Alt+O"))
             self.Menu_Options_action_ToggleCompactMenu.setText(_translate("AMaDiA_Main_Window", "&Compact Menu"))
@@ -931,41 +931,41 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             #self.Menu_Options_action_Use_Local_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Local Keyboard Remapper"))
             #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setText(_translate("AMaDiA_Main_Window", "Global Keyboard Remapper"))
             #self.Menu_Options_action_Use_Global_Keyboard_Remapper.setToolTip(_translate("AMaDiA_Main_Window", "<html><head/><body><p>Use (Shift+)AltGr+Key to type Mathematical Symbols.<br/>Refer to AMaDiA_ReplacementTables for mapping.<br/>This works for all inputs including those in other applications!<br/>(This might cause problems with anti cheat systems in games. Use with care.)</p></body></html>"))
-
+            
             self.Menu_DevOptions_action_Dev_Function.setText(_translate("AMaDiA_Main_Window", "&Dev Function"))
             self.Menu_DevOptions_action_Dev_Function.setShortcut(_translate("AMaDiA_Main_Window", "Alt+D"))
             self.Menu_DevOptions_action_Show_AMaDiA_exec_Window.setText(_translate("AMaDiA_Main_Window", "Show Debug Terminal"))
             self.Menu_DevOptions_action_Use_Threadpool.setText(_translate("AMaDiA_Main_Window", "Use Threadpool"))
             self.Menu_DevOptions_action_Terminate_All_Threads.setText(_translate("AMaDiA_Main_Window", "Terminate All Threads"))
             self.Menu_DevOptions_action_Terminate_All_Threads.setToolTip(_translate("AMaDiA_Main_Window", "Unstable, especially in Threadpool-mode"))
-
+            
             self.Menu_Chat_action_Open_Client.setText(_translate("AMaDiA_Main_Window", "Open Client"))
             self.Menu_Chat_action_Open_Server.setText(_translate("AMaDiA_Main_Window", "Open Server"))
-
+            
             #self.Menu_Colour_action_Dark.setText(_translate("AMaDiA_Main_Window", "Dark"))
             #self.Menu_Colour_action_Bright.setText(_translate("AMaDiA_Main_Window", "Bright"))
             
             self.Menu_OtherWindows_action_SystemControl.setText(_translate("AMaDiA_Main_Window", "System Control"))
-
+            
             self.Menu_Help_action_Examples.setText(_translate("AMaDiA_Main_Window", "Examples"))
             self.Menu_Help_action_Helpful_Commands.setText(_translate("AMaDiA_Main_Window", "Helpful Commands"))
             self.Menu_Help_action_License.setText(_translate("AMaDiA_Main_Window", "License"))
             self.Menu_Help_action_About.setText(_translate("AMaDiA_Main_Window", "About"))
             self.Menu_Help_action_Patchlog.setText(_translate("AMaDiA_Main_Window", "Patchlog"))
-
+    
     def setTheme(self, Colour = "Dark"):
         App().setTheme(Colour)
         
     def InstallSyntaxHighlighter(self):
         #self.Tab_1.InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1.InputField.document())
         pass
-
+    
     def INIT_Animation(self):
         self.init_Animations_With_Colour()
-
+    
     def init_Animations_With_Colour(self):
         pass#self.init_Notification_Flash()
-        
+    
  # ---------------------------------- Option Toolbar Functions ----------------------------------
     def Dev_Function(self):
         #AC.ReloadModules()
@@ -980,9 +980,9 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         #importlib.reload(AT)
         #
         #self.ColourMain()
-
+        
         NC(3,"The DevFunction is currently not assigned",win=self.windowTitle(),func="AMaDiA_Main_Window.Dev_Function")
-
+    
     def ToggleCompactMenu(self):
         #TODO: The size behaves weird when compact->scaling-up->switching->scaling-down
         self.init_Menu(False)
@@ -1034,13 +1034,13 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         Text = "Expected Entries after all calculations: "+str(len(Test_Input))
         print(Text)
         self.Tab_1.InputField.setText(Text)
-
+    
     def ToggleThreadMode(self):
         if self.Menu_DevOptions_action_Use_Threadpool.isChecked():
             self.Threading = "POOL"
         else:
             self.Threading = "LIST"
-        
+    
  # ---------------------------------- SubWindows ----------------------------------
     def Show_AMaDiA_Text_File(self,FileName):
         if not (FileName in self.AMaDiA_Text_File_Window):
@@ -1051,13 +1051,13 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         self.AMaDiA_Text_File_Window[FileName].positionReset()
         QtWidgets.QApplication.instance().processEvents()
         self.AMaDiA_Text_File_Window[FileName].activateWindow()
-        
+    
     def AMaDiA_Text_File_ScrollToEnd(self,window):
         try:
             window.Scroll_To_End()
         except common_exceptions:
             ExceptionOutput(sys.exc_info())
-        
+    
     def Show_About(self):
         if self.AMaDiA_About_Window_Window == None:
             self.AMaDiA_About_Window_Window = AMaDiA_About_Window()
@@ -1066,21 +1066,21 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         self.AMaDiA_About_Window_Window.positionReset()
         QtWidgets.QApplication.instance().processEvents()
         self.AMaDiA_About_Window_Window.activateWindow()
-
+    
     def OpenClient(self):
         if self.Chat == None:
             self.Chat = AstusChat_Client.MainWindow()
         self.Chat.show()
         QtWidgets.QApplication.instance().processEvents()
         self.Chat.activateWindow()
-
+    
     def OpenServer(self):
         if self.Sever == None:
             self.Sever = AstusChat_Server.MainWindow()
         self.Sever.show()
         QtWidgets.QApplication.instance().processEvents()
         self.Sever.activateWindow()
-
+    
     def OpenControlWindow(self):
         try:
             if self.ControlWindow == None:
@@ -1104,7 +1104,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         #if event.type() == 82: # QtCore.QEvent.ContextMenu
         #elif...
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
- 
+
  # ---------------------------------- HistoryHandler ----------------------------------
 
     def HistoryHandler(self, AMaS_Object:"AC.AMaS", Tab:"int", Subtab = None):
@@ -1148,15 +1148,15 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
                     item.setData(100,AMaS_Object)
                     item.setText(AMaS_Object.Text)
                     
-                    self.Tab_3.Tab_2D_History.addItem(item)
+                    self.Tab_3.Tab_2D.History.addItem(item)
                     AMaS_Object.Tab_3_1_is = True
                     AMaS_Object.Tab_3_1_ref = item
                 else:
-                    self.Tab_3.Tab_2D_History.takeItem(self.Tab_3.Tab_2D_History.row(AMaS_Object.Tab_3_1_ref))
+                    self.Tab_3.Tab_2D.History.takeItem(self.Tab_3.Tab_2D.History.row(AMaS_Object.Tab_3_1_ref))
                     AMaS_Object.Tab_3_1_ref.setText(AMaS_Object.Text)
-                    self.Tab_3.Tab_2D_History.addItem(AMaS_Object.Tab_3_1_ref)
+                    self.Tab_3.Tab_2D.History.addItem(AMaS_Object.Tab_3_1_ref)
                 
-                self.Tab_3.Tab_2D_History.scrollToBottom()
+                self.Tab_3.Tab_2D.History.scrollToBottom()
             else:
                 NC(1,"Tab {} Subtab {} is unknown".format(str(Tab),str(Subtab)),input="Tab {} Subtab {}".format(str(Tab),str(Subtab)),tb=True)
         

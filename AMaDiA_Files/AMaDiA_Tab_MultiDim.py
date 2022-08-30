@@ -141,6 +141,14 @@ class Tab_MultiDim(QtWidgets.QWidget):
         self.Display.AdditionalActions['Copy Solution'] = self.action_tab_4_Display_Copy_Displayed_Solution
         
         self.installEventFilter(self)
+        # Set up context menus for the histories and other list widgets
+        for i in self.findChildren(QtWidgets.QListWidget):
+            i.installEventFilter(self)
+        # Set up text input related Event Handlers
+        for i in self.findChildren(QtWidgets.QTextEdit):
+            i.installEventFilter(self)
+        for i in self.findChildren(QtWidgets.QLineEdit):
+            i.installEventFilter(self)
     
     def init_Equation(self):
         self.EquationTab_New_Equation_Name_Input.setText("Equation 1")

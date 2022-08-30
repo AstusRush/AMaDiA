@@ -400,7 +400,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
          
     def action_H_Load_Plot(self,source,event):
         TheItem = source.itemAt(event.pos())
-        if source is self.window().Tab_3.Tab_2D_History:
+        if source is self.window().Tab_3.Tab_2D.History:
             listItems=source.selectedItems()
             if not listItems: return
         else:
@@ -412,12 +412,12 @@ class HistoryWidget(AGeWidgets.ListWidget):
             if item.data(100).current_ax != None:
                 item.data(100).current_ax.remove()
                 item.data(100).current_ax = None
-                self.window().Tab_3.Tab_2D_F_RedrawPlot()
-            self.window().Tab_3.Tab_2D_F_Plot(item.data(100))
+                self.window().Tab_3.Tab_2D.F_RedrawPlot()
+            self.window().Tab_3.Tab_2D.F_Plot(item.data(100))
         
     def action_H_New_Plot(self,source,event):
         TheItem = source.itemAt(event.pos())
-        if source is self.window().Tab_3.Tab_2D_History:
+        if source is self.window().Tab_3.Tab_2D.History:
             listItems=source.selectedItems()
             if not listItems: return
         else:
@@ -429,8 +429,8 @@ class HistoryWidget(AGeWidgets.ListWidget):
             if item.data(100).current_ax != None:
                 item.data(100).current_ax.remove()
                 item.data(100).current_ax = None
-                self.window().Tab_3.Tab_2D_F_RedrawPlot()
-            self.window().Tab_3.Tab_2D_F_Plot_init(item.data(100))
+                self.window().Tab_3.Tab_2D.F_RedrawPlot()
+            self.window().Tab_3.Tab_2D.F_Plot_init(item.data(100))
          
   # ----------------
         
@@ -475,13 +475,13 @@ class HistoryWidget(AGeWidgets.ListWidget):
             elif source is self.window().Tab_2.History:
                 item.data(100).tab_2_is = False
                 item.data(100).tab_2_ref = None
-            elif source is self.window().Tab_3.Tab_2D_History:
+            elif source is self.window().Tab_3.Tab_2D.History:
                 item.data(100).Tab_3_1_is = False
                 item.data(100).Tab_3_1_ref = None
                 if item.data(100).current_ax != None:
                     item.data(100).current_ax.remove()
                     item.data(100).current_ax = None
-                    self.window().Tab_3.Tab_2D_F_RedrawPlot()
+                    self.window().Tab_3.Tab_2D.F_RedrawPlot()
             elif source is self.window().Tab_4.History:
                 if item.data(100) == self.window().Tab_4.Active_Equation:
                     self.window().Tab_4.History.addItem(item)
@@ -550,26 +550,26 @@ class AMaDiA_ComplexPlotWidget(QtWidgets.QWidget):
         AMaS_Object.plotC_i_max = self.SBToI.value()
         return AMaS_Object
         ##
-        #AMaS_Object.plot_ratio = self.Tab_3.Tab_2D_Axis_ratio_Checkbox.isChecked()
-        #AMaS_Object.plot_grid = self.Tab_3.Tab_2D_Draw_Grid_Checkbox.isChecked()
-        #AMaS_Object.plot_xmin = self.Tab_3.Tab_2D_From_Spinbox.value()
-        #AMaS_Object.plot_xmax = self.Tab_3.Tab_2D_To_Spinbox.value()
-        #AMaS_Object.plot_points = self.Tab_3.Tab_2D_Points_Spinbox.value()
+        #AMaS_Object.plot_ratio = self.Tab_3.Tab_2D.ConfigWidget.Axis_ratio_Checkbox.isChecked()
+        #AMaS_Object.plot_grid = self.Tab_3.Tab_2D.ConfigWidget.DrawGrid_Checkbox.isChecked()
+        #AMaS_Object.plot_xmin = self.Tab_3.Tab_2D.ConfigWidget.From_Spinbox.value()
+        #AMaS_Object.plot_xmax = self.Tab_3.Tab_2D.ConfigWidget.To_Spinbox.value()
+        #AMaS_Object.plot_points = self.Tab_3.Tab_2D.ConfigWidget.Points_Spinbox.value()
         
-        #if self.Tab_3.Tab_2D_Points_comboBox.currentIndex() == 0:
+        #if self.Tab_3.Tab_2D.ConfigWidget.Points_comboBox.currentIndex() == 0:
         #    AMaS_Object.plot_per_unit = False
-        #elif self.Tab_3.Tab_2D_Points_comboBox.currentIndex() == 1:
+        #elif self.Tab_3.Tab_2D.ConfigWidget.Points_comboBox.currentIndex() == 1:
         #    AMaS_Object.plot_per_unit = True
         
-        #AMaS_Object.plot_xlim = self.Tab_3.Tab_2D_XLim_Check.isChecked()
+        #AMaS_Object.plot_xlim = self.Tab_3.Tab_2D.ConfigWidget.XLim_Check.isChecked()
         #if AMaS_Object.plot_xlim:
-        #    xmin , xmax = self.Tab_3.Tab_2D_XLim_min.value(), self.Tab_3.Tab_2D_XLim_max.value()
+        #    xmin , xmax = self.Tab_3.Tab_2D.ConfigWidget.XLim_min.value(), self.Tab_3.Tab_2D.ConfigWidget.XLim_max.value()
         #    if xmax < xmin:
         #        xmax , xmin = xmin , xmax
         #    AMaS_Object.plot_xlim_vals = (xmin , xmax)
-        #AMaS_Object.plot_ylim = self.Tab_3.Tab_2D_YLim_Check.isChecked()
+        #AMaS_Object.plot_ylim = self.Tab_3.Tab_2D.ConfigWidget.YLim_Check.isChecked()
         #if AMaS_Object.plot_ylim:
-        #    ymin , ymax = self.Tab_3.Tab_2D_YLim_min.value(), self.Tab_3.Tab_2D_YLim_max.value()
+        #    ymin , ymax = self.Tab_3.Tab_2D.ConfigWidget.YLim_min.value(), self.Tab_3.Tab_2D.ConfigWidget.YLim_max.value()
         #    if ymax < ymin:
         #        ymax , ymin = ymin , ymax
         #    AMaS_Object.plot_ylim_vals = (ymin , ymax)
