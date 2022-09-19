@@ -24,30 +24,8 @@ builtins.QtVersion = "PyQt5" # Options: "PyQt5", "PyQt6", "PySide2", "PySide6"
 before importing this module. (If the import fails the distribution falls back to PyQt5.)\n
 """
 
-breaking_the_rules = """
-Hi there!
-If you have some programming experience you will have noticed that I am breaking many rules and conventions in this Library.
-For example: I use camelCase in python.
-But I have always (I hope... its probably more like "almost always" or "often") good reasons to do so. (Ok I don't have a good reason to program with british spelling except for that it is objectively the correct spelling.)
-For example: I was originally using snake_case but Qt uses camelCase and I would argue that mixing camelCase and snake_case in a program is even worse than using camelCase in python.
-    So I switched most things to camelCase for consistency. (And while yes, PySide6 does support snake_case this library is older than PySide6 and I won't change everything.)
-
-Things like
-    saving data as code (AGeToPy) instead of using something like JSON,
-    catching all exceptions by redirecting them,
-    and completely throwing "never touch a running system" out of the window with AGeIDE
-may seem like war crimes to some but these things allow for an enormous flexibility that in my opinion outweighs the consequences.
-
-If I want good solid code that can run undisturbed for years and has a completely predictable behaviour I write in C.
-If I want flexible code that is fast to write and can be easily modified I use Python.
-This library builds upon pythons flexibility to allow for things that are enormously powerful like
-      tweaking some functions in a simulation program without restarting it so that you don't have to generate all the basic data every time
-   or tweaking a function and comparing the result to the previous version without saving the data as it is simply stored as a variable
-and if there is a typo the exception is caught and no simulation data is lost.
-This alone has saved me hours of work.
-
-To Sum this up:
-    It is just more fun if you break some rules! (Just be mindful of the broken rules and be prepared for the consequences.)
+"""
+    Copyright (C) 2021  Robin Albers
 """
 
 #region Import

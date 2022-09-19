@@ -176,6 +176,7 @@ class NC: # Notification Class
         `exc = True` or `sys.exc_info()`   \n
         `tb` should be a string containing the callstack or `True` to generate a callstack
         """
+        #TODO: Also implement logging with the logging module and use that as output
         self._time_time = timetime()
         self._init_Values()
         self._was_send = False

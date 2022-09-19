@@ -370,7 +370,7 @@ class AGeApp(QtWidgets.QApplication):
         """
         self.AppSpecificThemes[name] = theme
         self.refreshThemeList()
-          
+    
     def refreshThemeList(self):
         #TODO: stop overwriting by appending the source in brackets and reversing the load order so that AGeColour.Colours always has priority (And then update doc of `addTheme`)
         self.Themes = {}
@@ -411,7 +411,7 @@ class AGeApp(QtWidgets.QApplication):
             self.Themes.update(AGeColour.Colours)
         except:
             NC(1,"Exception while loading refreshing the themes dictionary",exc=sys.exc_info(),func="AGeApp.refreshThemeList")
-      
+    
     def _setTheme(self, Theme, Name):
         # type: (typing.Dict[str,typing.Union[typing.Dict[str,QtGui.QBrush],QtGui.QPalette]], str) -> None
         """

@@ -93,13 +93,15 @@ from packaging.version import parse as versionParser
 #CRITICAL: This is no standard module! It usually is installed everywhere but not guaranteed!
 # Helpfull Link: https://stackoverflow.com/questions/11887762/how-do-i-compare-version-numbers-in-python
 # It would probably be best to move this into a new function in _AGeFunctions that is called versionParser.
-# In this function we can try to import packaging.version and return one of its Version objects but if we can't import it we return either the build-in "from distutils.version import LooseVersion, StrictVersion"
+# In this function we can try to import packaging.version and return one of its Version objects but if we can't import it we return either the build-in "from distutils.version import LooseVersion, StrictVersion" (distutils is deprecated since Python 3.10)
 #   or if that import fails we can simply use a brute force approach to try to turn it into a tuple like
 ###
 ## def versiontuple(v):
 ##    return tuple(map(int, (v.split("."))))
 ###
 # (which might already take care of non-digit-characters like a leading "v" but this must be checked! There is also talk about padding everything with leading 0's to deal with strings...)
+#
+# We can also take a look into Qt's Version Parser and use it if the packaging import fails!
 
 try:
     import typing

@@ -115,7 +115,7 @@ class Ui_AMaDiA_Main_Window(object):
         self.Tab_4.EquationTab_New_Equation_Name_Input.setPlaceholderText(_translate("AMaDiA_Main_Window", "Enter the equation name"))
         self.Tab_4.tabWidget.setTabText(self.Tab_4.tabWidget.indexOf(self.Tab_4.tab_2), _translate("AMaDiA_Main_Window", "History"))
         self.Tab_4.FormulaInput.setPlaceholderText(_translate("AMaDiA_Main_Window", "WIP: Input a formula (using the names of the matrices) and hit return"))
-        self.Tab_4.DirectInput.setPlaceholderText(_translate("AMaDiA_Main_Window", "WIP: This Widget is currently a placeholder but if you insert 'name = value' and hit ctrl+enter those variables (one per line if you want multiple) will be loaded into the current equation."))
+        self.Tab_4.DirectInput.setPlaceholderText(_translate("AMaDiA_Main_Window", "WIP: This Widget is currently a placeholder. You can use it for notes."))
         self.TabWidget.setTabText(self.TabWidget.indexOf(self.Tab_4), _translate("AMaDiA_Main_Window", "Multi-Dim"))
 from AGeLib.AGeGW import MplWidget_2D_Plot, MplWidget_LaTeX
 from AGeLib.AGeWidgets import ListWidget, MTabWidget

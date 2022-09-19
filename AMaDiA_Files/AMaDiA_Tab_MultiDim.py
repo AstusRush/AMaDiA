@@ -96,6 +96,12 @@ class Tab_MultiDim(QtWidgets.QWidget):
         self.EquationTab_New_Equation_Name_Input.setObjectName("2_New_Equation_Name_Input")
         self.gridLayout_4.addWidget(self.EquationTab_New_Equation_Name_Input, 1, 1, 1, 1)
         self.tabWidget.addTab(self.tab_2, "")
+        
+        self.tab_3 = AW.AMaDiA_TextEdit()
+        self.tab_3.setObjectName("tab_3")
+        self.tab_3.setPlaceholderText("WIP: If you insert 'name = value' and hit ctrl+enter those variables (one per line if you want multiple) will be loaded into the current equation.")
+        self.tabWidget.addTab(self.tab_3, "Vars")
+        
         self.Matrix_List = AGeWidgets.ListWidget(self.Splitter_Left)
         self.Matrix_List.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.Matrix_List.setObjectName("Matrix_List")
@@ -133,7 +139,8 @@ class Tab_MultiDim(QtWidgets.QWidget):
         self.EquationTab_Load_Selected_Button.clicked.connect(lambda: self.F_Load_Selected_Equation())
         
         #TODO: This is temporary:
-        self.DirectInput.returnCtrlPressed.connect(lambda: self.F_Text_to_Equations())
+        self.DirectInput.returnCtrlPressed.connect(lambda: self.F_AutoCalc())
+        self.tab_3.returnCtrlPressed.connect(lambda: self.F_Text_to_Equations())
         
         
         
@@ -354,9 +361,12 @@ class Tab_MultiDim(QtWidgets.QWidget):
     
     def F_Text_to_Equations(self): #TODO: Do this more properly. This MEthod is just a quick tool that I need right now
         #MAYBE: this could be implemented as a right-click action to the matrix list, too, but it also needs to get its own widget to be more obvious for the user.
-        text:str = self.DirectInput.text()
+        text:str = self.tab_3.text()
+        self.F_Text_to_Equations_F(text)
+    
+    def F_Text_to_Equations_F(self, text:str): #TODO: Better names needed
         lines = text.splitlines()
-        variables = [i.split("=") for i in lines]
+        variables = [i.split("=") for i in lines if i.strip()]
         #
         h,w = 1,1
         try:
@@ -372,7 +382,7 @@ class Tab_MultiDim(QtWidgets.QWidget):
         for i in range(self.InputTab_Matrix_Input.columnCount()):
             self.InputTab_Matrix_Input.setColumnWidth(i,75)
         #
-        self.InputTab_Matrix_Input.setItem(0,0,QtWidgets.QTableWidgetItem("="))
+        self.InputTab_Matrix_Input.setItem(0,0,QtWidgets.QTableWidgetItem("=")) # This only ensures that an item exists. What we write into it is irrelevant.
         for name, value in variables:
             self.InputTab_Name_Input.setText(name.strip())
             self.InputTab_Matrix_Input.item(0,0).setText(value.strip())
@@ -422,3 +432,20 @@ class Tab_MultiDim(QtWidgets.QWidget):
         Notification.f("AMaDiA_Main_Window.F_Display_Matrix")
         Notification.w(self.windowTitle())
         Notification.send()
+    
+    def F_AutoCalc(self):
+        text:str = self.DirectInput.text()
+        AMaS_Object = self.Active_Equation
+        lines:typing.List[str] = text.splitlines()
+        for i,s in enumerate(lines):
+            if s.startswith("#"):
+                continue
+            elif s.count("=") == 1 and not s.split("=")[0].count("("):
+                self.F_Text_to_Equations_F(s)
+            elif s.count("=") > 1 and s.strip().endswith("="):
+                self.AMaDiA.Set_AMaS_Flags(AMaS_Object,f_eval = False)
+                AMaS_Object.UpdateEquation(Text=s.split("=")[-2])
+                self.F_Text_to_Equations_F(s.split("=")[0]+" = "+AMaS_Object.Solution)
+                if not s.endswith(" "): s += " "
+                lines[i] = s + AMaS_Object.Solution.replace("I","j")
+        self.DirectInput.setText("\n".join(lines))

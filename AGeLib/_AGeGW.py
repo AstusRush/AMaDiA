@@ -18,6 +18,8 @@ from distutils.spawn import find_executable
 if find_executable('latex') and find_executable('dvipng'): LaTeX_dvipng_Installed = True
 else : LaTeX_dvipng_Installed = False
 
+import typing
+
 #endregion Special Imports
 
 #CRITICAL: Use matplotlibImported and numpyImported
@@ -113,12 +115,16 @@ class MplWidget_2D_Plot(MplWidget):
         self.Layout.addWidget(self.Canvas)
         self.setLayout(self.Layout)
         self.layout().setContentsMargins(0,0,0,0)
-
+        if typing.TYPE_CHECKING:
+            self.plot = self.Canvas.ax.plot
+        else:
+            self.plot = lambda *args, **kwargs: self.Canvas.ax.plot(*args, **kwargs)
+    
     #def on_key_press(self, event): #mpl control
     #    # implement the default mpl key press events described at
     #    # http://matplotlib.org/users/navigation_toolbar.html#navigation-keyboard-shortcuts
     #    mpl_key_press_handler(event, self.Canvas, self.NavBar)
-        
+    
     def setColour(self,BG=None,FG=None,Cycler=None):
         """
         Sets all colours for the plot and redraws it. \n
@@ -175,12 +181,12 @@ class MplWidget_2D_Plot(MplWidget):
         self.Canvas.draw()
     
     # CRITICAL: Add more convenience functions
-    def plot(self,x,y):
-        #CRITICAL: I am pretty sure that plot can take more arguments... (To be clear: That is sarcasm. Add support for all arguments.)
-        #CRITICAL: Try Except Block
-        self.Canvas.ax.plot(x,y)
-        self.Canvas.draw()
-        
+    #def plot(self,x,y): #CLEANUP: This redirect is now done in the __init__ and even gives the method annotation from mpl in the ide
+    #    #CRITICAL: I am pretty sure that plot can take more arguments... (To be clear: That is sarcasm. Add support for all arguments.)
+    #    #CRITICAL: Try Except Block
+    #    self.Canvas.ax.plot(x,y)
+    #    self.Canvas.draw()
+    
     def useTeX(self,TheBool):
         # This Method changes the settings for not only one but all widgets...
         # This makes the clear function of the plotter slow if the LaTeX display has been used in LaTeX mode directly before
@@ -192,7 +198,7 @@ class MplWidget_2D_Plot(MplWidget):
         matplotlib.rcParams['text.usetex'] = TheBool
         plt.rc('text', usetex=TheBool)
         return matplotlib.rcParams['text.usetex']
-
+    
     def plotThings(self,things): #CRITICAL: OVERHAUL THIS CONCEPT AND CHANGE THE ORDER OF THE VALUES IN THE TUPLE AND WRITE DOCUMENTATION
         if len(things) == 0:
             return

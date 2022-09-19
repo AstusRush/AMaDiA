@@ -68,7 +68,7 @@ class Tab_Plotter(QtWidgets.QWidget):
     
  # ---------------------------------- Tab_3D_ 3D-Plot (Tab_3D_3DWidget) ----------------------------------
     # FEATURE: 3D-Plot
- 
+    
  # ---------------------------------- Tab_Complex_ Complex-Plot (Tab_Complex_ComplexWidget) ----------------------------------
     # FEATURE: Complex-Plot
     def Tab_Complex_F_Plot_Button(self):
@@ -92,9 +92,10 @@ class Tab_Plotter(QtWidgets.QWidget):
             #print(AMaS_Object.plot_y_vals)
             #print(type(AMaS_Object.plot_y_vals))
             AMaS_Object.plottable = False
-            
+    
  # ---------------------------------- Tab_3_4_ ND-Plot ----------------------------------
     # FEATURE: ND-Plot
+
 
 class Plot2D(QtWidgets.QWidget):
     def __init__(self, parent: typing.Optional['QtWidgets.QWidget']) -> None:

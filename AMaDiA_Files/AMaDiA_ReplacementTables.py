@@ -149,7 +149,9 @@ n_greek_letters_nospace = [["\u0391","Alpha"],["\u03b1","alpha"],
                    ["\u03a8","Psi"],["\u03c8","psi"],
                    ["\u03a9","Omega"],["\u03c9","omega"]
                    ]
-n_constants = [["\u03c0"," pi "],["∞"," oo "]]
+n_constants = [["\u03c0"," pi "],["∞"," oo "], #]
+                ["c₀","299792458"],["ε₀","(8.8541878128*10**(-12))"],["µ₀","(1.25663706212*10**(-6))"], #CRITICAL: This is only temporary but should be implemented in a more permanent but toggleable way with optional units
+                ["η₀","377"]] #CRITICAL: Is is also only temporary but this is also not as precise as the other ones (this is the value so that my solutions match the official solutions of my uni)
 n_operators = [["^","**"],["\u22C5","*"]]
 n_operators_special = [["√","sqrt"],["∫","Integral"]]
 n_operators_notinv = [["–","-"],["—","-"],["\u00B7","*"],["×","*"],["÷","/"],["°C","degC"],["°F","*5/9*degC-32*5/9*degC"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
@@ -158,7 +160,7 @@ n_space = [[" "," "]]
 
 n_priority_Invertable = [["°C","*degC"],["°C","degC"],["°F","*5/9*degC-32*5/9*degC"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]
 
-LIST_n_all = [n_standard_integrals , n_greek_letters_nospace , n_constants , n_operators , n_operators_special , n_operators_notinv , n_space]
+LIST_n_all = [n_standard_integrals , n_constants , n_greek_letters_nospace , n_operators , n_operators_special , n_operators_notinv , n_space]
 
 n_constants_nospace = [["π"," pi "]]
 LIST_n_invertable = [n_priority_Invertable , n_operators , n_operators_special]

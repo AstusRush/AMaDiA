@@ -164,11 +164,11 @@ class AMaDiA_Internal_File_Display_Window(AWWF):
             
             self.TextBrowser = QtWidgets.QTextBrowser(self)
             self.TextBrowser.setObjectName("TextBrowser")
-
-
+            
+            
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
             self.setCentralWidget(self.centralwidget)
-
+            
             self.load(FileName)
             
             self.setAutoFillBackground(True)
@@ -213,7 +213,7 @@ class AMaDiA_Internal_File_Display_Window(AWWF):
                 self.TextBrowser.setText(Text)
         except common_exceptions:
             NC(1,"Could not load {}".format(str(FileName)),exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_Internal_File_Display_Window.load",input=FileName)
-
+    
     def Scroll_To_End(self):
         self.TextBrowser.verticalScrollBar().setValue(self.TextBrowser.verticalScrollBar().maximum())
         
@@ -225,7 +225,7 @@ class AMaDiA_About_Window(AWWF):
             self.StandardSize = (400, 600)
             self.resize(*self.StandardSize)
             self.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_DialogHelpButton))
-
+            
             self.centralwidget = QtWidgets.QWidget(self)
             self.centralwidget.setAutoFillBackground(True)
             self.centralwidget.setObjectName("centralwidget")
@@ -234,13 +234,13 @@ class AMaDiA_About_Window(AWWF):
             
             self.TextBrowser = QtWidgets.QTextBrowser(self)
             self.TextBrowser.setObjectName("TextBrowser")
-
+            
             self.gridLayout.addWidget(self.TextBrowser, 0, 0, 0, 0)
             #self.layout = QtWidgets.QVBoxLayout()
             #self.layout.addWidget(self.TextBrowser)
             #self.setLayout(self.layout)
             self.setCentralWidget(self.centralwidget)
-
+            
             #Text = WindowTitle+"\nWIP: More coming soon"
             #<p> Send comments, ideas and bug reports to: <a href="mailto:a011235robin@gmail.com">a011235robin@gmail.com</a></p>
             aboutText = """
@@ -301,17 +301,17 @@ class AMaDiA_exec_Window(AWWF): #CLEANUP: use the standard AGeLib exec_Window
             
             self.Input_Field = AW.AMaDiA_TextEdit(self)
             self.Input_Field.setObjectName("Input_Field")
-
-
+            
+            
             self.gridLayout.addWidget(self.Input_Field, 0, 0, 0, 0)
             self.setCentralWidget(self.centralwidget)
-
+            
             self.Input_Field.returnCtrlPressed.connect(self.execute_code)
             
             self.setAutoFillBackground(True)
         except common_exceptions:
             NC(exc=sys.exc_info(),win=self.windowTitle(),func="AMaDiA_exec_Window.__init__")
-
+    
     def execute_code(self):
         input_text = self.Input_Field.toPlainText()
         try:
@@ -343,7 +343,7 @@ class AMaDiA_options_window(AWWF, Ui_AMaDiA_Options):
         QtWidgets.QApplication.instance().S_advanced_mode_changed.connect(self.cb_O_AdvancedMode.setChecked)
         self.cb_O_Remapper_global.toggled.connect(self.ToggleGlobalRemapper)
         self.cb_O_PairHighlighter.toggled.connect(App().S_Highlighter.emit)
-
+    
     def ToggleGlobalRemapper(self):
         try:
             if self.cb_O_Remapper_global.isChecked():
@@ -481,7 +481,7 @@ class AMaDiA_Main_App(AGeApp):
             except AttributeError:
                 pass
         return super(AMaDiA_Main_App, self).eventFilter(source, event)
-
+    
  # ---------------------------------- Colour and Font ----------------------------------
     #def setTheme(self, Colour = "Dark"):
     #    super(AMaDiA_Main_App, self).setTheme(Colour)
@@ -509,13 +509,13 @@ class AMaDiA_Main_App(AGeApp):
                 self.MainWindow.Tab_4.FormulaInput.setPalette(self.Palette2)
             except common_exceptions:
                 ExceptionOutput(sys.exc_info())
-
+    
  # ---------------------------------- SubWindows ----------------------------------
     def r_init_Options(self):
         self.optionWindow = AMaDiA_options_window()
-
+    
  # ---------------------------------- Other ----------------------------------
-
+    
     def r_createFolders(self):
         try:
             if self.AGeLibPathOK:
@@ -536,7 +536,7 @@ class AMaDiA_Main_App(AGeApp):
                 self.pathOK = True
         except:
             NC(1,"Could not create/validate AMaDiA folders",exc=sys.exc_info())
-            
+
 
 
 
@@ -955,7 +955,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
     
     def setTheme(self, Colour = "Dark"):
         App().setTheme(Colour)
-        
+    
     def InstallSyntaxHighlighter(self):
         #self.Tab_1.InputField_BracesHighlighter = AW.BracesHighlighter(self.Tab_1.InputField.document())
         pass
@@ -1096,7 +1096,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
     
     
  # ---------------------------------- Event Filter ----------------------------------
-
+    
     def eventFilter(self, source, event):
         # TODO: Add more mouse button functionality! See https://doc.qt.io/qt-5/qt.html#MouseButton-enum and https://doc.qt.io/qt-5/qmouseevent.html
         #print(event.type())
@@ -1104,9 +1104,9 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         #if event.type() == 82: # QtCore.QEvent.ContextMenu
         #elif...
         return super(AMaDiA_Main_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
-
+    
  # ---------------------------------- HistoryHandler ----------------------------------
-
+    
     def HistoryHandler(self, AMaS_Object:"AC.AMaS", Tab:"int", Subtab = None):
         
         if Tab == 1:
@@ -1180,9 +1180,9 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         
         else:
             print("History of Tab {} is unknown".format(Tab))
- 
+    
  # ---------------------------------- Thread Handler ----------------------------------
-
+    
     def TR(self, AMaS_Object , Function , ID=-1 , Eval = -1): # Thread Return: Threads report back here when they are done
         self.Function = Function
         
@@ -1230,7 +1230,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
             NC(lvl=1,msg="Could not start thread",exc=sys.exc_info(),func="AMaDiA_Main_Window.TC",win=self.windowTitle(),input="Mode = {} , Kind = {}".format(self.Threading,Kind))
         else:
             self.workingThreadsDisplay(1)
-        
+    
     def TC_old(self,Thread): # Thread Creator: All new threads are created here # CLEANUP: TC_old
         ID = -1
         
@@ -1280,6 +1280,7 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
     
     def ThreadFinishedSlot(self):
         self.workingThreadsDisplay(-1)
+    
     def workingThreadsDisplay(self,pm):
         self.workingThreads += pm
         self.Statusbar.showMessage("Currently working on {} {}".format(self.workingThreads,"equation" if self.workingThreads==1 else "equations"))
@@ -1290,10 +1291,8 @@ class AMaDiA_Main_Window(AWWF, Ui_AMaDiA_Main_Window):
         if self.threadpool.activeThreadCount() >= 1:
             self.oldThreadpools.append(self.threadpool)
             self.threadpool = QtCore.QThreadPool()
-    
- # ---------------------------------- Tab_5_ ??? ----------------------------------
 
- # ---------------------------------- Tab_6_ ??? ----------------------------------
+
 
 # ---------------------------------- Main ----------------------------------
 if __name__ == "__main__":

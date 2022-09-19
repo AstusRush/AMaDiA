@@ -188,7 +188,7 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
         font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
         self.setFont(font)
         self.installEventFilter(self)
-
+    
     def sendExecute(self):
         """
         This method saves a backup of the code and then emits the S_Execute signal. \n
@@ -196,7 +196,7 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
         """
         self.saveBackup()
         self.S_Execute.emit()
-
+    
     def saveBackup(self):
         """
         This method saves the code in a file. \n
@@ -242,7 +242,7 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
     
     def toPlainText(self):
         return self.text()
-        
+    
     def eventFilter(self, source, event):
         # type: (QtWidgets.QWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
         try:
@@ -270,20 +270,20 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
         except:
             pass
         return super(CodeEditorWidget, self).eventFilter(source, event)
-
+    
     def resizeEvent(self, event):
         super(CodeEditorWidget, self).resizeEvent(event)
         if self.hasFloater:
             self.Floater.move(self.rect().right() - self.Floater.width(), 0)
             self.Floater.raise_()
-
+    
     def toggleEditor(self):
         if self.QScintilla:
             if self.EContainer.currentWidget() == self.Editor_Finder:
                 self.EContainer.setCurrentWidget(self.EditorSc)
             else:
                 self.EContainer.setCurrentWidget(self.Editor_Finder)
-        
+    
     def setupEditorSc(self):
         if self.QScintilla:
             # See https://www.scintilla.org/ScintillaDoc.html#SCI_SETMULTIPLESELECTION
@@ -343,7 +343,7 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             self.Lexer.setFont(font)
             self.EditorSc.setScrollWidth(10)
             self.EditorSc.setMarginWidth(0, "000")
-
+    
     def _UpdateFontSize(self):
         font = self.font()
         font.setPointSize(App().font().pointSize())
@@ -375,13 +375,13 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
                 self.executeButton.setIcon(recolourIcon(self.style().standardIcon(QtWidgets.QStyle.SP_MediaPlay)))
             except:
                 pass
-
+    
     def setText(self,Text): #TODO: Turn this into "select all"+"insert" to not reset the history every time
         self.Editor.setPlainText(str(Text))
         if self.QScintilla:
             self.EditorSc.setScrollWidth(10)
             self.EditorSc.setText(str(Text))
-
+    
     def rectToMulti(self, beenSet): # WHY THE BLOODY HELL CAN'T I GET THIS BLOODY HACK TO BLOODY WORK?!?!
         if beenSet and self.QScintilla and bool(QtWidgets.QApplication.keyboardModifiers()&( QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier)) and self._rectToMultiLast != timetime():
             self._rectToMultiLast = timetime()
@@ -461,7 +461,7 @@ class _InspectWidget_memberItem(QtWidgets.QWidget):
             pass
         #
         self.installEventFilter(self)
-
+    
     def showInfo(self):
         try:
             text = f"{self.string}\nType: {type(self.item)}\n{self.stringRep(Format = True)}"
@@ -473,7 +473,7 @@ class _InspectWidget_memberItem(QtWidgets.QWidget):
             self.InspectWidget.DisplayWidget.setPlainText(text)
         except:
             NC(1,"Could not show info",exc=True)
-
+    
     def stringRep(self, item = "no strItem given", Format = True): #TODO: Improve Formatting
         try:
             if item == "no strItem given":
@@ -504,16 +504,16 @@ class _InspectWidget_memberItem(QtWidgets.QWidget):
             if Format: string = "\n"+string+"\n\n\n"
         if Format: string = "\nString Representation: "+string
         return string
-
+    
     def showCode(self):
         pass
-
+    
     def showHelp(self):
         pass
-
+    
     def zoom(self):
         self.InspectWidget.zoom(self.string)
-
+    
     def callMethod(self):
         proceed = False#QtWidgets.QMessageBox.question(None,"Are you sure",f"Do you really want to call the method \"{self.string}\"?") == QtWidgets.QMessageBox.Yes
         args, proceed = QtWidgets.QInputDialog.getText(self,"Are you sure?",f"Do you really want to call the method \"{self.string}\"?\nIf so, do you want to call it with arguments?")
@@ -528,7 +528,7 @@ class _InspectWidget_memberItem(QtWidgets.QWidget):
             self.InspectWidget.DisplayWidget.setPlainText(text)
         except:
             NC(1,"Could not show return value",exc=True)
-
+    
     def eventFilter(self, source, event):
         # type: (QtWidgets.QWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
         if (event.type() == QtCore.QEvent.FontChange): # Rescale if font size changes
@@ -543,7 +543,7 @@ class _MemberListWidget(QtWidgets.QListWidget):
     def __init__(self, parent=None):
         super(_MemberListWidget, self).__init__(parent)
         self.installEventFilter(self)
-
+    
     def keyPressEvent(self,event):
         try:
             if event == QtGui.QKeySequence.Copy:
@@ -616,7 +616,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
         return ["App","NC",
                 "app","window","mw","self","display","dpl","dir","code","help","getPath"
                 ]
-
+    
     def setGlobals(self, Globals = None):
         # type: (dict) -> None
         """
@@ -628,19 +628,19 @@ class ConsoleWidget(QtWidgets.QSplitter):
         else:
             self.Globals = Globals
         #TODO: Update autocomplete
-
+    
     def setLocals(self, Locals = {}):
         """
         Set the locals used in executeCode.
         """
         self.LocalsExternal = Locals
-
+    
     def setLocalsUpdateFunction(self, function = None):
         """
         Set a function that is called before executing code. This function must return a dictionary containing additional locals that are used when executing the code.
         """
         self.updateLocals = function
-
+    
     def executeCode(self):
         if self.updateLocals: self.setLocals(self.updateLocals())
         input_text = self.Console.text()
@@ -666,7 +666,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
                 self.Locals = {}
         except:
             NC(exc=sys.exc_info(),win=self.window().windowTitle(),func="ConsoleWidget.executeCode",input=input_text)
-
+    
     def display(self, *args, sep=" ", end="\n", scroll=False):
         # type: (*object,str,str,bool) -> None
         l = []
@@ -677,9 +677,11 @@ class ConsoleWidget(QtWidgets.QSplitter):
             App().processEvents()
             self.DisplayWidget.verticalScrollBar().setValue(self.DisplayWidget.verticalScrollBar().maximum())
             App().processEvents()
-        
-    def dpl(self, *args, sep=" ", end="\n", scroll=False):
-        # type: (*object,str,str,bool) -> None
+    
+    def dpl(self, *args, sep=" ", end="\n", scroll=False, print_=False):
+        # type: (*object,str,str,bool,bool) -> None
+        if print_:
+            print(*args, sep=sep, end=end, flush=scroll)
         l = []
         for i in args:
             l.append(str(i))
@@ -688,7 +690,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
             App().processEvents()
             self.DisplayWidget.verticalScrollBar().setValue(self.DisplayWidget.verticalScrollBar().maximum())
             App().processEvents()
-
+    
     def dir(self,thing,filterItem=None):
         # type: (typing.Any,list[str]|None) -> list[str]
         if type(filterItem) == type(None):
@@ -698,26 +700,26 @@ class ConsoleWidget(QtWidgets.QSplitter):
         else:
             self.DisplayWidget.setPlainText("\n".join(filter(lambda x: str(filterItem).lower() in x.lower(), dir(thing))))
         return dir(thing)
-
+    
     def code(self,item):
         # type: (types.MethodType|types.FunctionType) -> None
         self.DisplayWidget.setPlainText(inspect.getsource(item))
-
+    
     def help(self,item):
         self.DisplayWidget.setPlainText(inspect.getdoc(item))
-        
+    
     def _filterHelper(self,x,filterItem):
         # type: (str, list[str]) -> bool
         for i in filterItem:
             if str(i).lower() in x.lower(): return True
         return False
-
+    
     def setText(self,Text): #TODO: Turn this into "select all"+"insert" to not reset the history every time
         self.Console.setText(Text)
-
+    
     def text(self):
         return self.Console.text()
-
+    
     def toPlainText(self):
         return self.Console.toPlainText()
 
@@ -811,7 +813,7 @@ class InspectWidget(QtWidgets.QWidget):
         self.setTabOrder(self.NameInput, self.FilterInput)
         self.setTabOrder(self.FilterInput, self.MemberList)
         self.setTabOrder(self.MemberList, self.DisplayWidget)
-
+    
     def setGlobals(self, Globals = None):
         # type: (dict) -> None
         """
@@ -823,7 +825,7 @@ class InspectWidget(QtWidgets.QWidget):
         else:
             self.Globals = Globals
         #TODO: Update autocomplete
-
+    
     def eventFilter(self, source, event):
         # type: (QtWidgets.QWidget|_MemberListWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
         try:
@@ -837,7 +839,7 @@ class InspectWidget(QtWidgets.QWidget):
         except:
             NC(lvl=1,exc=sys.exc_info())
         return super(InspectWidget, self).eventFilter(source, event)
-
+    
     def loadMembers(self): # self.window().InspectWidget.loadMembers
         self.MemberList.clear()
         if self.NameInput.text().strip() == "": # If the field is empty self.Globals and buildins are displayed
@@ -850,7 +852,7 @@ class InspectWidget(QtWidgets.QWidget):
             except:
                 ExceptionOutput()
         self.displayMembers()
-        
+    
     def loadBuiltins(self):
         self.MemberList.clear()
         self.dir(builtins)
@@ -861,7 +863,7 @@ class InspectWidget(QtWidgets.QWidget):
             except:
                 ExceptionOutput()
         self.displayMembers()
-
+    
     def loadGlobals(self):
         self.MemberList.clear()
         self.filter(self.Globals.keys())
@@ -872,7 +874,7 @@ class InspectWidget(QtWidgets.QWidget):
             except:
                 ExceptionOutput()
         self.displayMembers()
-
+    
     def displayMembers(self):
         for member in self._temp_members_dict.items():
             itemN = QtWidgets.QListWidgetItem()
@@ -881,17 +883,17 @@ class InspectWidget(QtWidgets.QWidget):
             self.MemberList.addItem(itemN)
             self.MemberList.setItemWidget(itemN, widget)
         self.updateListUnitGeometry()
-
+    
     def _objectGetter(self,string):
         self._temp_member = None
         exec("_self_self._temp_member = "+self.NameInput.text()+"."+string, self.Globals, {"self":self.window(),"_self_self":self})
         return self._temp_member
-
+    
     def _objectGetter_Builtins(self,string):
         self._temp_member = None
         exec("_self_self._temp_member = "+string, vars(builtins), {"self":self.window(),"_self_self":self})
         return self._temp_member
-
+    
     def dir(self, thing=None):
         # type: (typing.Any) -> list[str]
         self._temp_members = []
@@ -902,7 +904,7 @@ class InspectWidget(QtWidgets.QWidget):
         #if type(filterItem) == type(None) or filterItem == "":
         #    self._temp_members = filter(filterItem, self._temp_thing)
         return self.filter(self._temp_thing)
-
+    
     def filter(self,listToFilter):
         # type: (list[str]) -> list[str]
         self._temp_thing = listToFilter
@@ -918,12 +920,12 @@ class InspectWidget(QtWidgets.QWidget):
         else:
             self._temp_members = list(filter(lambda x: str(filterItem).lower() in x.lower(), self._temp_thing))
         return self._temp_members
-        
+    
     def _filterHelper(self,x,filterItem):
         for i in filterItem:
             if str(i).lower() in x.lower(): return True
         return False
-
+    
     def zoom(self,text):
         """Add `.text` to the NameInput"""
         self.NameInput.moveCursor(QtGui.QTextCursor.End)
@@ -934,7 +936,7 @@ class InspectWidget(QtWidgets.QWidget):
             self.NameInput.textCursor().insertText("."+text)
             self.NameInput.find("."+text, QtGui.QTextDocument.FindBackward)
         self.NameInput.setFocus()
-            
+    
     def updateListUnitGeometry(self):
         items = [self.MemberList.item(i) for i in range(self.MemberList.count())]
         for i in items:
@@ -1008,7 +1010,7 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
             self.highlightInput("Red")
             self.NameInput.textChanged.connect(lambda: self.highlightInput("Yellow"))
             App().S_ColourChanged.connect(lambda: self.highlightInput(self.lastHighlightColour))
-
+    
     def highlightInput(self,c="Red"):
         # type: (str) -> None
         """
@@ -1024,7 +1026,7 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
             pal.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
             pal.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
             self.NameInput.setPalette(pal)
-
+    
     def setGlobals(self, Globals = None):
         # type: (dict) -> None
         """
@@ -1036,7 +1038,7 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
         else:
             self.Globals = Globals
         #TODO: Update autocomplete
-
+    
     def loadCode(self):
         """
         Loads the code of the method that is named in the NameInput and displays it. \n
@@ -1071,7 +1073,7 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
             method = str(self.method) if self.Static else self.NameInput.text()
             NC(1,"Could not load code",exc=sys.exc_info(),input=method)
             self.highlightInput("Red")
-
+    
     def applyCode(self):
         """
         Overwrites the method currently named in the NameInput with the method currently entered in the Console using the globals that where loaded when loadCode was last called. \n
@@ -1119,7 +1121,7 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
                         NC(1,"Could not overwrite or add method of/to class.\nPlease refer to the last 2 level 4 notifications for more information.")
         except:
             NC(1,"Could not apply code",exc=sys.exc_info(),input=ovw)
-
+    
     def assembleMethod(self):
         """
         This is a helper function for applyCode that puts together the code necessary for overwriting the method with (or adding) the new one.
@@ -1153,7 +1155,7 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
         cnw = self.Console.text()+f"\n{className2}.{methodName2} = {methodName1}\n{className2}.{methodName2}.__self__ = {className2}\n{className2}.{methodName2}.__name__ = \"{methodName2}\"\n{className2}.{methodName2}.__qualname__ = {className2}.__name__+\".{methodName2}\""
         cnw+= f"\n{className2}._Code_Overwrite_{methodName2} = \"\"\""+ ( self.Console.text().split("\n",1)[1] if self.Console.text().startswith("#") else self.Console.text() ).replace("\\","\\\\").replace("\n","\\n").replace("\"","\\\"").replace("\'","\\\'")+"\"\"\""
         return ovw,new,cow,cnw
-
+    
     def applyCode_old(self): #CLEANUP: Remove
         #Further reading: https://stackoverflow.com/questions/394770/override-a-method-at-instance-level
         # Overwriting a method that is connected to signals does not change the method that is connected to the signals as they store a separate version of the method :(
@@ -1167,7 +1169,7 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
             exec(code,self.MethodGlobals,{"self":self})
         except:
             NC(2,"Could not apply code",exc=sys.exc_info(),input=code)
-
+    
     def assembleMethod_old(self,target): #CLEANUP: Remove
         r = self.Console.text()+"\nfunctype=type("+target+")\n"+target+" = functype("+self.Console.text().split("def ",1)[1].split("(",1)[0]+", "+target+".__self__)"
         r+= "\nsetattr("+target+".__self__,\"_Code_Overwrite_\"+"+target+".__name__, \"\"\""+ ( self.Console.text().split("\n",1)[1] if self.Console.text().startswith("#") else self.Console.text() ).replace("\\","\\\\").replace("\n","\\n").replace("\"","\\\"").replace("\'","\\\'")+"\"\"\")"
@@ -1255,7 +1257,7 @@ class exec_Window(AWWF):
             self.setAutoFillBackground(True)
         except:
             NC(exc=sys.exc_info(),win=self.windowTitle(),func="exec_Window.__init__")
-
+    
     def setGlobals(self, Globals = None):
         """
         Set the globals used in execute_code and the widgets. If None the globals of this method are loaded.
@@ -1268,13 +1270,13 @@ class exec_Window(AWWF):
         self.OverloadWidget.setGlobals(self.Globals)
         self.InspectWidget.setGlobals(self.Globals)
         self.ConsoleWidget.setGlobals(self.Globals)
-
+    
     def toggleGlobals(self):
         if self.GlobalsCheckBox.checkState():
             self.setGlobals(vars(sys.modules['__main__']))
         else:
             self.setGlobals(None)
-
+    
     def updateFonts(self, font):
         self.ConsoleWidget.Console.setFont(font)
         self.OverloadWidget.Console.setFont(font)
