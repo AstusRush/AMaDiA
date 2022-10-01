@@ -49,6 +49,7 @@ from . import AGeSpecialWidgets
 from . import AGeQuick
 from . import AGeIDE
 from . import AGeToPy
+from . import AGeInput
 from .AGeCore import *
 #endregion Import
 

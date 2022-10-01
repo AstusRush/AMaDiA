@@ -65,7 +65,7 @@ class MplWidget(QtWidgets.QWidget):
             self.Canvas.draw()
         except:
             ExceptionOutput(sys.exc_info())
-
+    
     #def eventFilter(self, source, event):
     #    if event.type() == QtCore.QEvent.PaletteChange:
     #        try:
@@ -79,7 +79,7 @@ class MplWidget(QtWidgets.QWidget):
 class MplCanvas_2D_Plot(FigureCanvasQTAgg):
     fig: Figure
     figure: Figure
-    ax: plt.Axes
+    ax: mplAxes
     def __init__(self):
         #plt.style.use('dark_background')
         if versionParser(matplotlib.__version__) >= versionParser("2.2"):
@@ -155,7 +155,7 @@ class MplWidget_2D_Plot(MplWidget):
             except:
                 pass
         self.Canvas.draw()
-
+    
     def draw(self, recolour = True):
         """
         Recolours and redraws the canvas. This also resets the colour wheel. \n
@@ -165,7 +165,7 @@ class MplWidget_2D_Plot(MplWidget):
             self.setColour()
         else:
             self.Canvas.draw()
-
+    
     def clear(self, re_init_ax = False):
         """
         Clears all axes. \n
@@ -224,7 +224,7 @@ class MplWidget_2D_Plot(MplWidget):
                     y = i if isinstance(i,np.ndarray) else np.asarray(i)
                     x = range(y.shape[0])
                     name = ""
-            
+                
                 #self.ConsoleWidget.dpl()
                 if len(y.shape) == 1:
                     if name == "": name = "Unnamed with {} values".format(str(y.shape[0]))
@@ -301,7 +301,7 @@ class MplWidget_LaTeX(MplWidget): #CRITICAL: Verify (should already be in): Make
         self.StackedWidget.addWidget(self.Scroll)
         if self.QtWebEngineWidgetsImported:
             self.StackedWidget.addWidget(self.WebCanvas)
-        
+            
             self.ToggleButton = QtWidgets.QToolButton(self)
             self.ToggleButton.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_BrowserReload))
             self.ToggleButton.setMaximumSize(24, 24)

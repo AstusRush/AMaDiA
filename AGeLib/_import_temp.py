@@ -122,6 +122,7 @@ try:
     import matplotlib
     import matplotlib.pyplot as plt
     from matplotlib.figure import Figure
+    from matplotlib.axes import Axes as mplAxes
     from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
     from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT #mpl control
     from matplotlib.backend_bases import key_press_handler as mpl_key_press_handler #mpl control

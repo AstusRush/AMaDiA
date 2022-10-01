@@ -11,6 +11,8 @@ from ._AGeWidgets import(
     ToolButton,
     MenuAction,
     TextAddon_Finder,
+    TightGridWidget,
+    TightGridFrame,
 )
 
 from ._AGeAWWF import(

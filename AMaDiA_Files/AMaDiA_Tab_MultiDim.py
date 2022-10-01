@@ -438,14 +438,15 @@ class Tab_MultiDim(QtWidgets.QWidget):
         AMaS_Object = self.Active_Equation
         lines:typing.List[str] = text.splitlines()
         for i,s in enumerate(lines):
-            if s.startswith("#"):
-                continue
-            elif s.count("=") == 1 and not s.split("=")[0].count("("):
-                self.F_Text_to_Equations_F(s)
-            elif s.count("=") > 1 and s.strip().endswith("="):
+            s, s_comment = (s+"#").split("#",1)
+            if s_comment: s_comment = "#"+s_comment[0:-1]
+            if s.count("=") > 1 and s.strip().endswith("="):
                 self.AMaDiA.Set_AMaS_Flags(AMaS_Object,f_eval = False)
                 AMaS_Object.UpdateEquation(Text=s.split("=")[-2])
                 self.F_Text_to_Equations_F(s.split("=")[0]+" = "+AMaS_Object.Solution)
                 if not s.endswith(" "): s += " "
-                lines[i] = s + AMaS_Object.Solution.replace("I","j")
+                lines[i] = s + AMaS_Object.Solution.replace("I","j") + s_comment
+            elif s.count("=") >= 1 and not s.split("=")[0].count("("):
+                s = s.split("=")
+                self.F_Text_to_Equations_F(f"{s[0]} = {s[-1]}")
         self.DirectInput.setText("\n".join(lines))
