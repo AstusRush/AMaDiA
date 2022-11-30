@@ -524,7 +524,10 @@ class AMaDiA_ComplexPlotWidget(QtWidgets.QWidget):
         self.SBToILabel = QtWidgets.QLabel("+ i ·",self)
         for i in [self.SBFromR,self.SBFromI,self.SBToR,self.SBToI]:
             i.setRange(-10000,10000)
-            i.setStepType(QtWidgets.QDoubleSpinBox.AdaptiveDecimalStepType)
+            try:
+                i.setStepType(QtWidgets.QDoubleSpinBox.StepType.AdaptiveDecimalStepType)
+            except:
+                i.setStepType(QtWidgets.QDoubleSpinBox.AdaptiveDecimalStepType)
         self.SBFromR.setValue(-5)
         self.SBFromI.setValue(-5)
         self.SBToR.setValue(5)

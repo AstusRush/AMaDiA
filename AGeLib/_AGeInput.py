@@ -70,7 +70,10 @@ class Float(_TypeWidget):
         else:
             self.SpinBox = self.addWidget(DoubleSpinBox(self),0,1)
             self.SpinBox.setDecimals(10)
-            self.SpinBox.setStepType(self.SpinBox.AdaptiveDecimalStepType)
+            try:
+                self.SpinBox.setStepType(self.SpinBox.AdaptiveDecimalStepType)
+            except:
+                self.SpinBox.setStepType(self.SpinBox.StepType.AdaptiveDecimalStepType)
         if unit:
             self.SpinBox.setSuffix(f" {unit}")
         if min_:
@@ -221,6 +224,9 @@ class Wildcard(_TypeWidget): #MAYBE: Multiline support?
 #region Type Helpers
 class DoubleSpinBox(QtWidgets.QDoubleSpinBox):
     def textFromValue(self, value):
-        return QtCore.QLocale().toString(roundToN(value,5), 'g', QtCore.QLocale.FloatingPointShortest)
+        try:
+            return QtCore.QLocale().toString(roundToN(value,5), 'g', QtCore.QLocale.FloatingPointPrecisionOption.FloatingPointShortest)
+        except:
+            return QtCore.QLocale().toString(roundToN(value,5), 'g', QtCore.QLocale.FloatingPointShortest)
 #endregion Type Helpers
 
