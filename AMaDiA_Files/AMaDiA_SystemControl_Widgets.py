@@ -113,6 +113,7 @@ class MplWidget_CONTROL(AGeGW.MplWidget):
         
     def setColour(self,BG=None,FG=None,Cycler=None):
         try:
+            self.Canvas.p_LaTeX_Display.clear() # Some Control Plot plots into this so we need to clear it...
             if BG != None and FG != None:
                 self.background_Colour = BG
                 self.TextColour = FG
