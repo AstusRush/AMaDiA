@@ -62,15 +62,17 @@ if not ('.config' in sys.modules):
 
 # Control system library
 from ..statesp import *
+from ..iosys import ss, rss, drss       # moved from .statesp
 from ..xferfcn import *
 from ..lti import *
+from ..namedio import *
 from ..frdata import *
 from ..dtime import *
 from ..exception import ControlArgument
 
 # Import MATLAB-like functions that can be used as-is
 from ..ctrlutil import *
-from ..freqplot import nyquist, gangof4
+from ..freqplot import gangof4
 from ..nichols import nichols
 from ..bdalg import *
 from ..pzmap import *
@@ -82,6 +84,9 @@ from ..margins import margin
 from ..rlocus import rlocus
 from ..dtime import c2d
 from ..sisotool import sisotool
+
+# Functions that are renamed in MATLAB
+pole, zero = poles, zeros
 
 # Import functions specific to Matlab compatibility package
 from .timeresp import *
@@ -224,8 +229,8 @@ Frequency-domain analysis
 \*  :func:`~control.nichols`    Nichols plot
 \*  :func:`margin`              gain and phase margins
 \   lti/allmargin               all crossover frequencies and margins
-\*  :func:`freqresp`            frequency response over a frequency grid
-\*  :func:`evalfr`              frequency response at single frequency
+\*  :func:`freqresp`            frequency response
+\*  :func:`evalfr`              frequency response at complex frequency s
 ==  ==========================  ============================================
 
 

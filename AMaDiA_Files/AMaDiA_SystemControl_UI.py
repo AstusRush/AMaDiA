@@ -288,7 +288,7 @@ class Ui_SystemControlWindow(object):
         self.ControlSystems_tabWidget.setTabText(self.ControlSystems_tabWidget.indexOf(self.ControlSystems_2), _translate("SystemControlWindow", "Plots"))
         self.ControlSystems_tabWidget.setTabText(self.ControlSystems_tabWidget.indexOf(self.ControlSystems_3), _translate("SystemControlWindow", "Single Plot"))
         self.ControlSystems_tabWidget.setTabText(self.ControlSystems_tabWidget.indexOf(self.ControlSystems_4), _translate("SystemControlWindow", "Code Input"))
-from AGeLib.AGeAWWF import MTabWidget
+from AGeLib.AGeWidgets import MTabWidget
 from AGeLib.AGeGW import MplWidget_LaTeX
 from AGeLib.AGeWidgets import ListWidget, TableWidget
 from AMaDiA_Files.AMaDiA_SystemControl_Widgets import MplWidget_CONTROL, MplWidget_CONTROL_single_plot

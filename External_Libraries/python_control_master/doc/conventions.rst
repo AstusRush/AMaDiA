@@ -29,9 +29,9 @@ of linear time-invariant (LTI) systems:
 
 where u is the input, y is the output, and x is the state.
 
-To create a state space system, use the :class:`StateSpace` constructor:
+To create a state space system, use the :func:`ss` function:
 
-  sys = StateSpace(A, B, C, D)
+  sys = ct.ss(A, B, C, D)
 
 State space systems can be manipulated using standard arithmetic operations
 as well as the :func:`feedback`, :func:`parallel`, and :func:`series`
@@ -51,10 +51,9 @@ transfer functions
 where n is generally greater than or equal to m (for a proper transfer
 function).
 
-To create a transfer function, use the :class:`TransferFunction`
-constructor:
+To create a transfer function, use the :func:`tf` function:
 
-  sys = TransferFunction(num, den)
+  sys = ct.tf(num, den)
 
 Transfer functions can be manipulated using standard arithmetic operations
 as well as the :func:`feedback`, :func:`parallel`, and :func:`series`
@@ -75,30 +74,53 @@ FRD systems have a somewhat more limited set of functions that are
 available, although all of the standard algebraic manipulations can be
 performed.
 
+The FRD class is also used as the return type for the
+:func:`frequency_response` function (and the equivalent method for the
+:class:`StateSpace` and :class:`TransferFunction` classes).  This
+object can be assigned to a tuple using
+
+    mag, phase, omega = response
+
+where `mag` is the magnitude (absolute value, not dB or log10) of the
+system frequency response, `phase` is the wrapped phase in radians of
+the system frequency response, and `omega` is the (sorted) frequencies
+at which the response was evaluated.  If the system is SISO and the
+`squeeze` argument to :func:`frequency_response` is not True,
+`magnitude` and `phase` are 1D, indexed by frequency.  If the system
+is not SISO or `squeeze` is False, the array is 3D, indexed by the
+output, input, and frequency.  If `squeeze` is True then
+single-dimensional axes are removed.  The processing of the `squeeze`
+keyword can be changed by calling the response function with a new
+argument:
+
+    mag, phase, omega = response(squeeze=False)
+
+
 Discrete time systems
 ---------------------
 A discrete time system is created by specifying a nonzero 'timebase', dt.
 The timebase argument can be given when a system is constructed:
 
-* dt = None: no timebase specified (default)
-* dt = 0: continuous time system
+* dt = 0: continuous time system (default)
 * dt > 0: discrete time system with sampling period 'dt'
 * dt = True: discrete time with unspecified sampling period
+* dt = None: no timebase specified
 
 Only the :class:`StateSpace`, :class:`TransferFunction`, and
 :class:`InputOutputSystem` classes allow explicit representation of
 discrete time systems.
 
-Systems must have compatible timebases in order to be combined.  A system
-with timebase `None` can be combined with a system having a specified
-timebase; the result will have the timebase of the latter system.
-Similarly, a discrete time system with unspecified sampling time (`dt =
-True`) can be combined with a system having a specified sampling time;
-the result will be a discrete time system with the sample time of the latter
-system.  For continuous time systems, the :func:`sample_system` function or
-the :meth:`StateSpace.sample` and :meth:`TransferFunction.sample` methods
-can be used to create a discrete time system from a continuous time system.
-See :ref:`utility-and-conversions`.
+Systems must have compatible timebases in order to be combined. A discrete
+time system with unspecified sampling time (`dt = True`) can be combined with
+a system having a specified sampling time; the result will be a discrete time
+system with the sample time of the latter system.  Similarly, a system with
+timebase `None` can be combined with a system having a specified timebase; the
+result will have the timebase of the latter system. For continuous time
+systems, the :func:`sample_system` function or the :meth:`StateSpace.sample`
+and :meth:`TransferFunction.sample` methods can be used to create a discrete
+time system from a continuous time system.  See
+:ref:`utility-and-conversions`. The default value of 'dt' can be changed by
+changing the value of ``control.config.defaults['control.default_dt']``.
 
 Conversion between representations
 ----------------------------------
@@ -106,13 +128,6 @@ LTI systems can be converted between representations either by calling the
 constructor for the desired data type using the original system as the sole
 argument or using the explicit conversion functions :func:`ss2tf` and
 :func:`tf2ss`.
-
-Input/output systems
-====================
-
-.. automodule:: control.iosys
-   :no-members:
-   :no-inherited-members:
 
 .. currentmodule:: control
 .. _time-series-convention:
@@ -137,18 +152,12 @@ and :func:`initial_response`.
     Thus, all 2D values must be transposed when they are used with functions
     from `scipy.signal`_.
 
-Types:
+The time vector is a 1D array with shape (n, )::
 
-    * **Arguments** can be **arrays**, **matrices**, or **nested lists**.
-    * **Return values** are **arrays** (not matrices).
-
-The time vector is either 1D, or 2D with shape (1, n)::
-
-      T = [[t1,     t2,     t3,     ..., tn    ]]
+      T = [t1,     t2,     t3,     ..., tn    ]
 
 Input, state, and output all follow the same convention. Columns are different
-points in time, rows are different components. When there is only one row, a
-1D object is accepted or returned, which adds convenience for SISO systems::
+points in time, rows are different components::
 
       U = [[u1(t1), u1(t2), u1(t3), ..., u1(tn)]
            [u2(t1), u2(t2), u2(t3), ..., u2(tn)]
@@ -161,6 +170,9 @@ points in time, rows are different components. When there is only one row, a
 So, U[:,2] is the system's input at the third point in time; and U[1] or U[1,:]
 is the sequence of values for the system's second input.
 
+When there is only one row, a 1D object is accepted or returned, which adds
+convenience for SISO systems:
+
 The initial conditions are either 1D, or 2D with shape (j, 1)::
 
      X0 = [[x1]
@@ -169,23 +181,57 @@ The initial conditions are either 1D, or 2D with shape (j, 1)::
            ...
            [xj]]
 
-As all simulation functions return *arrays*, plotting is convenient::
+Functions that return time responses (e.g., :func:`forced_response`,
+:func:`impulse_response`, :func:`input_output_response`,
+:func:`initial_response`, and :func:`step_response`) return a
+:class:`TimeResponseData` object that contains the data for the time
+response.  These data can be accessed via the ``time``, ``outputs``,
+``states`` and ``inputs`` properties::
 
-    t, y = step_response(sys)
+    sys = ct.rss(4, 1, 1)
+    response = ct.step_response(sys)
+    plot(response.time, response.outputs)
+
+The dimensions of the response properties depend on the function being
+called and whether the system is SISO or MIMO.  In addition, some time
+response function can return multiple "traces" (input/output pairs),
+such as the :func:`step_response` function applied to a MIMO system,
+which will compute the step response for each input/output pair.  See
+:class:`TimeResponseData` for more details.
+
+The time response functions can also be assigned to a tuple, which extracts
+the time and output (and optionally the state, if the `return_x` keyword is
+used).  This allows simple commands for plotting::
+
+    t, y = ct.step_response(sys)
     plot(t, y)
 
-The output of a MIMO system can be plotted like this::
+The output of a MIMO LTI system can be plotted like this::
 
-    t, y, x = forced_response(sys, u, t)
+    t, y = ct.forced_response(sys, t, u)
     plot(t, y[0], label='y_0')
     plot(t, y[1], label='y_1')
 
-The convention also works well with the state space form of linear systems. If
-``D`` is the feedthrough *matrix* of a linear system, and ``U`` is its input
-(*matrix* or *array*), then the feedthrough part of the system's response,
-can be computed like this::
+The convention also works well with the state space form of linear
+systems. If ``D`` is the feedthrough matrix (2D array) of a linear system,
+and ``U`` is its input (array), then the feedthrough part of the system's
+response, can be computed like this::
 
-    ft = D * U
+    ft = D @ U
+
+Finally, the `to_pandas()` function can be used to create a pandas dataframe:
+
+    df = response.to_pandas()
+
+The column labels for the data frame are `time` and the labels for the input,
+output, and state signals (`u[i]`, `y[i]`, and `x[i]` by default, but these
+can be changed using the `inputs`, `outputs`, and `states` keywords when
+constructing the system, as described in :func:`ss`, :func:`tf`, and other
+system creation function.  Note that when exporting to pandas, "rows" in the
+data frame correspond to time and "cols" (DataSeries) correspond to signals.
+
+.. currentmodule:: control
+.. _package-configuration-parameters:
 
 Package configuration parameters
 ================================
@@ -200,35 +246,43 @@ element of the `control.config.defaults` dictionary:
 
 .. code-block:: python
 
-    control.config.defaults['module.parameter'] = value
+    ct.config.defaults['module.parameter'] = value
 
 The `~control.config.set_defaults` function can also be used to set multiple
 configuration parameters at the same time:
 
 .. code-block:: python
 
-    control.config.set_defaults('module', param1=val1, param2=val2, ...]
+    ct.config.set_defaults('module', param1=val1, param2=val2, ...]
 
 Finally, there are also functions available set collections of variables based
 on standard configurations.
 
 Selected variables that can be configured, along with their default values:
 
-  * bode.dB (False): Bode plot magnitude plotted in dB (otherwise powers of 10)
+  * freqplot.dB (False): Bode plot magnitude plotted in dB (otherwise powers
+    of 10)
     
-  * bode.deg (True): Bode plot phase plotted in degrees (otherwise radians)
+  * freqplot.deg (True): Bode plot phase plotted in degrees (otherwise radians)
     
-  * bode.Hz (False): Bode plot frequency plotted in Hertz (otherwise rad/sec)
+  * freqplot.Hz (False): Bode plot frequency plotted in Hertz (otherwise
+    rad/sec)
     
-  * bode.grid (True): Include grids for magnitude and phase plots
+  * freqplot.grid (True): Include grids for magnitude and phase plots
     
-  * freqplot.number_of_samples (None): Number of frequency points in Bode plots
+  * freqplot.number_of_samples (1000): Number of frequency points in Bode plots
     
-  * freqplot.feature_periphery_decade (1.0): How many decades to include in the
-    frequency range on both sides of features (poles, zeros).
-    
-  * statesp.use_numpy_matrix: set the return type for state space matrices to
-    `numpy.matrix` (verus numpy.ndarray)
+  * freqplot.feature_periphery_decade (1.0): How many decades to include in
+    the frequency range on both sides of features (poles, zeros).
+
+  * statesp.use_numpy_matrix (True): set the return type for state space
+    matrices to `numpy.matrix` (verus numpy.ndarray)
+
+  * statesp.default_dt and xferfcn.default_dt (None): set the default value
+    of dt when constructing new LTI systems
+
+  * statesp.remove_useless_states (True): remove states that have no effect
+    on the input-output dynamics of the system
 
 Additional parameter variables are documented in individual functions
 
@@ -241,3 +295,4 @@ Functions that can be used to set standard configurations:
     use_fbs_defaults
     use_matlab_defaults
     use_numpy_matrix
+    use_legacy_defaults

@@ -48,18 +48,21 @@ for analyzing and designing feedback control systems.
 # Note: the functions we use are specified as __all__ variables in the modules
 from .bdalg import *
 from .delay import *
+from .descfcn import *
 from .dtime import *
 from .freqplot import *
 from .lti import *
 from .margins import *
 from .mateqn import *
 from .modelsimp import *
+from .namedio import *
 from .nichols import *
 from .phaseplot import *
 from .pzmap import *
 from .rlocus import *
 from .statefbk import *
 from .statesp import *
+from .stochsys import *
 from .timeresp import *
 from .xferfcn import *
 from .ctrlutil import *
@@ -69,6 +72,7 @@ from .robust import *
 from .config import *
 from .sisotool import *
 from .iosys import *
+from .passivity import *
 
 # Exceptions
 from .exception import *
@@ -78,12 +82,6 @@ try:
     from ._version import __version__, __commit__
 except ImportError:
     __version__ = "dev"
-
-# The following is to use Numpy's testing framework
-# Tests go under directory tests/, benchmarks under directory benchmarks/
-from numpy.testing import Tester
-test = Tester().test
-bench = Tester().bench
 
 # Initialize default parameter values
 reset_defaults()

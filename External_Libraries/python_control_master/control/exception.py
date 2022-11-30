@@ -61,10 +61,38 @@ class ControlNotImplemented(NotImplementedError):
     pass
 
 # Utility function to see if slycot is installed
+slycot_installed = None
 def slycot_check():
-    try:
-        import slycot
-    except:
-        return False
-    else:
-        return True
+    global slycot_installed
+    if slycot_installed is None:
+        try:
+            import slycot
+            slycot_installed = True
+        except:
+            slycot_installed = False
+    return slycot_installed
+
+
+# Utility function to see if pandas is installed
+pandas_installed = None
+def pandas_check():
+    global pandas_installed
+    if pandas_installed is None:
+        try:
+            import pandas
+            pandas_installed = True
+        except:
+            pandas_installed = False
+    return pandas_installed
+
+# Utility function to see if cvxopt is installed
+cvxopt_installed = None
+def cvxopt_check():
+    global cvxopt_installed
+    if cvxopt_installed is None:
+        try:
+            import cvxopt
+            cvxopt_installed = True
+        except:
+            cvxopt_installed = False
+    return cvxopt_installed

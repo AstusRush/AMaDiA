@@ -50,7 +50,7 @@ class AMaDiA_TextEdit(AGeWidgets.TextEdit):
         super(AMaDiA_TextEdit, self).__init__(parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
-
+    
     def CursorPositionChanged(self):
         self.Highlighter.blockSignals(True) #block signals because rehighlight might trigger the change signal? but this blocking might also be unnecessary
         self.Highlighter.rehighlight()
@@ -65,12 +65,12 @@ class AMaDiA_LineEdit(AGeWidgets.LineEdit):
         super(AMaDiA_LineEdit, self).__init__(parent)
         self.Highlighter = LineEditHighlighter(self.document(), self)
         self.cursorPositionChanged.connect(self.CursorPositionChanged)
-
+    
     def CursorPositionChanged(self):
         cursor = self.textCursor()
         curPos = cursor.position()
         self.document().contentsChange.emit(curPos,0,0)
-
+    
     # TODO: Make an option that creates a vector instead of adding everything when a multiline text is pasted into a AMaDiA_LineEdit
 
 
@@ -85,27 +85,27 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
         except common_exceptions:
             self.enabled = True
         QtWidgets.QApplication.instance().S_Highlighter.connect(self.ToggleActive)
-
+        
         ## init the rules # Currently Unused...
         #rules = [(r'%s' % b, 0, self.STYLES['brace']) for b in self.braces]
         #self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules] #REMINDER: QtCore.QRegExp has been replaced by QtCore.QRegularExpression in Qt6
-
+        
         App().S_ColourChanged.connect(self.UpdateFormats)
-
+    
     def ToggleActive(self,Active):
         self.enabled = Active
-
+    
     def UpdateFormats(self):
         self.RedFormat.setForeground(App().PenColours["Red"].color())
         self.GreenFormat.setForeground(App().PenColours["Green"].color())
         self.BlueFormat.setForeground(App().PenColours["Blue"].color())
         self.CyanFormat.setForeground(App().PenColours["Cyan"].color())
         self.MagentaFormat.setForeground(App().PenColours["Magenta"].color())
-
+    
     def init_Styles(self):
         # init Lists
         self.braces = ['\{', '\}', '\(', '\)', '\[', '\]'] # pylint: disable=anomalous-backslash-in-string
-
+        
         # Init Formats
         self.RedFormat = QtGui.QTextCharFormat()
         self.RedFormat.setForeground(QtGui.QColor('red'))
@@ -117,10 +117,10 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
         self.CyanFormat.setForeground(QtGui.QColor('cyan'))
         self.MagentaFormat = QtGui.QTextCharFormat()
         self.MagentaFormat.setForeground(QtGui.QColor('magenta'))
-
+        
         # Collect all Formats in a dictionary
         self.STYLES = {'brace': self.RedFormat,'pair': self.RedFormat}
-
+    
     def highlightBlock(self, text):
         if not self.enabled:
             self.setCurrentBlockState(0)
@@ -227,7 +227,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
     def __init__(self, parent=None):
         super(HistoryWidget, self).__init__(parent)
         self.installEventFilter(self)
-
+    
     def keyPressEvent(self,event):
         try:
             if event == QtGui.QKeySequence.Copy:
@@ -273,7 +273,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
         except common_exceptions:
             NC(lvl=2,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=str(event))
             super(HistoryWidget, self).keyPressEvent(event)
-
+    
     def eventFilter(self, source, event):
         #TODO: Add Tooltips for the Actions! These should also specify whether the action will be executed on all selected items or only the right-clicked-one! "Delete" should also mention "Del" as the hotkey!
         #FEATURE: When multiple items are selected the context menu should be different: instead of the usual options there should be options to format the selected items in a specific way and copy the result to the clipboard
@@ -338,66 +338,66 @@ class HistoryWidget(AGeWidgets.ListWidget):
             elif event.type() == 6: # QtCore.QEvent.KeyPress
                 if event.key() == QtCore.Qt.Key_Delete:
                     self.action_H_Delete(source,event)
-
+            
             return super(HistoryWidget, self).eventFilter(source, event)
         except common_exceptions:
             NC(lvl=1,exc=sys.exc_info(),win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).eventFilter",input=str(event))
             return super(HistoryWidget, self).eventFilter(source, event)
  # ---------------------------------- History Context Menu Actions/Functions ----------------------------------
   # ----------------
-         
+    
     def action_H_Copy_Solution(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).Solution)
-         
+    
     def action_H_Copy_Equation(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).Equation)
-         
+    
     def action_H_Copy_Text(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).Text)
-        
+    
     def action_H_Copy_LaTeX(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX)
-        
+    
     def action_H_Copy_LaTeX_E(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX_E)
-        
+    
     def action_H_Copy_Input(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).Input)
-        
+    
     def action_H_Copy_cstr(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).cstr)
-        
+    
   # ----------------
-         
+    
     def action_H_Calculate(self,source,event):
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(0)
         self.window().Tab_1.calculate(item.data(100))
-        
+    
     def action_H_Display_LaTeX(self,source,event): #TODO: Move all selected items to the LaTeX Tab History but only display LaTeX of the right-clicked-one (and update the tooltip for this action)
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(1)
         self.window().Tab_2.displayLaTeX(item.data(100))
-
+    
     def action_H_Display_LaTeX_Equation(self,source,event):
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(1)
         self.window().Tab_2.displayLaTeX(item.data(100),part="Equation")
-
+    
     def action_H_Display_LaTeX_Solution(self,source,event):
         item = source.itemAt(event.pos())
         self.window().TabWidget.setCurrentIndex(1)
         self.window().Tab_2.displayLaTeX(item.data(100),part="Solution")
-         
+    
   # ----------------
-         
+    
     def action_H_Load_Plot(self,source,event):
         TheItem = source.itemAt(event.pos())
         if source is self.window().Tab_3.Tab_2D.History:
@@ -414,7 +414,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
                 item.data(100).current_ax = None
                 self.window().Tab_3.Tab_2D.F_RedrawPlot()
             self.window().Tab_3.Tab_2D.F_Plot(item.data(100))
-        
+    
     def action_H_New_Plot(self,source,event):
         TheItem = source.itemAt(event.pos())
         if source is self.window().Tab_3.Tab_2D.History:
@@ -431,9 +431,9 @@ class HistoryWidget(AGeWidgets.ListWidget):
                 item.data(100).current_ax = None
                 self.window().Tab_3.Tab_2D.F_RedrawPlot()
             self.window().Tab_3.Tab_2D.F_Plot_init(item.data(100))
-         
+    
   # ----------------
-        
+    
     def action_H_Copy_x_Values(self,source,event):
         try:
             item = source.itemAt(event.pos())
@@ -446,7 +446,7 @@ class HistoryWidget(AGeWidgets.ListWidget):
             QtWidgets.QApplication.clipboard().setText(Text)
         except common_exceptions:
             NC(lvl=2,msg="Could not copy x values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_x_Values",win=self.window().windowTitle(),input=item.data(100).Input)
-        
+    
     def action_H_Copy_y_Values(self,source,event):
         try:
             item = source.itemAt(event.pos())
@@ -459,9 +459,9 @@ class HistoryWidget(AGeWidgets.ListWidget):
             QtWidgets.QApplication.clipboard().setText(Text)
         except common_exceptions:
             NC(lvl=2,msg="Could not copy y values",exc=sys.exc_info(),func="HistoryWidget.action_H_Copy_y_Values",win=self.window().windowTitle(),input=item.data(100).Input)
- 
+    
   # ----------------
-         
+    
     def action_H_Delete(self,source,event):
         #FEATURE: Paperbin for items: When items are deleted save them temporarily and add an "undo last deletion" context menu action
         listItems=source.selectedItems()
@@ -538,11 +538,11 @@ class AMaDiA_ComplexPlotWidget(QtWidgets.QWidget):
         self.InputField.returnPressed.connect(self.S_Plot.emit)
         self.InputField.returnCtrlPressed.connect(self.S_Plot.emit)
         self.layout().addWidget(self.InputField,2,0)
-
+    
     def plot(self, AMaS_Object:"AC.AMaS"):
         self.lastInput = AMaS_Object
         self.Display.plot(AMaS_Object.plotC_vals, (AMaS_Object.plotC_r_min, AMaS_Object.plotC_r_max, AMaS_Object.plotC_i_min, AMaS_Object.plotC_i_max))
-
+    
     def applySettings(self, AMaS_Object:"AC.AMaS"):
         AMaS_Object.plotC_r_min = self.SBFromR.value()
         AMaS_Object.plotC_i_min = self.SBFromI.value()
@@ -573,7 +573,7 @@ class AMaDiA_ComplexPlotWidget(QtWidgets.QWidget):
         #    if ymax < ymin:
         #        ymax , ymin = ymin , ymax
         #    AMaS_Object.plot_ylim_vals = (ymin , ymax)
-
+        
         
 #endregion ComplexPlotWidget --------------------------------------------------------------------------------------
 

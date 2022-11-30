@@ -1,6 +1,19 @@
-.. image:: https://travis-ci.org/python-control/python-control.svg?branch=master
-   :target: https://travis-ci.org/python-control/python-control
-.. image:: https://coveralls.io/repos/python-control/python-control/badge.png
+.. image:: https://anaconda.org/conda-forge/control/badges/version.svg
+   :target: https://anaconda.org/conda-forge/control
+
+.. image:: https://img.shields.io/pypi/v/control.svg
+   :target: https://pypi.org/project/control/
+
+.. image:: https://github.com/python-control/python-control/actions/workflows/python-package-conda.yml/badge.svg
+   :target: https://github.com/python-control/python-control/actions/workflows/python-package-conda.yml
+
+.. image:: https://github.com/python-control/python-control/actions/workflows/install_examples.yml/badge.svg
+   :target: https://github.com/python-control/python-control/actions/workflows/install_examples.yml
+
+.. image:: https://github.com/python-control/python-control/actions/workflows/control-slycot-src.yml/badge.svg
+   :target: https://github.com/python-control/python-control/actions/workflows/control-slycot-src.yml
+
+.. image:: https://coveralls.io/repos/python-control/python-control/badge.svg
    :target: https://coveralls.io/r/python-control/python-control
 
 Python Control Systems Library
@@ -8,6 +21,18 @@ Python Control Systems Library
 
 The Python Control Systems Library is a Python module that implements basic
 operations for analysis and design of feedback control systems.
+
+
+Have a go now!
+==============
+Try out the examples in the examples folder using the binder service.
+
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/python-control/python-control/HEAD
+
+
+
+
 
 Features
 --------
@@ -38,8 +63,7 @@ The package requires numpy, scipy, and matplotlib.  In addition, some routines
 use a module called slycot, that is a Python wrapper around some FORTRAN
 routines.  Many parts of python-control will work without slycot, but some
 functionality is limited or absent, and installation of slycot is recommended
-(see below).  Note that in order to install slycot, you will need a FORTRAN
-compiler on your machine.  The Slycot wrapper can be found at:
+(see below). The Slycot wrapper can be found at:
 
 https://github.com/python-control/Slycot
 
@@ -73,17 +97,14 @@ To install using pip::
 If you install Slycot using pip you'll need a development environment
 (e.g., Python development files, C and Fortran compilers).
 
-Distutils
----------
+Installing from source
+----------------------
 
-To install in your home directory, use::
+To install from source, get the source code of the desired branch or release
+from the github repository or archive, unpack, and run from within the
+toplevel `python-control` directory::
 
-  python setup.py install --user
-
-To install for all users (on Linux or Mac OS)::
-
-  python setup.py build
-  sudo python setup.py install
+  pip install .
 
 
 Development
@@ -99,10 +120,16 @@ You can check out the latest version of the source code with the command::
 Testing
 -------
 
-You can run a set of unit tests to make sure that everything is working
-correctly.  After installation, run::
+You can run the unit tests with `pytest`_ to make sure that everything is
+working correctly.  Inside the source directory, run::
 
-  python setup.py test
+  pytest -v
+
+or to test the installed package::
+
+  pytest --pyargs control -v
+
+.. _pytest: https://docs.pytest.org/
 
 License
 -------
@@ -124,4 +151,8 @@ Your contributions are welcome!  Simply fork the GitHub repository and send a
 `pull request`_.
 
 .. _pull request: https://github.com/python-control/python-control/pulls
+
+Please see the `Developer's Wiki`_ for detailed instructions.
+
+.. _Developer's Wiki: https://github.com/python-control/python-control/wiki
 

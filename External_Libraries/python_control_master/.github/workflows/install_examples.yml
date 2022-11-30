@@ -1,0 +1,32 @@
+name: Setup, Examples, Notebooks
+
+on: [push, pull_request]
+
+jobs:
+  install-examples:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Python dependencies from conda-forge
+      run: |
+        # Set up conda using the preinstalled GHA Miniconda environment
+        echo $CONDA/bin >> $GITHUB_PATH
+        conda config --add channels conda-forge
+        conda config --set channel_priority strict
+
+        # Install build tools
+        conda install pip setuptools setuptools-scm
+
+        # Install python-control dependencies and extras
+        conda install numpy matplotlib scipy
+        conda install slycot pmw jupyter
+
+    - name: Install from source
+      run: pip install .
+
+    - name: Run examples
+      run: |
+        cd examples
+        ./run_examples.sh
+        ./run_notebooks.sh

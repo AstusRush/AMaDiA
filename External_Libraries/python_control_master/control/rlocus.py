@@ -43,35 +43,45 @@
 # RMM, 2 April 2011: modified to work with new LTI structure (see ChangeLog)
 #   * Not tested: should still work on signal.ltisys objects
 #
+# Sawyer B. Fuller (minster@uw.edu) 21 May 2020:
+#   * added compatibility with discrete-time systems.
+#
 # $Id$
 
 # Packages used by this module
 from functools import partial
 import numpy as np
-import matplotlib
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-from scipy import array, poly1d, row_stack, zeros_like, real, imag
+from numpy import array, poly1d, row_stack, zeros_like, real, imag
 import scipy.signal             # signal processing toolbox
-import pylab                    # plotting routines
+from .namedio import isdtime
 from .xferfcn import _convert_to_transfer_function
 from .exception import ControlMIMONotImplemented
 from .sisotool import _SisotoolUpdate
+from .grid import sgrid, zgrid
 from . import config
 
-__all__ = ['root_locus', 'rlocus','root_locus_AMaDiA']
+try:
+    from AGeLib import *
+except:
+    print("Could not import AGeLib in control.rlocus. This can be safely ignored as it is only used to display some debugging information")
+
+__all__ = ['root_locus', 'rlocus']
 
 # Default values for module parameters
 _rlocus_defaults = {
-    'rlocus.grid':True,
-    'rlocus.plotstr':'b' if int(matplotlib.__version__[0]) == 1 else 'C0',
-    'rlocus.PrintGain':True,
-    'rlocus.Plot':True
+    'rlocus.grid': True,
+    'rlocus.plotstr': 'b' if int(mpl.__version__[0]) == 1 else 'C0',
+    'rlocus.print_gain': True,
+    'rlocus.plot': True
 }
 
 
 # Main function: compute a root locus diagram
 def root_locus(sys, kvect=None, xlim=None, ylim=None,
-               plotstr=None, Plot=True, PrintGain=None, grid=None, **kwargs):
+               plotstr=None, plot=True, print_gain=None, grid=None, ax=None, App=None,
+               **kwargs):
 
     """Root locus plot
 
@@ -86,16 +96,22 @@ def root_locus(sys, kvect=None, xlim=None, ylim=None,
     kvect : list or ndarray, optional
         List of gains to use in computing diagram.
     xlim : tuple or list, optional
-        Set limits of x axis, normally with tuple (see matplotlib.axes).
+        Set limits of x axis, normally with tuple
+        (see :doc:`matplotlib:api/axes_api`).
     ylim : tuple or list, optional
-        Set limits of y axis, normally with tuple (see matplotlib.axes).
-    Plot : boolean, optional
+        Set limits of y axis, normally with tuple
+        (see :doc:`matplotlib:api/axes_api`).
+    plotstr : :func:`matplotlib.pyplot.plot` format string, optional
+        plotting style specification
+    plot : boolean, optional
         If True (default), plot root locus diagram.
-    PrintGain : bool
+    print_gain : bool
         If True (default), report mouse clicks when close to the root locus
         branches, calculate gain, damping and print.
     grid : bool
         If True plot omega-damping grid.  Default is False.
+    ax : :class:`matplotlib.axes.Axes`
+        Axes on which to create root locus plot
 
     Returns
     -------
@@ -103,158 +119,51 @@ def root_locus(sys, kvect=None, xlim=None, ylim=None,
         Computed root locations, given as a 2D array
     klist : ndarray or list
         Gains used.  Same as klist keyword argument if provided.
+
+    Notes
+    -----
+    The root_locus function calls matplotlib.pyplot.axis('equal'), which
+    means that trying to reset the axis limits may not behave as expected.
+    To change the axis limits, use matplotlib.pyplot.gca().axis('auto') and
+    then set the axis limits to the desired values.
+
     """
+    # Check to see if legacy 'Plot' keyword was used
+    if 'Plot' in kwargs:
+        import warnings
+        warnings.warn("'Plot' keyword is deprecated in root_locus; "
+                      "use 'plot'", FutureWarning)
+        # Map 'Plot' keyword to 'plot' keyword
+        plot = kwargs.pop('Plot')
+
+    # Check to see if legacy 'PrintGain' keyword was used
+    if 'PrintGain' in kwargs:
+        import warnings
+        warnings.warn("'PrintGain' keyword is deprecated in root_locus; "
+                      "use 'print_gain'", FutureWarning)
+        # Map 'PrintGain' keyword to 'print_gain' keyword
+        print_gain = kwargs.pop('PrintGain')
+
     # Get parameter values
     plotstr = config._get_param('rlocus', 'plotstr', plotstr, _rlocus_defaults)
     grid = config._get_param('rlocus', 'grid', grid, _rlocus_defaults)
-    PrintGain = config._get_param(
-        'rlocus', 'PrintGain', PrintGain, _rlocus_defaults)
-
-    # Convert numerator and denominator to polynomials if they aren't
-    (nump, denp) = _systopoly1d(sys)
-
-    if kvect is None:
-        start_mat = _RLFindRoots(nump, denp, [1])
-        kvect, mymat, xlim, ylim = _default_gains(nump, denp, xlim, ylim)
-    else:
-        start_mat = _RLFindRoots(nump, denp, [kvect[0]])
-        mymat = _RLFindRoots(nump, denp, kvect)
-        mymat = _RLSortRoots(mymat)
-
-    # Check for sisotool mode
-    sisotool = False if 'sisotool' not in kwargs else True
-
-    # Create the Plot
-    if Plot:
-        if sisotool:
-            f = kwargs['fig']
-            ax = f.axes[1]
-
-        else:
-            figure_number = pylab.get_fignums()
-            figure_title = [
-                pylab.figure(numb).Canvas.get_window_title()
-                for numb in figure_number]
-            new_figure_name = "Root Locus"
-            rloc_num = 1
-            while new_figure_name in figure_title:
-                new_figure_name = "Root Locus " + str(rloc_num)
-                rloc_num += 1
-            f = pylab.figure(new_figure_name)
-            ax = pylab.axes()
-
-        if PrintGain and not sisotool:
-            f.Canvas.mpl_connect(
-                'button_release_event',
-                partial(_RLClickDispatcher, sys=sys, fig=f,
-                        ax_rlocus=f.axes[0], plotstr=plotstr))
-
-        elif sisotool:
-            f.axes[1].plot(
-                [root.real for root in start_mat],
-                [root.imag for root in start_mat],
-                'm.', marker='s', markersize=8, zorder=20, label='gain_point')
-            f.suptitle(
-                "Clicked at: %10.4g%+10.4gj  gain: %10.4g  damp: %10.4g" %
-                (start_mat[0][0].real, start_mat[0][0].imag,
-                 1, -1 * start_mat[0][0].real / abs(start_mat[0][0])),
-                fontsize=12 if int(matplotlib.__version__[0]) == 1 else 10)
-            f.Canvas.mpl_connect(
-                'button_release_event',
-                partial(_RLClickDispatcher, sys=sys, fig=f,
-                        ax_rlocus=f.axes[1], plotstr=plotstr,
-                        sisotool=sisotool,
-                        bode_plot_params=kwargs['bode_plot_params'],
-                        tvect=kwargs['tvect']))
-
-        # zoom update on xlim/ylim changed, only then data on new limits
-        # is available, i.e., cannot combine with _RLClickDispatcher
-        dpfun = partial(
-            _RLZoomDispatcher, sys=sys, ax_rlocus=ax, plotstr=plotstr)
-        # TODO: the next too lines seem to take a long time to execute
-        # TODO: is there a way to speed them up?  (RMM, 6 Jun 2019)
-        ax.callbacks.connect('xlim_changed', dpfun)
-        ax.callbacks.connect('ylim_changed', dpfun)
-
-        # plot open loop poles
-        poles = array(denp.r)
-        ax.plot(real(poles), imag(poles), 'x')
-
-        # plot open loop zeros
-        zeros = array(nump.r)
-        if zeros.size > 0:
-            ax.plot(real(zeros), imag(zeros), 'o')
-
-        # Now plot the loci
-        for index, col in enumerate(mymat.T):
-            ax.plot(real(col), imag(col), plotstr, label='rootlocus')
-
-        # Set up plot axes and labels
-        if xlim:
-            ax.set_xlim(xlim)
-        if ylim:
-            ax.set_ylim(ylim)
-
-        ax.set_xlabel('Real')
-        ax.set_ylabel('Imaginary')
-        if grid and sisotool:
-            _sgrid_func(f)
-        elif grid:
-            _sgrid_func()
-        else:
-            ax.axhline(0., linestyle=':', color='k', zorder=-20)
-            ax.axvline(0., linestyle=':', color='k')
-        
-
-    return mymat, kvect
-
-
-# Main function: compute a root locus diagram
-def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
-               plotstr=None, Plot=True, PrintGain=None, grid=None, App=None, **kwargs):
-
-    """Root locus plot
-
-    Calculate the root locus by finding the roots of 1+k*TF(s)
-    where TF is self.num(s)/self.den(s) and each k is an element
-    of kvect.
-
-    Parameters
-    ----------
-    sys : LTI object
-        Linear input/output systems (SISO only, for now).
-    kvect : list or ndarray, optional
-        List of gains to use in computing diagram.
-    xlim : tuple or list, optional
-        Set limits of x axis, normally with tuple (see matplotlib.axes).
-    ylim : tuple or list, optional
-        Set limits of y axis, normally with tuple (see matplotlib.axes).
-    Plot : boolean, optional
-        If True (default), plot root locus diagram.
-    PrintGain : bool
-        If True (default), report mouse clicks when close to the root locus
-        branches, calculate gain, damping and print.
-    grid : bool
-        If True plot omega-damping grid.  Default is False.
-
-    Returns
-    -------
-    rlist : ndarray
-        Computed root locations, given as a 2D array
-    klist : ndarray or list
-        Gains used.  Same as klist keyword argument if provided.
-    """
-    # Get parameter values
-    plotstr = config._get_param('rlocus', 'plotstr', plotstr, _rlocus_defaults)
-    grid = config._get_param('rlocus', 'grid', grid, _rlocus_defaults)
-    PrintGain = config._get_param(
-        'rlocus', 'PrintGain', PrintGain, _rlocus_defaults)
-
+    print_gain = config._get_param(
+        'rlocus', 'print_gain', print_gain, _rlocus_defaults)
+    
+    sys_loop = sys if sys.issiso() else sys[0, 0]
+    
     xlim_b, ylim_b = xlim, ylim
     kvect_b = kvect
-    # Convert numerator and denominator to polynomials if they aren't
     try:
-        (nump, denp) = _systopoly1d(sys)
+        # Convert numerator and denominator to polynomials if they aren't
+        (nump, denp) = _systopoly1d(sys_loop)
+
+        # if discrete-time system and if xlim and ylim are not given,
+        #  that we a view of the unit circle
+        if xlim is None and isdtime(sys, strict=True):
+            xlim = (-1.2, 1.2)
+        if ylim is None and isdtime(sys, strict=True):
+            xlim = (-1.3, 1.3)
 
         if kvect is None:
             start_mat = _RLFindRoots(nump, denp, [1])
@@ -267,18 +176,47 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
         # Check for sisotool mode
         sisotool = False if 'sisotool' not in kwargs else True
 
+        # Make sure there were no extraneous keywords
+        if not sisotool and kwargs:
+            raise TypeError("unrecognized keywords: ", str(kwargs))
+
         # Create the Plot
-        if Plot:
-            figure_number = pylab.get_fignums()
-            figure_title = [
-                pylab.figure(numb).Canvas.get_window_title()
-                for numb in figure_number]
-            new_figure_name = "Root Locus"
-            rloc_num = 1
-            while new_figure_name in figure_title:
-                new_figure_name = "Root Locus " + str(rloc_num)
-                rloc_num += 1
-            f = pylab.figure(new_figure_name)
+        if plot:
+            if sisotool:
+                fig = kwargs['fig']
+                ax = fig.axes[1]
+            else:
+                if ax is None:
+                    ax = plt.gca()
+                fig = ax.figure
+                ax.set_title('Root Locus')
+
+            if print_gain and not sisotool:
+                fig.canvas.mpl_connect(
+                    'button_release_event',
+                    partial(_RLClickDispatcher, sys=sys, fig=fig,
+                            ax_rlocus=fig.axes[0], plotstr=plotstr))
+            elif sisotool:
+                fig.axes[1].plot(
+                    [root.real for root in start_mat],
+                    [root.imag for root in start_mat],
+                    marker='s', markersize=6, zorder=20, color='k', label='gain_point')
+                s = start_mat[0][0]
+                if isdtime(sys, strict=True):
+                    zeta = -np.cos(np.angle(np.log(s)))
+                else:
+                    zeta = -1 * s.real / abs(s)
+                fig.suptitle(
+                    "Clicked at: %10.4g%+10.4gj  gain: %10.4g  damp: %10.4g" %
+                    (s.real, s.imag, kvect[0], zeta),
+                    fontsize=12 if int(mpl.__version__[0]) == 1 else 10)
+                fig.canvas.mpl_connect(
+                    'button_release_event',
+                    partial(_RLClickDispatcher, sys=sys, fig=fig,
+                            ax_rlocus=fig.axes[1], plotstr=plotstr,
+                            sisotool=sisotool,
+                            bode_plot_params=kwargs['bode_plot_params'],
+                            tvect=kwargs['tvect']))
 
             # zoom update on xlim/ylim changed, only then data on new limits
             # is available, i.e., cannot combine with _RLClickDispatcher
@@ -301,35 +239,55 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
             # Now plot the loci
             setLabel = True
             for index, col in enumerate(mymat.T):
-                if setLabel:
-                    ax.plot(real(col), imag(col), plotstr, label='V>0', c="m" if App == None else App.PenColours["Magenta"].color().name(0))
-                    setLabel = False
-                else:
-                    ax.plot(real(col), imag(col), plotstr, c="m" if App == None else App.PenColours["Magenta"].color().name(0))
+                    if setLabel:
+                        ax.plot(real(col), imag(col), plotstr, label='V>0', c="m" if App is None else App.PenColours["Magenta"].color().name(0))
+                        setLabel = False
+                    else:
+                        ax.plot(real(col), imag(col), plotstr, c="m" if App is None else App.PenColours["Magenta"].color().name(0))
 
             # Set up plot axes and labels
+            ax.set_xlabel('Real')
+            ax.set_ylabel('Imaginary')
+
+            # Set up the limits for the plot
+            # Note: need to do this before computing grid lines
             if xlim:
                 ax.set_xlim(xlim)
             if ylim:
                 ax.set_ylim(ylim)
 
-            ax.set_xlabel('Real')
-            ax.set_ylabel('Imaginary')
-            if grid and sisotool:
-                _sgrid_func(f)
-            elif grid:
-                _sgrid_func()
+            # Draw the grid
+            if grid:
+                if isdtime(sys, strict=True):
+                    zgrid(ax=ax)
+                else:
+                    _sgrid_func(fig=fig if sisotool else None)
             else:
-                ax.axhline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), zorder=-20)
-                ax.axvline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0))
+                ax.axhline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), linewidth=.75, zorder=-20)
+                ax.axvline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), linewidth=.75, zorder=-20)
+                if isdtime(sys, strict=True):
+                    ax.add_patch(plt.Circle(
+                        (0, 0), radius=1.0, linestyle=':', edgecolor='k',
+                        linewidth=0.75, fill=False, zorder=-20))
         r_mymat, r_kvect = mymat, kvect
     except:
+        try:
+            NC(4,"Error in pos rloculs",exc=True)
+        except: pass
         r_mymat, r_kvect = None, None
     #---------------------- INVERSE ----------------------
     try:
         sys = -1*sys
+        sys_loop = sys if sys.issiso() else sys[0, 0]
         # Convert numerator and denominator to polynomials if they aren't
-        (nump, denp) = _systopoly1d(sys)
+        (nump, denp) = _systopoly1d(sys_loop)
+
+        # if discrete-time system and if xlim and ylim are not given,
+        #  that we a view of the unit circle
+        if xlim_b is None and isdtime(sys, strict=True):
+            xlim_b = (-1.2, 1.2)
+        if ylim_b is None and isdtime(sys, strict=True):
+            ylim_b = (-1.3, 1.3)
 
         if kvect_b is None:
             start_mat = _RLFindRoots(nump, denp, [1])
@@ -346,18 +304,47 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
         # Check for sisotool mode
         sisotool = False if 'sisotool' not in kwargs else True
 
+        # Make sure there were no extraneous keywords
+        if not sisotool and kwargs:
+            raise TypeError("unrecognized keywords: ", str(kwargs))
+
         # Create the Plot
-        if Plot:
-            figure_number = pylab.get_fignums()
-            figure_title = [
-                pylab.figure(numb).Canvas.get_window_title()
-                for numb in figure_number]
-            new_figure_name = "Root Locus"
-            rloc_num = 1
-            while new_figure_name in figure_title:
-                new_figure_name = "Root Locus " + str(rloc_num)
-                rloc_num += 1
-            f = pylab.figure(new_figure_name)
+        if plot:
+            if sisotool:
+                fig = kwargs['fig']
+                ax = fig.axes[1]
+            else:
+                if ax is None:
+                    ax = plt.gca()
+                fig = ax.figure
+                ax.set_title('Root Locus')
+
+            if print_gain and not sisotool:
+                fig.canvas.mpl_connect(
+                    'button_release_event',
+                    partial(_RLClickDispatcher, sys=sys, fig=fig,
+                            ax_rlocus=fig.axes[0], plotstr=plotstr))
+            elif sisotool:
+                fig.axes[1].plot(
+                    [root.real for root in start_mat],
+                    [root.imag for root in start_mat],
+                    marker='s', markersize=6, zorder=20, color='k', label='gain_point')
+                s = start_mat[0][0]
+                if isdtime(sys, strict=True):
+                    zeta = -np.cos(np.angle(np.log(s)))
+                else:
+                    zeta = -1 * s.real / abs(s)
+                fig.suptitle(
+                    "Clicked at: %10.4g%+10.4gj  gain: %10.4g  damp: %10.4g" %
+                    (s.real, s.imag, kvect[0], zeta),
+                    fontsize=12 if int(mpl.__version__[0]) == 1 else 10)
+                fig.canvas.mpl_connect(
+                    'button_release_event',
+                    partial(_RLClickDispatcher, sys=sys, fig=fig,
+                            ax_rlocus=fig.axes[1], plotstr=plotstr,
+                            sisotool=sisotool,
+                            bode_plot_params=kwargs['bode_plot_params'],
+                            tvect=kwargs['tvect']))
 
             # zoom update on xlim/ylim changed, only then data on new limits
             # is available, i.e., cannot combine with _RLClickDispatcher
@@ -367,46 +354,62 @@ def root_locus_AMaDiA(sys, ax, kvect=None, xlim=None, ylim=None,
             # TODO: is there a way to speed them up?  (RMM, 6 Jun 2019)
             #ax.callbacks.connect('xlim_changed', dpfun)
             #ax.callbacks.connect('ylim_changed', dpfun)
-
+            #
             ## plot open loop poles
             #poles = array(denp.r)
-            #ax.plot(real(poles), imag(poles), 'x', c="red")
+            #ax.plot(real(poles), imag(poles), 'x', c="red" if App == None else App.PenColours["Red"].color().name(0))
             #
             ## plot open loop zeros
             #zeros = array(nump.r)
             #if zeros.size > 0:
-            #    ax.plot(real(zeros), imag(zeros), 'o', c="orange")
+            #    ax.plot(real(zeros), imag(zeros), 'o', c="orange" if App == None else App.PenColours["Orange"].color().name(0))
 
             # Now plot the loci
             setLabel = True
             for index, col in enumerate(mymat.T):
-                if setLabel:
-                    ax.plot(real(col), imag(col), plotstr, label='V<0', c="g" if App == None else App.PenColours["Green"].color().name(0))
-                    setLabel = False
-                else:
-                    ax.plot(real(col), imag(col), plotstr, c="g" if App == None else App.PenColours["Green"].color().name(0))
+                    if setLabel:
+                        ax.plot(real(col), imag(col), plotstr, label='V<0', c="g" if App is None else App.PenColours["Green"].color().name(0))
+                        setLabel = False
+                    else:
+                        ax.plot(real(col), imag(col), plotstr, c="g" if App is None else App.PenColours["Green"].color().name(0))
 
-
+            # Set up plot axes and labels
             ax.set_xlabel('Real')
             ax.set_ylabel('Imaginary')
-            if grid and sisotool:
-                _sgrid_func(f)
-            elif grid:
-                _sgrid_func()
+
+            # Set up the limits for the plot
+            # Note: need to do this before computing grid lines
+            if xlim:
+                ax.set_xlim(xlim)
+            if ylim:
+                ax.set_ylim(ylim)
+
+            # Draw the grid
+            if grid:
+                if isdtime(sys, strict=True):
+                    zgrid(ax=ax)
+                else:
+                    _sgrid_func(fig=fig if sisotool else None)
             else:
-                ax.axhline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), zorder=-20)
-                ax.axvline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0))
+                ax.axhline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), linewidth=.75, zorder=-20)
+                ax.axvline(0., linestyle=':', color='k' if App == None else App.PenColours["Black"].color().name(0), linewidth=.75, zorder=-20)
+                if isdtime(sys, strict=True):
+                    ax.add_patch(plt.Circle(
+                        (0, 0), radius=1.0, linestyle=':', edgecolor='k',
+                        linewidth=0.75, fill=False, zorder=-20))
+            r_mymat, r_kvect = mymat, kvect
     except:
+        try:
+            NC(4,"Error in neg rloculs",exc=True)
+        except: pass
         pass
-    if Plot:
-        # Set up plot axes and labels
+    if plot and not grid:
         if xlim:
             ax.set_xlim(xlim)
         if ylim:
             ax.set_ylim(ylim)
-        
-
     return r_mymat, r_kvect
+
 
 
 def _default_gains(num, den, xlim, ylim, zoom_xlim=None, zoom_ylim=None):
@@ -560,8 +563,8 @@ def _indexes_filt(mymat, tolerance, zoom_xlim=None, zoom_ylim=None):
 
 
 def _break_points(num, den):
-    # type: (np.poly1d, np.poly1d) -> (np.array, np.array)
     """Extract break points over real axis and gains given these locations"""
+    # type: (np.poly1d, np.poly1d) -> (np.array, np.array)
     dnum = num.deriv(m=1)
     dden = den.deriv(m=1)
     polynom = den * dnum - num * dden
@@ -637,7 +640,7 @@ def _systopoly1d(sys):
         sys = _convert_to_transfer_function(sys)
 
         # Make sure we have a SISO system
-        if (sys.inputs > 1 or sys.outputs > 1):
+        if not sys.issiso():
             raise ControlMIMONotImplemented()
 
         # Start by extracting the numerator and denominator from system object
@@ -658,7 +661,7 @@ def _RLFindRoots(nump, denp, kvect):
     """Find the roots for the root locus."""
     # Convert numerator and denominator to polynomials if they aren't
     roots = []
-    for k in kvect:
+    for k in np.array(kvect, ndmin=1):
         curpoly = denp + k * nump
         curroots = curpoly.r
         if len(curroots) < denp.order:
@@ -698,8 +701,9 @@ def _RLSortRoots(mymat):
 
 def _RLZoomDispatcher(event, sys, ax_rlocus, plotstr):
     """Rootlocus plot zoom dispatcher"""
+    sys_loop = sys if sys.issiso() else sys[0,0]
 
-    nump, denp = _systopoly1d(sys)
+    nump, denp = _systopoly1d(sys_loop)
     xlim, ylim = ax_rlocus.get_xlim(), ax_rlocus.get_ylim()
 
     kvect, mymat, xlim, ylim = _default_gains(
@@ -725,27 +729,29 @@ def _RLClickDispatcher(event, sys, fig, ax_rlocus, plotstr, sisotool=False,
         if sisotool and K is not None:
             _SisotoolUpdate(sys, fig, K, bode_plot_params, tvect)
 
-    # Update the Canvas
-    fig.Canvas.draw()
+    # Update the canvas
+    fig.canvas.draw()
 
 
 def _RLFeedbackClicksPoint(event, sys, fig, ax_rlocus, sisotool=False):
     """Display root-locus gain feedback point for clicks on root-locus plot"""
-    (nump, denp) = _systopoly1d(sys)
+    sys_loop = sys if sys.issiso() else sys[0,0]
+
+    (nump, denp) = _systopoly1d(sys_loop)
 
     xlim = ax_rlocus.get_xlim()
     ylim = ax_rlocus.get_ylim()
-    x_tolerance = 0.05 * abs((xlim[1] - xlim[0]))
-    y_tolerance = 0.05 * abs((ylim[1] - ylim[0]))
+    x_tolerance = 0.1 * abs((xlim[1] - xlim[0]))
+    y_tolerance = 0.1 * abs((ylim[1] - ylim[0]))
     gain_tolerance = np.mean([x_tolerance, y_tolerance])*0.1
 
     # Catch type error when event click is in the figure but not in an axis
     try:
         s = complex(event.xdata, event.ydata)
-        K = -1. / sys.horner(s)
-        K_xlim = -1. / sys.horner(
+        K = -1. / sys_loop(s)
+        K_xlim = -1. / sys_loop(
             complex(event.xdata + 0.05 * abs(xlim[1] - xlim[0]), event.ydata))
-        K_ylim = -1. / sys.horner(
+        K_ylim = -1. / sys_loop(
             complex(event.xdata, event.ydata + 0.05 * abs(ylim[1] - ylim[0])))
 
     except TypeError:
@@ -759,13 +765,18 @@ def _RLFeedbackClicksPoint(event, sys, fig, ax_rlocus, sisotool=False):
     if abs(K.real) > 1e-8 and abs(K.imag / K.real) < gain_tolerance and \
        event.inaxes == ax_rlocus.axes and K.real > 0.:
 
+        if isdtime(sys, strict=True):
+            zeta = -np.cos(np.angle(np.log(s)))
+        else:
+            zeta = -1 * s.real / abs(s)
+
         # Display the parameters in the output window and figure
         print("Clicked at %10.4g%+10.4gj gain %10.4g damp %10.4g" %
-              (s.real, s.imag, K.real, -1 * s.real / abs(s)))
+              (s.real, s.imag, K.real, zeta))
         fig.suptitle(
             "Clicked at: %10.4g%+10.4gj  gain: %10.4g  damp: %10.4g" %
-            (s.real, s.imag, K.real, -1 * s.real / abs(s)),
-            fontsize=12 if int(matplotlib.__version__[0]) == 1 else 10)
+            (s.real, s.imag, K.real, zeta),
+            fontsize=12 if int(mpl.__version__[0]) == 1 else 10)
 
         # Remove the previous line
         _removeLine(label='gain_point', ax=ax_rlocus)
@@ -776,12 +787,12 @@ def _RLFeedbackClicksPoint(event, sys, fig, ax_rlocus, sisotool=False):
             ax_rlocus.plot(
                 [root.real for root in mymat],
                 [root.imag for root in mymat],
-                'm.', marker='s', markersize=8, zorder=20, label='gain_point')
+                marker='s', markersize=6, zorder=20, label='gain_point', color='k')
         else:
             ax_rlocus.plot(s.real, s.imag, 'k.', marker='s', markersize=8,
                            zorder=20, label='gain_point')
 
-        return K.real[0][0]
+        return K.real
 
 
 def _removeLine(label, ax):
@@ -794,34 +805,37 @@ def _removeLine(label, ax):
 
 def _sgrid_func(fig=None, zeta=None, wn=None):
     if fig is None:
-        fig = pylab.gcf()
+        fig = plt.gcf()
         ax = fig.gca()
     else:
         ax = fig.axes[1]
-    xlocator = ax.get_xaxis().get_major_locator()
 
+    # Get locator function for x-axis, y-axis tick marks
+    xlocator = ax.get_xaxis().get_major_locator()
+    ylocator = ax.get_yaxis().get_major_locator()
+
+    # Decide on the location for the labels (?)
     ylim = ax.get_ylim()
     ytext_pos_lim = ylim[1] - (ylim[1] - ylim[0]) * 0.03
     xlim = ax.get_xlim()
     xtext_pos_lim = xlim[0] + (xlim[1] - xlim[0]) * 0.0
 
+    # Create a list of damping ratios, if needed
     if zeta is None:
         zeta = _default_zetas(xlim, ylim)
 
-    angules = []
+    # Figure out the angles for the different damping ratios
+    angles = []
     for z in zeta:
         if (z >= 1e-4) and (z <= 1):
-            angules.append(np.pi/2 + np.arcsin(z))
+            angles.append(np.pi/2 + np.arcsin(z))
         else:
             zeta.remove(z)
-    y_over_x = np.tan(angules)
+    y_over_x = np.tan(angles)
 
     # zeta-constant lines
-
-    index = 0
-
-    for yp in y_over_x:
-        ax.plot([0, xlocator()[0]], [0, yp*xlocator()[0]], color='gray',
+    for index, yp in enumerate(y_over_x):
+        ax.plot([0, xlocator()[0]], [0, yp * xlocator()[0]], color='gray',
                 linestyle='dashed', linewidth=0.5)
         ax.plot([0, xlocator()[0]], [0, -yp * xlocator()[0]], color='gray',
                 linestyle='dashed', linewidth=0.5)
@@ -835,46 +849,104 @@ def _sgrid_func(fig=None, zeta=None, wn=None):
                 ytext_pos = ytext_pos_lim
             ax.annotate(an, textcoords='data', xy=[xtext_pos, ytext_pos],
                         fontsize=8)
-        index += 1
     ax.plot([0, 0], [ylim[0], ylim[1]],
             color='gray', linestyle='dashed', linewidth=0.5)
 
-    angules = np.linspace(-90, 90, 20)*np.pi/180
+    # omega-constant lines
+    angles = np.linspace(-90, 90, 20) * np.pi/180
     if wn is None:
-        wn = _default_wn(xlocator(), ylim)
+        wn = _default_wn(xlocator(), ylocator())
 
     for om in wn:
         if om < 0:
-            yp = np.sin(angules)*np.abs(om)
-            xp = -np.cos(angules)*np.abs(om)
-            ax.plot(xp, yp, color='gray',
-                    linestyle='dashed', linewidth=0.5)
-            an = "%.2f" % -om
-            ax.annotate(an, textcoords='data', xy=[om, 0], fontsize=8)
+            # Generate the lines for natural frequency curves
+            yp = np.sin(angles) * np.abs(om)
+            xp = -np.cos(angles) * np.abs(om)
+
+            # Plot the natural frequency contours
+            ax.plot(xp, yp, color='gray', linestyle='dashed', linewidth=0.5)
+
+            # Annotate the natural frequencies by listing on x-axis
+            # Note: need to filter values for proper plotting in Jupyter
+            if (om > xlim[0]):
+                an = "%.2f" % -om
+                ax.annotate(an, textcoords='data', xy=[om, 0], fontsize=8)
 
 
 def _default_zetas(xlim, ylim):
-    """Return default list of dumps coefficients"""
-    sep1 = -xlim[0]/4
+    """Return default list of damping coefficients
+
+    This function computes a list of damping coefficients based on the limits
+    of the graph.  A set of 4 damping coefficients are computed for the x-axis
+    and a set of three damping coefficients are computed for the y-axis
+    (corresponding to the normal 4:3 plot aspect ratio in `matplotlib`?).
+
+    Parameters
+    ----------
+    xlim : array_like
+        List of x-axis limits [min, max]
+    ylim : array_like
+        List of y-axis limits [min, max]
+
+    Returns
+    -------
+    zeta : list
+        List of default damping coefficients for the plot
+
+    """
+    # Damping coefficient lines that intersect the x-axis
+    sep1 = -xlim[0] / 4
     ang1 = [np.arctan((sep1*i)/ylim[1]) for i in np.arange(1, 4, 1)]
+
+    # Damping coefficient lines that intersection the y-axis
     sep2 = ylim[1] / 3
     ang2 = [np.arctan(-xlim[0]/(ylim[1]-sep2*i)) for i in np.arange(1, 3, 1)]
 
-    angules = np.concatenate((ang1, ang2))
-    angules = np.insert(angules, len(angules), np.pi/2)
-    zeta = np.sin(angules)
+    # Put the lines together and add one at -pi/2 (negative real axis)
+    angles = np.concatenate((ang1, ang2))
+    angles = np.insert(angles, len(angles), np.pi/2)
+
+    # Return the damping coefficients corresponding to these angles
+    zeta = np.sin(angles)
     return zeta.tolist()
 
 
-def _default_wn(xloc, ylim):
-    """Return default wn for root locus plot"""
+def _default_wn(xloc, yloc, max_lines=7):
+    """Return default wn for root locus plot
 
-    wn = xloc
-    sep = xloc[1]-xloc[0]
-    while np.abs(wn[0]) < ylim[1]:
-        wn = np.insert(wn, 0, wn[0]-sep)
+    This function computes a list of natural frequencies based on the grid
+    parameters of the graph.
 
-    while len(wn) > 7:
+    Parameters
+    ----------
+    xloc : array_like
+        List of x-axis tick values
+    ylim : array_like
+        List of y-axis limits [min, max]
+    max_lines : int, optional
+        Maximum number of frequencies to generate (default = 7)
+
+    Returns
+    -------
+    wn : list
+        List of default natural frequencies for the plot
+
+    """
+    sep = xloc[1]-xloc[0]       # separation between x-ticks
+
+    # Decide whether to use the x or y axis for determining wn
+    if yloc[-1] / sep > max_lines*10:
+        # y-axis scale >> x-axis scale
+        wn = yloc                   # one frequency per y-axis tick mark
+    else:
+        wn = xloc                   # one frequency per x-axis tick mark
+
+        # Insert additional frequencies to span the y-axis
+        while np.abs(wn[0]) < yloc[-1]:
+            wn = np.insert(wn, 0, wn[0]-sep)
+
+    # If there are too many values, cut them in half
+    while len(wn) > max_lines:
         wn = wn[0:-1:2]
 
     return wn

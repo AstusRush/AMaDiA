@@ -1,15 +1,6 @@
-#!/usr/bin/env python
-from __future__ import print_function
-#
-# mateqn_test.py - test wuit for matrix equation solvers
-#
-#! Currently uses numpy.testing framework; will dump you out of unittest
-#! if an error occurs.  Should figure out the right way to fix this.
+"""mateqn_test.py - test suite for matrix equation solvers
 
-""" Test cases for lyap, dlyap, care and dare functions in the file
-pyctrl_lin_alg.py. """
-
-"""Copyright (c) 2011, All rights reserved.
+Copyright (c) 2020, All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,201 +33,364 @@ SUCH DAMAGE.
 Author: Bjorn Olofsson
 """
 
-import unittest
-from numpy import matrix
+import numpy as np
+from numpy import array, zeros
 from numpy.testing import assert_array_almost_equal, assert_array_less
-# need scipy version of eigvals for generalized eigenvalue problem
+import pytest
 from scipy.linalg import eigvals, solve
-from scipy import zeros,dot
-from control.mateqn import lyap,dlyap,care,dare
-from control.exception import slycot_check
 
-@unittest.skipIf(not slycot_check(), "slycot not installed")
-class TestMatrixEquations(unittest.TestCase):
+import control as ct
+from control.mateqn import lyap, dlyap, care, dare
+from control.exception import ControlArgument, ControlDimension, slycot_check
+from control.tests.conftest import slycotonly
+
+
+class TestMatrixEquations:
     """These are tests for the matrix equation solvers in mateqn.py"""
 
     def test_lyap(self):
-        A = matrix([[-1, 1],[-1, 0]])
-        Q = matrix([[1,0],[0,1]])
-        X = lyap(A,Q)
+        A = array([[-1, 1], [-1, 0]])
+        Q = array([[1, 0], [0, 1]])
+        X = lyap(A, Q)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X + X * A.T + Q, zeros((2,2)))
+        assert_array_almost_equal(A @ X + X @ A.T + Q, zeros((2,2)))
 
-        A = matrix([[1, 2],[-3, -4]])
-        Q = matrix([[3, 1],[1, 1]])
+        A = array([[1, 2], [-3, -4]])
+        Q = array([[3, 1], [1, 1]])
         X = lyap(A,Q)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X + X * A.T + Q, zeros((2,2)))
+        assert_array_almost_equal(A @ X + X @ A.T + Q, zeros((2,2)))
+
+        # Compare methods
+        if slycot_check():
+            X_scipy = lyap(A, Q, method='scipy')
+            X_slycot = lyap(A, Q, method='slycot')
+            assert_array_almost_equal(X_scipy, X_slycot)
 
     def test_lyap_sylvester(self):
         A = 5
-        B = matrix([[4, 3], [4, 3]])
-        C = matrix([2, 1])
-        X = lyap(A,B,C)
+        B = array([[4, 3], [4, 3]])
+        C = array([2, 1])
+        X = lyap(A, B, C)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X + X * B + C, zeros((1,2)))
+        assert_array_almost_equal(A * X + X @ B + C, zeros((1,2)))
 
-        A = matrix([[2,1],[1,2]])
-        B = matrix([[1,2],[0.5,0.1]])
-        C = matrix([[1,0],[0,1]])
-        X = lyap(A,B,C)
+        A = array([[2, 1], [1, 2]])
+        B = array([[1, 2], [0.5, 0.1]])
+        C = array([[1, 0], [0, 1]])
+        X = lyap(A, B, C)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X + X * B + C, zeros((2,2)))
+        assert_array_almost_equal(A @ X + X @ B + C, zeros((2,2)))
 
+        # Compare methods
+        if slycot_check():
+            X_scipy = lyap(A, B, C, method='scipy')
+            X_slycot = lyap(A, B, C, method='slycot')
+            assert_array_almost_equal(X_scipy, X_slycot)
+
+    @slycotonly
     def test_lyap_g(self):
-        A = matrix([[-1, 2],[-3, -4]])
-        Q = matrix([[3, 1],[1, 1]])
-        E = matrix([[1,2],[2,1]])
-        X = lyap(A,Q,None,E)
+        A = array([[-1, 2], [-3, -4]])
+        Q = array([[3, 1], [1, 1]])
+        E = array([[1, 2], [2, 1]])
+        X = lyap(A, Q, None, E)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X * E.T + E * X * A.T + Q, zeros((2,2)))
+        assert_array_almost_equal(A @ X @ E.T + E @ X @ A.T + Q,
+                                  zeros((2,2)))
+
+        # Make sure that trying to solve with SciPy generates an error
+        with pytest.raises(ControlArgument, match="'scipy' not valid"):
+            X = lyap(A, Q, None, E, method='scipy')
 
     def test_dlyap(self):
-        A = matrix([[-0.6, 0],[-0.1, -0.4]])
-        Q = matrix([[1,0],[0,1]])
+        A = array([[-0.6, 0],[-0.1, -0.4]])
+        Q = array([[1,0],[0,1]])
         X = dlyap(A,Q)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X * A.T - X + Q, zeros((2,2)))
+        assert_array_almost_equal(A @ X @ A.T - X + Q, zeros((2,2)))
 
-        A = matrix([[-0.6, 0],[-0.1, -0.4]])
-        Q = matrix([[3, 1],[1, 1]])
+        A = array([[-0.6, 0],[-0.1, -0.4]])
+        Q = array([[3, 1],[1, 1]])
         X = dlyap(A,Q)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X * A.T - X + Q, zeros((2,2)))
+        assert_array_almost_equal(A @ X @ A.T - X + Q, zeros((2,2)))
 
+    @slycotonly
     def test_dlyap_g(self):
-        A = matrix([[-0.6, 0],[-0.1, -0.4]])
-        Q = matrix([[3, 1],[1, 1]])
-        E = matrix([[1, 1],[2, 1]])
-        X = dlyap(A,Q,None,E)
+        A = array([[-0.6, 0],[-0.1, -0.4]])
+        Q = array([[3, 1],[1, 1]])
+        E = array([[1, 1],[2, 1]])
+        X = dlyap(A, Q, None, E)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X * A.T - E * X * E.T + Q, zeros((2,2)))
+        assert_array_almost_equal(A @ X @ A.T - E @ X @ E.T + Q,
+                                  zeros((2,2)))
 
+        # Make sure that trying to solve with SciPy generates an error
+        with pytest.raises(ControlArgument, match="'scipy' not valid"):
+            X = dlyap(A, Q, None, E, method='scipy')
+
+    @slycotonly
     def test_dlyap_sylvester(self):
         A = 5
-        B = matrix([[4, 3], [4, 3]])
-        C = matrix([2, 1])
+        B = array([[4, 3], [4, 3]])
+        C = array([2, 1])
         X = dlyap(A,B,C)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X * B.T - X + C, zeros((1,2)))
+        assert_array_almost_equal(A * X @ B.T - X + C, zeros((1,2)))
 
-        A = matrix([[2,1],[1,2]])
-        B = matrix([[1,2],[0.5,0.1]])
-        C = matrix([[1,0],[0,1]])
-        X = dlyap(A,B,C)
+        A = array([[2, 1], [1, 2]])
+        B = array([[1, 2], [0.5, 0.1]])
+        C = array([[1, 0], [0, 1]])
+        X = dlyap(A, B, C)
         # print("The solution obtained is ", X)
-        assert_array_almost_equal(A * X * B.T - X + C, zeros((2,2)))
+        assert_array_almost_equal(A @ X @ B.T - X + C, zeros((2,2)))
+
+        # Make sure that trying to solve with SciPy generates an error
+        with pytest.raises(ControlArgument, match="'scipy' not valid"):
+            X = dlyap(A, B, C, method='scipy')
 
     def test_care(self):
-        A = matrix([[-2, -1],[-1, -1]])
-        Q = matrix([[0, 0],[0, 1]])
-        B = matrix([[1, 0],[0, 4]])
+        A = array([[-2, -1],[-1, -1]])
+        Q = array([[0, 0],[0, 1]])
+        B = array([[1, 0],[0, 4]])
 
-        X,L,G = care(A,B,Q)
+        X, L, G = care(A, B, Q)
         # print("The solution obtained is", X)
-        assert_array_almost_equal(A.T * X + X * A - X * B * B.T * X + Q,
+        M = A.T @ X + X @ A - X @ B @ B.T @ X + Q
+        assert_array_almost_equal(M,
                                   zeros((2,2)))
-        assert_array_almost_equal(B.T * X, G)
+        assert_array_almost_equal(B.T @ X, G)
+
+        # Compare methods
+        if slycot_check():
+            X_scipy, L_scipy, G_scipy = care(A, B, Q, method='scipy')
+            X_slycot, L_slycot, G_slycot = care(A, B, Q, method='slycot')
+            assert_array_almost_equal(X_scipy, X_slycot)
+            assert_array_almost_equal(np.sort(L_scipy), np.sort(L_slycot))
+            assert_array_almost_equal(G_scipy, G_slycot)
 
     def test_care_g(self):
-        A = matrix([[-2, -1],[-1, -1]])
-        Q = matrix([[0, 0],[0, 1]])
-        B = matrix([[1, 0],[0, 4]])
-        R = matrix([[2, 0],[0, 1]])
-        S = matrix([[0, 0],[0, 0]])
-        E = matrix([[2, 1],[1, 2]])
+        A = array([[-2, -1],[-1, -1]])
+        Q = array([[0, 0],[0, 1]])
+        B = array([[1, 0],[0, 4]])
+        R = array([[2, 0],[0, 1]])
+        S = array([[0, 0],[0, 0]])
+        E = array([[2, 1],[1, 2]])
 
         X,L,G = care(A,B,Q,R,S,E)
         # print("The solution obtained is", X)
+        Gref = solve(R, B.T @ X @ E + S.T)
+        assert_array_almost_equal(Gref, G)
         assert_array_almost_equal(
-            A.T * X * E + E.T * X * A -
-            (E.T * X * B + S) * solve(R, B.T * X * E + S.T)  + Q, zeros((2,2)))
-        assert_array_almost_equal(solve(R, B.T * X * E + S.T), G)
+            A.T @ X @ E + E.T @ X @ A
+            - (E.T @ X @ B + S) @ Gref + Q,
+            zeros((2,2)))
 
-        A = matrix([[-2, -1],[-1, -1]])
-        Q = matrix([[0, 0],[0, 1]])
-        B = matrix([[1],[0]])
+        # Compare methods
+        if slycot_check():
+            X_scipy, L_scipy, G_scipy = care(
+                A, B, Q, R, S, E, method='scipy')
+            X_slycot, L_slycot, G_slycot = care(
+                A, B, Q, R, S, E, method='slycot')
+            assert_array_almost_equal(X_scipy, X_slycot)
+            assert_array_almost_equal(np.sort(L_scipy), np.sort(L_slycot))
+            assert_array_almost_equal(G_scipy, G_slycot)
+
+    def test_care_g2(self):
+        A = array([[-2, -1],[-1, -1]])
+        Q = array([[0, 0],[0, 1]])
+        B = array([[1],[0]])
         R = 1
-        S = matrix([[1],[0]])
-        E = matrix([[2, 1],[1, 2]])
+        S = array([[1],[0]])
+        E = array([[2, 1],[1, 2]])
 
         X,L,G = care(A,B,Q,R,S,E)
         # print("The solution obtained is", X)
+        Gref = 1/R * (B.T @ X @ E + S.T)
         assert_array_almost_equal(
-            A.T * X * E + E.T * X * A -
-            (E.T * X * B + S) / R * (B.T * X * E + S.T) + Q , zeros((2,2)))
-        assert_array_almost_equal(dot( 1/R , dot(B.T,dot(X,E)) + S.T) , G)
+            A.T @ X @ E + E.T @ X @ A
+            - (E.T @ X @ B + S) @ Gref + Q ,
+            zeros((2,2)))
+        assert_array_almost_equal(Gref , G)
+
+        # Compare methods
+        if slycot_check():
+            X_scipy, L_scipy, G_scipy = care(
+                A, B, Q, R, S, E, method='scipy')
+            X_slycot, L_slycot, G_slycot = care(
+                A, B, Q, R, S, E, method='slycot')
+            assert_array_almost_equal(X_scipy, X_slycot)
+            assert_array_almost_equal(L_scipy, L_slycot)
+            assert_array_almost_equal(G_scipy, G_slycot)
 
     def test_dare(self):
-        A = matrix([[-0.6, 0],[-0.1, -0.4]])
-        Q = matrix([[2, 1],[1, 0]])
-        B = matrix([[2, 1],[0, 1]])
-        R = matrix([[1, 0],[0, 1]])
+        A = array([[-0.6, 0],[-0.1, -0.4]])
+        Q = array([[2, 1],[1, 0]])
+        B = array([[2, 1],[0, 1]])
+        R = array([[1, 0],[0, 1]])
 
-        X,L,G = dare(A,B,Q,R)
+        X, L, G = dare(A, B, Q, R)
         # print("The solution obtained is", X)
+        Gref = solve(B.T @ X @ B + R, B.T @ X @ A)
+        assert_array_almost_equal(Gref, G)
         assert_array_almost_equal(
-            A.T * X * A - X -
-            A.T * X * B * solve(B.T * X * B + R, B.T * X * A) + Q, zeros((2,2)))
-        assert_array_almost_equal(solve(B.T * X * B + R, B.T * X * A), G)
+            X, A.T @ X @ A - A.T @ X @ B @ Gref + Q)
         # check for stable closed loop
-        lam = eigvals(A - B * G)
+        lam = eigvals(A - B @ G)
         assert_array_less(abs(lam), 1.0)
 
-        A = matrix([[1, 0],[-1, 1]])
-        Q = matrix([[0, 1],[1, 1]])
-        B = matrix([[1],[0]])
+        A = array([[1, 0],[-1, 1]])
+        Q = array([[0, 1],[1, 1]])
+        B = array([[1],[0]])
         R = 2
 
-        X,L,G = dare(A,B,Q,R)
+        X, L, G = dare(A, B, Q, R)
         # print("The solution obtained is", X)
+        AtXA = A.T @ X @ A
+        AtXB = A.T @ X @ B
+        BtXA = B.T @ X @ A
+        BtXB = B.T @ X @ B
         assert_array_almost_equal(
-            A.T * X * A - X -
-            A.T * X * B * solve(B.T *  X * B + R, B.T * X * A) + Q, zeros((2,2)))
-        assert_array_almost_equal(B.T * X * A / (B.T * X * B + R), G)
+            X, AtXA - AtXB @ solve(BtXB + R, BtXA) + Q)
+        assert_array_almost_equal(BtXA / (BtXB + R), G)
         # check for stable closed loop
-        lam = eigvals(A - B * G)
+        lam = eigvals(A - B @ G)
         assert_array_less(abs(lam), 1.0)
+
+    def test_dare_compare(self):
+        A = np.array([[-0.6, 0], [-0.1, -0.4]])
+        Q = np.array([[2, 1], [1, 0]])
+        B = np.array([[2, 1], [0, 1]])
+        R = np.array([[1, 0], [0, 1]])
+        S = np.zeros((A.shape[0], B.shape[1]))
+        E = np.eye(A.shape[0])
+
+        # Solve via scipy
+        X_scipy, L_scipy, G_scipy = dare(A, B, Q, R, method='scipy')
+
+        # Solve via slycot
+        if ct.slycot_check():
+            X_slicot, L_slicot, G_slicot = dare(
+                A, B, Q, R, S, E, method='scipy')
+            np.testing.assert_almost_equal(X_scipy, X_slicot)
+            np.testing.assert_almost_equal(L_scipy, L_slicot)
+            np.testing.assert_almost_equal(G_scipy, G_slicot)
 
     def test_dare_g(self):
-        A = matrix([[-0.6, 0],[-0.1, -0.4]])
-        Q = matrix([[2, 1],[1, 3]])
-        B = matrix([[1, 5],[2, 4]])
-        R = matrix([[1, 0],[0, 1]])
-        S = matrix([[1, 0],[2, 0]])
-        E = matrix([[2, 1],[1, 2]])
+        A = array([[-0.6, 0],[-0.1, -0.4]])
+        Q = array([[2, 1],[1, 3]])
+        B = array([[1, 5],[2, 4]])
+        R = array([[1, 0],[0, 1]])
+        S = array([[1, 0],[2, 0]])
+        E = array([[2, 1],[1, 2]])
 
-        X,L,G = dare(A,B,Q,R,S,E)
+        X, L, G = dare(A, B, Q, R, S, E)
         # print("The solution obtained is", X)
+        Gref = solve(B.T @ X @ B + R, B.T @ X @ A + S.T)
+        assert_array_almost_equal(Gref, G)
         assert_array_almost_equal(
-            A.T * X * A - E.T * X * E -
-            (A.T * X * B + S) * solve(B.T * X * B + R, B.T * X * A + S.T) + Q,
-            zeros((2,2)) )
-        assert_array_almost_equal(solve(B.T * X * B + R, B.T * X * A + S.T), G)
+            E.T @ X @ E,
+            A.T @ X @ A - (A.T @ X @ B + S) @ Gref + Q)
         # check for stable closed loop
-        lam = eigvals(A - B * G, E)
+        lam = eigvals(A - B @ G, E)
         assert_array_less(abs(lam), 1.0)
 
-        A = matrix([[-0.6, 0],[-0.1, -0.4]])
-        Q = matrix([[2, 1],[1, 3]])
-        B = matrix([[1],[2]])
+    def test_dare_g2(self):
+        A = array([[-0.6, 0], [-0.1, -0.4]])
+        Q = array([[2, 1], [1, 3]])
+        B = array([[1], [2]])
         R = 1
-        S = matrix([[1],[2]])
-        E = matrix([[2, 1],[1, 2]])
+        S = array([[1], [2]])
+        E = array([[2, 1], [1, 2]])
 
-        X,L,G = dare(A,B,Q,R,S,E)
+        X, L, G = dare(A, B, Q, R, S, E)
         # print("The solution obtained is", X)
+        AtXA = A.T @ X @ A
+        AtXB = A.T @ X @ B
+        BtXA = B.T @ X @ A
+        BtXB = B.T @ X @ B
+        EtXE = E.T @ X @ E
         assert_array_almost_equal(
-            A.T * X * A - E.T * X * E -
-            (A.T * X * B + S) * solve(B.T * X * B + R, B.T * X * A + S.T) + Q,
-            zeros((2,2)) )
-        assert_array_almost_equal((B.T * X * A + S.T) / (B.T * X * B + R), G)
+            EtXE, AtXA - (AtXB + S)  @ solve(BtXB + R, BtXA + S.T) + Q)
+        assert_array_almost_equal((BtXA + S.T) / (BtXB + R), G)
         # check for stable closed loop
-        lam = eigvals(A - B * G, E)
+        lam = eigvals(A - B @ G, E)
         assert_array_less(abs(lam), 1.0)
 
-def suite():
-    return unittest.TestLoader().loadTestsFromTestCase(TestMatrixEquations)
+    def test_raise(self):
+        """ Test exception raise for invalid inputs """
 
-if __name__ == "__main__":
-    unittest.main()
+        # correct shapes and forms
+        A = array([[1, 0], [-1, -1]])
+        Q = array([[2, 1], [1, 2]])
+        C = array([[1, 0], [0, 1]])
+        E = array([[2, 1], [1, 2]])
+
+        # these fail
+        Afq = array([[1, 0, 0], [-1, -1, 0]])
+        Qfq = array([[2, 1, 0], [1, 2, 0]])
+        Qfs = array([[2, 1], [-1, 2]])
+        Cfd = array([[1, 0, 0], [0, 1, 0]])
+        Efq = array([[2, 1, 0], [1, 2, 0]])
+
+        for cdlyap in [lyap, dlyap]:
+            with pytest.raises(ControlDimension):
+                cdlyap(Afq, Q)
+            with pytest.raises(ControlDimension):
+                cdlyap(A, Qfq)
+            with pytest.raises(ControlArgument):
+                cdlyap(A, Qfs)
+            with pytest.raises(ControlDimension):
+                cdlyap(Afq, Q, C)
+            with pytest.raises(ControlDimension):
+                cdlyap(A, Qfq, C)
+            with pytest.raises(ControlDimension):
+                cdlyap(A, Q, Cfd)
+            with pytest.raises(ControlDimension):
+                cdlyap(A, Qfq, None, E)
+            with pytest.raises(ControlDimension):
+                cdlyap(A, Q, None, Efq)
+            with pytest.raises(ControlArgument):
+                cdlyap(A, Qfs, None, E)
+            with pytest.raises(ControlArgument):
+                cdlyap(A, Q, C, E)
+
+        B = array([[1, 0], [0, 1]])
+        Bf = array([[1, 0], [0, 1], [1, 1]])
+        R = Q
+        Rfs = Qfs
+        Rfq = Qfq
+        S = array([[0, 0], [0, 0]])
+        Sf = array([[0, 0, 0], [0, 0, 0]])
+        E = array([[2, 1], [1, 2]])
+        Ef = array([[2, 1], [1, 2], [1, 2]])
+
+        with pytest.raises(ControlDimension):
+            care(Afq, B, Q)
+        with pytest.raises(ControlDimension):
+            care(A, B, Qfq)
+        with pytest.raises(ControlDimension):
+            care(A, Bf, Q)
+        with pytest.raises(ControlDimension):
+            care(1, B, 1)
+        with pytest.raises(ControlArgument):
+            care(A, B, Qfs)
+        with pytest.raises(ControlArgument):
+            dare(A, B, Q, Rfs)
+        for cdare in [care, dare]:
+            with pytest.raises(ControlDimension):
+                cdare(Afq, B, Q, R, S, E)
+            with pytest.raises(ControlDimension):
+                cdare(A, B, Qfq, R, S, E)
+            with pytest.raises(ControlDimension):
+                cdare(A, Bf, Q, R, S, E)
+            with pytest.raises(ControlDimension):
+                cdare(A, B, Q, R, S, Ef)
+            with pytest.raises(ControlDimension):
+                cdare(A, B, Q, Rfq, S, E)
+            with pytest.raises(ControlDimension):
+                cdare(A, B, Q, R, Sf, E)
+            with pytest.raises(ControlArgument):
+                cdare(A, B, Qfs, R, S, E)
+            with pytest.raises(ControlArgument):
+                cdare(A, B, Q, Rfs, S, E)

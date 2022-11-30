@@ -42,45 +42,47 @@ from ..iosys import LinearIOSystem
 
 
 class LinearFlatSystem(FlatSystem, LinearIOSystem):
+    """Base class for a linear, differentially flat system.
+
+    This class is used to create a differentially flat system representation
+    from a linear system.
+
+    Parameters
+    ----------
+    linsys : StateSpace
+        LTI StateSpace system to be converted
+    inputs : int, list of str or None, optional
+        Description of the system inputs.  This can be given as an integer
+        count or as a list of strings that name the individual signals.
+        If an integer count is specified, the names of the signal will be
+        of the form `s[i]` (where `s` is one of `u`, `y`, or `x`).  If
+        this parameter is not given or given as `None`, the relevant
+        quantity will be determined when possible based on other
+        information provided to functions using the system.
+    outputs : int, list of str or None, optional
+        Description of the system outputs.  Same format as `inputs`.
+    states : int, list of str, or None, optional
+        Description of the system states.  Same format as `inputs`.
+    dt : None, True or float, optional
+        System timebase.  None (default) indicates continuous
+        time, True indicates discrete time with undefined sampling
+        time, positive number is discrete time with specified
+        sampling time.
+    params : dict, optional
+        Parameter values for the systems.  Passed to the evaluation
+        functions for the system as default values, overriding internal
+        defaults.
+    name : string, optional
+        System name (used for specifying signals)
+
+    """
+
     def __init__(self, linsys, inputs=None, outputs=None, states=None,
                  name=None):
         """Define a flat system from a SISO LTI system.
 
         Given a reachable, single-input/single-output, linear time-invariant
         system, create a differentially flat system representation.
-
-        Parameters
-        ----------
-        linsys : StateSpace
-            LTI StateSpace system to be converted
-        inputs : int, list of str or None, optional
-            Description of the system inputs.  This can be given as an integer
-            count or as a list of strings that name the individual signals.
-            If an integer count is specified, the names of the signal will be
-            of the form `s[i]` (where `s` is one of `u`, `y`, or `x`).  If
-            this parameter is not given or given as `None`, the relevant
-            quantity will be determined when possible based on other
-            information provided to functions using the system.
-        outputs : int, list of str or None, optional
-            Description of the system outputs.  Same format as `inputs`.
-        states : int, list of str, or None, optional
-            Description of the system states.  Same format as `inputs`.
-        dt : None, True or float, optional
-            System timebase.  None (default) indicates continuous
-            time, True indicates discrete time with undefined sampling
-            time, positive number is discrete time with specified
-            sampling time.
-        params : dict, optional
-            Parameter values for the systems.  Passed to the evaluation
-            functions for the system as default values, overriding internal
-            defaults.
-        name : string, optional
-            System name (used for specifying signals)
-
-        Returns
-        -------
-        iosys : LinearFlatSystem
-            Linear system represented as an flat input/output system
 
         """
         # Make sure we can handle the system
@@ -97,20 +99,21 @@ class LinearFlatSystem(FlatSystem, LinearIOSystem):
             name=name)
 
         # Find the transformation to chain of integrators form
+        # Note: store all array as ndarray, not matrix
         zsys, Tr = control.reachable_form(linsys)
-        Tr = Tr[::-1, ::]               # flip rows
+        Tr = np.array(Tr[::-1, ::])     # flip rows
 
         # Extract the information that we need
-        self.F = zsys.A[0, ::-1]        # input function coeffs
-        self.T = Tr                     # state space transformation
-        self.Tinv = np.linalg.inv(Tr)   # compute inverse once
+        self.F = np.array(zsys.A[0, ::-1])      # input function coeffs
+        self.T = Tr                             # state space transformation
+        self.Tinv = np.linalg.inv(Tr)           # compute inverse once
 
         # Compute the flat output variable z = C x
         Cfz = np.zeros(np.shape(linsys.C)); Cfz[0, 0] = 1
-        self.Cf = np.dot(Cfz, Tr)
+        self.Cf = Cfz @ Tr
 
     # Compute the flat flag from the state (and input)
-    def forward(self, x, u):
+    def forward(self, x, u, params):
         """Compute the flat flag given the states and input.
 
         See :func:`control.flatsys.FlatSystem.forward` for more info.
@@ -119,21 +122,31 @@ class LinearFlatSystem(FlatSystem, LinearIOSystem):
         x = np.reshape(x, (-1, 1))
         u = np.reshape(u, (1, -1))
         zflag = [np.zeros(self.nstates + 1)]
-        zflag[0][0] = np.dot(self.Cf, x)
+        zflag[0][0] = self.Cf @ x
         H = self.Cf                     # initial state transformation
         for i in range(1, self.nstates + 1):
-            zflag[0][i] = np.dot(H, np.dot(self.A, x) + np.dot(self.B, u))
-            H = np.dot(H, self.A)       # derivative for next iteration
+            zflag[0][i] = H @ (self.A @ x + self.B @ u)
+            H = H @ self.A       # derivative for next iteration
         return zflag
 
     # Compute state and input from flat flag
-    def reverse(self, zflag):
+    def reverse(self, zflag, params):
         """Compute the states and input given the flat flag.
 
         See :func:`control.flatsys.FlatSystem.reverse` for more info.
 
         """
         z = zflag[0][0:-1]
-        x = np.dot(self.Tinv, z)
-        u = zflag[0][-1] - np.dot(self.F, z)
+        x = self.Tinv @ z
+        u = zflag[0][-1] - self.F @ z
         return np.reshape(x, self.nstates), np.reshape(u, self.ninputs)
+
+    # Update function
+    def _rhs(self, t, x, u):
+        # Use LinearIOSystem._rhs instead of default (MRO) NonlinearIOSystem
+        return LinearIOSystem._rhs(self, t, x, u)
+
+    # output function
+    def _out(self, t, x, u):
+        # Use LinearIOSystem._out instead of default (MRO) NonlinearIOSystem
+        return LinearIOSystem._out(self, t, x, u)

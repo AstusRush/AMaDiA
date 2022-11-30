@@ -14,9 +14,9 @@ from mpl_toolkits.axes_grid1.mpl_axes import Axes
 import numpy as np
 import scipy
 import sympy
+import re
 common_exceptions = (TypeError , SyntaxError , re.error ,  AttributeError , ValueError , NotImplementedError , Exception , RuntimeError , ImportError , sympy.SympifyError , sympy.parsing.sympy_parser.TokenError)
 from sympy.parsing.sympy_parser import parse_expr
-import re
 import time
 
 import warnings
@@ -192,7 +192,10 @@ class MplWidget_CONTROL(AGeGW.MplWidget):
             try:
                 if T == None:
                     syst = control.timeresp._get_ss_simo(sys1)
-                    T = scipy.signal.ltisys._default_response_times(syst.A, 500)
+                    try:
+                        T = scipy.signal.ltisys._default_response_times(syst.A, 500)
+                    except:
+                        T = control.timeresp._default_time_vector(sys1, 500)
 
                 # If U not given try to create using Ufunc. If Ufunc not given or creation failed set U and Ufunc to 0
                 if U == 0.0:
@@ -229,21 +232,22 @@ class MplWidget_CONTROL(AGeGW.MplWidget):
             return
         
         try: # 0
-            oT,y = control.step_response(sys1, number_of_samples=500, T=T, X0 = X0)
+            oT,y = control.step_response(sys1, T_num=500, T=T, X0 = X0)
             self.Canvas.p_step_response.plot(oT,y,c=App().PenColours["Red"].color().name(0))
         except common_exceptions:
             NC(1,"Could not plot step response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.Canvas.p_step_response.set_title("N/A")
 
         try: # 1
-            oT,y = control.impulse_response(sys1, number_of_samples=500, T=T, X0 = X0)
+            oT,y = control.impulse_response(sys1, T_num=500, T=T, X0 = X0)
             self.Canvas.p_impulse_response.plot(oT,y,c=App().PenColours["Red"].color().name(0))
         except common_exceptions:
             NC(1,"Could not plot impulse response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.Canvas.p_impulse_response.set_title("N/A")
 
         try: # 2
-            oT,y, xout = control.forced_response(sys1, T=T, X0 = X0, U=U) # pylint: disable=unused-variable
+            tr = control.forced_response(sys1, T=T, X0 = X0, U=U) # pylint: disable=unused-variable
+            oT,y = tr.time, tr.y[0]
             self.Canvas.p_forced_response.plot(oT,y,c=App().PenColours["Red"].color().name(0))
         except common_exceptions:
             NC(1,"Could not plot forced response",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
@@ -257,15 +261,15 @@ class MplWidget_CONTROL(AGeGW.MplWidget):
             self.Canvas.p_bode_plot_1.set_title("N/A")
 
         try: # 5
-            plt.sca(self.Canvas.p_nyquist_plot)
-            control.nyquist_plot(sys1,number_of_samples=500,App=App())
+            #plt.sca(self.Canvas.p_nyquist_plot)
+            control.nyquist_plot(sys1,omega_num=500,App=App(), ax=self.Canvas.p_nyquist_plot)
         except common_exceptions:
             NC(1,"Could not generate Nyquist plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.Canvas.p_nyquist_plot.set_title("N/A")
 
         try: # 6
-            plt.sca(self.Canvas.p_nichols_plot)
-            control.nichols_plot(sys1, number_of_samples=500)
+            #plt.sca(self.Canvas.p_nichols_plot)
+            control.nichols_plot(sys1, number_of_samples=500, ax=self.Canvas.p_nichols_plot)
         except common_exceptions:
             NC(1,"Could not generate Nichols plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
             self.Canvas.p_nichols_plot.set_title("N/A")
@@ -284,7 +288,7 @@ class MplWidget_CONTROL(AGeGW.MplWidget):
         try: # 8
             #plt.sca(self.Canvas.p_root_locus)
             #control.rlocus(sys1)
-            control.root_locus_AMaDiA(sys1,self.Canvas.p_root_locus, App=App())
+            control.root_locus(sys1,ax=self.Canvas.p_root_locus, App=App())
             self.Canvas.p_root_locus.grid(True)
         except common_exceptions:
             NC(1,"Could not generate root locus plot",exc=sys.exc_info(),input=sys1,win=self.window().windowTitle(),func=str(self.objectName())+".Display")
@@ -598,10 +602,10 @@ class MplWidget_CONTROL_single_plot(AGeGW.MplWidget):
         # Plot the Plot
         try:
             if PlotName == Titles[0]:
-                oT,y = control.step_response(sys1, number_of_samples=5000, T=T, X0 = X0)
+                oT,y = control.step_response(sys1, T_num=5000, T=T, X0 = X0)
                 self.Canvas.ax.plot(oT,y)
             elif PlotName == Titles[1]:
-                oT,y = control.impulse_response(sys1, number_of_samples=5000, T=T, X0 = X0)
+                oT,y = control.impulse_response(sys1, T_num=5000, T=T, X0 = X0)
                 self.Canvas.ax.plot(oT,y)
             elif PlotName == Titles[2]:
                 # If U not given try to create using Ufunc. If Ufunc not given or creation failed set U and Ufunc to 0
@@ -624,7 +628,8 @@ class MplWidget_CONTROL_single_plot(AGeGW.MplWidget):
                         Ufunc = "0"
                 
                 self.FuncLabel = "u(s) = "+Ufunc
-                oT,y,xout = control.forced_response(sys1, T=T, X0 = X0, U=U) # pylint: disable=unused-variable
+                tr = control.forced_response(sys1, T=T, X0 = X0, U=U)
+                oT,y = tr.time, tr.y[0]
                 self.Canvas.ax.plot(oT,y,label="Response")
                 self.Canvas.ax.plot(T,U,label="Input Function: u(s) = "+Ufunc)
             elif PlotName == Titles[3] or PlotName == Titles[4] or PlotName == "  ":
@@ -637,12 +642,12 @@ class MplWidget_CONTROL_single_plot(AGeGW.MplWidget):
                 plt.figure(self.Canvas.fig.number)
                 control.bode_plot(sys1, dB=True, omega_num=5000,Dense_Phase_Major_Ticks=True, margins=True, App=App())
             elif PlotName == Titles[5]:
-                plt.sca(self.Canvas.ax)
-                control.nyquist_plot(sys1, number_of_samples=5000,App=App())
+                #plt.sca(self.Canvas.ax)
+                control.nyquist_plot(sys1, omega_num=5000,App=App(), ax=self.Canvas.ax)
                 self.FuncLabel = "Nyquist"
             elif PlotName == Titles[6]:
-                plt.sca(self.Canvas.ax)
-                control.nichols_plot(sys1, number_of_samples=5000)
+                #plt.sca(self.Canvas.ax)
+                control.nichols_plot(sys1, number_of_samples=5000, ax=self.Canvas.ax)
             elif PlotName == Titles[7]:
                 poles,zeros = control.pzmap(sys1,Plot=False)
                 if len(poles) > 0:
@@ -651,7 +656,7 @@ class MplWidget_CONTROL_single_plot(AGeGW.MplWidget):
                     self.Canvas.ax.scatter(np.real(zeros), np.imag(zeros), s=25, marker='o', c=App().PenColours["Orange"].color().name(0))
                 self.Canvas.ax.grid(True)
             elif PlotName == Titles[8]:
-                control.root_locus_AMaDiA(sys1,self.Canvas.ax, App=App())
+                control.root_locus(sys1,ax=self.Canvas.ax, App=App())
                 self.Canvas.ax.grid(True)
                 self.Canvas.ax.legend()
             else: # LaTeX Display (Uses Title as display string) # This can currently not occur

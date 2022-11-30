@@ -6,8 +6,9 @@ Function reference
 
 .. Include header information from the main control module
 .. automodule:: control
-    :no-members:
-    :no-inherited-members:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
 
 System creation
 ===============
@@ -32,6 +33,9 @@ System interconnections
     parallel
     series
 
+See also the :ref:`iosys-module` module, which can be used to create and
+interconnect nonlinear input/output systems.
+
 Frequency domain plotting
 =========================
 
@@ -39,9 +43,11 @@ Frequency domain plotting
    :toctree: generated/
 
     bode_plot
+    describing_function_plot
     nyquist_plot
     gangof4_plot
     nichols_plot
+    nichols_grid
 
 Note: For plotting commands that create multiple axes on the same plot, the
 individual axes can be retrieved using the axes label (retrieved using the
@@ -65,32 +71,28 @@ Time domain simulation
     step_response
     phase_plot
 
-Block diagram algebra
-=====================
-.. autosummary::
-   :toctree: generated/
-
-    series
-    parallel
-    feedback
-    negate
-
 Control system analysis
 =======================
 .. autosummary::
    :toctree: generated/
 
     dcgain
+    describing_function
     evalfr
     freqresp
+    get_input_ff_index
+    get_output_fb_index
+    ispassive
     margin
     stability_margins
     phase_crossover_frequencies
-    pole
-    zero
+    poles
+    zeros
     pzmap
     root_locus
     sisotool
+
+
 
 Matrix computations
 ===================
@@ -111,11 +113,14 @@ Control system synthesis
    :toctree: generated/
 
     acker
+    create_statefbk_iosystem
+    dlqr
     h2syn
     hinfsyn
     lqr
     mixsyn
     place
+    rootlocus_pid_designer
 
 Model simplification tools
 ==========================
@@ -134,8 +139,26 @@ Nonlinear system support
 .. autosummary::
    :toctree: generated/
 
-   find_eqpt
-   linearize
+    describing_function
+    find_eqpt
+    interconnect
+    linearize
+    input_output_response
+    ss2io
+    summing_junction
+    tf2io
+    flatsys.point_to_point
+
+Stochastic system support
+=========================
+.. autosummary::
+   :toctree: generated/
+
+    correlation
+    create_estimator_iosystem
+    dlqe
+    lqe
+    white_noise
 
 .. _utility-and-conversions:
 
@@ -145,6 +168,7 @@ Utility functions and conversions
    :toctree: generated/
 
     augw
+    bdschur
     canonical_form
     damp
     db2mag
@@ -153,6 +177,7 @@ Utility functions and conversions
     issiso
     issys
     mag2db
+    modal_form
     observable_form
     pade
     reachable_form

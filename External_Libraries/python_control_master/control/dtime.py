@@ -5,6 +5,7 @@ Functions for manipulating discrete time systems.
 Routines in this module:
 
 sample_system()
+c2d()
 """
 
 """Copyright (c) 2012 by California Institute of Technology
@@ -46,75 +47,115 @@ $Id: dtime.py 185 2012-08-30 05:44:32Z murrayrm $
 
 """
 
-from .lti import isctime
-from .statesp import StateSpace, _convertToStateSpace
+from .namedio import isctime
+from .statesp import StateSpace
 
 __all__ = ['sample_system', 'c2d']
 
 # Sample a continuous time system
-def sample_system(sysc, Ts, method='zoh', alpha=None):
-    """Convert a continuous time system to discrete time
-
-    Creates a discrete time system from a continuous time system by
-    sampling.  Multiple methods of conversion are supported.
+def sample_system(sysc, Ts, method='zoh', alpha=None, prewarp_frequency=None,
+        name=None, copy_names=True, **kwargs):
+    """
+    Convert a continuous time system to discrete time by sampling
 
     Parameters
     ----------
-    sysc : linsys
+    sysc : LTI (:class:`StateSpace` or :class:`TransferFunction`)
         Continuous time system to be converted
-    Ts : real
+    Ts : float > 0
         Sampling period
     method : string
-        Method to use for conversion: 'matched', 'tustin', 'zoh' (default)
+        Method to use for conversion, e.g. 'bilinear', 'zoh' (default)
+    alpha : float within [0, 1]
+            The generalized bilinear transformation weighting parameter, which
+            should only be specified with method="gbt", and is ignored
+            otherwise. See :func:`scipy.signal.cont2discrete`.
+    prewarp_frequency : float within [0, infinity)
+        The frequency [rad/s] at which to match with the input continuous-
+        time system's magnitude and phase (only valid for method='bilinear')
+    name : string, optional
+        Set the name of the sampled system.  If not specified and
+        if `copy_names` is `False`, a generic name <sys[id]> is generated
+        with a unique integer id.  If `copy_names` is `True`, the new system
+        name is determined by adding the prefix and suffix strings in
+        config.defaults['namedio.sampled_system_name_prefix'] and
+        config.defaults['namedio.sampled_system_name_suffix'], with the
+        default being to add the suffix '$sampled'.
+    copy_names : bool, Optional
+        If True, copy the names of the input signals, output
+        signals, and states to the sampled system.
 
     Returns
     -------
     sysd : linsys
         Discrete time system, with sampling rate Ts
 
+    Additional Parameters
+    ---------------------
+    inputs : int, list of str or None, optional
+        Description of the system inputs.  If not specified, the origional
+        system inputs are used.  See :class:`NamedIOSystem` for more
+        information.
+    outputs : int, list of str or None, optional
+        Description of the system outputs.  Same format as `inputs`.
+    states : int, list of str, or None, optional
+        Description of the system states.  Same format as `inputs`. Only
+        available if the system is :class:`StateSpace`.
+
     Notes
     -----
-    See `TransferFunction.sample` and `StateSpace.sample` for
+    See :meth:`StateSpace.sample` or :meth:`TransferFunction.sample` for
     further details.
 
     Examples
     --------
     >>> sysc = TransferFunction([1], [1, 2, 1])
-    >>> sysd = sample_system(sysc, 1, method='matched')
+    >>> sysd = sample_system(sysc, 1, method='bilinear')
     """
 
     # Make sure we have a continuous time system
     if not isctime(sysc):
         raise ValueError("First argument must be continuous time system")
 
-    return sysc.sample(Ts, method, alpha)
+    return sysc.sample(Ts,
+        method=method, alpha=alpha, prewarp_frequency=prewarp_frequency,
+        name=name, copy_names=copy_names, **kwargs)
 
 
-def c2d(sysc, Ts, method='zoh'):
-    '''
-    Return a discrete-time system
+def c2d(sysc, Ts, method='zoh', prewarp_frequency=None):
+    """
+    Convert a continuous time system to discrete time by sampling
 
     Parameters
     ----------
-    sysc: LTI (StateSpace or TransferFunction), continuous
-        System to be converted
+    sysc : LTI (:class:`StateSpace` or :class:`TransferFunction`)
+        Continuous time system to be converted
+    Ts : float > 0
+        Sampling period
+    method : string
+        Method to use for conversion, e.g. 'bilinear', 'zoh' (default)
+    prewarp_frequency : real within [0, infinity)
+        The frequency [rad/s] at which to match with the input continuous-
+        time system's magnitude and phase (only valid for method='bilinear')
 
-    Ts: number
-        Sample time for the conversion
+    Returns
+    -------
+    sysd : LTI of the same class
+        Discrete time system, with sampling rate Ts
 
-    method: string, optional
-        Method to be applied,
-        'zoh'        Zero-order hold on the inputs (default)
-        'foh'        First-order hold, currently not implemented
-        'impulse'    Impulse-invariant discretization, currently not implemented
-        'tustin'     Bilinear (Tustin) approximation, only SISO
-        'matched'    Matched pole-zero method, only SISO
-    '''
+    Notes
+    -----
+    See :meth:`StateSpace.sample` or :meth:`TransferFunction.sample`` for
+    further details.
+
+    Examples
+    --------
+    >>> sysc = TransferFunction([1], [1, 2, 1])
+    >>> sysd = sample_system(sysc, 1, method='bilinear')
+    """
+
     #  Call the sample_system() function to do the work
-    sysd = sample_system(sysc, Ts, method)
-
-    # TODO: is this check needed?  If sysc is  StateSpace, sysd is too?
-    if isinstance(sysc, StateSpace) and not isinstance(sysd, StateSpace):
-        return _convertToStateSpace(sysd)       # pragma: no cover
+    sysd = sample_system(sysc, Ts,
+        method=method, prewarp_frequency=prewarp_frequency)
 
     return sysd

@@ -1,5 +1,8 @@
+sphinx>=3.4
 numpy
 scipy
 matplotlib
 sphinx_rtd_theme
 numpydoc
+ipykernel
+nbsphinx
