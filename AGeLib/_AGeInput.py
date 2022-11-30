@@ -71,9 +71,12 @@ class Float(_TypeWidget):
             self.SpinBox = self.addWidget(DoubleSpinBox(self),0,1)
             self.SpinBox.setDecimals(10)
             try:
-                self.SpinBox.setStepType(self.SpinBox.AdaptiveDecimalStepType)
+                try:
+                    self.SpinBox.setStepType(self.SpinBox.AdaptiveDecimalStepType)
+                except:
+                    self.SpinBox.setStepType(self.SpinBox.StepType.AdaptiveDecimalStepType)
             except:
-                self.SpinBox.setStepType(self.SpinBox.StepType.AdaptiveDecimalStepType)
+                ExceptionOutput()
         if unit:
             self.SpinBox.setSuffix(f" {unit}")
         if min_:
