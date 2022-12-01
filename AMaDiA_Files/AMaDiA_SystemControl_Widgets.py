@@ -321,12 +321,12 @@ class MplWidget_CONTROL_single_plot(AGeGW.MplWidget):
         self.Bode = False
         self.FuncLabel = ""
         self.Title = "Doubleclick on a control plot to display it here"
-
+        
         self.Grid = QtWidgets.QGridLayout(self)
         self.Grid.setContentsMargins(0, 0, 0, 0)
         self.Grid.setSpacing(0)
         self.Grid.setObjectName("Grid")
-
+        
         ##self.ScrollWidgetC = QtWidgets.QWidget(self)
         ##self.ScrollWidgetCGrid = QtWidgets.QGridLayout(self.ScrollWidgetC)
         ##self.ScrollWidgetCGrid.setContentsMargins(0, 0, 0, 0)
@@ -347,7 +347,7 @@ class MplWidget_CONTROL_single_plot(AGeGW.MplWidget):
         self.ScrollGrid.setContentsMargins(0, 0, 0, 0)
         self.ScrollGrid.setSpacing(0)
         self.ScrollGrid.setObjectName("ScrollGrid")
-
+        
         self.Canvas = MplCanvas_CONTROL_single_plot()
         self.x_from_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
         self.x_to_input = QtWidgets.QDoubleSpinBox(self.ScrollWidgetContents)
@@ -403,7 +403,16 @@ class MplWidget_CONTROL_single_plot(AGeGW.MplWidget):
         ##self.ScrollWidgetCGrid.addWidget(self.ScrollWidget,1,0)
 
         self.Layout = QtWidgets.QVBoxLayout()         # Set box for plotting
+        #self.Layout.addWidget(self.Canvas)
+        ##
+        includeNavBar = True
+        if includeNavBar:
+            from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT 
+            self.NavBar = NavigationToolbar2QT(self.Canvas, self) #mpl control
+            self.Layout.addWidget(self.NavBar) #mpl control
+            #self.Canvas.mpl_connect('key_press_event', self.on_key_press) #mpl control
         self.Layout.addWidget(self.Canvas)
+        ##
         self.plotW = QtWidgets.QWidget(self)
         self.plotW.setLayout(self.Layout)
         self.plotW.layout().setContentsMargins(0,0,0,0)
