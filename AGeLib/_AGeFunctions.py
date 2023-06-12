@@ -38,7 +38,7 @@ def cTimeFullStr(separator = None):
     If given uses `separator` to separate the values\n
     %Y.%m.%d-%H:%M:%S or separator.join(['%Y','%m','%d','%H','%M','%S'])
     """
-    if separator == None:
+    if separator is None:
         return str(datetime.datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
     else:
         TheFormat = separator.join(['%Y','%m','%d','%H','%M','%S'])
@@ -83,7 +83,7 @@ def recolourIcon(icon,colour=None,size=128):
     Remember to update the colour of the icon when the app's colour palette changes if you use a colour of one of the 3 palettes or any of the colour dictionaries of the app. \n
     To do this it is recommended to make a method that sets the icons and connect it to the global signal: `App().S_ColourChanged.connect(lambda: self.recolourIcons())`
     """
-    if colour == None:
+    if colour is None:
         colour = App().Palette1.color(QtGui.QPalette.Active,QtGui.QPalette.Text)
     pixmap = icon.pixmap(size)
     mask = pixmap.createMaskFromColor(QtGui.QColor('transparent'), QtCore.Qt.MaskInColor)
@@ -105,6 +105,11 @@ def getPath(mustExist=False):
     else:
         raise FileNotFoundError("The file name was empty")
 
+def isInstanceOrSubclass(obj, cls):
+    if isinstance(obj, type):
+        return issubclass(obj, cls)
+    else:
+        return isinstance(obj, cls)
 #endregion
 
 

@@ -61,7 +61,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
 
  ##################### Layout Attempt
   #    def setMenuBar(self, MenuBar):
-  #        if MenuBar == None:
+  #        if MenuBar is None:
   #            try:
   #                self.AWWF_CentralWidget_layout.addWidget(QtWidgets.QWidget(self),0,0)
   #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
@@ -77,7 +77,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
   #        return self.AWWF_p_MenuBar
   #
   #    def setCentralWidget(self, CentralWidget):
-  #        if CentralWidget == None:
+  #        if CentralWidget is None:
   #            try:
   #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_CentralWidget)
   #            except:
@@ -92,7 +92,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
   #        return self.AWWF_p_CentralWidget
   #        
   #    def setStatusBar(self, StatusBar):
-  #        if StatusBar == None:
+  #        if StatusBar is None:
   #            try:
   #                self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_StatusBar)
   #            except:
@@ -110,7 +110,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
  ##################### MenuBar/CentralWidget/StatusBar/ToolBar
 
     def setMenuBar(self, MenuBar):
-        if MenuBar == None:
+        if MenuBar is None:
             try:
                 self.AWWF_CentralWindow.setMenuBar(None)
                 #self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
@@ -133,7 +133,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         return self.AWWF_CentralWindow.menuBar()
 
     def setCentralWidget(self, CentralWidget):
-        if CentralWidget == None:
+        if CentralWidget is None:
             try:
                 self.AWWF_CentralWindow.setCentralWidget(None)
             except:
@@ -148,7 +148,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         return self.AWWF_CentralWindow.centralWidget()
         
     def setStatusBar(self, StatusBar):
-        if StatusBar == None:
+        if StatusBar is None:
             try:
                 self.AWWF_CentralWindow.setStatusBar(None)
             except:
@@ -164,7 +164,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
 
     # ToolBar #TODO:Expand
     def addToolBar(self, *ToolBar):
-        if ToolBar == None:
+        if ToolBar is None:
             try:
                 self.AWWF_CentralWindow.addToolBar(None)
                 #self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
@@ -175,7 +175,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         return TB
 
     def insertToolBar(self, *ToolBar):
-        if ToolBar == None:
+        if ToolBar is None:
             try:
                 self.AWWF_CentralWindow.insertToolBar(None)
                 #self.AWWF_CentralWidget_layout.removeWidget(self.AWWF_p_MenuBar)
@@ -363,14 +363,14 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
                 scale = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos()).logicalDotsPerInchX()/96.0
             else:
                 scale = screen.logicalDotsPerInchX()/96.0
-            if h == None:
+            if h is None:
                 if type(w) in [list,tuple]:
                     w, h = scale*w[0], scale*w[1]
                 else:
                     w *= scale
             else:
                 w, h = scale*w, scale*h
-        if h == None:
+        if h is None:
             if type(w) in [list,tuple]:
                 super(AWWF, self).resize(int(w[0]),int(w[1]))
             else:
@@ -463,7 +463,7 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
         self.IncludeErrorButton, self.IncludeAdvancedCB = IncludeErrorButton, IncludeAdvancedCB
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setObjectName("TopBar")
-        if self.layout() == None:
+        if self.layout() is None:
             self.gridLayout = QtWidgets.QGridLayout(self)
             self.gridLayout.setContentsMargins(0, 0, 0, 0)
             self.gridLayout.setSpacing(0)
@@ -1034,7 +1034,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
 
     def mousePressEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
-        if event.button() == QtCore.Qt.LeftButton and self.actionAt(event.pos())==None and self.moving == False and self.activeAction()==None:
+        if event.button() == QtCore.Qt.LeftButton and self.actionAt(event.pos()) is None and self.moving == False and self.activeAction() is None:
             self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
             self.moving = True
             self.offset = event.globalPos()-self.window().geometry().topLeft()
@@ -1152,7 +1152,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
                 self.offset = event.globalPos()-self.window().geometry().topLeft()
             self.window().move(event.globalPos()-self.offset)
         else:
-            if self.actionAt(event.pos())!=None:
+            if self.actionAt(event.pos()) is not None:
                 self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
             else:
                 self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -1171,7 +1171,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
 
     def mousePressEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
-        if event.button() == QtCore.Qt.LeftButton and self.moving == False and self.childAt(event.pos())==None:
+        if event.button() == QtCore.Qt.LeftButton and self.moving == False and self.childAt(event.pos()) is None:
             event.accept()
             self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
             self.moving = True
@@ -1289,7 +1289,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
                 self.offset = event.globalPos()-self.window().geometry().topLeft()
             self.window().move(event.globalPos()-self.offset)
         else:
-            #if self.childAt(event.pos())==None:
+            #if self.childAt(event.pos()) is None:
             #    self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             #else: # Does not work... Maybe all widgets need self.setMouseTracking(True) ?
             #    self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
@@ -1305,7 +1305,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
  #        self.offset = 0
  #
  #    def mousePressEvent(self,event):
- #        if event.button() == QtCore.Qt.LeftButton and self.tabAt(event.pos())==None and self.moving == False:
+ #        if event.button() == QtCore.Qt.LeftButton and self.tabAt(event.pos()) is None and self.moving == False:
  #            self.setCursor(QtGui.QCursor(QtCore.Qt.ClosedHandCursor))
  #            self.moving = True
  #            self.offset = event.globalPos()-self.window().geometry().topLeft()
@@ -1332,7 +1332,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
  #        if self.moving:
  #            self.window().move(event.globalPos()-self.offset)
  #        else:
- #            if self.tabAt(event.pos())!=None:
+ #            if self.tabAt(event.pos()) is not None:
  #                self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
  #            else:
  #                self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))

@@ -117,7 +117,7 @@ class NotificationInfoWidget(ListWidget):
             self.clear()
             for k,v in Notification.items():
                 try:
-                    if v != None:
+                    if v is not None:
                         item = QtWidgets.QListWidgetItem()
                         item.setText(k+str(v))
                         self.addItem(item)
@@ -546,7 +546,7 @@ class _BrushDictWidget(QtWidgets.QTableWidget): #TODO
             y+=1
         self.setVerticalHeaderLabels(labels)
 
-class OptionsWidget_1_Appearance(QtWidgets.QWidget):
+class OptionsWidget_1_Appearance(QtWidgets.QWidget): #CRITICAL: Conform to naming convention: methods camelCase, members PascalCase
     """
     This widget allows the user to change the Font and the colourpalette of the application. \n
     It furthermore allows the user to create, save and load their own colour palette. \n
@@ -583,10 +583,10 @@ class OptionsWidget_1_Appearance(QtWidgets.QWidget):
         self.fontComboBox = QtWidgets.QFontComboBox(self)
         self.fontComboBox.currentFontChanged.connect(self.SetFontFamily)
         self.layout().addWidget(self.fontComboBox,0,1)
-        self.ColourListLabel = QtWidgets.QLabel(self)
+        self.ColourListLabel = QtWidgets.QLabel(self) #TODO: Rename to ThemeListLabel
         self.ColourListLabel.setText("Choose a colour theme:")
         self.layout().addWidget(self.ColourListLabel,1,0)
-        self.ColourList = QtWidgets.QComboBox(self)
+        self.ColourList = QtWidgets.QComboBox(self) #TODO: Rename to ThemeList
         self.ColourList.addItems(self.LoadPaletteList())
         self.ColourList.setCurrentText("Dark")
         if versionParser(QtCore.qVersion())>=versionParser("5.14"):
@@ -718,7 +718,7 @@ class OptionsWidget_1_Appearance(QtWidgets.QWidget):
         #self.NotificationColours = []
         #self.MiscColours = []
         #self.LexerColours = []
-        
+    
     def LoadPaletteList(self):
         App().refreshThemeList()
         return list(App().Themes.keys())
@@ -749,7 +749,11 @@ class OptionsWidget_1_Appearance(QtWidgets.QWidget):
         except:
             NC(1,"Exception while loading colour palette",exc=sys.exc_info(),func="MainApp.recolour")
         return ColourList
-        
+    
+    def refreshThemeList(self):
+        self.ColourList.clear()
+        self.ColourList.addItems(self.LoadPaletteList())
+    
     def MakeTheme(self):
         #TODO: Should this reload be here? If so: Shouldn't the list display "custom" or something like that?
         #       And if not there must be a special button for reloading the list (though there should be a button for this anyways...)
@@ -803,7 +807,7 @@ class OptionsWidget_1_Appearance(QtWidgets.QWidget):
         #window.AMaDiA_About_Window_Window.TextBrowser.setText(app.optionWindow.ColourPicker.PaletteToPython(AGeColour.Colours[app.optionWindow.ColourPicker.LoadPaletteList()[0]],app.optionWindow.ColourPicker.LoadPaletteList()[0])[0])
         try:
             Palette1, Palette2, Palette3, _PenColours, _NotificationColours, _MiscColours, _LexerColours = Palette()
-            if _LexerColours == None or len(_LexerColours)<5: raise Exception("_LexerColours is either None or has less than 5 Elements")
+            if _LexerColours is None or len(_LexerColours)<5: raise Exception("_LexerColours is either None or has less than 5 Elements")
         except:
             Palette1, Palette2, Palette3, _PenColours, _NotificationColours, _MiscColours = Palette()
             _LexerColours =  {
@@ -862,10 +866,10 @@ class OptionsWidget_1_Appearance(QtWidgets.QWidget):
         return Text,FunctionName,Name
     
     def SavePalette(self,Name=None): #TODO:OVERHAUL
-        if Name == None:
+        if Name is None:
             Name = QtWidgets.QInputDialog.getText(self,"Palette Name","What should the palette be called?")[0].strip()
             # VALIDATE: Ensure that the names can not break the dictionary
-            if Name == None or Name == "":
+            if Name is None or Name == "":
                 NC(2,"SavePalette has been cancelled")
                 return ""
         Text = AGeToPy.formatObject(self.ThemeWidget.getDict(Name))
@@ -929,10 +933,10 @@ class OptionsWidget_1_Appearance(QtWidgets.QWidget):
             NC(1,"Could not save",exc=sys.exc_info())
         return Text
         # window.AMaDiA_About_Window_Window.TextBrowser.setText(app.optionWindow.ColourPicker.SavePalette("Test"))
-        if Name == None:
+        if Name is None:
             Name = QtWidgets.QInputDialog.getText(self,"Palette Name","What should the palette be called?")[0].strip()
             # VALIDATE: Ensure that the names can not break the dictionary
-            if Name == None or Name == "":
+            if Name is None or Name == "":
                 NC(2,"SavePalette has been cancelled")
                 return ""
         #Text = "from PyQt5 import QtCore, QtGui\n\ndef NewColour():\n    palette1 = QtGui.QPalette()\n    palette2 = QtGui.QPalette()\n    palette3 = QtGui.QPalette()"

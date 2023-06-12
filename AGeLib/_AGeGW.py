@@ -43,11 +43,11 @@ class MplWidget(QtWidgets.QWidget):
         self.Cycler = App().mplCycler
     
     def setColour(self,BG=None,FG=None,Cycler=None):
-        if BG!=None:
+        if BG is not None:
             self.background_Colour = BG
-        if FG!=None:
+        if FG is not None:
             self.TextColour = FG
-        if type(Cycler)!=None:
+        if Cycler is not None:
             self.Cycler = Cycler
         self.HexcolourText = '#%02x%02x%02x' % (int(self.TextColour[0]*255),int(self.TextColour[1]*255),int(self.TextColour[2]*255))
         try:
@@ -516,7 +516,7 @@ class MplWidget_LaTeX(MplWidget): #CRITICAL: Verify (should already be in): Make
         
     def displayRaw(self, Text_L, Text_N, Font_Size = None, Use_LaTeX = False):
         """Returns a notification with all relevant information"""
-        if Font_Size == None:
+        if Font_Size is None:
             Font_Size = App().font().pointSize()
         self.LaTeX_L = Text_L
         self.LaTeX_N = Text_N
@@ -791,7 +791,7 @@ class GCanvas_RGB(GCanvas_Label): # TODO
         else:
             array = np.zeros((400,400,3))
         if type(a1) != type(None):
-            if a1m == None:
+            if a1m is None:
                 a1m = [a1.min(),a1.max()]
             else:
                 a1m = np.minimum(a1m, np.full_like(a1m,a1m[1]))
@@ -799,7 +799,7 @@ class GCanvas_RGB(GCanvas_Label): # TODO
             a1 = (a1-a1m[0])/(a1m[1]-a1m[0])*255
             if self.colourDict[a1c] != -1: array[:,:,self.colourDict[a1c.lower()]] = a1
         if type(a2) != type(None):
-            if a2m == None:
+            if a2m is None:
                 a2m = [a2.min(),a2.max()]
             else:
                 a2m = np.minimum(a2m, np.full_like(a2m,a2m[1]))
@@ -807,7 +807,7 @@ class GCanvas_RGB(GCanvas_Label): # TODO
             a2 = (a2-a2m[0])/(a2m[1]-a2m[0])*255
             if self.colourDict[a2c] != -1: array[:,:,self.colourDict[a2c.lower()]] = a2
         if type(a3) != type(None):
-            if a3m == None:
+            if a3m is None:
                 a3m = [a3.min(),a3.max()]
             else:
                 a3m = np.minimum(a3m, np.full_like(a3m,a3m[1]))

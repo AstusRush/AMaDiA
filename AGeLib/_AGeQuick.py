@@ -56,7 +56,7 @@ def QuickSetup(window_class,window_name,app_class=None):
     TODO: Make a better documentation for this function...
     """
     print(cTimeSStr(),": ",window_name,"Window Startup")
-    if app_class==None:
+    if app_class is None:
         app_class = AGeApp
     app = app_class([])
     #app.setStyle("fusion") #CLEANUP: Already part of the main apps init

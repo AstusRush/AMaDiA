@@ -1,11 +1,13 @@
 
 from ._AGeInput import(
-    Wildcard,
+    _TypeWidget,
     Int,
     Float,
     Bool,
     Str,
+    Name,
     Path,
     List,
     Array,
+    Wildcard,
 )

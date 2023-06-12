@@ -44,7 +44,7 @@ def cTimeFullStr(separator = None):
     If given uses `separator` to separate the values\n
     %Y.%m.%d-%H:%M:%S or separator.join(['%Y','%m','%d','%H','%M','%S'])
     """
-    if separator == None:
+    if separator is None:
         return str(datetime.datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
     else:
         TheFormat = separator.join(['%Y','%m','%d','%H','%M','%S'])
@@ -69,12 +69,12 @@ def ExceptionOutput(exc_info = None, extraInfo = True):
     """
     try:
         if False: #CLEANUP: The new code (in the else case) seems to be stable; therefore, this old code can be removed.
-            if exc_info == None:
+            if exc_info is None:
                 exc_info = True
             return NC(exc=exc_info)
         else:
             print(cTimeSStr(),":")
-            if exc_info==None:
+            if exc_info is None:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
             else:
                 exc_type, exc_obj, exc_tb = exc_info
@@ -149,7 +149,7 @@ class NC: # Notification Class
     Only `lvl=int`,`time=datetime.datetime.now()`,`send=bool`,`unique=bool`, and `exc=True or sys.exc_info()` need a specific data type.
     Everything else will be stored (msg will be converted into a string before storing). The access methods will return a string (and cast all input to a string before saving)
     but the variables can still be accessed directly with the data type that was given to the init.  \n
-    Please note that `err` and `tb` are ignored when `exc != None` as they will be extracted from the exception.  \n
+    Please note that `err` and `tb` are ignored when `exc is not None` as they will be extracted from the exception.  \n
     `tb` should be a string containing the callstack or `True` to generate a callstack. \n \n
     Setting `log=False` will suppress the S_New_Notification signal, prevent the notification to appear in the tooltip of following notifications
     and cause the notification to not be saved in the Notification_List. \n
@@ -182,7 +182,7 @@ class NC: # Notification Class
         self._was_send = False
         self.log = log
         try:
-            self._time = datetime.datetime.now() if time == None else time
+            self._time = datetime.datetime.now() if time is None else time
             self.Time = self._time.strftime('%H:%M:%S')
             self.DplStr = DplStr
             self.Window = win
@@ -200,19 +200,19 @@ class NC: # Notification Class
                     if type(lvl)==str:
                         self.level = 1
                         self.Message = lvl
-                    elif msg==None and type(lvl) == tuple:
+                    elif msg is None and type(lvl) == tuple:
                         self.level, self.Message = lvl[0], lvl[1]
                     else:
-                        self.level = 1 if lvl == None else lvl
-                        self.Message = str(msg) if msg!=None else None
-                except: # Catches the case that "msg" is of a data type that can not perform the compare "msg==None"
+                        self.level = 1 if lvl is None else lvl
+                        self.Message = str(msg) if msg is not None else None
+                except: # Catches the case that "msg" is of a data type that can not perform the compare "msg is None"
                     if type(lvl)==str:
                         self.level = 1
                         self.Message = lvl
                     elif type(msg)==type(None) and type(lvl) == tuple:
                         self.level, self.Message = lvl[0], lvl[1]
                     else:
-                        self.level = 1 if lvl == None else lvl
+                        self.level = 1 if lvl is None else lvl
                         self.Message = str(msg) if type(msg)!=type(None) else None
                 #self.ErrorTraceback = str(self.exc_type)+"  in "+str(fName)+"  line "+str(self.exc_tb.tb_lineno)+"\n\n"+"".join(traceback.format_tb(self.exc_tb))#str(traceback.format_exc())#[:-1]) # maybe: Use traceback.format_exc() to get full traceback or something like traceback.extract_stack()[:-1] ([:-1] removes the NC.__init__())
                 self.ErrorTraceback = "".join(traceback.format_exception(self.exc_type, self.exc_obj, self.exc_tb))
@@ -232,19 +232,19 @@ class NC: # Notification Class
                     if type(lvl)==str:
                         self.level = 3
                         self.Message = lvl
-                    elif msg==None and type(lvl) == tuple:
+                    elif msg is None and type(lvl) == tuple:
                         self.level, self.Message = lvl[0], lvl[1]
                     else:
-                        self.level = 3 if lvl == None else lvl
-                        self.Message = str(msg) if msg!=None else None
-                except: # Catches the case that "msg" is of a data type that can not perform the compare "msg==None"
+                        self.level = 3 if lvl is None else lvl
+                        self.Message = str(msg) if msg is not None else None
+                except: # Catches the case that "msg" is of a data type that can not perform the compare "msg is None"
                     if type(lvl)==str:
                         self.level = 3
                         self.Message = lvl
                     elif type(msg)==type(None) and type(lvl) == tuple:
                         self.level, self.Message = lvl[0], lvl[1]
                     else:
-                        self.level = 3 if lvl == None else lvl
+                        self.level = 3 if lvl is None else lvl
                         self.Message = str(msg) if type(msg)!=type(None) else None
                 self.Error = err
                 if tb == True:
@@ -267,7 +267,7 @@ class NC: # Notification Class
             self._init_Values()
             print(cTimeSStr(),": An exception occurred while trying to create a Notification")
             print(inst)
-            self._time = datetime.datetime.now() if time == None else time
+            self._time = datetime.datetime.now() if time is None else time
             self.Time = self._time.strftime('%H:%M:%S')
             self.Message = "An exception occurred while trying to create a Notification"
             self.exc_obj = inst
@@ -313,7 +313,7 @@ class NC: # Notification Class
     def print(self):
         """Prints this notification to the console"""
         print("\n",self.Level, "at",self.Time,"\nMessage:",self.Message)
-        if self.Error != None:
+        if self.Error is not None:
             print("Error:",self.Error,"Traceback:",self.ErrorTraceback,"\n")
   #---------- items, unpack ----------#
     def items(self):
@@ -321,7 +321,7 @@ class NC: # Notification Class
         Returns self.itemDict.items()   \n
         self.itemDict contains all relevant data about this notification.  \n
         Please note that not all values are strings and should be converted before diplaying them.
-        This allows `if v!=None:` to filter out all empty entries.    \n
+        This allows `if v is not None:` to filter out all empty entries.    \n
         The keys already end with `:\\n` thus it is advised to simply use `k+str(v)` for formatting.  \n
         For an example how to use this method see the source code of `NotificationInfoWidget`.
         """
@@ -340,7 +340,7 @@ class NC: # Notification Class
         Returns int(level)  \n
         An int can be given to change the level
         """
-        if level != None:
+        if level is not None:
             self.level = level
             self.GenerateLevelName()
         return self.level
@@ -351,9 +351,9 @@ class NC: # Notification Class
         Returns str(Message)  \n
         A str can be given to change the Message
         """
-        if message != None:
+        if message is not None:
             self.Message = str(message)
-        if self.Message == None and self.Error != None:
+        if self.Message is None and self.Error is not None:
             return str(self.Error)
         else:
             return str(self.Message)
@@ -365,9 +365,9 @@ class NC: # Notification Class
         DplStr is the string that is intended to be displayed directly   \n
         A str can be given to change the DplStr
         """
-        if DplStr != None:
+        if DplStr is not None:
             self.DplStr = str(DplStr)
-        elif self.DplStr == None:
+        elif self.DplStr is None:
             if self.level == 10:
                 self.DplStr = self.m()
             else:
@@ -381,9 +381,9 @@ class NC: # Notification Class
         TTStr is the string that is intended to be displayed as the tool tip   \n
         A str can be given to change the TTStr
         """
-        if TTStr != None:
+        if TTStr is not None:
             self.TTStr = str(TTStr)
-        elif self.TTStr == None:
+        elif self.TTStr is None:
             if self.level == 10:
                 self.TTStr = self.Level + " at " + self.t()
             else:
@@ -396,7 +396,7 @@ class NC: # Notification Class
         Returns the time as %H:%M:%S  \n
         datetime.datetime.now() can be given to change the time
         """
-        if time != None:
+        if time is not None:
             self._time = time
             self.Time = self._time.strftime('%H:%M:%S')
         return self.Time
@@ -407,9 +407,9 @@ class NC: # Notification Class
         Returns str(Error)  \n
         strings can be given to change the Error and ErrorTraceback
         """
-        if Error != None:
+        if Error is not None:
             self.Error = str(Error)
-        if ErrorTraceback != None:
+        if ErrorTraceback is not None:
             self.ErrorTraceback = str(ErrorTraceback)
         return str(self.Error)
 
@@ -419,7 +419,7 @@ class NC: # Notification Class
         Returns str(ErrorTraceback)  \n
         A str can be given to change the ErrorTraceback
         """
-        if ErrorTraceback != None:
+        if ErrorTraceback is not None:
             self.ErrorTraceback = str(ErrorTraceback)
         return str(self.ErrorTraceback)
 
@@ -430,7 +430,7 @@ class NC: # Notification Class
         A str can be given to change the Function  \n
         Function is the name of the function from which this notification originates
         """
-        if func != None:
+        if func is not None:
             self.Function = str(func)
         return str(self.Function)
 
@@ -441,7 +441,7 @@ class NC: # Notification Class
         A str can be given to change the Window  \n
         Window is the name of the window from which this notification originates
         """
-        if win != None:
+        if win is not None:
             self.Window = str(win)
         return str(self.Window)
 
@@ -452,7 +452,7 @@ class NC: # Notification Class
         A str can be given to change the Input  \n
         Input is the (user-)input that caused this notification
         """
-        if input != None:
+        if input is not None:
             self.Input = str(input)
         return str(self.Input)
   #---------- GenerateLevelName ----------#
@@ -495,13 +495,13 @@ class NC: # Notification Class
             return "Could not generate Level Name"
   #---------- __...__ ----------#
     def __add__(self,other):
-        if self.Error != None:
+        if self.Error is not None:
             return str(self.Error) + str(other)
         else:
             return str(self.Message) + str(other)
 
     def __radd__(self,other):
-        if self.Error != None:
+        if self.Error is not None:
             return str(other) + str(self.Error)
         else:
             return str(other) + str(self.Message)
@@ -510,8 +510,8 @@ class NC: # Notification Class
         return str(self.Message)
 
     def __str__(self):
-        if self.Error != None:
-            if self.Message == None:
+        if self.Error is not None:
+            if self.Message is None:
                 return "Exception at "+str(self.Time)+":\n"+str(self.Error)
             else:
                 return str(self.Level)+" at "+str(self.Time)+":\n"+str(self.Message)+"\n"+str(self.Error)

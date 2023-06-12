@@ -12,6 +12,7 @@ from . import _AGeWidgets as AGeWidgets
 
 import math
 import typing
+import weakref
 
 #region Helper Functions
 def roundToN(x,n):
@@ -177,8 +178,9 @@ class Str(_TypeWidget):
         super().__init__(parent)
         self.NameLabel = self.addWidget(QtWidgets.QLabel(displayname, self),0,0)
         self.NameLabel.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,QtWidgets.QSizePolicy.Policy.MinimumExpanding)
-        self.Input = self.addWidget(QtWidgets.QLineEdit(self),0,1)
-        self.Input.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        #self.Input = self.addWidget(QtWidgets.QLineEdit(self),0,1)
+        self.Input = self.addWidget(AGeWidgets.LineEdit(self),0,1)
+        #self.Input.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         self.Input.setText(default)
     
     def get(self) -> str:
@@ -192,6 +194,16 @@ class Str(_TypeWidget):
     
     def copyFrom(self, other:'Str'):
         self.Input.setText(other.Input.text())
+
+class Name(Str):
+    def __init__(self, parent: 'QtWidgets.QWidget', displayname:str, object_:'object', attribute:'str') -> None:
+        self.objectRef:'weakref.ref[object]' = weakref.ref(object_)
+        self.AttributeName = attribute
+        super().__init__(parent, displayname=displayname, default=getattr(object_,attribute))
+        self.Input.textChanged.connect(lambda: self.updateName())
+    
+    def updateName(self):
+        setattr(self.objectRef(), self.AttributeName, self.get())
 
 class Wildcard(_TypeWidget): #MAYBE: Multiline support?
     def __init__(self, parent: 'QtWidgets.QWidget', displayname:str, default:str) -> None:
