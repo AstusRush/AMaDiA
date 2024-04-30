@@ -48,14 +48,15 @@ On Windows:<br/>
    On OSX [???]:<br/>
  * I don't have access to OSX and am not even sure how good AMaDiA runs on it (it should work flawlessy?)... Sorry but I can not help you...<br/>
  * If anyone has a good description how to easily install/update+run a python script on OSX feel free to inform me so I can add it here<br/>
+ * Here https://github.com/AstusRush/AMaDiA/issues/2 is a description by someone who installed it on OSX
 
 <br/><br/>
 # Screenshot
 Screenshot Version 0.15.7.1<br/>
 <img src="/AMaDiA v0.15.7.1 Demo.png" alt="Demo Picture"/>
 <br/><br/>
-# Short Term Roadmap
-Planned features for near future (order reflects priority):<br/>
+# "Short" Term Roadmap
+Planned features for near future (order reflects priority) (note that the word "short" is very relative here):<br/>
 - Plot 3D and complex functions<br/>
 - Improve System Control Window<br/>
 - (Continuous:) Better parser to allow a more flexible input<br/>
