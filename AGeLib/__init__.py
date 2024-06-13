@@ -50,6 +50,7 @@ from . import AGeQuick
 from . import AGeIDE
 from . import AGeToPy
 from . import AGeInput
+from . import AGeHelp
 from .AGeCore import *
 #endregion Import
 

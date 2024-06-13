@@ -34,11 +34,11 @@ class QuickWindow(AWWF):
         self.CentralWidget.setLayout(self.CentralLayout)
         self.setCentralWidget(self.CentralWidget)
         self.init()
-
+    
     def init(self):
         "Reimplement this as your init"
         pass
-
+    
     def addWidget(self,widget):
         # type: (QtWidgets.QWidget) -> QtWidgets.QWidget
         """

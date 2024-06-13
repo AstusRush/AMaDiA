@@ -132,33 +132,42 @@ if v: # If a specific Qt distribution is requested check if it can be imported
 
 # If no specific Qt distribution is requested we or the requested one can not be imported we choose one
 if not v: #REMINDER: PyQt6 should be preferred over PyQt5 as soon as QWebwidgets and MatPlotLib are supported... Or PySide6 once it supports Qsci (if ever...)
+    print("No Qt version was specified.",end=" ")
     try:
         import PyQt5
     except:
         v = False
+        print("Could not find PyQt5.",end=" ")
     else:
         v = "PyQt5"
+        print("Found PyQt5 so it will be used.")
 if not v:
     try:
         import PyQt6
     except:
         v = False
+        print("Could not find PyQt6.",end=" ")
     else:
         v = "PyQt6"
+        print("Found PyQt6 so it will be used.")
 if not v:
     try:
         import PySide6
     except:
         v = False
+        print("Could not find PySide6.",end=" ")
     else:
         v = "PySide6"
+        print("Found PySide6 so it will be used.")
 if not v:
     try:
         import PySide2
     except:
         v = False
+        print("Could not find PySide2.")
     else:
         v = "PySide2"
+        print("Found PySide2 so it will be used.")
 
 
 try:

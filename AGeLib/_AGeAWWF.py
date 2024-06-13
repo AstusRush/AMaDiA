@@ -43,9 +43,9 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         self.StandardSize = (900, 500)
         self.LastOpenState = self.showNormal
         self.OnTop = False
-
+        
         self.installEventFilter(self)
-
+        
         if IncludeTopBar:
             self.TopBar = TopBar_Widget(self, initTopBar, IncludeErrorButton = self.IncludeErrorButton)
             self.MenuBar = MMenuBar(self)
@@ -58,7 +58,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             self.setStatusBar(self.Statusbar)
             self.Statusbar.setSizeGripEnabled(False)
             self.windowTitleChanged.connect(self.Statusbar.setWindowTitle)
-
+    
  ##################### Layout Attempt
   #    def setMenuBar(self, MenuBar):
   #        if MenuBar is None:
@@ -108,7 +108,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
   #
   #
  ##################### MenuBar/CentralWidget/StatusBar/ToolBar
-
+    
     def setMenuBar(self, MenuBar):
         if MenuBar is None:
             try:
@@ -128,10 +128,10 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         #except:
         #    pass
         #return r
-
+    
     def menuBar(self):
         return self.AWWF_CentralWindow.menuBar()
-
+    
     def setCentralWidget(self, CentralWidget):
         if CentralWidget is None:
             try:
@@ -143,7 +143,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             CentralWidget.setCursor(CentralWidget.cursor())
         self.AWWF_p_CentralWidget = CentralWidget
         return True
-
+    
     def centralWidget(self):
         return self.AWWF_CentralWindow.centralWidget()
         
@@ -158,10 +158,10 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             StatusBar.setCursor(StatusBar.cursor())
         self.AWWF_p_StatusBar = StatusBar
         return True
-
+    
     def statusBar(self):
         return self.AWWF_CentralWindow.statusBar()
-
+    
     # ToolBar #TODO:Expand
     def addToolBar(self, *ToolBar):
         if ToolBar is None:
@@ -173,7 +173,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         else:
             TB = self.AWWF_CentralWindow.addToolBar(*ToolBar)
         return TB
-
+    
     def insertToolBar(self, *ToolBar):
         if ToolBar is None:
             try:
@@ -184,10 +184,10 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         else:
             TB = self.AWWF_CentralWindow.insertToolBar(*ToolBar)
         return TB
-
+    
     def toolBarArea(self):
         return self.AWWF_CentralWindow.toolBarArea()
-
+    
  ##################### show, restoreState and positionReset
     def hideBars(self,b):
         """
@@ -205,7 +205,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             self.Statusbar.setVisible(b)
         except:
             pass
-
+    
     def setTopBarVisible(self,b):
         if not self.BarsHidden:
             self.TopBar.setVisible(b)
@@ -217,13 +217,13 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
                 self.Statusbar.setVisible(b)
             except:
                 pass
-
+    
     def showNormal(self):
         self.setTopBarVisible(True)
         self.AWWF_CentralWidget.showFrame()
         self.TopBar.MaximizeButton.setText("🗖")
         super(AWWF, self).showNormal()
-
+    
     def show(self):
         self.setTopBarVisible(True)
         super(AWWF, self).show()
@@ -236,7 +236,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             self.TopBar.MaximizeButton.setText("🗖")
         if self.isFullScreen() and self.FullscreenHidesBars:
             self.setTopBarVisible(False)
-
+    
     def showMaximized(self):
         # Windows will not behave correctly when we try to maximize a window which does not
         # have minimize nor maximize buttons in the window frame. Windows would then ignore
@@ -275,7 +275,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
                 self.window().setGeometry(self.window().screen().availableGeometry())
             except: # For compatibility reasons try the outdated version
                 self.window().setGeometry(QtWidgets.QApplication.instance().desktop().availableGeometry(self))
-
+    
     def showFullScreen(self):
         if self.FullscreenHidesBars:
             self.setTopBarVisible(False)
@@ -284,7 +284,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         self.AWWF_CentralWidget.hideFrame()
         self.TopBar.MaximizeButton.setText("🗗")
         super(AWWF, self).showFullScreen()
-        
+    
     def restoreState(self,state,version=0):
         self.setTopBarVisible(True)
         super(AWWF, self).restoreState(state,version)
@@ -297,7 +297,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             self.TopBar.MaximizeButton.setText("🗖")
         if self.isFullScreen() and self.FullscreenHidesBars:
             self.setTopBarVisible(False)
-            
+    
     def positionReset(self):
         self.showNormal()
         QtWidgets.QApplication.instance().processEvents()
@@ -308,8 +308,8 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         #QtWidgets.QApplication.instance().processEvents()
         for _ in range(2):
             # This must be executed twice in case the window is moved between 2 screens with different scale factors:
-            #   The first move moves the window to the new screen's center. 
-            #   Then the OS rescales the window according to the dpi. When scaling the top left corner of the window is stationary 
+            #   The first move moves the window to the new screen's center.
+            #   Then the OS rescales the window according to the dpi. When scaling the top left corner of the window is stationary
             #        thus the center of the window is no longer in the center of the screen.
             #   The second move uses the new frameGeometry to correct the position.
             try:
@@ -328,7 +328,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
                 except:
                     ExceptionOutput(sys.exc_info())
         QtWidgets.QApplication.instance().processEvents()
-
+    
     def toggleFullscreen(self):
         if not self.isFullScreen():
             if self.isMaximized():
@@ -344,7 +344,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             else:
                 self.TopBar.MaximizeButton.setText("🗖")
             self.LastOpenState()
-
+    
     def resize(self, w, h=None, autoscale=True, screen = None):
         """
         w,h = width and height in pixel \n
@@ -377,7 +377,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
                 super(AWWF, self).resize(w)
         else:
             super(AWWF, self).resize(int(w),int(h))
-
+    
  ##################### eventFilter
     def eventFilter(self, source, event):
         # type: (QtWidgets.QWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
@@ -403,7 +403,10 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
                         self.show()
                         return True
             else:
-                if event.key() == QtCore.Qt.Key_F11 : # F11 to toggle Fullscreen
+                if event.key() == QtCore.Qt.Key_F1:
+                    App().showWindow_Help(self.windowTitle())
+                    return True
+                elif event.key() == QtCore.Qt.Key_F11 : # F11 to toggle Fullscreen
                     self.toggleFullscreen()
                     return True
         #    #if event.modifiers() == QtCore.Qt.MetaModifier: # Does not work on windows as the meta key is not detected this way
@@ -455,7 +458,7 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
         self.IncludeErrorButton, self.IncludeAdvancedCB = IncludeErrorButton, IncludeAdvancedCB
         if DoInit:
             self.init(IncludeMenu, IncludeFontSpinBox, IncludeErrorButton, IncludeAdvancedCB)
-
+    
     def init(self, IncludeMenu = False, IncludeFontSpinBox = False, IncludeErrorButton = False, IncludeAdvancedCB = False):
         # type: (bool,bool,bool,bool) -> None
         # TODO: restrict the height and add the Option for a QtWidgets.QSpacerItem to make the horizontal spacing work if not corner widget
@@ -577,10 +580,10 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
             self.layout().addWidget(self.Error_Label, 0, 100, 1, 1,QtCore.Qt.AlignRight)
             self.Error_Label.installEventFilter(self)
             self.Error_Label.clicked.connect(lambda: QtWidgets.QApplication.instance().showWindow_Notifications())
-
+    
     def minimize(self):
         self.window().showMinimized()
-
+    
     def toggleMinMax(self):
         if not self.window().isFullScreen():
             if self.window().isMaximized():
@@ -592,16 +595,16 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
                 self.window().LastOpenState()
             except AttributeError:
                 self.window().showMaximized()
-
+    
     def exit(self):
         self.window().close()
-
+    
     def changeFontSize(self):
         try:
             QtWidgets.QApplication.instance().setFont(PointSize = self.Font_Size_spinBox.value(), source=self.window())
         except:
             ExceptionOutput(sys.exc_info())
-        
+    
     def eventFilter(self, source, event):
         # type: (QtWidgets.QWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
         #if event.type() == 5: # QtCore.QEvent.MouseMove
@@ -643,7 +646,7 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
         elif self.IncludeErrorButton and source is self.Error_Label and event.type() == QtCore.QEvent.Enter: #==10
             QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.Error_Label.toolTip(),self.Error_Label)
         return super(TopBar_Widget, self).eventFilter(source, event)
-
+    
     def mousePressEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         if event.button() == QtCore.Qt.LeftButton:
@@ -657,7 +660,7 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
             #    self.window().move(corPos-self.window().geometry().topRight()+self.window().geometry().topLeft())
             self.moving = True
             self.offset = event.globalPos()-self.window().geometry().topLeft()
-
+    
     def mouseReleaseEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -743,7 +746,7 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
                     self.window().move(frameGm.topLeft())
             except:
                 NC(exc=sys.exc_info(),win=self.window().windowTitle(),func="TopBar_Widget.mouseReleaseEvent")
-
+    
     def mouseMoveEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         if self.moving:
@@ -763,7 +766,7 @@ class StatusBar_Widget(QtWidgets.QStatusBar):
         super(StatusBar_Widget, self).__init__(parent)
         self.WindowNameLabel = QtWidgets.QLabel(self)
         self.addPermanentWidget(self.WindowNameLabel)
-
+    
     def setWindowTitle(self, WindowTitle):
         # type: (str) -> None
         WindowTitle += " "
@@ -807,19 +810,19 @@ class Window_Frame_Widget(QtWidgets.QFrame): #IMPROVE: Maybe the resizing and mo
         self.setFrameStyle(self.Box | self.Sunken)
         self.setLineWidth(2)
         #self.setMidLineWidth(3)
-
+    
     def hideFrame(self):
         self.FrameEnabled = False
         self.setFrameStyle(self.NoFrame)
         #self.setLineWidth(1)
         #self.setMidLineWidth(3)
-
+    
     def mousePressEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         if (event.button() == QtCore.Qt.LeftButton):
             # Coordinates have been mapped such that the mouse position is relative to the upper left of the main window
             self.mPos = event.globalPos() - self.window().frameGeometry().topLeft()
-
+            
             # At the moment of mouse click, capture global position and lock the size of window for resizing
             self.global_mPos = event.globalPos()
             self.storeWidth = self.width()
@@ -848,7 +851,7 @@ class Window_Frame_Widget(QtWidgets.QFrame): #IMPROVE: Maybe the resizing and mo
                 # However, with other corners this is not so and since I chose to subtract
                 # This difference at the end for resizing, self.adjXFac and self.adjYFac should be
                 # 1 or -1 depending on whether moving the mouse in the x or y directions
-                # increases or decreases the coordinates respectively. 
+                # increases or decreases the coordinates respectively.
                 # 
                 # self.transXFac self.transYFac is to move the window over. Resizing the window does not
                 # automatically pull the window back toward your mouse. This is what
@@ -939,40 +942,40 @@ class Window_Frame_Widget(QtWidgets.QFrame): #IMPROVE: Maybe the resizing and mo
                     self.moving = True
             
             event.accept()
-
+    
     def mouseReleaseEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         self.moving = False
         self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-
+    
     def mouseMoveEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         if self.moving:
             #if (event.buttons()==QtCore.Qt.LeftButton ):
             if self.Direction == "D":
                 # Calculation of displacement. self.adjXFac=1 means normal displacement
-                # self.adjXFac=-1 means flip over axis     
+                # self.adjXFac=-1 means flip over axis
                 adjXDiff = self.adjXFac*(event.globalPos().x() - self.global_mPos.x())
                 adjYDiff = self.adjYFac*(event.globalPos().y() - self.global_mPos.y())
-                # if transfac is 1 then movepoint of mouse is translated     
+                # if transfac is 1 then movepoint of mouse is translated
                 movePoint = QtCore.QPoint(self.mPos.x() - self.transXFac*adjXDiff, self.mPos.y()-self.transYFac*adjYDiff)
                 self.window().move(event.globalPos()-movePoint)
                 self.window().resize(self.storeWidth-adjXDiff, self.storeHeight-adjYDiff, autoscale=False)
             elif self.Direction == "y":
                 # Calculation of displacement. self.adjXFac=1 means normal displacement
-                # self.adjXFac=-1 means flip over axis     
+                # self.adjXFac=-1 means flip over axis
                 adjXDiff = self.adjXFac*(event.globalPos().x() - self.global_mPos.x())
                 adjYDiff = self.adjYFac*(event.globalPos().y() - self.global_mPos.y())
-                # if transfac is 1 then movepoint of mouse is translated     
+                # if transfac is 1 then movepoint of mouse is translated
                 movePoint = QtCore.QPoint(self.mPos.x() - self.transXFac*adjXDiff, self.mPos.y()-self.transYFac*adjYDiff)
                 self.window().move(event.globalPos()-movePoint)
                 self.window().resize(self.storeWidth, self.storeHeight-adjYDiff, autoscale=False)
             elif self.Direction == "x":
                 # Calculation of displacement. self.adjXFac=1 means normal displacement
-                # self.adjXFac=-1 means flip over axis     
+                # self.adjXFac=-1 means flip over axis
                 adjXDiff = self.adjXFac*(event.globalPos().x() - self.global_mPos.x())
                 adjYDiff = self.adjYFac*(event.globalPos().y() - self.global_mPos.y())
-                # if transfac is 1 then movepoint of mouse is translated     
+                # if transfac is 1 then movepoint of mouse is translated
                 movePoint = QtCore.QPoint(self.mPos.x() - self.transXFac*adjXDiff, self.mPos.y()-self.transYFac*adjYDiff)
                 self.window().move(event.globalPos()-movePoint)
                 self.window().resize(self.storeWidth-adjXDiff, self.storeHeight, autoscale=False)
@@ -1020,7 +1023,7 @@ class Window_Frame_Widget(QtWidgets.QFrame): #IMPROVE: Maybe the resizing and mo
             # In any move event if it is not in a resize region use the default cursor
             else:
                 self.setCursor(QtCore.Qt.ArrowCursor)
-
+    
     def leaveEvent(self,event):
         self.setCursor(QtCore.Qt.ArrowCursor)
 
@@ -1031,7 +1034,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
         self.moving = False
         self.offset = 0
         self.setMouseTracking(True)
-
+    
     def mousePressEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         if event.button() == QtCore.Qt.LeftButton and self.actionAt(event.pos()) is None and self.moving == False and self.activeAction() is None:
@@ -1043,7 +1046,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
         else:
             self.moving = False
         super(MMenuBar, self).mousePressEvent(event)
-
+    
     def mouseReleaseEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -1133,7 +1136,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
         else:
             self.moving = False
             super(MMenuBar, self).mouseReleaseEvent(event)
-
+    
     def mouseMoveEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         if self.moving:
@@ -1168,7 +1171,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
         self.moving = False
         self.offset = 0
         self.setMouseTracking(True)
-
+    
     def mousePressEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         if event.button() == QtCore.Qt.LeftButton and self.moving == False and self.childAt(event.pos()) is None:
@@ -1180,7 +1183,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
         else:
             self.moving = False
         super(MTabWidget, self).mousePressEvent(event)
-
+    
     def mouseReleaseEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None
         self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
@@ -1270,7 +1273,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
         else:
             self.moving = False
             super(MTabWidget, self).mouseReleaseEvent(event)
-
+    
     def mouseMoveEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None # Only registers if mouse is pressed...
         if self.moving:

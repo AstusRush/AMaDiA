@@ -201,7 +201,7 @@ class ListWidget(QtWidgets.QListWidget):
         self.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.installEventFilter(self)
-
+    
     def keyPressEvent(self,event):
         try:
             if event == QtGui.QKeySequence.Copy:
@@ -328,13 +328,15 @@ class StackedWidget(QtWidgets.QStackedWidget):
         self.RButton.raise_()
         self.LButton.raise_()
 
-    def addWidget(self, widget):
+    def addWidget(self, widget:'QtWidgets.QWidget'):
         index = super(StackedWidget, self).addWidget(widget)
         self.checkSwitchButtons()
         return index
 
-    def removeWidget(self, widget):
+    def removeWidget(self, widget:'QtWidgets.QWidget') -> 'typing.Union[None,int]':
+        #INVESTIGATE: According to the linter, removeWidget does not return anything. But I apparently was very certain at some point that it returns the index of the removed item...
         index = super(StackedWidget, self).removeWidget(widget)
+        widget.deleteLater()
         self.checkSwitchButtons()
         return index
     

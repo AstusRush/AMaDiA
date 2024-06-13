@@ -7,6 +7,7 @@ try:
     from typing import TYPE_CHECKING
     if TYPE_CHECKING:
         import typing
+        from ._AGeGW import MplWidget_2D_Plot as MplWidget_2D_Plot_TYPE_HINT
 except:
     pass
 #endregion General Import
@@ -575,6 +576,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
         self.Globals = globals()
         self.Locals = {}
         self.LocalsExternal = {}
+        self._LocalsExternal = {}
         self.updateLocals = None
         #
         
@@ -601,7 +603,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
         self.DisplayWidget.installEventFilter(self)
         self.DisplayWidget_Finder = TextAddon_Finder(self,self.DisplayWidget)
         self.Console.S_Execute.connect(lambda: self.executeCode())
-        
+    
     def eventFilter(self, source, event):
         # type: (QtWidgets.QWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
         if event.type() == QtCore.QEvent.FontChange:
@@ -611,7 +613,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
             except: # For old Qt Versions
                 self.DisplayWidget.setTabStopWidth(4 * metrics.averageCharWidth())
         return super(ConsoleWidget, self).eventFilter(source, event)
-        
+    
     def additionalKeywords(self):
         return ["App","NC",
                 "app","window","mw","self","display","dpl","dir","code","help","getPath"
@@ -635,6 +637,12 @@ class ConsoleWidget(QtWidgets.QSplitter):
         """
         self.LocalsExternal = Locals
     
+    def _setLocals(self, Locals = {}):
+        """
+        Set the locals used in executeCode.
+        """
+        self._LocalsExternal = Locals
+    
     def setLocalsUpdateFunction(self, function = None):
         """
         Set a function that is called before executing code. This function must return a dictionary containing additional locals that are used when executing the code.
@@ -642,11 +650,12 @@ class ConsoleWidget(QtWidgets.QSplitter):
         self.updateLocals = function
     
     def executeCode(self):
-        if self.updateLocals: self.setLocals(self.updateLocals())
+        if self.updateLocals: self._setLocals(self.updateLocals())
         input_text = self.Console.text()
         try:
             if not self.Console.CheckBox.checkState():
                 self.Locals = {}
+            self.Locals.update(self.Globals)
             # Set app and window for the local dictionary so that they can be used in the execution
             self.Locals.update({
                 "app"     : App() ,
@@ -661,7 +670,10 @@ class ConsoleWidget(QtWidgets.QSplitter):
                 "getPath" : lambda mustExist=False: getPath(mustExist) ,
                 })
             self.Locals.update(self.LocalsExternal)
-            exec(input_text, self.Globals, self.Locals)
+            self.Locals.update(self._LocalsExternal)
+            #NOTE: Having locals and globals be the same dictionary allows importing modules and then using them in functions
+            # as well as using global variables in function, etc.
+            exec(input_text, self.Locals, self.Locals)
             if not self.Console.CheckBox.checkState():
                 self.Locals = {}
         except:
@@ -730,7 +742,7 @@ class InspectWidget(QtWidgets.QWidget):
     # Inspection should contain:
     # o = base().terrain
     # #o = base().terrain.get_root()
-    # 
+    #
     # self.dir(o,"")
     # #self.help(o)
     # #self.code(o)
@@ -748,6 +760,7 @@ class InspectWidget(QtWidgets.QWidget):
         """
         TODO: Write Documentation
         """
+        #CRITICAL: numpy arrays can not be displayed properly
         super(InspectWidget, self).__init__(parent)
         #
         self.Globals = globals()
@@ -1175,6 +1188,22 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
         r+= "\nsetattr("+target+".__self__,\"_Code_Overwrite_\"+"+target+".__name__, \"\"\""+ ( self.Console.text().split("\n",1)[1] if self.Console.text().startswith("#") else self.Console.text() ).replace("\\","\\\\").replace("\n","\\n").replace("\"","\\\"").replace("\'","\\\'")+"\"\"\")"
         return r
 
+class PlotWidget(QtWidgets.QWidget):
+    def __init__(self, parent: typing.Optional['QtWidgets.QWidget'] = None) -> None:
+        super().__init__(parent=parent)
+        self.setLayout(QtWidgets.QGridLayout(self))
+        self.layout().setObjectName("gridLayout")
+        self.layout().setContentsMargins(0,0,0,0)
+        self.Button = Button(self, "Make Plot Widget", lambda: self.makePlotWidget())
+        self.layout().addWidget(self.Button)
+    
+    def makePlotWidget(self):
+        from . import _AGeGW
+        self.Plot = _AGeGW.MplWidget_2D_Plot(self, True)
+        self.layout().removeWidget(self.Button)
+        self.Button = None
+        self.layout().addWidget(self.Plot)
+
 #endregion IDE Widgets
 #region IDE Window
 class exec_Window(AWWF):
@@ -1219,7 +1248,8 @@ class exec_Window(AWWF):
             self.OverloadWidget.Console.setFont(font)
             
             # Console #REM#
-            self.ConsoleWidget = ConsoleWidget(self)
+            self.ConsoleWidget = ConsoleWidget(self,["Plot","draw","clear","plot"])
+            self.ConsoleWidget.setLocals({"Plot":lambda:self.Plot,"draw":lambda:self.Plot.draw(),"clear":lambda:self.Plot.clear(),"plot":lambda *args,**wargs:self.Plot.plot(*args,**wargs)})
             self.TabWidget.addTab(self.ConsoleWidget,"Console")
             
             # Inspect #TODO
@@ -1251,12 +1281,43 @@ class exec_Window(AWWF):
             #self.HelpLayout.setObjectName("HelpLayout")
             #self.TabWidget.addTab(self.HelpWidget,"Help")
             
+            # Plot #TODO
+            self.PlotWidget = PlotWidget(self)
+            self.PlotWidget.setObjectName("PlotWidget")
+            self.TabWidget.addTab(self.PlotWidget,"Plot")
+            
             # Other
             self.TabWidget.setCurrentWidget(self.ConsoleWidget)
             
             self.setAutoFillBackground(True)
+            self.setupHelpTexts()
+            self.installEventFilter(self)
         except:
             NC(exc=sys.exc_info(),win=self.windowTitle(),func="exec_Window.__init__")
+    
+    def eventFilter(self, source, event):
+        # type: (QtWidgets.QWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
+        if event.type() == 6: # QtCore.QEvent.KeyPress
+            if event.key() == QtCore.Qt.Key_F1:
+                if self.InitialHelpWindowOpening:
+                    App().showWindow_Help(self.windowTitle())
+                    self.InitialHelpWindowOpening = False
+                else: App().showWindow_Help(f"{self.windowTitle()}: {self.TabWidget.tabText(self.TabWidget.currentIndex())}")
+                return True
+        return super(exec_Window, self).eventFilter(source, event) # let the normal eventFilter handle the event
+    
+    def setupHelpTexts(self):
+        self.InitialHelpWindowOpening = True
+        help_text = "This is the AGeIDE.\nThis Window allows full developer access to the running program." #TODO: More Text
+        App().HelpWindow.addHelpCategory(self.windowTitle(),help_text,{
+            self.windowTitle()+": Overload" : "The Overload tab allows you to overload any method in the current program.\n"+
+                                            "The changes are only temporary and are lost when the program ends.", #TODO: More Text; describe behaviour; describe operation modes (class/instance,overwrite/new)
+            self.windowTitle()+": Console" : "In the Console tab you can execute code that can interact with the program.", #TODO: More Text; describe namespace behaviour; describe build-in commands like dpl()
+            self.windowTitle()+": Inspect" : "The Inspect tab allows you to browse the entire program including all imported modules.", #TODO: More Text
+            self.windowTitle()+": Options" : "The Options tab currently only lets you change the font of the code editor.",
+            self.windowTitle()+": Plot" :   "The Plot tab allows you to display matplotlib plots.\nTo activate the plot initially you have to press the button to create the plot widget.\n"+
+                                            "Once the widget is created you have access to the AGeGW.MplWidget_2D_Plot object under the name `Plot` in the Console tab.", #TODO: Describe available methods and add some example code
+            })
     
     def setGlobals(self, Globals = None):
         """
@@ -1280,6 +1341,11 @@ class exec_Window(AWWF):
     def updateFonts(self, font):
         self.ConsoleWidget.Console.setFont(font)
         self.OverloadWidget.Console.setFont(font)
+    
+    @property
+    def Plot(self):
+        #type: () -> MplWidget_2D_Plot_TYPE_HINT
+        return self.PlotWidget.Plot
 
 #endregion IDE Window
 
