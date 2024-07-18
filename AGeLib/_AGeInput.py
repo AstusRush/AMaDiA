@@ -127,16 +127,18 @@ class Array(_TypeWidget): #TODO: Make a thingy to input arrays. This should prob
 
 class Path(_TypeWidget):
     S_ValueChanged:pyqtSignal = pyqtSignal(str)
-    def __init__(self, parent: 'QtWidgets.QWidget', displayname:str, default:str, defaultDir:str="") -> None:
+    def __init__(self, parent: 'QtWidgets.QWidget', displayname:str, default:str, defaultDir:str="", filter:str="", initialFilter:str="") -> None:
         super().__init__(parent)
         self.NameLabel = self.addWidget(QtWidgets.QLabel(f"{displayname}", self),0,0)
         self.Button = self.addWidget(AGeWidgets.Button(self,"Set Path",lambda: self.setPath()),0,1)
         self.Path = default
         self.Button.setToolTip(default)
         self.DefaultDir = defaultDir
+        self.Filter = filter
+        self.InitialFilter = initialFilter
     
     def setPath(self):
-        path = QtWidgets.QFileDialog.getOpenFileName(directory=self.DefaultDir)[0]
+        path = QtWidgets.QFileDialog.getOpenFileName(directory=self.DefaultDir, filter=self.Filter, initialFilter=self.InitialFilter)[0]
         if path:
             self.Path = path
             self.Button.setToolTip(path)

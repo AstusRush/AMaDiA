@@ -637,6 +637,9 @@ class TightGridWidget(QtWidgets.QWidget):
         self.layout().setContentsMargins(0,0,0,0)
         if makeCompact: self.makeCompact()
     
+    def layout(self) -> 'QtWidgets.QGridLayout':
+        return super().layout()
+    
     def makeCompact(self):
         self.layout().setRowStretch(1000, 1)
     

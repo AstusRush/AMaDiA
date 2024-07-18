@@ -1188,6 +1188,24 @@ class OverloadWidget(QtWidgets.QWidget): #CRITICAL: Add ability to overload and 
         r+= "\nsetattr("+target+".__self__,\"_Code_Overwrite_\"+"+target+".__name__, \"\"\""+ ( self.Console.text().split("\n",1)[1] if self.Console.text().startswith("#") else self.Console.text() ).replace("\\","\\\\").replace("\n","\\n").replace("\"","\\\"").replace("\'","\\\'")+"\"\"\")"
         return r
 
+class ClassEditorWidget(QtWidgets.QTabWidget):
+    def __init__(self, parent: 'QtWidgets.QWidget', _class:'type'):
+        super().__init__(parent)
+        self.Class = _class
+        self.EditorWidgets:'list[OverloadWidget]' = []
+        self._loadTabs()
+    
+    def _loadTabs(self):
+        for k,v in dict(self.Class.__dict__).items():
+            #if isinstance(v, types.MethodType):
+            if hasattr(v,'__call__'):
+                try:
+                    if inspect.getsource(v):
+                        w = OverloadWidget(self, v, k, self.Class)
+                        self.addTab(w, k)
+                except OSError:
+                    pass
+
 class PlotWidget(QtWidgets.QWidget):
     def __init__(self, parent: typing.Optional['QtWidgets.QWidget'] = None) -> None:
         super().__init__(parent=parent)

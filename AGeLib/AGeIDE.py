@@ -4,6 +4,7 @@ from ._AGeIDE import(
     ConsoleWidget,
     InspectWidget,
     OverloadWidget,
+    ClassEditorWidget,
     exec_Window,
 )
 from ._AGeIDE_SH import(
