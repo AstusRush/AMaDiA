@@ -382,7 +382,14 @@ def _topy_num(value, name="", indent=0, indentstr="    ", ignoreNotImplemented =
     ret = indentstr*indent
     if name:
         ret += name + " = "
-    ret += str(value)
+    if str(value) == "inf":
+        ret += "float(\"inf\")"
+    elif str(value) == "-inf":
+        ret += "float(\"-inf\")"
+    elif str(value) == "nan":
+        ret += "float(\"nan\")"
+    else:
+        ret += str(value)
     return ret, {}
 
 def _topy_str(value, name="", indent=0, indentstr="    ", ignoreNotImplemented = False):

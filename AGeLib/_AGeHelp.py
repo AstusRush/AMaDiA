@@ -27,43 +27,39 @@ class HelpTreeWidget(QtWidgets.QTreeWidget):
         self.HelpWindow = helpWindow #type: HelpWindow
         self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.setAlternatingRowColors(True)
-        self.itemDoubleClicked.connect(lambda item: self.HelpWindow.selectCategory(item, False))
-        self.itemActivated.connect(lambda item: self.HelpWindow.selectCategory(item, False)) # triggers with the enter key
+        self.currentItemChanged.connect(lambda item: self.HelpWindow.selectCategory(item, False))
+        #self.itemDoubleClicked.connect(lambda item: self.HelpWindow.selectCategory(item, False))
+        #self.itemActivated.connect(lambda item: self.HelpWindow.selectCategory(item, False)) # triggers with the enter key
         self.setHeaderHidden(True)
     
-    def addHelpCategory(self, categoryName, content, subCategories=None, overwrite=False):
-        # type: (str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget]],typing.Dict[str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget]]],bool) -> None
-        if self.getCategoryItem(categoryName)[1]:
+    def addHelpCategory(self, categoryName, content, overwrite=False, _topItem=None):
+        # type: (str, typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget], typing.Dict[str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget],typing.Dict]]], bool, typing.Union[None,HelperTreeItem]) -> None
+        subCategories = {}
+        if isinstance(content, dict):
+            subCategories = content
+            content = subCategories["_TOP_"] if "_TOP_" in subCategories else ""
+        item, is_present = self.getCategoryItem(categoryName, _topItem)
+        if is_present:
             if overwrite:
-                for i in self.findCategoryItems(categoryName):
+                tex = f"removing\n{len(self.findCategoryItems(categoryName, _topItem)) = }"
+                for i in self.findCategoryItems(categoryName, _topItem):
                     if i.parent(): i.parent().removeChild(i)
                     else: self.takeTopLevelItem(self.indexOfTopLevelItem(i))
+                tex += f"\n{len(self.findCategoryItems(categoryName, _topItem)) = }"
+                NC(3,tex)
             elif subCategories:
-                self.addSubCategories(categoryName, subCategories, overwrite)
+                for k,v in subCategories.items():
+                    if k == "_TOP_": continue
+                    self.addHelpCategory(k, v, overwrite=overwrite, _topItem=item)
                 return
             else:
                 return
         item = self._prepareItem(categoryName, content)
-        self.addTopLevelItem(item)
-        if subCategories:
-            self.addSubCategories(categoryName, subCategories, overwrite)
-    
-    def addSubCategories(self, categoryName, subCategories, overwrite=False):
-        # type: (str,typing.Dict[str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget]]],bool) -> None
-        parent_item = self.getCategoryItem(categoryName)
-        if not parent_item[1]:
-            NC(1,f"Could not find \"{categoryName}\" and can therefore not add subcategories.",win=self.windowTitle(),func="HelpTreeWidget.addSubCategories")
-            return
+        if not _topItem: self.addTopLevelItem(item)
+        else: _topItem.addChild(item)
         for k,v in subCategories.items():
-            if self.getCategoryItem(k)[1]:
-                if overwrite:
-                    for i in self.findCategoryItems(categoryName):
-                        if i.parent(): i.parent().removeChild(i)
-                        else: self.takeTopLevelItem(self.indexOfTopLevelItem(i))
-                else:
-                    continue
-            item = self._prepareItem(k,v)
-            parent_item[0].addChild(item)
+            if k == "_TOP_": continue
+            self.addHelpCategory(k, v, overwrite=overwrite, _topItem=item)
     
     def _prepareItem(self, categoryName, content):
         # type: (str,str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget]]) -> HelperTreeItem
@@ -82,9 +78,9 @@ class HelpTreeWidget(QtWidgets.QTreeWidget):
             item.setData(0,101, errMsg)
         return item
     
-    def getCategoryItem(self, name):
-        # type: (str) -> typing.Tuple[HelperTreeItem,bool]
-        l = self.findCategoryItems(name)
+    def getCategoryItem(self, name, top=None):
+        # type: (typing.Union[str,typing.List[str]], typing.Union[None,HelperTreeItem]) -> typing.Tuple[HelperTreeItem,bool]
+        l = self.findCategoryItems(name, top=top)
         if l:
             if len(l) > 1:
                 NC(2,f"Found multiple categories for the term \"{name}\". Returning only the first.",win=self.windowTitle(),func="HelpTreeWidget.getCategoryItem")
@@ -96,9 +92,25 @@ class HelpTreeWidget(QtWidgets.QTreeWidget):
             item.setData(0,101, f"Could not find help category \"{name}\"")
             return item, False
     
-    def findCategoryItems(self, name):
-        # type: (str) -> typing.List[HelperTreeItem]
-        return self.findItems(name, QtCore.Qt.MatchFlag.MatchFixedString|QtCore.Qt.MatchFlag.MatchCaseSensitive|QtCore.Qt.MatchFlag.MatchExactly|QtCore.Qt.MatchFlag.MatchRecursive)
+    def findCategoryItems(self, name, top=None):
+        # type: (typing.Union[str,typing.List[str]], typing.Union[None,HelperTreeItem]) -> typing.List[HelperTreeItem]
+        #return self.findItems(name, QtCore.Qt.MatchFlag.MatchFixedString|QtCore.Qt.MatchFlag.MatchCaseSensitive|QtCore.Qt.MatchFlag.MatchExactly|QtCore.Qt.MatchFlag.MatchRecursive)
+        if not isinstance(name, str) and len(name)==1: name = name[0]
+        if isinstance(name, str):
+            ret = []
+            count = self.topLevelItemCount() if not top else top.childCount()
+            for i in range(count):
+                i = self.topLevelItem(i) if not top else top.child(i)
+                if i.text(0) == name: ret.append(i)
+            return ret
+        else:
+            ret = []
+            count = self.topLevelItemCount() if not top else top.childCount()
+            for i in range(count):
+                i = self.topLevelItem(i) if not top else top.child(i)
+                if i.text(0) == name[0]:
+                    ret.extend(self.findCategoryItems(name[1:],i))
+            return ret
 
 class HelpTextDisplay(QtWidgets.QPlainTextEdit): pass
 
@@ -119,14 +131,17 @@ class HelpWindow(AWWF):
             self.HelpCategoryListWidget = HelpTreeWidget(self.Splitter, self)
             self.HelpDisplay = HelpTextDisplay(self.Splitter)
             self.setCentralWidget(self.Splitter)
-            help_text = "This is the help window.\nYou can open this window by pressing F1.\nDouble-click an item on the left to display the help page for it."
+            AGeLibHelpText = "This program is based upon the Astus General Library (AGeLib)." #TODO: More helptext to AGeLib
+            help_text = "This is the help window.\nYou can open this window by pressing F1.\nSelect an item on the left to display the help page for it."
             if True: # Normal
-                self.addHelpCategory(self.windowTitle(),help_text)
+                self.addHelpCategory("AGeLib",{"_TOP_":AGeLibHelpText,self.windowTitle():help_text})
             else: # Test
-                self.addHelpCategory(self.windowTitle(),help_text,{"Test":"Test Text Pre"})
-                self.addHelpCategory(self.windowTitle(),help_text,{"Test":"Test Text","Test Widget":lambda p: Button(p,"TEST")},overwrite=True)
+                self.addHelpCategory(self.windowTitle(),{"_TOP_":help_text,"Test":"Test Text Pre"})
+                self.addHelpCategory(self.windowTitle(),{"_TOP_":help_text,"Test":"Test Text","Test Widget":lambda p: Button(p,"TEST")},overwrite=True)
                 self.addHelpCategory("Test Category","Test Text")
                 self.addHelpCategory("Test Category","Test Text2",overwrite=True)
+                self.addHelpCategory("Test Category 2",{"_TOP_":"Test Text 2","Top Test":{"_TOP_":"Top Test","sub":"SubTestText"},"Other":"Other Text"})
+                self.addHelpCategory("Test",{"_TOP_":"Test Text","Sub Hack":"This is cool"})
             self.installEventFilter(self)
         except:
             NC(exc=sys.exc_info(),win=self.windowTitle(),func="HelpWindow.__init__")
@@ -135,17 +150,19 @@ class HelpWindow(AWWF):
         # type: (QtWidgets.QWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
         if event.type() == 6: # QtCore.QEvent.KeyPress
             if event.key() == QtCore.Qt.Key_F1:
-                self.selectCategory(*self.HelpCategoryListWidget.getCategoryItem(self.windowTitle()))
+                self.selectCategory(*self.HelpCategoryListWidget.getCategoryItem(["AGeLib",self.windowTitle()]))
                 return True
         return super(HelpWindow, self).eventFilter(source, event) # let the normal eventFilter handle the event
     
-    def showCategory(self, category = ""):
+    def showCategory(self, category = "", openWindow=True):
+        #type: (typing.Union[str,typing.List[str]], bool) -> None
         if category=="": category = "No Category"
-        self.show()
-        App().processEvents()
-        self.positionReset()
-        App().processEvents()
-        self.activateWindow()
+        if openWindow:
+            self.show()
+            App().processEvents()
+            self.positionReset()
+            App().processEvents()
+            self.activateWindow()
         self.selectCategory(*self.HelpCategoryListWidget.getCategoryItem(category))
     
     def selectCategory(self, item, select=True):
@@ -181,9 +198,9 @@ class HelpWindow(AWWF):
                 self.HelpDisplay = HelpTextDisplay(self.Splitter)
             self.HelpDisplay.setPlainText(f"ERROR\nData of type \"{item.data(100)}\" is not supported yet.")
     
-    def addHelpCategory(self, categoryName, content, subCategories=None, overwrite=False):
-        # type: (str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget]],typing.Dict[str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget]]],bool) -> None
-        self.HelpCategoryListWidget.addHelpCategory(categoryName, content, subCategories, overwrite)
+    def addHelpCategory(self, categoryName, content, overwrite=False):
+        # type: (str, typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget], typing.Dict[str,typing.Union[str,typing.Callable[[QtWidgets.QWidget],QtWidgets.QWidget],typing.Dict]]], bool) -> None
+        self.HelpCategoryListWidget.addHelpCategory(categoryName, content, overwrite=overwrite)
     
     def clearWidgets(self):
         self.HelpDisplay = None

@@ -291,7 +291,7 @@ class AGeApp(QtWidgets.QApplication):
         clipboard = QtWidgets.QApplication.clipboard()
         if platform.system() == 'Windows':
             try:
-                import win32clipboard
+                import win32clipboard #type: ignore
                 text = clipboard.text()
                 win32clipboard.OpenClipboard()
                 win32clipboard.EmptyClipboard()
@@ -300,8 +300,8 @@ class AGeApp(QtWidgets.QApplication):
             except:
                 print("Could not save clipboard data:")
                 ExceptionOutput(sys.exc_info())
-        else: #FEATURE: Find a linux version of win32clipboard
-            print("Clipboard is only saved if a clipboard manager is installed due to OS limitations.")
+        else:
+            #print("Clipboard is only saved if a clipboard manager is installed due to OS limitations.")
             event = QtCore.QEvent(QtCore.QEvent.Clipboard)
             QtWidgets.QApplication.sendEvent(clipboard, event)
             self.processEvents()
@@ -804,12 +804,16 @@ class AGeApp(QtWidgets.QApplication):
         self.optionWindow.activateWindow()
         self.processEvents()
     
-    def showWindow_Help(self, category=""):
+    def showWindow_Help(self, category="", openWindow=True):
+        #type: (typing.Union[str,typing.List[str]],bool) -> None
         """
         Shows the help window. \n
-        Default shortcut (applicationwide): F1
+        Default shortcut (applicationwide): F1 \n
+        category can be the name of a help entry
+        (or a list of strings to describe sub entries or sub-sub-entries, etc)
+        which will be displayed to the user
         """
-        self.HelpWindow.showCategory(category)
+        self.HelpWindow.showCategory(category,openWindow=openWindow)
         self.processEvents()
     
  # ---------------------------------- Files and Folders ----------------------------------
