@@ -1005,7 +1005,6 @@ class AMaS: # Astus' Mathematical Structure
             
     def Plot_2D_Calc_Values(self):
         oldErrCall = np.seterrcall(self.NotifyFromNumpy)
-        oldErrCall_sp = scipy.seterrcall(self.NotifyFromNumpy)
         if self.cstr.count("=")>=1:
             try:
                 temp_line_split = self.cstr.split("=",1)
@@ -1017,7 +1016,6 @@ class AMaS: # Astus' Mathematical Structure
                         self.plot_x_vals = temp_line_x_val
                         self.plot_data_exists = True
                         np.seterrcall(oldErrCall)
-                        scipy.seterrcall(oldErrCall_sp)
                         return True
             except common_exceptions:
                 pass
@@ -1032,7 +1030,6 @@ class AMaS: # Astus' Mathematical Structure
                 self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info(),send=False))
                 self.plottable = False
                 np.seterrcall(oldErrCall)
-                scipy.seterrcall(oldErrCall_sp)
                 return False
             try:
                 Function = Function.doit()
@@ -1113,7 +1110,6 @@ class AMaS: # Astus' Mathematical Structure
                 except common_exceptions: #as inst:
                     self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info(),send=False))
                     np.seterrcall(oldErrCall)
-                    scipy.seterrcall(oldErrCall_sp)
                     return False
                 finally:
                     np.warnings.showwarning = oldNPWarn
@@ -1122,11 +1118,9 @@ class AMaS: # Astus' Mathematical Structure
                     
             self.plot_data_exists = True
             np.seterrcall(oldErrCall)
-            scipy.seterrcall(oldErrCall_sp)
             return True
         else:
             np.seterrcall(oldErrCall)
-            scipy.seterrcall(oldErrCall_sp)
             return False
 
 
@@ -1139,7 +1133,6 @@ class AMaS: # Astus' Mathematical Structure
             
     def Plot_Complex_Calc_Values(self): #TODO: Complex-Plot
         oldErrCall = np.seterrcall(self.NotifyFromNumpy)
-        oldErrCall_sp = scipy.seterrcall(self.NotifyFromNumpy)
         if self.cstr.count("=")>=1: #CRITICAL: Complex-Plot This has not been adapted and will crash
             try:
                 temp_line_split = self.cstr.split("=",1)
@@ -1151,7 +1144,6 @@ class AMaS: # Astus' Mathematical Structure
                         self.plot_x_vals = temp_line_x_val
                         self.plot_data_exists = True
                         np.seterrcall(oldErrCall)
-                        scipy.seterrcall(oldErrCall_sp)
                         return True
             except common_exceptions:
                 pass
@@ -1167,7 +1159,6 @@ class AMaS: # Astus' Mathematical Structure
                 self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_Complex_Calc_Values",exc=sys.exc_info(),send=False))
                 self.plottable = False
                 np.seterrcall(oldErrCall)
-                scipy.seterrcall(oldErrCall_sp)
                 return False
             try:
                 Function = Function.doit()
@@ -1194,16 +1185,13 @@ class AMaS: # Astus' Mathematical Structure
                 #TheException = sys.exc_info()
                 self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_Complex_Calc_Values",exc=sys.exc_info(),send=False))
                 np.seterrcall(oldErrCall)
-                scipy.seterrcall(oldErrCall_sp)
                 return False
                     
             self.plot_data_exists = True
             np.seterrcall(oldErrCall)
-            scipy.seterrcall(oldErrCall_sp)
             return True
         else:
             np.seterrcall(oldErrCall)
-            scipy.seterrcall(oldErrCall_sp)
             return False
 
  # ---------------------------------- Variable (and Multi-Dim) Methods ----------------------------------
