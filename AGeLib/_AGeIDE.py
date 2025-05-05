@@ -1241,7 +1241,7 @@ class _InspectWidget_memberItem_methodBrowser(_InspectWidget_memberItem):
                 try:
                     found_code = bool(inspect.getsource(self.Item))
                 except:
-                    found_code = eval(f"hasattr({self.FullName.rsplit(".",1)[0]},\"_Code_Overwrite_{self.String}\")",self.Item.__globals__) #FEATURE: Edit Functions
+                    found_code = eval("hasattr("+self.FullName.rsplit(".",1)[0]+f",\"_Code_Overwrite_{self.String}\")",self.Item.__globals__) #FEATURE: Edit Functions
                 if found_code:
                     self.Button_Select = QtWidgets.QToolButton(self)
                     self.Buttons.append(self.Button_Select)
