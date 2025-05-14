@@ -276,6 +276,17 @@ Dark = {
             "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
             "Decorator" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
         } ,
+    "Special Text Colours" : {
+            "Positive" : QtGui.QBrush(QtGui.QColor(54,153,0,255),QtCore.Qt.SolidPattern) ,
+            "Negative" : QtGui.QBrush(QtGui.QColor(214,115,115,255),QtCore.Qt.SolidPattern) ,
+            "Changed" : QtGui.QBrush(QtGui.QColor(140,199,217,255),QtCore.Qt.SolidPattern) ,
+            "Unchanged" : QtGui.QBrush(QtGui.QColor(127,146,153,255),QtCore.Qt.SolidPattern) ,
+            "Important" : QtGui.QBrush(QtGui.QColor(238,180,86,255),QtCore.Qt.SolidPattern) ,
+            "Unimportant" : QtGui.QBrush(QtGui.QColor(141,141,141,255),QtCore.Qt.SolidPattern) ,
+            "Keyword" : QtGui.QBrush(QtGui.QColor(176,150,213,255),QtCore.Qt.SolidPattern) ,
+            "Hint" : QtGui.QBrush(QtGui.QColor(126,197,203,255),QtCore.Qt.SolidPattern) ,
+            "Quote" : QtGui.QBrush(QtGui.QColor(224,255,238,255),QtCore.Qt.SolidPattern) ,
+        } ,
 }
 
 
@@ -530,6 +541,17 @@ Bright = {
         "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(64,112,144,255),QtCore.Qt.SolidPattern) ,
         "Decorator" : QtGui.QBrush(QtGui.QColor(128,80,0,255),QtCore.Qt.SolidPattern) ,
     } ,
+    "Special Text Colours" : {
+            "Positive" : QtGui.QBrush(QtGui.QColor(97,103,0,255),QtCore.Qt.SolidPattern) ,
+            "Negative" : QtGui.QBrush(QtGui.QColor(138,0,0,255),QtCore.Qt.SolidPattern) ,
+            "Changed" : QtGui.QBrush(QtGui.QColor(0,110,144,255),QtCore.Qt.SolidPattern) ,
+            "Unchanged" : QtGui.QBrush(QtGui.QColor(73,84,88,255),QtCore.Qt.SolidPattern) ,
+            "Important" : QtGui.QBrush(QtGui.QColor(161,107,0,255),QtCore.Qt.SolidPattern) ,
+            "Unimportant" : QtGui.QBrush(QtGui.QColor(141,141,141,255),QtCore.Qt.SolidPattern) ,
+            "Keyword" : QtGui.QBrush(QtGui.QColor(96,73,129,255),QtCore.Qt.SolidPattern) ,
+            "Hint" : QtGui.QBrush(QtGui.QColor(15,112,117,255),QtCore.Qt.SolidPattern) ,
+            "Quote" : QtGui.QBrush(QtGui.QColor(43,74,71,255),QtCore.Qt.SolidPattern) ,
+        } ,
 }
 
 DeepSea = {
@@ -782,6 +804,17 @@ DeepSea = {
             "UnclosedString" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
             "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
             "Decorator" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        } ,
+    "Special Text Colours" : {
+            "Positive" : QtGui.QBrush(QtGui.QColor(66,180,0,255),QtCore.Qt.SolidPattern) ,
+            "Negative" : QtGui.QBrush(QtGui.QColor(214,82,82,255),QtCore.Qt.SolidPattern) ,
+            "Changed" : QtGui.QBrush(QtGui.QColor(156,221,241,255),QtCore.Qt.SolidPattern) ,
+            "Unchanged" : QtGui.QBrush(QtGui.QColor(127,146,153,255),QtCore.Qt.SolidPattern) ,
+            "Important" : QtGui.QBrush(QtGui.QColor(238,180,86,255),QtCore.Qt.SolidPattern) ,
+            "Unimportant" : QtGui.QBrush(QtGui.QColor(141,141,141,255),QtCore.Qt.SolidPattern) ,
+            "Keyword" : QtGui.QBrush(QtGui.QColor(176,150,213,255),QtCore.Qt.SolidPattern) ,
+            "Hint" : QtGui.QBrush(QtGui.QColor(126,197,203,255),QtCore.Qt.SolidPattern) ,
+            "Quote" : QtGui.QBrush(QtGui.QColor(224,255,238,255),QtCore.Qt.SolidPattern) ,
         } ,
 }
 
@@ -1036,6 +1069,17 @@ BloodMoon = {
             "UnclosedString" : QtGui.QBrush(QtGui.QColor(255,0,234,255),QtCore.Qt.SolidPattern) ,
             "HighlightedIdentifier" : QtGui.QBrush(QtGui.QColor(255,255,255,255),QtCore.Qt.SolidPattern) ,
             "Decorator" : QtGui.QBrush(QtGui.QColor(0,255,0,255),QtCore.Qt.SolidPattern) ,
+        } ,
+    "Special Text Colours" : {
+            "Positive" : QtGui.QBrush(QtGui.QColor(108,202,46,255),QtCore.Qt.SolidPattern) ,
+            "Negative" : QtGui.QBrush(QtGui.QColor(225,111,111,255),QtCore.Qt.SolidPattern) ,
+            "Changed" : QtGui.QBrush(QtGui.QColor(165,234,255,255),QtCore.Qt.SolidPattern) ,
+            "Unchanged" : QtGui.QBrush(QtGui.QColor(127,146,153,255),QtCore.Qt.SolidPattern) ,
+            "Important" : QtGui.QBrush(QtGui.QColor(238,180,86,255),QtCore.Qt.SolidPattern) ,
+            "Unimportant" : QtGui.QBrush(QtGui.QColor(141,141,141,255),QtCore.Qt.SolidPattern) ,
+            "Keyword" : QtGui.QBrush(QtGui.QColor(170,111,248,255),QtCore.Qt.SolidPattern) ,
+            "Hint" : QtGui.QBrush(QtGui.QColor(129,238,248,255),QtCore.Qt.SolidPattern) ,
+            "Quote" : QtGui.QBrush(QtGui.QColor(183,217,198,255),QtCore.Qt.SolidPattern) ,
         } ,
 }
 
