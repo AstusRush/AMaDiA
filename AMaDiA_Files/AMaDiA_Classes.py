@@ -67,6 +67,7 @@ class AMaS: # Astus' Mathematical Structure
         self.Name = "No Name Given"
         self.init_bools()
         self.init_Flags()
+        self.subs_a = lambda: 0
         self.f_eval_LaTeX = EvalL
         self.Iam = Iam
         self.Variables = {}
@@ -94,6 +95,7 @@ class AMaS: # Astus' Mathematical Structure
         self.Plot_is_initialized_complex = False
         self.plot_data_exists = False
         self.disable_units = False
+        self._has_subs_a = None
         self.init_history()
 
     def INIT_WhatAmI(self,string):
@@ -349,6 +351,24 @@ class AMaS: # Astus' Mathematical Structure
             return global_dict
         else:
             return None
+    
+    def has_subs_a(self):
+        if self._has_subs_a is None:
+            x = sympy.symbols('x') # pylint: disable=unused-variable
+            a = sympy.symbols('a') # pylint: disable=unused-variable
+            n = sympy.symbols('n') # pylint: disable=unused-variable
+            try:
+                Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
+            except common_exceptions:
+                NC(exc=True)
+                self._has_subs_a = False
+            else:
+                if a in Function.free_symbols:
+                    self._has_subs_a = True
+                else:
+                    self._has_subs_a = True
+            return self._has_subs_a
+    
  # ---------------------------------- Notifications ----------------------------------
 
     def sendNotifications(self,win=None):
@@ -1023,6 +1043,7 @@ class AMaS: # Astus' Mathematical Structure
         
         if True : #self.plottable: #IMPROVE: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
             x = sympy.symbols('x')
+            a = sympy.symbols('a')
             n = sympy.symbols('n') # pylint: disable=unused-variable
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
@@ -1031,11 +1052,15 @@ class AMaS: # Astus' Mathematical Structure
                 self.plottable = False
                 np.seterrcall(oldErrCall)
                 return False
+            
             try:
                 Function = Function.doit()
             except common_exceptions: #as inst:
                 ExceptionOutput(sys.exc_info())
-                
+            
+            if a in Function.free_symbols:
+                Function = Function.subs({a:self.subs_a()})
+            
             if self.plot_xmax < self.plot_xmin:
                 self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax
             

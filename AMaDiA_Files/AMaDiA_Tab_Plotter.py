@@ -197,6 +197,12 @@ class Plot2D(QtWidgets.QWidget):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 3)
         self.gridLayout_12.addLayout(self.gridLayout, 0, 0, 1, 1)
         
+        #### TODO: Make prettier
+        self.SubsASlider = AGeInput.Float(self, "Substitute for a", 0, -10, 10)
+        self.gridLayout_5.addWidget(self.SubsASlider, 1, 0, 1, 1)
+        self.SubsASlider.S_ValueChanged.connect(lambda a: self.SliderChanged(a))
+        ####
+        
         self.TabWidget.setCurrentIndex(0)
         self.splitter.setSizes([297,565])
         
@@ -209,6 +215,22 @@ class Plot2D(QtWidgets.QWidget):
             self.Display.Canvas.mpl_connect('button_press_event', self.Display_Context_Menu)
         except:
             NC(lvl=4,msg="Could not update Display context menu",exc=sys.exc_info(),func="AMaDiA_Main_Window.OtherContextMenuSetup",win=self.windowTitle())
+    
+    def SliderChanged(self, a): #CRITICAL: WIP
+        for i in range(self.History.count()):
+            item = self.History.item(i)
+            #if not item.data(100).has_subs_a():
+            #    continue
+            if not item.data(100).Plot_is_initialized:
+                #continue
+                item.data(100).init_2D_plot()
+            if item.data(100).current_ax != None:
+                item.data(100).current_ax.remove()
+                item.data(100).current_ax = None
+                self.F_RedrawPlot()
+            #else:
+            #    continue
+            self.F_Plot_init(item.data(100))
     
     def Display_Context_Menu(self,event):
         #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
@@ -280,6 +302,9 @@ class Plot2D(QtWidgets.QWidget):
             if ymax < ymin:
                 ymax , ymin = ymin , ymax
             AMaS_Object.plot_ylim_vals = (ymin , ymax)
+        
+        if AMaS_Object.has_subs_a():
+            AMaS_Object.subs_a = lambda: self.SubsASlider()
         
         #self.AMaDiA.TC(lambda ID: AT.AMaS_Worker(AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.F_Plot ,ID))
         self.AMaDiA.TC("WORK",AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.F_Plot)
