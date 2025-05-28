@@ -359,15 +359,19 @@ class AMaS: # Astus' Mathematical Structure
             n = sympy.symbols('n') # pylint: disable=unused-variable
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
-            except common_exceptions:
-                NC(exc=True)
+                #Function.doit()
+            except SyntaxError:
+                self._has_subs_a = False
+            except:
+                NC(2,exc=True)
                 self._has_subs_a = False
             else:
+                #NC(3,str(Function.free_symbols))
                 if a in Function.free_symbols:
                     self._has_subs_a = True
                 else:
-                    self._has_subs_a = True
-            return self._has_subs_a
+                    self._has_subs_a = False
+        return self._has_subs_a
     
  # ---------------------------------- Notifications ----------------------------------
 

@@ -197,12 +197,6 @@ class Plot2D(QtWidgets.QWidget):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 3)
         self.gridLayout_12.addLayout(self.gridLayout, 0, 0, 1, 1)
         
-        #### TODO: Make prettier
-        self.SubsASlider = AGeInput.Float(self, "Substitute for a", 0, -10, 10)
-        self.gridLayout_5.addWidget(self.SubsASlider, 1, 0, 1, 1)
-        self.SubsASlider.S_ValueChanged.connect(lambda a: self.SliderChanged(a))
-        ####
-        
         self.TabWidget.setCurrentIndex(0)
         self.splitter.setSizes([297,565])
         
@@ -211,26 +205,48 @@ class Plot2D(QtWidgets.QWidget):
         self.Formula_Field.returnPressed.connect(lambda: self.F_Plot_Button())
         self.ButtonClear.clicked.connect(lambda: self.F_Clear())
         
+        self.SliderMutex = QtCore.QMutex()
+        
         try:
             self.Display.Canvas.mpl_connect('button_press_event', self.Display_Context_Menu)
         except:
             NC(lvl=4,msg="Could not update Display context menu",exc=sys.exc_info(),func="AMaDiA_Main_Window.OtherContextMenuSetup",win=self.windowTitle())
     
     def SliderChanged(self, a): #CRITICAL: WIP
-        for i in range(self.History.count()):
-            item = self.History.item(i)
-            #if not item.data(100).has_subs_a():
-            #    continue
-            if not item.data(100).Plot_is_initialized:
-                #continue
-                item.data(100).init_2D_plot()
-            if item.data(100).current_ax != None:
-                item.data(100).current_ax.remove()
-                item.data(100).current_ax = None
+        with QtCore.QMutexLocker(self.SliderMutex):
+            for i in range(self.History.count()):
+                item = self.History.item(i)
+                AMaS_Object = item.data(100)
+                if not AMaS_Object.has_subs_a():
+                    continue
+                if not AMaS_Object.Plot_is_initialized:
+                    continue
+                    #AMaS_Object.init_2D_plot()
+                if AMaS_Object.current_ax != None:
+                    AC.AMaS.Plot_2D_Calc_Values(AMaS_Object)
+                    colour = AMaS_Object.current_ax.get_color()
+                    AMaS_Object.current_ax.remove()
+                    AMaS_Object.current_ax = None
+                    
+                    if type(AMaS_Object.plot_x_vals) == int or type(AMaS_Object.plot_x_vals) == float:
+                        p = self.Display.Canvas.ax.axvline(x = AMaS_Object.plot_x_vals,color='red')
+                    else:
+                        p = self.Display.Canvas.ax.plot(AMaS_Object.plot_x_vals , AMaS_Object.plot_y_vals) #  (... , 'r--') for red colour and short lines
+                    try:
+                        AMaS_Object.current_ax = p[0]
+                    except common_exceptions:
+                        AMaS_Object.current_ax = p
+                    
+                    AMaS_Object.current_ax.set_color(colour)
+                    #self.F_RedrawPlot()
+                #else:
+                #    continue
+                #self.F_Plot_init(AMaS_Object)
+                #self.AMaDiA.TC("NEW",self.Formula_Field.text() , self.F_Plot_init, Iam=AC.Iam_2D_plot)
+                #self.AMaDiA.TC("WORK",AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.F_Plot)
+                
+                #self.F_Plot(AMaS_Object)
                 self.F_RedrawPlot()
-            #else:
-            #    continue
-            self.F_Plot_init(item.data(100))
     
     def Display_Context_Menu(self,event):
         #print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
@@ -304,7 +320,7 @@ class Plot2D(QtWidgets.QWidget):
             AMaS_Object.plot_ylim_vals = (ymin , ymax)
         
         if AMaS_Object.has_subs_a():
-            AMaS_Object.subs_a = lambda: self.SubsASlider()
+            AMaS_Object.subs_a = lambda: self.ConfigWidget.SubsASlider()
         
         #self.AMaDiA.TC(lambda ID: AT.AMaS_Worker(AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.F_Plot ,ID))
         self.AMaDiA.TC("WORK",AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.F_Plot)
@@ -582,3 +598,9 @@ class Plot2DConfig(QtWidgets.QScrollArea):
         self.Button_Plot_SymPy.clicked.connect(lambda: self.Plot2DTab.F_Sympy_Plot_Button())
         self.RedrawPlot_Button.clicked.connect(lambda: self.Plot2DTab.F_RedrawPlot())
         self.Button_SavePlot.clicked.connect(lambda: self.Plot2DTab.action_tab_3_tab_1_Display_SavePlt())
+        
+        #### TODO: Make prettier
+        self.SubsASlider = AGeInput.Float(self, "Substitute for a", 0, -10, 10)
+        self.gridLayout_11.addWidget(self.SubsASlider, 14, 0, 1, 2)
+        self.SubsASlider.S_ValueChanged.connect(lambda a: self.Plot2DTab.SliderChanged(a))
+        ####
