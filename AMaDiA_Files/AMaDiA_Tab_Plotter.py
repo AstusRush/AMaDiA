@@ -216,14 +216,14 @@ class Plot2D(QtWidgets.QWidget):
         with QtCore.QMutexLocker(self.SliderMutex):
             for i in range(self.History.count()):
                 item = self.History.item(i)
-                AMaS_Object = item.data(100)
+                AMaS_Object:'AC.AMaS' = item.data(100)
                 if not AMaS_Object.has_subs_a():
                     continue
                 if not AMaS_Object.Plot_is_initialized:
                     continue
                     #AMaS_Object.init_2D_plot()
                 if AMaS_Object.current_ax != None:
-                    AC.AMaS.Plot_2D_Calc_Values(AMaS_Object)
+                    AMaS_Object.Plot_2D_Calc_Values()
                     colour = AMaS_Object.current_ax.get_color()
                     AMaS_Object.current_ax.remove()
                     AMaS_Object.current_ax = None
@@ -600,7 +600,7 @@ class Plot2DConfig(QtWidgets.QScrollArea):
         self.Button_SavePlot.clicked.connect(lambda: self.Plot2DTab.action_tab_3_tab_1_Display_SavePlt())
         
         #### TODO: Make prettier
-        self.SubsASlider = AGeInput.Float(self, "Substitute for a", 0, -10, 10)
+        self.SubsASlider = AGeInput.FloatSlider(self, "Substitute for a", 0, -10, 10)
         self.gridLayout_11.addWidget(self.SubsASlider, 14, 0, 1, 2)
         self.SubsASlider.S_ValueChanged.connect(lambda a: self.Plot2DTab.SliderChanged(a))
         ####

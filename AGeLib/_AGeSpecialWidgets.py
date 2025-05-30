@@ -588,6 +588,7 @@ class OptionsWidget_1_Appearance(QtWidgets.QWidget): #CRITICAL: Conform to namin
         #       TIP: LoadCurrentPalette is only called when the user presses the button therefore the check whether the checkbox is checked can simply be there without the need to worry about annoying the user with automatic loading
         #MAYBE: Add Mpl/Special Colour selection
         #MAYBE: Add a button to revert ?the last? change
+        #FEATURE: Add a window that previews all the colours to have some context when creating a new theme
         
         self.setLayout(QtWidgets.QGridLayout())
         self.FontLabel = QtWidgets.QLabel(self)

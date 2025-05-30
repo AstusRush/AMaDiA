@@ -63,6 +63,53 @@ class Int(_TypeWidget):
     def copyFrom(self, other:'Int'):
         self.SpinBox.setValue(other.SpinBox.value())
 
+class IntSlider(_TypeWidget):
+    S_ValueChanged:'pyqtSignal' = pyqtSignal(int)
+    def __init__(self, parent: 'QtWidgets.QWidget', displayname:str, default:int, min_:int=-10, max_:int=10, unit="") -> None:
+        super().__init__(parent)
+        self.NameLabel = self.addWidget(QtWidgets.QLabel(f"{displayname}", self),0,0)
+        self.SpinBox = self.addWidget(QtWidgets.QSpinBox(self),0,1)
+        self.Slider = self.addWidget(QtWidgets.QSlider(self),1,0,1,2)
+        self.Slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        if unit:
+            self.SpinBox.setSuffix(f" {unit}")
+        if min_:
+            self.SpinBox.setMinimum(min_)
+            self.Slider.setMinimum(min_)
+        if max_:
+            self.SpinBox.setMaximum(max_)
+            self.Slider.setMaximum(max_)
+        self.SpinBox.setValue(default)
+        self.Slider.setValue(default)
+        self.Slider.setSingleStep(1)
+        self.Slider.setPageStep(1)
+        
+        self.SpinBox.valueChanged.connect(lambda val: self._changed(val))
+        self.Slider.valueChanged.connect(lambda val: self._changed(val))
+    
+    def _changed(self, val:int):
+        self.SpinBox.blockSignals(True)
+        self.Slider.blockSignals(True)
+        self.SpinBox.setValue(val)
+        self.Slider.setValue(val)
+        self.SpinBox.blockSignals(False)
+        self.Slider.blockSignals(False)
+        self.S_ValueChanged.emit(val)
+    
+    def get(self) -> int:
+        return self.SpinBox.value()
+    
+    def __call__(self) -> int:
+        return self.get()
+    
+    def set(self, value:int):
+        self.SpinBox.setValue(value)
+        #NOTE: This sends a signal, triggering _changed and thus updating the slider
+    
+    def copyFrom(self, other:'Int'):
+        self.SpinBox.setValue(other.SpinBox.value())
+        #NOTE: This sends a signal, triggering _changed and thus updating the slider
+
 class Float(_TypeWidget):
     def __init__(self, parent: 'QtWidgets.QWidget', displayname:str, default:float, min_:float=None, max_:float=None, unit="", precise=False) -> None:
         super().__init__(parent)
@@ -100,6 +147,62 @@ class Float(_TypeWidget):
     
     def copyFrom(self, other:'Float'):
         self.SpinBox.setValue(other.SpinBox.value())
+
+class FloatSlider(_TypeWidget):
+    S_ValueChanged:'pyqtSignal' = pyqtSignal(float)
+    def __init__(self, parent: 'QtWidgets.QWidget', displayname:str, default:float, min_:float=-10, max_:float=10, unit="",sliderPrecision:int=1) -> None:
+        super().__init__(parent)
+        self.SliderPrecision = sliderPrecision
+        self.NameLabel = self.addWidget(QtWidgets.QLabel(f"{displayname}", self),0,0)
+        self.SpinBox = self.addWidget(DoubleSpinBox(self),0,1)
+        self.SpinBox.setDecimals(10)
+        try:
+            try:
+                self.SpinBox.setStepType(self.SpinBox.AdaptiveDecimalStepType)
+            except:
+                self.SpinBox.setStepType(self.SpinBox.StepType.AdaptiveDecimalStepType)
+        except:
+            ExceptionOutput()
+        self.Slider = self.addWidget(QtWidgets.QSlider(self),1,0,1,2)
+        self.Slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        if unit:
+            self.SpinBox.setSuffix(f" {unit}")
+        if min_:
+            self.SpinBox.setMinimum(min_)
+            self.Slider.setMinimum(math.ceil(min_*10**self.SliderPrecision))
+        if max_:
+            self.SpinBox.setMaximum(max_)
+            self.Slider.setMaximum(math.floor(max_*10**self.SliderPrecision))
+        self.SpinBox.setValue(default)
+        self.Slider.setValue(int(default))
+        self.Slider.setSingleStep(1)
+        self.Slider.setPageStep(1)
+        
+        self.SpinBox.valueChanged.connect(lambda val: self._changed(val))
+        self.Slider.valueChanged.connect(lambda val: self._changed(val/(10**self.SliderPrecision)))
+    
+    def _changed(self, val:float):
+        self.SpinBox.blockSignals(True)
+        self.Slider.blockSignals(True)
+        self.SpinBox.setValue(val)
+        self.Slider.setValue(int(val*10**self.SliderPrecision))
+        self.SpinBox.blockSignals(False)
+        self.Slider.blockSignals(False)
+        self.S_ValueChanged.emit(val)
+    
+    def get(self) -> float:
+        return self.SpinBox.value()
+    
+    def __call__(self) -> float:
+        return self.get()
+    
+    def set(self, value:float):
+        self.SpinBox.setValue(value)
+        #NOTE: This sends a signal, triggering _changed and thus updating the slider
+    
+    def copyFrom(self, other:'Float'):
+        self.SpinBox.setValue(other.SpinBox.value())
+        #NOTE: This sends a signal, triggering _changed and thus updating the slider
 
 class Bool(_TypeWidget):
     S_ValueChanged:pyqtSignal = pyqtSignal(bool)
