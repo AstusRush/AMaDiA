@@ -629,13 +629,24 @@ class _TextAddon_Finder_Floater(QtWidgets.QWidget):
 #endregion find
 
 #region layout
-class TightGridWidget(QtWidgets.QWidget):
-    def __init__(self, parent: typing.Optional['QtWidgets.QWidget'] = None, makeCompact:bool=True) -> None:
+class TightGridWidget(QtWidgets.QFrame):
+    def __init__(self, parent: typing.Optional['QtWidgets.QWidget'] = None, makeCompact:bool=True, frame:'typing.Union[bool,QtWidgets.QFrame.Shape]'=False) -> None:
         super().__init__(parent=parent)
         self.setLayout(QtWidgets.QGridLayout(self))
         self.layout().setObjectName("gridLayout")
-        self.layout().setContentsMargins(0,0,0,0)
+        self.setFrame(frame)
         if makeCompact: self.makeCompact()
+    
+    def setFrame(self, frame:'typing.Union[bool,QtWidgets.QFrame.Shape]'=True):
+        if frame:
+            if frame is True:
+                self.setFrameStyle(self.Box | self.Sunken)
+            else:
+                self.setFrameStyle(frame)
+            self.layout().setContentsMargins(3,3,3,3)
+        else:
+            self.setFrameStyle(self.NoFrame)
+            self.layout().setContentsMargins(0,0,0,0)
     
     def layout(self) -> 'QtWidgets.QGridLayout':
         return super().layout()
@@ -672,44 +683,7 @@ class TightGridWidget(QtWidgets.QWidget):
                     if widget is not None:
                         yield widget
 
-class TightGridFrame(QtWidgets.QFrame):
+class TightGridFrame(TightGridWidget):
     def __init__(self, parent: typing.Optional['QtWidgets.QWidget'] = None, makeCompact:bool=True) -> None:
-        super().__init__(parent=parent)
-        self.setFrameStyle(self.Box | self.Sunken)
-        self.setLayout(QtWidgets.QGridLayout(self))
-        self.layout().setObjectName("gridLayout")
-        #self.layout().setContentsMargins(0,0,0,0)
-        if makeCompact: self.makeCompact()
-    
-    def makeCompact(self):
-        self.layout().setRowStretch(1000, 1)
-    
-    def addWidget(self, widget, *args, **kwargs):
-        """
-        Allows creating a widget and adding it to the grid layout in one line. \n
-        (This is just a wrapper for `layout().addWidget` that returns the widget.) \n
-        This can make it much more readable when adding several spin boxes or labels to a layout.
-        """
-        #NOTE: widget must be a QWidget or a subclass but type-hinting this actually stops the linter from working correctly
-        #       as it then only sees a QWidget returned instead of what you actually gave it.
-        self.layout().addWidget(widget, *args, **kwargs)
-        return widget
-        #if typing.TYPE_CHECKING:
-        #    return widget
-        #else:
-        #    if isinstance(widget, QtWidgets.QWidget):
-        #        return widget
-        #    else:
-        #        NC(1,f"{widget} is not a subclass of QtWidgets.QWidget!", input=args, func=f"{type(self)}.addWidget")
-        #        return None
-    
-    def __iter__(self):
-        layout = self.layout()
-        for row in range(layout.rowCount()):
-            for col in range(layout.columnCount()):
-                item = layout.itemAtPosition(row, col)
-                if item is not None:
-                    widget = item.widget()
-                    if widget is not None:
-                        yield widget
+        super().__init__(parent=parent,makeCompact=makeCompact, frame=True)
 #endregion layout
