@@ -384,23 +384,29 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         if event.type() == 6 and App().enableHotkeys: # QtCore.QEvent.KeyPress
             if event.modifiers() == QtCore.Qt.AltModifier:
                 if event.key() == QtCore.Qt.Key_T :#and source is self: # Alt+T to toggle on top
+                    #NC(10,f"On Top: {self.OnTop} {bool(self.windowFlags() & QtCore.Qt.WindowStaysOnTopHint)}") #NOTE: Window Manager seems to not set/unset the OnTopHint flag when moving a window on top through OS-hotkeys
+                    #MAYBE: Add an optional OnTop button to the TopBar like on linux that also reflects the current OnTop status
                     if not self.OnTop:
                         print("Try OnTop")
                         self.OnTop = True
-                        self.setWindowFlag(QtCore.Qt.X11BypassWindowManagerHint,True)
-                        self.setWindowFlag(QtCore.Qt.BypassWindowManagerHint,True)
+                        if platform.system() == 'Windows':
+                            self.setWindowFlag(QtCore.Qt.X11BypassWindowManagerHint,True)
+                            self.setWindowFlag(QtCore.Qt.BypassWindowManagerHint,True)
                         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint,True)
                         QtWidgets.QApplication.instance().processEvents()
                         self.show()
+                        self.activateWindow()
                         return True
                     else:
                         print("No longer OnTop")
                         self.OnTop = False
-                        self.setWindowFlag(QtCore.Qt.X11BypassWindowManagerHint,False)
-                        self.setWindowFlag(QtCore.Qt.BypassWindowManagerHint,False)
+                        if platform.system() == 'Windows':
+                            self.setWindowFlag(QtCore.Qt.X11BypassWindowManagerHint,False)
+                            self.setWindowFlag(QtCore.Qt.BypassWindowManagerHint,False)
                         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint,False)
                         QtWidgets.QApplication.instance().processEvents()
                         self.show()
+                        self.activateWindow()
                         return True
             else:
                 if event.key() == QtCore.Qt.Key_F1:
