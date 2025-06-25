@@ -86,6 +86,8 @@ class AGeApp(QtWidgets.QApplication):
             args = []
         print("Starting App")
         self.enableHotkeys = True
+        if builtins.QtVersion == "PyQt6" and not args:
+            args.append("AGeApp") # Name of the Application
         super(AGeApp, self).__init__(args)
         self.setStyle("fusion")
         self.setAttribute(QtCore.Qt.AA_DontUseNativeMenuBar) #Fixes to bar widget on MacOS/OSX/darwin/Apples OS

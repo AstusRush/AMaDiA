@@ -44,9 +44,9 @@ class Int(_TypeWidget):
         self.SpinBox = self.addWidget(QtWidgets.QSpinBox(self),0,1)
         if unit:
             self.SpinBox.setSuffix(f" {unit}")
-        if min_:
+        if min_ is not None:
             self.SpinBox.setMinimum(min_)
-        if max_:
+        if max_ is not None:
             self.SpinBox.setMaximum(max_)
         self.SpinBox.setValue(default)
         if not _doNotConnectSignal: self.S_ValueChanged = self.SpinBox.valueChanged
@@ -69,9 +69,9 @@ class IntSlider(Int):
         super().__init__(parent=parent, displayname=displayname, default=default, min_=min_, max_=max_, unit=unit, _doNotConnectSignal=True)
         self.Slider = self.addWidget(QtWidgets.QSlider(self),1,0,1,2)
         self.Slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
-        if min_:
+        if min_ is not None:
             self.Slider.setMinimum(min_)
-        if max_:
+        if max_ is not None:
             self.Slider.setMaximum(max_)
         self.Slider.setValue(default)
         self.Slider.setSingleStep(1)
@@ -109,9 +109,9 @@ class Float(_TypeWidget):
                 ExceptionOutput()
         if unit:
             self.SpinBox.setSuffix(f" {unit}")
-        if min_:
+        if min_ is not None:
             self.SpinBox.setMinimum(min_)
-        if max_:
+        if max_ is not None:
             self.SpinBox.setMaximum(max_)
         self.SpinBox.setValue(default)
         if not _doNotConnectSignal: self.S_ValueChanged = self.SpinBox.valueChanged
@@ -135,9 +135,9 @@ class FloatSlider(Float):
         self.SliderPrecision = sliderPrecision
         self.Slider = self.addWidget(QtWidgets.QSlider(self),1,0,1,2)
         self.Slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
-        if min_:
+        if min_ is not None:
             self.Slider.setMinimum(math.ceil(min_*10**self.SliderPrecision))
-        if max_:
+        if max_ is not None:
             self.Slider.setMaximum(math.floor(max_*10**self.SliderPrecision))
         self.Slider.setValue(int(default))
         self.Slider.setSingleStep(1)

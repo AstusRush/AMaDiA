@@ -259,6 +259,7 @@ try:
             for QModule2 in QModuleDir:
                 if QModule2[0] != "_":
                     try:
+                        exec("if '<flag \\'' in str("+QModule+"."+QModule2+"): enumList.append('"+QModule+"."+QModule2+"')")
                         exec("if '<enum \\'' in str("+QModule+"."+QModule2+"): enumList.append('"+QModule+"."+QModule2+"')")
                     except AttributeError:
                         pass
@@ -268,6 +269,7 @@ try:
                     for i in QModuleDir2:
                         if i[0] != "_":
                             try:
+                                exec("if '<flag \\'' in str("+QModule+"."+QModule2+"."+i+"): enumList.append('"+QModule+"."+QModule2+"."+i+"')")
                                 exec("if '<enum \\'' in str("+QModule+"."+QModule2+"."+i+"): enumList.append('"+QModule+"."+QModule2+"."+i+"')")
                             except AttributeError:
                                 pass
@@ -328,6 +330,18 @@ try:
             for j in _enum:
                 if j[0] != "_":
                     exec(i.rsplit(".",1)[0]+"."+j+" = "+i+"."+j)
+        
+        # Apparently some flags/enums are invisible to dir()... (Why the hell would they do that?!)
+        extra_enums = [
+            "QtCore.Qt.NoFocus = QtCore.Qt.FocusPolicy.NoFocus",
+            "QtCore.Qt.AlignTrailing = QtCore.Qt.AlignmentFlag.AlignTrailing",
+            "QtCore.Qt.AlignCenter = QtCore.Qt.AlignmentFlag.AlignCenter",
+        ]
+        for i in extra_enums:
+            try:
+                exec(i)
+            except:
+                pass
         #endregion PyQt6 enums
         #region PyQt6 weirdness
         QtGui.QMouseEvent.globalPos = lambda self: QtGui.QMouseEvent.globalPosition(self).toPoint()
