@@ -131,17 +131,8 @@ if v: # If a specific Qt distribution is requested check if it can be imported
         v = False
 
 # If no specific Qt distribution is requested we or the requested one can not be imported we choose one
-if not v: #REMINDER: PyQt6 should be preferred over PyQt5 as soon as QWebwidgets and MatPlotLib are supported... Or PySide6 once it supports Qsci (if ever...)
-    print("No Qt version was specified.",end=" ")
-    try:
-        import PyQt5
-    except:
-        v = False
-        print("Could not find PyQt5.",end=" ")
-    else:
-        v = "PyQt5"
-        print("Found PyQt5 so it will be used.")
 if not v:
+    print("No Qt version was specified.",end=" ")
     try:
         import PyQt6
     except:
@@ -150,6 +141,15 @@ if not v:
     else:
         v = "PyQt6"
         print("Found PyQt6 so it will be used.")
+if not v:
+    try:
+        import PyQt5
+    except:
+        v = False
+        print("Could not find PyQt5.",end=" ")
+    else:
+        v = "PyQt5"
+        print("Found PyQt5 so it will be used.")
 if not v:
     try:
         import PySide6
@@ -321,10 +321,12 @@ try:
         for i in enumList:
             _enum = []
             exec("_enum.append(dir("+i+"))")
-            exec("setattr("+i+",\"__eq__\",__eq__)")
-            exec("setattr("+i+",\"__or__\",__or__)")
-            exec("setattr("+i+",\"__ror__\",__ror__)")
-            exec("setattr("+i+",\"__int__\",__int__)")
+            from packaging.version import parse as versionParser #REMINDER: this is not necessarily installed
+            if versionParser(QtCore.qVersion()) < versionParser("6.8"): #MAYBE: find out the exact Version since when it is no longer needed
+                exec("setattr("+i+",\"__eq__\",__eq__)")
+                exec("setattr("+i+",\"__or__\",__or__)")
+                exec("setattr("+i+",\"__ror__\",__ror__)")
+                exec("setattr("+i+",\"__int__\",__int__)")
             #MAYBE: Add more of these if they are necessary
             _enum = _enum[0]
             for j in _enum:
