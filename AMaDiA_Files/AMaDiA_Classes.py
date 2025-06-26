@@ -486,8 +486,17 @@ class AMaS: # Astus' Mathematical Structure
                 if "#" in self.cstr:
                     self.LaTeX += r" \qquad \text{ " + self.cstr.split("#",1)[1] + " } "
             except common_exceptions:
-                self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert input to LaTeX",func="AMaS.ConvertToLaTeX",send=False))
-                self.LaTeX = r"\text{Could not convert}"
+                isLaTeX = False
+                try:
+                    parse_latex(self.Input)
+                    isLaTeX = True
+                except:
+                    isLaTeX = False
+                if isLaTeX:
+                    self.LaTeX = self.Input
+                else:
+                    self.Notify(NC(exc=sys.exc_info(),lvl=2,msg="Could not convert input to LaTeX",func="AMaS.ConvertToLaTeX",send=False))
+                    self.LaTeX = r"\text{Could not convert}"
     
     def ConvertToLaTeX_Solution(self, expr=None):
         """
@@ -814,7 +823,15 @@ class AMaS: # Astus' Mathematical Structure
             try:
                 temp = AF.UnpackDualOperators(self.cstr,Brackets=("{","}"))
                 print(temp)
-                ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
+                try:
+                    ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
+                except common_exceptions as ex:
+                    try:
+                        ans = parse_latex(self.Input)
+                        self.LaTeX = self.Input
+                    except:
+                        NC(3, "Could not parse as LaTeX", exc=True)
+                        raise ex
                 self.CheckForNonesense(ans)
                 separator = "   <==   "
                 self.Separator = "   ==>   "
