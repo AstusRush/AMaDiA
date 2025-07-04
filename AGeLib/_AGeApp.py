@@ -58,8 +58,8 @@ class AGeApp(QtWidgets.QApplication):
         optionWindow: Options_Window
         
         advanced_mode: bool
-        Notification_List: list
-        uniqueNotificationList: list
+        Notification_List: typing.List[NC]
+        uniqueNotificationList: typing.List[NC]
         ModuleVersions: str
         
         Theme: typing.Dict[str,typing.Union[typing.Dict[str,QtGui.QBrush],QtGui.QPalette]]

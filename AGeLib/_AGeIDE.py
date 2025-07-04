@@ -519,10 +519,10 @@ class _InspectWidget_memberItem(QtWidgets.QWidget):
         return string
     
     def showCode(self):
-        pass
+        pass #TODO: InspectWidget.showCode
     
     def showHelp(self):
-        pass
+        pass #TODO: InspectWidget.showHelp
     
     def zoom(self):
         self.InspectWidget.zoom(self.String)
@@ -532,10 +532,10 @@ class _InspectWidget_memberItem(QtWidgets.QWidget):
         args, proceed = QtWidgets.QInputDialog.getText(self,"Are you sure?",f"Do you really want to call the method \"{self.String}\"?\nIf so, do you want to call it with arguments?")
         if not proceed: return
         try:
-            exec(f"_self_self._t_ret = _self_self.item({args})", self.InspectWidget.Globals, {"self":self.InspectWidget.window(),"_self_self":self})
-            #self._t_ret = self.item()
+            exec(f"_self_self._t_ret = _self_self.Item({args})", self.InspectWidget.Globals, {"self":self.InspectWidget.window(),"_self_self":self})
+            #self._t_ret = self.Item()
         except:
-            self._t_ret = sys.exc_info()
+            self._t_ret = sys.exc_info() #MAYBE: improve error output
         try:
             text = f"{self.String}\nReturn Type: {type(self._t_ret)}\n{self.stringRep(item = self._t_ret, Format = True)}"
             self.InspectWidget.DisplayWidget.setPlainText(text)

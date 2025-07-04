@@ -454,6 +454,17 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
         #    QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),source.toolTip(),source)
         return super(AWWF, self).eventFilter(source, event) # let the normal eventFilter handle the event
 
+class NotificationPopup(QtWidgets.QTextEdit):
+    #MAYBE: The Notification Popup is WIP, very experimental, and currently quite unstable
+    def __init__(self, parent):
+        super().__init__(parent)
+    
+    def populate(self):
+        self.clear()
+        notifications = App().Notification_List[-5:]
+        text = "\n\n".join([str(i) for i in notifications])
+        self.setText(text)
+
 class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to merely hide the 3 control buttons in fullscreen instead of hiding top and status bar completely
     def __init__(self, parent=None, DoInit=False, IncludeMenu = False, IncludeFontSpinBox = True, IncludeErrorButton = False, IncludeAdvancedCB = False):
         # type: (QtWidgets.QWidget, bool,bool,bool,bool,bool) -> None
@@ -586,6 +597,7 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
             self.layout().addWidget(self.Error_Label, 0, 100, 1, 1,QtCore.Qt.AlignRight)
             self.Error_Label.installEventFilter(self)
             self.Error_Label.clicked.connect(lambda: QtWidgets.QApplication.instance().showWindow_Notifications())
+            self.NotificationPopup = None #MAYBE: The Notification Popup is WIP, very experimental, and currently quite unstable
     
     def minimize(self):
         self.window().showMinimized()
@@ -649,9 +661,42 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
                     self.MinimizeButton.setAutoRaise(False)
                 elif event.type() == QtCore.QEvent.Leave:
                     self.MinimizeButton.setAutoRaise(True)
-        elif self.IncludeErrorButton and source is self.Error_Label and event.type() == QtCore.QEvent.Enter: #==10
-            QtWidgets.QToolTip.showText(QtGui.QCursor.pos(),self.Error_Label.toolTip(),self.Error_Label)
+            elif self.IncludeErrorButton and source is self.Error_Label:
+                if True:
+                    global_pos = self.Error_Label.mapToGlobal(self.Error_Label.rect().bottomLeft())
+                    QtWidgets.QToolTip.showText(global_pos,self.Error_Label.toolTip(),self.Error_Label)
+                else:
+                    #MAYBE: The Notification Popup is WIP, very experimental, and currently quite unstable
+                    self.createNotificationPopup()
+                    if event.type() == QtCore.QEvent.Enter:
+                        self.NotificationPopup.setHidden(False)
+                        #self.NotificationPopup.move(self.Error_Label.rect().bottomLeft())
+                        # Get global position of Error_Label's bottom left
+                        global_pos = self.Error_Label.mapToGlobal(self.Error_Label.rect().bottomLeft())
+                        window_pos = self.window().mapFromGlobal(global_pos)
+                        self.NotificationPopup.move(window_pos)
+                        # Calculate available width and height
+                        window = self.window()
+                        window_geom = window.geometry()
+                        popup_x = global_pos.x()
+                        popup_y = global_pos.y()
+                        available_width = window_geom.x() + window_geom.width() - popup_x - 10  # 10px margin
+                        available_height = window_geom.y() + window_geom.height() - popup_y - 10  # 10px margin
+                        self.NotificationPopup.resize(max(100, available_width), max(50, available_height))
+                        self.NotificationPopup.show()
+                        self.NotificationPopup.populate()
+                    elif event.type() == QtCore.QEvent.Leave:
+                        self.NotificationPopup.setHidden(True)
         return super(TopBar_Widget, self).eventFilter(source, event)
+    
+    def createNotificationPopup(self):
+        #MAYBE: The Notification Popup is WIP, very experimental, and currently quite unstable
+        if self.NotificationPopup is None:
+            self.NotificationPopup = NotificationPopup(self.window())
+        if self.NotificationPopup.parent() is not self.window():
+            self.NotificationPopup.setParent(self.window())
+        self.NotificationPopup.show()
+        self.NotificationPopup.setHidden(True)
     
     def mousePressEvent(self,event):
         # type: (QtGui.QMouseEvent) -> None

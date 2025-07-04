@@ -329,7 +329,7 @@ class NC: # Notification Class
                         "Error:\n":self.Error,"Error Description:\n":self.ErrorLongDesc,"Error Traceback:\n":self.ErrorTraceback,
                         "Function:\n":self.Function,"Window:\n":self.Window,"Input:\n":self.Input,"Versions:\n":_NC_App().ModuleVersions}
         return self.itemDict.items()
-
+    
     def unpack(self): #CLEANUP: remove unpack
         """DEPRECATED: Returns a tuple `(int(level),str(Message),str(Time))`"""
         return (self.level, str(self.Message), self.Time)
@@ -344,7 +344,7 @@ class NC: # Notification Class
             self.level = level
             self.GenerateLevelName()
         return self.level
-
+    
     def m(self, message=None):
         # type: (typing.Optional[str]) -> str
         """
@@ -357,7 +357,7 @@ class NC: # Notification Class
             return str(self.Error)
         else:
             return str(self.Message)
-        
+    
     def DPS(self, DplStr = None):
         # type: (typing.Optional[str]) -> str
         """
@@ -373,7 +373,7 @@ class NC: # Notification Class
             else:
                 self.DplStr = self.Level + " at " + self.t()
         return str(self.DplStr)
-        
+    
     def TTS(self, TTStr = None):
         # type: (typing.Optional[str]) -> str
         """
@@ -389,7 +389,7 @@ class NC: # Notification Class
             else:
                 self.TTStr = self.m()
         return str(self.TTStr)
-
+    
     def t(self, time=None):
         # type: (typing.Optional[datetime.datetime]) -> str
         """
@@ -400,7 +400,7 @@ class NC: # Notification Class
             self._time = time
             self.Time = self._time.strftime('%H:%M:%S')
         return self.Time
-
+    
     def e(self, Error=None, ErrorTraceback=None):
         # type: (typing.Optional[BaseException],typing.Optional[str]) -> str
         """
@@ -412,7 +412,7 @@ class NC: # Notification Class
         if ErrorTraceback is not None:
             self.ErrorTraceback = str(ErrorTraceback)
         return str(self.Error)
-
+    
     def tb(self, ErrorTraceback=None):
         # type: (typing.Optional[str]) -> str
         """
@@ -422,7 +422,7 @@ class NC: # Notification Class
         if ErrorTraceback is not None:
             self.ErrorTraceback = str(ErrorTraceback)
         return str(self.ErrorTraceback)
-
+    
     def f(self, func=None):
         # type: (typing.Optional[str]) -> str
         """
@@ -433,7 +433,7 @@ class NC: # Notification Class
         if func is not None:
             self.Function = str(func)
         return str(self.Function)
-
+    
     def w(self, win=None):
         # type: (typing.Optional[str]) -> str
         """
@@ -444,7 +444,7 @@ class NC: # Notification Class
         if win is not None:
             self.Window = str(win)
         return str(self.Window)
-
+    
     def i(self, input=None):
         # type: (typing.Optional[str]) -> str
         """
@@ -499,16 +499,16 @@ class NC: # Notification Class
             return str(self.Error) + str(other)
         else:
             return str(self.Message) + str(other)
-
+    
     def __radd__(self,other):
         if self.Error is not None:
             return str(other) + str(self.Error)
         else:
             return str(other) + str(self.Message)
-
+    
     def __call__(self):
         return str(self.Message)
-
+    
     def __str__(self):
         if self.Error is not None:
             if self.Message is None:

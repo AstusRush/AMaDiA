@@ -1093,20 +1093,20 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
 
     # Python operators
     operators = [
-        '=',
+        r'=',
         # Comparison
-        '==', '!=', '<', '<=', '>', '>=',
+        r'==', r'!=', r'<', r'<=', r'>', r'>=',
         # Arithmetic
-        '\+', '-', '\*', '/', '//', '\%', '\*\*',
+        r'\+', r'-', r'\*', r'/', r'//', r'\%', r'\*\*',
         # In-place
-        '\+=', '-=', '\*=', '/=', '\%=',
+        r'\+=', r'-=', r'\*=', r'/=', r'\%=',
         # Bitwise
-        '\^', '\|', '\&', '\~', '>>', '<<',
+        r'\^', r'\|', r'\&', r'\~', r'>>', r'<<',
     ]
 
     # Python braces
     braces = [
-        '\{', '\}', '\(', '\)', '\[', '\]',
+        r'\{', r'\}', r'\(', r'\)', r'\[', r'\]',
     ]
     def __init__(self, document):
         QtGui.QSyntaxHighlighter.__init__(self, document)
@@ -1550,20 +1550,20 @@ class Highlighter_Python_AGeSimple_base(_Highlighter_base):
     
     # Python operators
     l_operators = [
-        '=',
+        r'=',
         # Comparison
-        '==', '!=', '<', '<=', '>', '>=',
+        r'==', r'!=', r'<', r'<=', r'>', r'>=',
         # Arithmetic
-        '\+', '-', '\*', '/', '//', '\%', '\*\*',
+        r'\+', r'-', r'\*', r'/', r'//', r'\%', r'\*\*',
         # In-place
-        '\+=', '-=', '\*=', '/=', '\%=',
+        r'\+=', r'-=', r'\*=', r'/=', r'\%=',
         # Bitwise
-        '\^', '\|', '\&', '\~', '>>', '<<',
+        r'\^', r'\|', r'\&', r'\~', r'>>', r'<<',
     ]
     
     # Python braces
     l_braces = [
-        '\{', '\}', '\(', '\)', '\[', '\]',
+        r'\{', r'\}', r'\(', r'\)', r'\[', r'\]',
     ]
     
     
