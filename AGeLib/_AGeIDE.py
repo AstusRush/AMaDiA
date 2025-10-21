@@ -91,6 +91,7 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
                     ExecuteButton = True, ExecuteButtonToolTip = "Execute the code",
                     SaveButton = False, LoadButton = False, StandardFolder = "", #CRITICAL: Implement these!!! (EDFA could use these to make saving and loading templates easier.)
                     CheckBox = False, CheckBoxToolTip = "This Check Box seems to have no function",
+                    APIList:list[str]=None,
                     ):
         if additionalKeywords is None:
             additionalKeywords = []
@@ -182,6 +183,7 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             #self.Input_Field_Highlighter = PythonSH(self.Editor.document())
             #self.Lexer = PythonLexerQsci(self.EditorSc, additionalKeywords)
             self.Lexer = Lexer(self.Editor, self.EditorSc, additionalKeywords)
+            self.setupEditorSc_Autocomplete(additionalKeywords, APIList)
         except:
             NC(1,exc=True)
         self.recolour()
@@ -266,6 +268,8 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
                     self.sendExecute()
                 if event.key() == QtCore.Qt.Key_Backspace and self.QScintilla:
                     self.EditorSc.setScrollWidth(10) # Update the scroll width when backspace is pressed. (Can fail when holding backspace on longer documents but can be updated again by simply selecting another line)
+                if event.key() == QtCore.Qt.Key_Space and event.modifiers() == QtCore.Qt.ControlModifier and source == self.EditorSc:
+                    self.EditorSc.autoCompleteFromAll()
             #if self.QScintilla and event.type() == QtCore.QEvent.KeyRelease:
             #    #if event.key() == QtCore.Qt.AltModifier or event.key() == QtCore.Qt.ShiftModifier:
             #    #    modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -273,11 +277,11 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             #    #        self.rectToMulti()
             #    if event.key() == QtCore.Qt.ShiftModifier:
             #        modifiers = QtWidgets.QApplication.keyboardModifiers()
-            #        if not bool(modifiers & QtCore.Qt.AltModifier): # if alt and shift are both not pressed
+            #        if not bool(modifiers & QtCore.Qt.AltModifier): # if alt is not pressed
             #            self.rectToMulti()
             #    elif event.key() == QtCore.Qt.AltModifier:
             #        modifiers = QtWidgets.QApplication.keyboardModifiers()
-            #        if not bool(modifiers & QtCore.Qt.ShiftModifier): # if alt and shift are both not pressed
+            #        if not bool(modifiers & QtCore.Qt.ShiftModifier): # if shift is not pressed
             #            self.rectToMulti()
         except:
             pass
@@ -346,6 +350,38 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             commands.find(Qsci.QsciCommand.CharLeftRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Left)
             commands.find(Qsci.QsciCommand.CharRightRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Right)
     
+    def setupEditorSc_Autocomplete(self, additionalKeywords:list[str], apiList:list[str]=None):
+        if self.QScintilla:
+            if not apiList: apiList = []
+            self.EditorSc.setAutoCompletionCaseSensitivity(False)
+            self.EditorSc.setAutoCompletionReplaceWord(False)
+            self.EditorSc.setAutoCompletionSource(Qsci.QsciScintilla.AcsAll)
+            self.EditorSc.setAutoCompletionThreshold(1)
+            self.EditorSc.setCallTipsStyle(Qsci.QsciScintilla.CallTipsContext)
+            
+            self._EditorSc_ACapi = Qsci.QsciAPIs(self.Lexer.QSciSH)
+            
+            if not apiList:
+                for ac in additionalKeywords:
+                    self._EditorSc_ACapi.add(ac)
+            else:
+                for ac in apiList:
+                    self._EditorSc_ACapi.add(ac)
+            
+            #self._EditorSc_ACapi.add("testFunc1()")
+            #self._EditorSc_ACapi.add("testFunc2() A Test Func")
+            #self._EditorSc_ACapi.add("testFunc3(int arg_1)")
+            #self._EditorSc_ACapi.add("testFunc4(int arg_1) Another Test Func")
+            #self._EditorSc_ACapi.add("testFunc5(int arg_1,int arg_2,str arg_3) Yet another Test Func")
+            
+            self._EditorSc_ACapi.prepare() # This finalizes the API and prohibits all further changes
+            
+            #TODO: If self._EditorSc_ACapi already exists when calling this method the old one needs to be deleted first
+            #TODO: Call this method where appropriate to set up all methods in the namespace
+            #MAYBE: When calling this we might want to recreate the whole lexer to set up more highlighting
+            #MAYBE: If the apiList is complete we probably don't want to also add additionalKeywords as there would be duplicates
+            #FEATURE: When creating the apiList, mark functions as such
+    
     def setFont(self,font):
         font.setPointSize(App().font().pointSize())
         super(CodeEditorWidget, self).setFont(font)
@@ -382,6 +418,10 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             self.EditorSc.setMatchedBraceForegroundColor(App().PythonLexerColours["Keyword"].color())
             self.EditorSc.setUnmatchedBraceBackgroundColor(App().Palette1.color(QtGui.QPalette.Active,QtGui.QPalette.Base))
             self.EditorSc.setUnmatchedBraceForegroundColor(App().PythonLexerColours["UnclosedString"].color())
+            
+            self.EditorSc.setCallTipsBackgroundColor(App().Palette1.color(QtGui.QPalette.Active,QtGui.QPalette.Base))
+            self.EditorSc.setCallTipsForegroundColor(App().Palette1.color(QtGui.QPalette.Active,QtGui.QPalette.Text))
+            self.EditorSc.setCallTipsHighlightColor(App().PythonLexerColours["Keyword"].color())
         if self.hasExecuteButton:
             try:
                 self.executeButton.setIcon(recolourIcon(self.style().standardIcon(QtWidgets.QStyle.SP_MediaPlay)))
@@ -528,7 +568,7 @@ class _InspectWidget_memberItem(QtWidgets.QWidget):
         self.InspectWidget.zoom(self.String)
     
     def callMethod(self):
-        proceed = False#QtWidgets.QMessageBox.question(None,"Are you sure",f"Do you really want to call the method \"{self.string}\"?") == QtWidgets.QMessageBox.Yes
+        proceed = False#QtWidgets.QMessageBox.question(None,"Are you sure",f"Do you really want to call the method \"{self.String}\"?") == QtWidgets.QMessageBox.Yes
         args, proceed = QtWidgets.QInputDialog.getText(self,"Are you sure?",f"Do you really want to call the method \"{self.String}\"?\nIf so, do you want to call it with arguments?")
         if not proceed: return
         try:
@@ -563,7 +603,7 @@ class _MemberListWidget(QtWidgets.QListWidget):
                 SelectedItems = self.selectedItems()
                 if len(SelectedItems)==1:
                     item = SelectedItems[0]
-                    QtWidgets.QApplication.clipboard().setText(self.itemWidget(item).string)
+                    QtWidgets.QApplication.clipboard().setText(self.itemWidget(item).String)
                     event.accept()
                     return
             super(_MemberListWidget, self).keyPressEvent(event)
@@ -597,7 +637,8 @@ class ConsoleWidget(QtWidgets.QSplitter):
         font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
         self.Console = CodeEditorWidget(self,additionalKeywords=self.additionalKeywords()+additionalKeywords,
                                         ExecuteButton=True, ExecuteButtonToolTip="Execute the code",
-                                        CheckBox = True, CheckBoxToolTip = "If checked the locals will be persistend between executions.\nThus if not checked the locals will be cleared before and after execution."
+                                        CheckBox = True, CheckBoxToolTip = "If checked the locals will be persistend between executions.\nThus if not checked the locals will be cleared before and after execution.",
+                                        APIList=self.getAPIList()
                                         )
         self.Console.setFont(font)
         self.Console.setText("# TODO: Write some introductory text here.\n")
@@ -661,6 +702,42 @@ class ConsoleWidget(QtWidgets.QSplitter):
         """
         self.updateLocals = function
     
+    def getSpecialLocals(self):
+        return {
+            "app"     : App() ,
+            "window"  : App().MainWindow ,
+            "mw"      : App().MainWindow ,
+            "self"    : self.window() ,
+            "display" : self.display ,
+            "dpl"     : self.dpl ,
+            "dir"     : self.dir ,
+            "code"    : self.code ,
+            "help"    : self.help ,
+            "getPath" : lambda mustExist=False: getPath(mustExist) ,
+            }
+    
+    def getAPIList(self):
+        l = set()
+        d = dict({**builtins.__dict__, **self.Locals, **self.Globals, **self.LocalsExternal, **self._LocalsExternal})
+        d.update(self.getSpecialLocals())
+        self._createAPIList(d,l,set(),3)
+        return l
+    
+    def _createAPIList(self, APIDict:dict, SetToAddTo:set, ModuleSet:set, recursionDepth:int=3, ModulePrefix:str=""):
+        if ModulePrefix: ModulePrefix+="."
+        for k,v in APIDict.items():
+            if k.startswith("__"): continue
+            if inspect.ismodule(v) and k in ModuleSet: continue
+            s = k
+            #if hasattr(v, "__call__"): s+="()" #MAYBE: Find out how to add params
+            s+=" Type: "+str(type(v)) #TODO: Is not displayed for func until parentheses are typed
+            if hasattr(v, "__doc__") and isinstance(v.__doc__, str) and v.__doc__: s+=" Doc: "+(v.__doc__.replace("\n"," ") if len(v.__doc__)<60 else v.__doc__.replace("\n"," ")[:55])
+            s = s.replace(".","․") # Replace dot with similar character to not confuse the parser who tends to interpret the dor as a module separator
+            SetToAddTo.add(ModulePrefix+s)
+            if inspect.ismodule(v): ModuleSet.add(k)
+            if recursionDepth>0 and (inspect.ismodule(v) or k in ["self",] or (not (inspect.isclass(v) or inspect.ismethod(v) or inspect.isfunction(v)))) and hasattr(v,"__dict__"):
+                self._createAPIList(v.__dict__, SetToAddTo, ModuleSet, recursionDepth-1, ModulePrefix+k)
+    
     def executeCode(self):
         if self.updateLocals: self._setLocals(self.updateLocals())
         input_text = self.Console.text()
@@ -669,18 +746,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
                 self.Locals = {}
             self.Locals.update(self.Globals)
             # Set app and window for the local dictionary so that they can be used in the execution
-            self.Locals.update({
-                "app"     : App() ,
-                "window"  : App().MainWindow ,
-                "mw"      : App().MainWindow ,
-                "self"    : self.window() ,
-                "display" : self.display ,
-                "dpl"     : self.dpl ,
-                "dir"     : self.dir ,
-                "code"    : self.code ,
-                "help"    : self.help ,
-                "getPath" : lambda mustExist=False: getPath(mustExist) ,
-                })
+            self.Locals.update(self.getSpecialLocals())
             self.Locals.update(self.LocalsExternal)
             self.Locals.update(self._LocalsExternal)
             #NOTE: Having locals and globals be the same dictionary allows importing modules and then using them in functions
