@@ -25,6 +25,36 @@ from . import AGeToPy
 from . import _AGeIDE_SH
 #endregion Special Imports
 
+#region Helper Functions
+def getDirDict(theObject):
+    d = dict()
+    for i in dir(theObject):
+        #TODO: This "dir returns other values to "vars" (which uses "__dict__"). It might be better to use "vars" or both. More research required
+        #TODO: Is there a way to get a list of members of class or can it only be done for objects (instances of classes)? Maybe by analysing the code of the init with inspect?
+        try:
+            d[i] = getattr(theObject,i)
+        except: pass
+    return d
+
+def createAPIList(APIDict:dict, SetToAddTo:set, ModuleSet:set, recursionDepth:int=4, ModulePrefix:str="",*, _isInitialCall=True):
+    if ModulePrefix: ModulePrefix+="."
+    for k,v in APIDict.items():
+        if k.startswith("__"): continue
+        if inspect.ismodule(v) and k in ModuleSet: continue
+        if not _isInitialCall and inspect.isbuiltin(v): continue # ensures that builtins are only shown once
+        s = k
+        #if hasattr(v, "__call__"): s+="()" #MAYBE: Find out how to add params
+        s+=" Type: "+str(type(v)) #TODO: Is not displayed for func until parentheses are typed
+        if hasattr(v, "__doc__") and isinstance(v.__doc__, str) and v.__doc__: s+=" Doc: "+(v.__doc__.replace("\n"," ") if len(v.__doc__)<60 else v.__doc__.replace("\n"," ")[:55])
+        s = s.replace(".","․") # Replace dot with similar character to not confuse the parser who tends to interpret the dor as a module separator
+        SetToAddTo.add(ModulePrefix+s)
+        if inspect.ismodule(v): ModuleSet.add(k)
+        try: hasattr(v,"test") # This checks if hasattr can be invoked. Catches the case when a C++ object is already deleted
+        except: continue
+        if recursionDepth>0 and (inspect.ismodule(v) or k in ["self",] or (not (inspect.isclass(v) or inspect.ismethod(v) or inspect.isfunction(v)))) and hasattr(v,"__dir__"):
+            #createAPIList({i:getattr(v,i) for i in dir(v) if hasattr(v,i)}, SetToAddTo, ModuleSet, recursionDepth-1, ModulePrefix+k, _isInitialCall=False)
+            createAPIList(getDirDict(v), SetToAddTo, ModuleSet, recursionDepth-1, ModulePrefix+k, _isInitialCall=False)
+#endregion Helper Functions
 
 #region IDE General Widgets
 
@@ -81,7 +111,6 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
     """
     #TODO: Add line numbers to Editor
     #TODO: Enable auto indentation for Editor
-    #TODO: Make autocomplete for EditorSc
     #TODO: Try to add the Finder to EditorSc
     returnPressed = pyqtSignal()
     returnCtrlPressed = pyqtSignal()
@@ -92,16 +121,22 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
                     SaveButton = False, LoadButton = False, StandardFolder = "", #CRITICAL: Implement these!!! (EDFA could use these to make saving and loading templates easier.)
                     CheckBox = False, CheckBoxToolTip = "This Check Box seems to have no function",
                     APIList:list[str]=None,
+                    APIUpdater:typing.Callable[[],list[str]]=None,
+                    APIUpdateButton = False,
+                    automaticallySetUpAutoComplete=True,
                     ):
         if additionalKeywords is None:
             additionalKeywords = []
         additionalKeywords = list(set(additionalKeywords).union([i for i in list(builtins.__dict__.keys()) if not i.startswith("__")],["match","case"]))
+        if not APIList:
+            APIList = additionalKeywords
         self.hasFloater = False
         self._rectToMultiLast = timetime()
         super(CodeEditorWidget, self).__init__(parent)
         self.QScintilla = QSciImported #CRITICAL: Setting this to False leads to exceptions getting thrown
         self.hasExecuteButton = ExecuteButton
         self.hasCheckBox = CheckBox
+        self.hasAPIUpdateButton = APIUpdateButton
         self.setLayout(QtWidgets.QGridLayout(self))
         self.layout().setObjectName("gridLayout")
         self.layout().setContentsMargins(0,0,0,0)
@@ -140,7 +175,7 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
         self.layout().addWidget(self.EContainer)
         App().S_FontChanged.connect(lambda: self._UpdateFontSize())
         App().S_ColourChanged.connect(lambda: self.recolour())
-        if self.QScintilla or self.hasExecuteButton or self.hasCheckBox:
+        if self.QScintilla or self.hasExecuteButton or self.hasCheckBox or self.hasAPIUpdateButton:
             self.Floater = QtWidgets.QWidget(self)
             self.Floater.setFocusPolicy(QtCore.Qt.NoFocus)
             self.Floater.setLayout(QtWidgets.QGridLayout(self.Floater))
@@ -148,32 +183,41 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             self.Floater.layout().setContentsMargins(0,0,0,0)
             self.Floater.layout().setSpacing(0)
             MaxSizeFactor = 0
-            if self.QScintilla:
+            if self.hasCheckBox:
+                self.CheckBox = QtWidgets.QCheckBox(self.Floater)
+                self.CheckBox.setMaximumSize(24, 24)
+                self.CheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
+                self.CheckBox.setToolTip(CheckBoxToolTip)
+                self.CheckBox.setChecked(False)
+                self.Floater.layout().addWidget(self.CheckBox,0,MaxSizeFactor)
                 MaxSizeFactor += 1
-                self.toggleButton = QtWidgets.QToolButton(self.Floater)
-                self.toggleButton.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_BrowserReload))
-                self.toggleButton.setMaximumSize(24, 24)
-                self.toggleButton.setFocusPolicy(QtCore.Qt.NoFocus)
-                self.toggleButton.setToolTip("Toggle between the QScintilla Editor and the Qt Editor")
-                self.toggleButton.clicked.connect(lambda: self.toggleEditor())
-                self.Floater.layout().addWidget(self.toggleButton,0,2)
             if self.hasExecuteButton:
-                MaxSizeFactor += 1
                 self.executeButton = QtWidgets.QToolButton(self.Floater)
                 self.executeButton.setIcon(recolourIcon(self.style().standardIcon(QtWidgets.QStyle.SP_MediaPlay)))
                 self.executeButton.setMaximumSize(24, 24)
                 self.executeButton.setFocusPolicy(QtCore.Qt.NoFocus)
                 self.executeButton.setToolTip(ExecuteButtonToolTip+"\n(shortcut ctrl+return)")
                 self.executeButton.clicked.connect(lambda: self.sendExecute())
-                self.Floater.layout().addWidget(self.executeButton,0,1)
-            if self.hasCheckBox:
+                self.Floater.layout().addWidget(self.executeButton,0,MaxSizeFactor)
                 MaxSizeFactor += 1
-                self.CheckBox = QtWidgets.QCheckBox(self.Floater)
-                self.CheckBox.setMaximumSize(24, 24)
-                self.CheckBox.setFocusPolicy(QtCore.Qt.NoFocus)
-                self.CheckBox.setToolTip(CheckBoxToolTip)
-                self.CheckBox.setChecked(False)
-                self.Floater.layout().addWidget(self.CheckBox,0,0)
+            if self.QScintilla:
+                self.toggleButton = QtWidgets.QToolButton(self.Floater)
+                self.toggleButton.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_BrowserReload))
+                self.toggleButton.setMaximumSize(24, 24)
+                self.toggleButton.setFocusPolicy(QtCore.Qt.NoFocus)
+                self.toggleButton.setToolTip("Toggle between the QScintilla Editor and the Qt Editor")
+                self.toggleButton.clicked.connect(lambda: self.toggleEditor())
+                self.Floater.layout().addWidget(self.toggleButton,0,MaxSizeFactor)
+                MaxSizeFactor += 1
+            if self.hasAPIUpdateButton:
+                self.APIUpdateButton = QtWidgets.QToolButton(self.Floater)
+                self.APIUpdateButton.setText("A")
+                self.APIUpdateButton.setMaximumSize(24, 24)
+                self.APIUpdateButton.setFocusPolicy(QtCore.Qt.NoFocus)
+                self.APIUpdateButton.setToolTip("Update the autocomplete list")
+                self.APIUpdateButton.clicked.connect(lambda: self.updateAutocomplete())
+                self.Floater.layout().addWidget(self.APIUpdateButton,0,MaxSizeFactor)
+                MaxSizeFactor += 1
             self.Floater.raise_()
             self.Floater.setMaximumSize(MaxSizeFactor*24, 24)
             self.hasFloater = True
@@ -183,7 +227,10 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             #self.Input_Field_Highlighter = PythonSH(self.Editor.document())
             #self.Lexer = PythonLexerQsci(self.EditorSc, additionalKeywords)
             self.Lexer = Lexer(self.Editor, self.EditorSc, additionalKeywords)
-            self.setupEditorSc_Autocomplete(additionalKeywords, APIList)
+            if self.QScintilla:
+                self.Lexer.QSciSH.setFoldQuotes(True)
+            if automaticallySetUpAutoComplete: self.setupEditorSc_Autocomplete(APIList)
+            self.APIUpdater = APIUpdater
         except:
             NC(1,exc=True)
         self.recolour()
@@ -311,8 +358,11 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             self.EditorSc.setTabWidth(4)
             self.EditorSc.setTabIndents(True)
             self.EditorSc.setAutoIndent(True)
-            self.EditorSc.setIndentationsUseTabs(True)
+            self.EditorSc.setIndentationsUseTabs(False)
             self.EditorSc.setUtf8(True)
+            self.EditorSc.setBraceMatching(True)
+            self.EditorSc.setBackspaceUnindents(True)
+            self.EditorSc.setEolMode(Qsci.QsciScintilla.EolUnix)
             #
             self.EditorSc.setScrollWidth(10)
             self.EditorSc.setScrollWidthTracking(True)
@@ -350,8 +400,11 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             commands.find(Qsci.QsciCommand.CharLeftRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Left)
             commands.find(Qsci.QsciCommand.CharRightRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Right)
     
-    def setupEditorSc_Autocomplete(self, additionalKeywords:list[str], apiList:list[str]=None):
+    def setupEditorSc_Autocomplete(self, apiList:list[str]):
         if self.QScintilla:
+            #try: self._EditorSc_ACapi.cancelPreparation() #NOTE: This leads to uncatchable crashes!
+            #except: pass
+            
             if not apiList: apiList = []
             self.EditorSc.setAutoCompletionCaseSensitivity(False)
             self.EditorSc.setAutoCompletionReplaceWord(False)
@@ -361,12 +414,8 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             
             self._EditorSc_ACapi = Qsci.QsciAPIs(self.Lexer.QSciSH)
             
-            if not apiList:
-                for ac in additionalKeywords:
-                    self._EditorSc_ACapi.add(ac)
-            else:
-                for ac in apiList:
-                    self._EditorSc_ACapi.add(ac)
+            for ac in apiList:
+                self._EditorSc_ACapi.add(ac)
             
             #self._EditorSc_ACapi.add("testFunc1()")
             #self._EditorSc_ACapi.add("testFunc2() A Test Func")
@@ -381,6 +430,12 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             #MAYBE: When calling this we might want to recreate the whole lexer to set up more highlighting
             #MAYBE: If the apiList is complete we probably don't want to also add additionalKeywords as there would be duplicates
             #FEATURE: When creating the apiList, mark functions as such
+    
+    def updateAutocomplete(self):
+        try:
+            self.setupEditorSc_Autocomplete(self.APIUpdater())
+        except:
+            NC(2,"Could not update autocomplete list",exc=True)
     
     def setFont(self,font):
         font.setPointSize(App().font().pointSize())
@@ -616,7 +671,7 @@ class _MemberListWidget(QtWidgets.QListWidget):
 #CRITICAL: Validate (should already be in) self should refer to the window instead of the widget for easier navigation
 
 class ConsoleWidget(QtWidgets.QSplitter):
-    def __init__(self, parent = None, additionalKeywords=None):
+    def __init__(self, parent = None, additionalKeywords=None, automaticallySetUpAutoComplete=True):
         """
         TODO: Write Documentation
         """
@@ -638,12 +693,11 @@ class ConsoleWidget(QtWidgets.QSplitter):
         self.Console = CodeEditorWidget(self,additionalKeywords=self.additionalKeywords()+additionalKeywords,
                                         ExecuteButton=True, ExecuteButtonToolTip="Execute the code",
                                         CheckBox = True, CheckBoxToolTip = "If checked the locals will be persistend between executions.\nThus if not checked the locals will be cleared before and after execution.",
-                                        APIList=self.getAPIList()
+                                        APIList=self.getAPIList(),
+                                        APIUpdater=lambda: self.getAPIList(),APIUpdateButton=True,automaticallySetUpAutoComplete=automaticallySetUpAutoComplete,
                                         )
         self.Console.setFont(font)
         self.Console.setText("# TODO: Write some introductory text here.\n")
-        
-        #TODO: Load the and the class members to the auto complete of self.Console
         
         self.DisplayWidget = QtWidgets.QPlainTextEdit(self)
         self.DisplayWidget.setObjectName("DisplayWidget")
@@ -682,7 +736,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
             self.Globals = globals()
         else:
             self.Globals = Globals
-        #TODO: Update autocomplete
+        self.Console.updateAutocomplete()
     
     def setLocals(self, Locals = {}):
         """
@@ -720,23 +774,8 @@ class ConsoleWidget(QtWidgets.QSplitter):
         l = set()
         d = dict({**builtins.__dict__, **self.Locals, **self.Globals, **self.LocalsExternal, **self._LocalsExternal})
         d.update(self.getSpecialLocals())
-        self._createAPIList(d,l,set(),3)
+        createAPIList(d,l,set())
         return l
-    
-    def _createAPIList(self, APIDict:dict, SetToAddTo:set, ModuleSet:set, recursionDepth:int=3, ModulePrefix:str=""):
-        if ModulePrefix: ModulePrefix+="."
-        for k,v in APIDict.items():
-            if k.startswith("__"): continue
-            if inspect.ismodule(v) and k in ModuleSet: continue
-            s = k
-            #if hasattr(v, "__call__"): s+="()" #MAYBE: Find out how to add params
-            s+=" Type: "+str(type(v)) #TODO: Is not displayed for func until parentheses are typed
-            if hasattr(v, "__doc__") and isinstance(v.__doc__, str) and v.__doc__: s+=" Doc: "+(v.__doc__.replace("\n"," ") if len(v.__doc__)<60 else v.__doc__.replace("\n"," ")[:55])
-            s = s.replace(".","․") # Replace dot with similar character to not confuse the parser who tends to interpret the dor as a module separator
-            SetToAddTo.add(ModulePrefix+s)
-            if inspect.ismodule(v): ModuleSet.add(k)
-            if recursionDepth>0 and (inspect.ismodule(v) or k in ["self",] or (not (inspect.isclass(v) or inspect.ismethod(v) or inspect.isfunction(v)))) and hasattr(v,"__dict__"):
-                self._createAPIList(v.__dict__, SetToAddTo, ModuleSet, recursionDepth-1, ModulePrefix+k)
     
     def executeCode(self):
         if self.updateLocals: self._setLocals(self.updateLocals())
@@ -752,6 +791,8 @@ class ConsoleWidget(QtWidgets.QSplitter):
             #NOTE: Having locals and globals be the same dictionary allows importing modules and then using them in functions
             # as well as using global variables in function, etc.
             exec(input_text, self.Locals, self.Locals)
+            if self.Console.CheckBox.checkState() or input_text.find("import ")>=0:
+                self.Console.updateAutocomplete()
             if not self.Console.CheckBox.checkState():
                 self.Locals = {}
         except:
@@ -916,7 +957,6 @@ class InspectWidget(QtWidgets.QWidget):
             self.Globals = globals()
         else:
             self.Globals = Globals
-        #TODO: Update autocomplete
     
     def eventFilter(self, source, event):
         # type: (QtWidgets.QWidget|_MemberListWidget, QtCore.QEvent|QtGui.QKeyEvent) -> bool
@@ -1097,7 +1137,9 @@ class OverloadWidget(QtWidgets.QWidget): #FEATURE: Add ability to overload and a
         self.ApplyButton.setToolTip(self.applyCode.__doc__)
         self.ApplyButton.setToolTipDuration(0)
         self.layout().addWidget(self.ApplyButton,0,3)
-        self.Console = CodeEditorWidget(self,additionalKeywords=["self","NC"],ExecuteButton=False)
+        self.Console = CodeEditorWidget(self,additionalKeywords=["self","NC"],ExecuteButton=False,
+                                        APIList=self.getAPIList(),APIUpdater=lambda: self.getAPIList(),APIUpdateButton=True,automaticallySetUpAutoComplete=False,
+                                        )
         self.layout().addWidget(self.Console, 1, 0, 1, 4)
         self.ApplyButton.clicked.connect(lambda: self.Console.sendExecute())
         self.Console.S_Execute.connect(lambda: self.applyCode())
@@ -1152,7 +1194,26 @@ class OverloadWidget(QtWidgets.QWidget): #FEATURE: Add ability to overload and a
         if self.MethodBrowserWindow != None:
             self.MethodBrowserWindow.InspectWidget.setGlobals(self.Globals)
         
-        #TODO: Update autocomplete
+        self.Console.updateAutocomplete()
+    
+    def getAPIList(self):
+        l = set()
+        d = dict({**self.MethodGlobals,"_self_self":self,"types":types,"sys":sys})
+        try:
+            if self.Method is not None:
+                try:
+                    d["self"] = self.Method.__self__
+                except:
+                    if not self.Static:
+                        exec(f"try:\n\t_self_self.Target = {self.NameInput.text()}\nexcept:\n\t_self_self.Target = None\ntry:\n\t_self_self.TargetObject = "+self.NameInput.text().rsplit(".",1)[0]+"\nexcept:\n\t_self_self.TargetObject = None", self.Globals, {"self":self.window(),"_self_self":self})
+                    if not inspect.isclass(self.TargetObject) or self.TargetObject is not None:
+                        d["self"] = self.TargetObject
+                    else:
+                        NC(2,"Could not load autocomplete list for \"self\"",exc=True)
+        except:
+            NC(2,"Could not load autocomplete list for \"self\"",exc=True)
+        createAPIList(d,l,set())
+        return l
     
     def loadCode(self):
         """
@@ -1179,15 +1240,16 @@ class OverloadWidget(QtWidgets.QWidget): #FEATURE: Add ability to overload and a
                 # Filter out leading tabs and spaces.
                 # Do several passes in case a class definition is indented but not infinite passes to avoid endless loops.
                 # (I can conceive of many ways that could lead to one or both if cases evaluating to True while replace does not actually perform any changes.
-                #   All of these are far too uncommon to warrent handling and most make the code invalid anyways.)
+                #   All of these are far too uncommon to warrant handling and most make the code invalid anyways.)
                 # textwrap.dedent is not used because empty lines should not be normalized to just a newline character but instead be dedented like all other lines
                 if "    def" in code and not True in [s.startswith("def") for s in code.splitlines()]:
                     code = code.replace("\n    ","\n")
                 if "\tdef" in code and not True in [s.startswith("def") for s in code.splitlines()]: # Not using elif in case strings containing "def" with leading spaces/tabs are used
                     code = code.replace("\n\t","\n")
             self.Console.setText("# Use ctrl+return to confirm your code changes"+code)
-            self.MethodGlobals = self.Method.__globals__ #TODO: Load these globals and the class members to the auto complete of self.Console
+            self.MethodGlobals = self.Method.__globals__
             self.highlightInput("Green")
+            self.Console.updateAutocomplete()
         except:
             method = str(self.Method) if self.Static else self.NameInput.text()
             NC(1,"Could not load code",exc=sys.exc_info(),input=method)
@@ -1469,7 +1531,7 @@ class exec_Window(AWWF):
             self.OverloadWidget.Console.setFont(font)
             
             # Console #REM#
-            self.ConsoleWidget = ConsoleWidget(self,["Plot","draw","clear","plot"])
+            self.ConsoleWidget = ConsoleWidget(self,["Plot","draw","clear","plot"],automaticallySetUpAutoComplete=False)
             self.ConsoleWidget.setLocals({"Plot":lambda:self.Plot,"draw":lambda:self.Plot.draw(),"clear":lambda:self.Plot.clear(),"plot":lambda *args,**wargs:self.Plot.plot(*args,**wargs)})
             self.TabWidget.addTab(self.ConsoleWidget,"Console")
             
@@ -1513,6 +1575,7 @@ class exec_Window(AWWF):
             self.setAutoFillBackground(True)
             self.setupHelpTexts()
             self.installEventFilter(self)
+            QtCore.QTimer.singleShot(500, lambda:self.ConsoleWidget.Console.updateAutocomplete())
         except:
             NC(exc=sys.exc_info(),win=self.windowTitle(),func="exec_Window.__init__")
     
