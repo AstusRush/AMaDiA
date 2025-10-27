@@ -1119,12 +1119,15 @@ class AMaS: # Astus' Mathematical Structure
                     #np.warnings.showwarning = self.NotifyWarning #NOTE: Removed from numpy
                     warnings.showwarning = self.NotifyWarning
                     if self.cstr.count("Integral") == 0:
-                        evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
+                        evalfunc = sympy.lambdify(x, self.cstr, modules=['numpy','sympy'])
                         self.plot_y_vals = evalfunc(self.plot_x_vals)
                         self.plot_y_vals = np.asarray(self.plot_y_vals)
                         
+                        #NC(3,self.plot_y_vals)
+                        #NC(3,dir(self.plot_y_vals))
                         if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == ():
                             self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
+                            #self.plot_y_vals = sympy.full_like(self.plot_x_vals , self.plot_y_vals)
                         if self.plot_y_vals.shape != self.plot_x_vals.shape:
                             print(self.plot_y_vals.shape)
                             raise Exception("Dimensions do not match")
@@ -1133,7 +1136,7 @@ class AMaS: # Astus' Mathematical Structure
                         temp_Text = self.cstr
                         temp_Text = temp_Text.replace("Integral","")
                         temp_Text = re.sub(r",x\)$",")",temp_Text)
-                        evalfunc = sympy.lambdify(x, temp_Text, modules='numpy')
+                        evalfunc = sympy.lambdify(x, temp_Text, modules=['numpy','sympy'])
                         
                         def F(X):
                             try:

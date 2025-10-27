@@ -542,7 +542,6 @@ def FactorialParser(string):
     for i in insertion_points:
         string = string[:i] + "factorial" + string[i:]
     string = string.replace("!","")
-    NC(2,string)
     return string
 
 def NonInterpretableBracketReplace(string):
