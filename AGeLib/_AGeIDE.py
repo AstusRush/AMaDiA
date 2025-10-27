@@ -36,8 +36,10 @@ def getDirDict(theObject):
         except: pass
     return d
 
-def createAPIList(APIDict:dict, SetToAddTo:set, ModuleSet:set, recursionDepth:int=4, ModulePrefix:str="",*, _isInitialCall=True):
+def createAPIList(APIDict:dict, SetToAddTo:set, recursionDepth:int=4, ModulePrefix:str="",*, _isInitialCall=True, ModuleSet:set=None, ClassSet:set=None):
     if ModulePrefix: ModulePrefix+="."
+    if ModuleSet is None: ModuleSet = set()
+    if ClassSet is None: ClassSet = set()
     for k,v in APIDict.items():
         if k.startswith("__"): continue
         if inspect.ismodule(v) and k in ModuleSet: continue
@@ -48,12 +50,15 @@ def createAPIList(APIDict:dict, SetToAddTo:set, ModuleSet:set, recursionDepth:in
         if hasattr(v, "__doc__") and isinstance(v.__doc__, str) and v.__doc__: s+=" Doc: "+(v.__doc__.replace("\n"," ") if len(v.__doc__)<60 else v.__doc__.replace("\n"," ")[:55])
         s = s.replace(".","․") # Replace dot with similar character to not confuse the parser who tends to interpret the dor as a module separator
         SetToAddTo.add(ModulePrefix+s)
+        if inspect.isclass(v) and v in ClassSet: continue
+        newRecursionDepth = min(1,recursionDepth-1) if not inspect.ismodule(v) and type(k) in ClassSet else recursionDepth-1
         if inspect.ismodule(v): ModuleSet.add(k)
+        if inspect.isclass(v): ClassSet.add(v)
         try: hasattr(v,"test") # This checks if hasattr can be invoked. Catches the case when a C++ object is already deleted
         except: continue
         if recursionDepth>0 and (inspect.ismodule(v) or k in ["self",] or (not (inspect.isclass(v) or inspect.ismethod(v) or inspect.isfunction(v)))) and hasattr(v,"__dir__"):
-            #createAPIList({i:getattr(v,i) for i in dir(v) if hasattr(v,i)}, SetToAddTo, ModuleSet, recursionDepth-1, ModulePrefix+k, _isInitialCall=False)
-            createAPIList(getDirDict(v), SetToAddTo, ModuleSet, recursionDepth-1, ModulePrefix+k, _isInitialCall=False)
+            #createAPIList({i:getattr(v,i) for i in dir(v) if hasattr(v,i)}, SetToAddTo, recursionDepth-1, ModulePrefix+k, _isInitialCall=False, ModuleSet=ModuleSet, ClassSet=ClassSet)
+            createAPIList(getDirDict(v), SetToAddTo, newRecursionDepth, ModulePrefix+k, _isInitialCall=False, ModuleSet=ModuleSet, ClassSet=ClassSet)
 #endregion Helper Functions
 
 #region IDE General Widgets
@@ -774,7 +779,7 @@ class ConsoleWidget(QtWidgets.QSplitter):
         l = set()
         d = dict({**builtins.__dict__, **self.Locals, **self.Globals, **self.LocalsExternal, **self._LocalsExternal})
         d.update(self.getSpecialLocals())
-        createAPIList(d,l,set())
+        createAPIList(d,l)
         return l
     
     def executeCode(self):
@@ -1212,7 +1217,7 @@ class OverloadWidget(QtWidgets.QWidget): #FEATURE: Add ability to overload and a
                         NC(2,"Could not load autocomplete list for \"self\"",exc=True)
         except:
             NC(2,"Could not load autocomplete list for \"self\"",exc=True)
-        createAPIList(d,l,set())
+        createAPIList(d,l)
         return l
     
     def loadCode(self):
