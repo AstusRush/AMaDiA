@@ -827,8 +827,8 @@ class AMaS: # Astus' Mathematical Structure
                     ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
                 except common_exceptions as ex:
                     try:
-                        ans = parse_latex(self.Input)
-                        self.LaTeX = self.Input
+                        ans = parse_latex(self.Input.replace("·","\\cdot"))
+                        self.LaTeX = self.Input.replace("·","\\cdot")
                     except:
                         NC(3, "Could not parse as LaTeX", exc=True)
                         raise ex
@@ -1114,9 +1114,9 @@ class AMaS: # Astus' Mathematical Structure
                 # This is a known Sympy bug since ~2011 and is yet to be fixed...  See https://github.com/sympy/sympy/issues/5721
                 try:
                     self.warningMutex.lock()
-                    oldNPWarn = np.warnings.showwarning
+                    #oldNPWarn = np.warnings.showwarning #NOTE: Removed from numpy
                     oldWarn = warnings.showwarning
-                    np.warnings.showwarning = self.NotifyWarning
+                    #np.warnings.showwarning = self.NotifyWarning #NOTE: Removed from numpy
                     warnings.showwarning = self.NotifyWarning
                     if self.cstr.count("Integral") == 0:
                         evalfunc = sympy.lambdify(x, self.cstr, modules='numpy')
@@ -1158,7 +1158,7 @@ class AMaS: # Astus' Mathematical Structure
                     np.seterrcall(oldErrCall)
                     return False
                 finally:
-                    np.warnings.showwarning = oldNPWarn
+                    #np.warnings.showwarning = oldNPWarn #NOTE: Removed from numpy
                     warnings.showwarning = oldWarn
                     self.warningMutex.unlock()
                     

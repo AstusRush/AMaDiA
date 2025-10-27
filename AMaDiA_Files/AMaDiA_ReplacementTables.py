@@ -151,7 +151,7 @@ n_greek_letters_nospace = [["\u0391","Alpha"],["\u03b1","alpha"],
                    ]
 n_constants = [["\u03c0"," pi "],["∞"," oo "], #]
                 ["c₀","299792458"],["ε₀","(8.8541878128*10**(-12))"],["µ₀","(1.25663706212*10**(-6))"], #CRITICAL: This is only temporary but should be implemented in a more permanent but toggleable way with optional units
-                ["η₀","377"]] #CRITICAL: Is is also only temporary but this is also not as precise as the other ones (this is the value so that my solutions match the official solutions of my uni)
+                ["η₀","376.730313412"]] #CRITICAL: Is is also only temporary and is oft rounded to 377
 n_operators = [["^","**"],["\u22C5","*"]]
 n_operators_special = [["√","sqrt"],["∫","Integral"]]
 n_operators_notinv = [["–","-"],["—","-"],["\u00B7","*"],["×","*"],["÷","/"],["°C","degC"],["°F","*5/9*degC-32*5/9*degC"],["/°","*(360/pi/2)"],["°","/(360/pi/2)"]]

@@ -198,11 +198,11 @@ class Counterpart_Result_List:
         self.List = []
         self.Both = Both
         self.FirstResult = None
-
+    
     def append(self , x):
         self.List.append(x)
         return self
-        
+    
     def __getitem__(self, key):
         if self.Both and type(self.FirstResult) == list:
             return self.FirstResult[key]
@@ -211,25 +211,25 @@ class Counterpart_Result_List:
     
     def __len__(self):
         return len(self.List)
-
+    
     def __iadd__(self,value):
         if len(self.List) == 0:
             self.FirstResult = value
         self.List.append(value)
         return self
-
+    
     def __call__(self):
         return self.FirstResult
-
+    
     def __repr__(self):
         return self.FirstResult
-
+    
     def __str__(self):
         return str(self.FirstResult)
-
+    
     def __contains__(self,keyword): # FIXME: Does not work as it opens all internal lists as well...
         return keyword in self.List
-
+    
     def HalfList(self,Column):
         if self.Both:
             t = []
@@ -238,7 +238,7 @@ class Counterpart_Result_List:
             return t
         else:
             return self.FirstResult
-            
+
 def Counterpart(String,ListOfLists=ART.LIST_l_all_pairs,Both=False):
     result = Counterpart_Result_List(Both)
     for i in ListOfLists:
@@ -424,6 +424,7 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     # Then Parse the multiplication signs in accordance to the position of the LocalVars
     
     string = re.sub(r"√(\w+)",r"sqrt(\1)",string)
+    string = re.sub(r"(\w+)!",r"factorial(\1)",string)
     string = re.sub(r"(\w+)\'\'\'\'\'\(([^\W\dπ])\)",r"diff(diff(diff(diff(diff(\1(\2),\2),\2),\2),\2),\2)",string)
     string = re.sub(r"(\w+)\"\"\'\(([^\W\dπ])\)"  ,  r"diff(diff(diff(diff(diff(\1(\2),\2),\2),\2),\2),\2)",string)
     string = re.sub(r"(\w+)\'\'\'\'\(([^\W\dπ])\)",r"diff(diff(diff(diff(\1(\2),\2),\2),\2),\2)",string)
@@ -463,6 +464,7 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     #---- Temporary Integral Handling for Astus' Integral Syntax
     string = IntegralParser_Astus(string)
     #----
+    string = FactorialParser(string)
     string = IntegralParser(string)
     string = Derivative_and_IndefiniteIntegral_Parser(string) # Do this after all other integral parsers
     
@@ -516,7 +518,7 @@ def Derivative_and_IndefiniteIntegral_Parser(string):
                     if B[-1] == "*":
                         B = B[:-1]
                     x , C = C[len(i[1]):len(i[1])+1] , C[len(i[1])+1:]
-                    B += "," 
+                    B += ","
                     B += x
                     B += ")"
                     string = A+B
@@ -525,6 +527,22 @@ def Derivative_and_IndefiniteIntegral_Parser(string):
                     start = Pair[0]+len(i[0])
                 else:
                     break
+    return string
+
+def FactorialParser(string):
+    if ")!" not in string: return string
+    pattern = "\("
+    braces_list = [[m.start(),m.end()] for m in re.finditer(pattern, string)]
+    braces_list.sort(key=takeFirst,reverse=False)
+    insertion_points = []
+    for i in braces_list:
+        a,b = FindPair(string,["(",")"],i[0])
+        if len(string)>b+1 and string[b+1] =="!": insertion_points.append(a)
+    insertion_points.sort(reverse=True)
+    for i in insertion_points:
+        string = string[:i] + "factorial" + string[i:]
+    string = string.replace("!","")
+    NC(2,string)
     return string
 
 def NonInterpretableBracketReplace(string):

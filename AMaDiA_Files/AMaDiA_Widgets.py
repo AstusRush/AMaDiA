@@ -142,8 +142,8 @@ class LineEditHighlighter(QtGui.QSyntaxHighlighter): # TODO: performance, Fix Fi
         for i in TheList:
             pattern += re.escape(i)
             pattern += "|"
-            pattern += re.escape(i)
-            pattern += "|"
+            #pattern += re.escape(i)
+            #pattern += "|"
         pattern = pattern[:-1]
         braces_list = [[m.start(),m.end()] for m in re.finditer(pattern, text)]
         braces_list.sort(key=AF.takeFirst,reverse=False)
