@@ -1092,11 +1092,18 @@ class AMaS: # Astus' Mathematical Structure
                 
             #                                 from     up to (excluding the last!) step size
             self.plot_x_vals = np.arange(self.plot_xmin, self.plot_xmax+step_size, step_size)
-
+            
             try:
                 evalfunc = sympy.lambdify(x, Function, modules=['numpy','sympy'])
                 print(self.plot_x_vals,type(self.plot_x_vals))
-                self.plot_y_vals = evalfunc(self.plot_x_vals)
+                #self.plot_y_vals = evalfunc(self.plot_x_vals)
+                try:
+                    self.plot_y_vals = np.array([evalfunc(i) for i in self.plot_x_vals])
+                except ValueError:
+                    TheException = sys.exc_info()
+                    self.Notify(NC(3,msg="Value error encountered. Trying only positive values",exc=TheException,func="AMaS.Plot_2D_Calc_Values",send=False))
+                    self.plot_x_vals = self.plot_x_vals[self.plot_x_vals>0]
+                    self.plot_y_vals = np.array([evalfunc(i) for i in self.plot_x_vals])
                 
                 
                 if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == (): #This also catches the case exp(x)
@@ -1119,12 +1126,10 @@ class AMaS: # Astus' Mathematical Structure
                     #np.warnings.showwarning = self.NotifyWarning #NOTE: Removed from numpy
                     warnings.showwarning = self.NotifyWarning
                     if self.cstr.count("Integral") == 0:
-                        evalfunc = sympy.lambdify(x, self.cstr, modules=['numpy','sympy'])
-                        self.plot_y_vals = evalfunc(self.plot_x_vals)
-                        self.plot_y_vals = np.asarray(self.plot_y_vals)
+                        evalfunc = sympy.lambdify(x, self.cstr, modules=['numpy'])
+                        #self.plot_y_vals = pn.asarray(evalfunc(self.plot_x_vals))
+                        self.plot_y_vals = np.array([evalfunc(i) for i in self.plot_x_vals])
                         
-                        #NC(3,self.plot_y_vals)
-                        #NC(3,dir(self.plot_y_vals))
                         if type(self.plot_y_vals) == int or type(self.plot_y_vals) == float or self.plot_y_vals.shape == ():
                             self.plot_y_vals = np.full_like(self.plot_x_vals , self.plot_y_vals)
                             #self.plot_y_vals = sympy.full_like(self.plot_x_vals , self.plot_y_vals)
@@ -1136,7 +1141,7 @@ class AMaS: # Astus' Mathematical Structure
                         temp_Text = self.cstr
                         temp_Text = temp_Text.replace("Integral","")
                         temp_Text = re.sub(r",x\)$",")",temp_Text)
-                        evalfunc = sympy.lambdify(x, temp_Text, modules=['numpy','sympy'])
+                        evalfunc = sympy.lambdify(x, temp_Text, modules=['numpy'])
                         
                         def F(X):
                             try:
