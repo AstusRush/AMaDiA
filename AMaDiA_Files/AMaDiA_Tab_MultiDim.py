@@ -441,7 +441,7 @@ class Tab_MultiDim(QtWidgets.QWidget):
             s, s_comment = (s+"#").split("#",1)
             if s_comment: s_comment = "#"+s_comment[0:-1]
             if s.count("=") > 1 and s.strip().endswith("="):
-                self.AMaDiA.Set_AMaS_Flags(AMaS_Object,f_eval = False)
+                self.AMaDiA.Set_AMaS_Flags(AMaS_Object,f_eval = text.startswith("#eval")) #MAYBE: Distinguish between "=" and "≈" and eval only for "≈"
                 AMaS_Object.UpdateEquation(Text=s.split("=")[-2])
                 self.F_Text_to_Equations_F(s.split("=")[0]+" = "+AMaS_Object.Solution)
                 if not s.endswith(" "): s += " "
