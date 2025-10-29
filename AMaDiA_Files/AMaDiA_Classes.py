@@ -68,6 +68,8 @@ class AMaS: # Astus' Mathematical Structure
         self.init_bools()
         self.init_Flags()
         self.subs_a = lambda: 0
+        self.subs_b = lambda: 0
+        self.subs_q = lambda: 0
         self.f_eval_LaTeX = EvalL
         self.Iam = Iam
         self.Variables = {}
@@ -96,6 +98,8 @@ class AMaS: # Astus' Mathematical Structure
         self.plot_data_exists = False
         self.disable_units = False
         self._has_subs_a = None
+        self._has_subs_b = None
+        self._has_subs_q = None
         self.init_history()
 
     def INIT_WhatAmI(self,string):
@@ -352,26 +356,31 @@ class AMaS: # Astus' Mathematical Structure
         else:
             return None
     
-    def has_subs_a(self):
-        if self._has_subs_a is None:
+    def has_subs(self):
+        if self._has_subs_a is None or self._has_subs_b is None or self._has_subs_q is None:
             x = sympy.symbols('x') # pylint: disable=unused-variable
             a = sympy.symbols('a') # pylint: disable=unused-variable
+            b = sympy.symbols('b') # pylint: disable=unused-variable
+            q = sympy.symbols('q') # pylint: disable=unused-variable
             n = sympy.symbols('n') # pylint: disable=unused-variable
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
                 #Function.doit()
             except SyntaxError:
                 self._has_subs_a = False
+                self._has_subs_b = False
+                self._has_subs_q = False
             except:
                 NC(2,exc=True)
                 self._has_subs_a = False
+                self._has_subs_b = False
+                self._has_subs_q = False
             else:
                 #NC(3,str(Function.free_symbols))
-                if a in Function.free_symbols:
-                    self._has_subs_a = True
-                else:
-                    self._has_subs_a = False
-        return self._has_subs_a
+                self._has_subs_a = bool(a in Function.free_symbols)
+                self._has_subs_b = bool(b in Function.free_symbols)
+                self._has_subs_q = bool(q in Function.free_symbols)
+        return self._has_subs_a, self._has_subs_b, self._has_subs_q
     
  # ---------------------------------- Notifications ----------------------------------
 
@@ -1065,6 +1074,8 @@ class AMaS: # Astus' Mathematical Structure
         if True : #self.plottable: #IMPROVE: The "plottable" thing is not exact. Try to plot it even if not "plottable" and handle the exceptions
             x = sympy.symbols('x')
             a = sympy.symbols('a')
+            b = sympy.symbols('b')
+            q = sympy.symbols('q')
             n = sympy.symbols('n') # pylint: disable=unused-variable
             try:
                 Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
@@ -1081,6 +1092,10 @@ class AMaS: # Astus' Mathematical Structure
             
             if a in Function.free_symbols:
                 Function = Function.subs({a:self.subs_a()})
+            if b in Function.free_symbols:
+                Function = Function.subs({b:self.subs_b()})
+            if q in Function.free_symbols:
+                Function = Function.subs({q:self.subs_q()})
             
             if self.plot_xmax < self.plot_xmin:
                 self.plot_xmax , self.plot_xmin = self.plot_xmin , self.plot_xmax

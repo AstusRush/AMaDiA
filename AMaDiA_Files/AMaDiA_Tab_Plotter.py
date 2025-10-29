@@ -212,12 +212,12 @@ class Plot2D(QtWidgets.QWidget):
         except:
             NC(lvl=4,msg="Could not update Display context menu",exc=sys.exc_info(),func="AMaDiA_Main_Window.OtherContextMenuSetup",win=self.windowTitle())
     
-    def SliderChanged(self, a): #CRITICAL: WIP
+    def SliderChanged(self): #CRITICAL: WIP
         with QtCore.QMutexLocker(self.SliderMutex):
             for i in range(self.History.count()):
                 item = self.History.item(i)
                 AMaS_Object:'AC.AMaS' = item.data(100)
-                if not AMaS_Object.has_subs_a():
+                if not any(AMaS_Object.has_subs()):
                     continue
                 if not AMaS_Object.Plot_is_initialized:
                     continue
@@ -319,8 +319,12 @@ class Plot2D(QtWidgets.QWidget):
                 ymax , ymin = ymin , ymax
             AMaS_Object.plot_ylim_vals = (ymin , ymax)
         
-        if AMaS_Object.has_subs_a():
+        if AMaS_Object.has_subs()[0]:
             AMaS_Object.subs_a = lambda: self.ConfigWidget.SubsASlider()
+        if AMaS_Object.has_subs()[1]:
+            AMaS_Object.subs_b = lambda: self.ConfigWidget.SubsBSlider()
+        if AMaS_Object.has_subs()[2]:
+            AMaS_Object.subs_q = lambda: self.ConfigWidget.SubsQSlider()
         
         #self.AMaDiA.TC(lambda ID: AT.AMaS_Worker(AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.F_Plot ,ID))
         self.AMaDiA.TC("WORK",AMaS_Object,lambda:AC.AMaS.Plot_2D_Calc_Values(AMaS_Object),self.F_Plot)
@@ -602,5 +606,12 @@ class Plot2DConfig(QtWidgets.QScrollArea):
         #### TODO: Make prettier
         self.SubsASlider = AGeInput.FloatSlider(self, "Substitute for a", 0, -10, 10)
         self.gridLayout_11.addWidget(self.SubsASlider, 14, 0, 1, 2)
-        self.SubsASlider.S_ValueChanged.connect(lambda a: self.Plot2DTab.SliderChanged(a))
+        self.SubsASlider.S_ValueChanged.connect(lambda: self.Plot2DTab.SliderChanged())
+        self.SubsBSlider = AGeInput.FloatSlider(self, "Substitute for b", 0, -10, 10)
+        self.gridLayout_11.addWidget(self.SubsBSlider, 15, 0, 1, 2)
+        self.SubsBSlider.S_ValueChanged.connect(lambda: self.Plot2DTab.SliderChanged())
+        self.SubsQSlider = AGeInput.FloatSlider(self, "Substitute for q", 0, -10, 10)
+        self.SubsQSlider.setToolTip("Note: c is already the speed of light and d is used for derivatives and integrals so the third slider-variable is q")
+        self.gridLayout_11.addWidget(self.SubsQSlider, 16, 0, 1, 2)
+        self.SubsQSlider.S_ValueChanged.connect(lambda: self.Plot2DTab.SliderChanged())
         ####
