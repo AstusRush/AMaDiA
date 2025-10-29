@@ -78,6 +78,8 @@ def takeFirst(elem):
     return elem[0]
 def takeSecond(elem):
     return elem[1]
+def takeThird(elem):
+    return elem[2]
 
 def FindNthOccurrence(string, toFind, n=1, start=0, end=0):
     """Finds nth occurrence of toFind in string between start and end\n
@@ -465,6 +467,7 @@ def AstusParse(string,ConsoleOutput = True, Iam = AC.Iam_Normal ,LocalVars = Non
     string = IntegralParser_Astus(string)
     #----
     string = FactorialParser(string)
+    string = LogarithmParser(string)
     string = IntegralParser(string)
     string = Derivative_and_IndefiniteIntegral_Parser(string) # Do this after all other integral parsers
     
@@ -542,6 +545,27 @@ def FactorialParser(string):
     for i in insertion_points:
         string = string[:i] + "factorial" + string[i:]
     string = string.replace("!","")
+    return string
+
+def LogarithmParser(string):
+    if "log2" not in string and "log10" not in string and "ld" not in string: return string
+    pattern = "log2\(|log10\(|ld\("
+    braces_list = [[m.start(),m.end()] for m in re.finditer(pattern, string)]
+    braces_list.sort(key=takeFirst,reverse=False)
+    insertion_points = []
+    for i in braces_list:
+        a,b = FindPair(string,["(",")"],i[0])
+        insertion_points.append((i[0],a,b))
+    insertion_points.sort(key=takeThird,reverse=True)
+    for i in insertion_points:
+        if string[i[0]:i[1]] == "log2": n = 2
+        elif string[i[0]:i[1]] == "ld": n = 2
+        elif string[i[0]:i[1]] == "log10": n = 10
+        else: raise Exception("LogarithmParser Error: Unknown logarithm")
+        string = string[:i[2]] + f",{n}" + string[i[2]:]
+    string = string.replace("log2","log")
+    string = string.replace("ld","log")
+    string = string.replace("log10","log")
     return string
 
 def NonInterpretableBracketReplace(string):

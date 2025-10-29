@@ -87,7 +87,7 @@ l_pairs_special_I_D_all_Integrals = [["Integral","d","Integral("],["d(",")/d","d
                                 ["Integrate","d","Integral("],["integrate","d","Integral("],["int ","d","Integral("],["Int ","d","Integral("],["∫","d","Integral("]]
 l_pairs_special_I_D_Unicode = [["∫","d","Integral("],["d(",")/d","diff("],["∂(",")/∂","diff("]]
 
-l_pairs_special = [["sqrt(",")"],["√(",")"]]
+l_pairs_special = [["sqrt(",")"],["√(",")"],["log(",")"],["ln(",")"],["ld(",")"],["log2(",")"],["log10(",")"]]
 l_separators = [',']
 
 LIST_l_normal_pairs = [l_pairs_brackets , l_pairs_special_I_D_all_Integrals , l_pairs_special]
