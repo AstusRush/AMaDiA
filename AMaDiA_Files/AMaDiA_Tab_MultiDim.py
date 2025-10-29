@@ -434,6 +434,8 @@ class Tab_MultiDim(QtWidgets.QWidget):
         Notification.send()
     
     def F_AutoCalc(self):
+        #CRITICAL: Does not work with numbers using scientific Notation as the "e" is understood as Euler's number...
+        #           This is especially a problem when evaluating intermediate solutions with "#eval"
         text:str = self.DirectInput.text()
         AMaS_Object = self.Active_Equation
         lines:typing.List[str] = text.splitlines()
