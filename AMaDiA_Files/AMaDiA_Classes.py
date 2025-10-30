@@ -1127,6 +1127,11 @@ class AMaS: # Astus' Mathematical Structure
                     raise Exception("Dimensions do not match")
                 
             except common_exceptions: #as inst:
+                if any(self.has_subs()):
+                    #MAYBE: Try to handle substitutes for numpy solving
+                    self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info(),send=False))
+                    np.seterrcall(oldErrCall)
+                    return False
                 TheException = sys.exc_info()
                 #print(inst.args)
                 #if callable(inst.args):
@@ -1177,7 +1182,7 @@ class AMaS: # Astus' Mathematical Structure
                     else:
                         raise Exception("Can not calculate plot data")
                 except common_exceptions: #as inst:
-                    self.Notify(NC(1,"Could not calculate values for plot",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info(),send=False))
+                    self.Notify(NC(1,"Could not calculate values for plot. Error message displays numpy exception. Please read full traceback for sympy exception which usually is more relevant.",func="AMaS.Plot_2D_Calc_Values",exc=sys.exc_info(),send=False))
                     np.seterrcall(oldErrCall)
                     return False
                 finally:
