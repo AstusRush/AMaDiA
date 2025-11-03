@@ -367,11 +367,12 @@ class AMaS: # Astus' Mathematical Structure
                 Function = parse_expr(self.cstr,local_dict=self.Variables,global_dict=self.global_dict())
                 #Function.doit()
             except SyntaxError:
+                # Silence the error notification for simple syntax errors (I think there was a special case that made me do this but I can't remember what it was)
                 self._has_subs_a = False
                 self._has_subs_b = False
                 self._has_subs_q = False
             except:
-                NC(2,exc=True)
+                NC(2,"Could not determine if a, b, or q are present. Assuming no substitution.",exc=True)
                 self._has_subs_a = False
                 self._has_subs_b = False
                 self._has_subs_q = False
