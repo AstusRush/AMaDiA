@@ -185,11 +185,12 @@ class Plot2D(QtWidgets.QWidget):
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_6.setSpacing(0)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.Display = AGeGW.MplWidget_2D_Plot(self.scrollArea_Layout)
+        self.Display = AGeGW.MplWidget_2D_Plot(self.scrollArea_Layout,True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.Display.sizePolicy().hasHeightForWidth())
+        self.Display.NavBar.hide()
         self.Display.setSizePolicy(sizePolicy)
         self.Display.setObjectName("Display")
         self.gridLayout_6.addWidget(self.Display, 0, 0, 1, 1)
@@ -276,6 +277,12 @@ class Plot2D(QtWidgets.QWidget):
         else:
             print("Could not save Plot: Could not validate save location")
             NC(1,"Could not save Plot: Could not validate save location",func="AMaDiA_Main_Window.Tab_3.action_tab_3_tab_1_Display_SavePlt",win=self.windowTitle(),input=App().AGeLibPath)
+    
+    def action_tab_3_tab_1_Display_ToggleMplToolbar(self):
+        if self.Display.NavBar.isHidden():
+            self.Display.NavBar.show()
+        else:
+            self.Display.NavBar.hide()
     
     def F_Plot_Button(self):
         #self.AMaDiA.TC(lambda ID: AT.AMaS_Creator(self.Formula_Field.text() , self.F_Plot_init,ID=ID, Iam=AC.Iam_2D_plot))
@@ -596,12 +603,16 @@ class Plot2DConfig(QtWidgets.QScrollArea):
         self.Button_SavePlot = QtWidgets.QPushButton(self.ScrollAreaWidgetContents)
         self.Button_SavePlot.setObjectName("Button_SavePlot")
         self.gridLayout_11.addWidget(self.Button_SavePlot, 13, 0, 1, 1)
+        self.Button_ToggleMplToolbar = QtWidgets.QPushButton(self.ScrollAreaWidgetContents)
+        self.Button_ToggleMplToolbar.setObjectName("Button_ToggleMplToolbar")
+        self.gridLayout_11.addWidget(self.Button_ToggleMplToolbar, 13, 1, 1, 1)
         self.setWidget(self.ScrollAreaWidgetContents)
         
         self.Button_Plot_SymPy.setVisible(False) # CLEANUP: The Control Tab Has broken the Sympy plotter... Repairing it is not worth it... Remove this function...
         self.Button_Plot_SymPy.clicked.connect(lambda: self.Plot2DTab.F_Sympy_Plot_Button())
         self.RedrawPlot_Button.clicked.connect(lambda: self.Plot2DTab.F_RedrawPlot())
         self.Button_SavePlot.clicked.connect(lambda: self.Plot2DTab.action_tab_3_tab_1_Display_SavePlt())
+        self.Button_ToggleMplToolbar.clicked.connect(lambda: self.Plot2DTab.action_tab_3_tab_1_Display_ToggleMplToolbar())
         
         #### TODO: Make prettier
         self.SubsASlider = AGeInput.FloatSlider(self, "Substitute for a", 0, -10, 10)
