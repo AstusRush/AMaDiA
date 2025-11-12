@@ -1536,8 +1536,14 @@ class exec_Window(AWWF):
             self.OverloadWidget.Console.setFont(font)
             
             # Console #REM#
-            self.ConsoleWidget = ConsoleWidget(self,["Plot","draw","clear","plot"],automaticallySetUpAutoComplete=False)
-            self.ConsoleWidget.setLocals({"Plot":lambda:self.Plot,"draw":lambda:self.Plot.draw(),"clear":lambda:self.Plot.clear(),"plot":lambda *args,**wargs:self.Plot.plot(*args,**wargs)})
+            self.ConsoleWidget = ConsoleWidget(self,["Plot","draw","clear","plot","hist","scatter"],automaticallySetUpAutoComplete=False)
+            self.ConsoleWidget.setLocals({"Plot":lambda:self.Plot,
+                                            "draw":lambda:self.Plot.draw(),
+                                            "clear":lambda:self.Plot.clear(),
+                                            "plot":lambda *args,**wargs:self.Plot.plot(*args,**wargs),
+                                            "hist":lambda *args,**wargs:self.Plot.Canvas.ax.hist(*args,**wargs),
+                                            "scatter":lambda *args,**wargs:self.Plot.Canvas.ax.scatter(*args,**wargs),
+                                            })
             self.TabWidget.addTab(self.ConsoleWidget,"Console")
             
             # Inspect #TODO
