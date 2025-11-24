@@ -471,11 +471,22 @@ class AMaS: # Astus' Mathematical Structure
         if self.multiline:
             self.LaTeX = ""
             n = len(self.cstrList)
-            for e in self.cstrList:
+            for e,r in zip(self.cstrList,self.stringList):
                 n -= 1
                 LineText = ""
                 try:
-                    LineText = AF.LaTeX(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                    try:
+                        LineText = AF.LaTeX(e,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                    except Exception as inst:
+                        tempLaTeX = AF.Replace(r, [ART.UNICODE_TO_LATEX_direct_replacements])
+                        try:
+                            parse_latex(tempLaTeX) # Only to check if input is valid LaTeX
+                        except:
+                            #Note:  Usually the input is not LaTeX and so the extra exception is only confusing
+                            #MAYBE: But sometimes it is supposed to be LaTeX but something went wrong and then the extra exception would be useful so it should be displayed
+                            raise inst
+                        else:
+                            LineText = tempLaTeX
                 except common_exceptions:
                     ExceptionOutput(sys.exc_info())
                     # LineText += AF.AstusParseInverse(e) #MAYBE: Unicodesymbols seem to brake LaTeX Output... Maybe there is a way to fix it?
@@ -492,7 +503,18 @@ class AMaS: # Astus' Mathematical Structure
                     self.LaTeX += r" \qquad "*e.count("\t") + LineText
         else:
             try:
-                self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                try:
+                    self.LaTeX = AF.LaTeX(self.cstr,local_dict=self.VariablesUnev,evalf=self.f_eval_LaTeX)
+                except Exception as inst:
+                    tempLaTeX = AF.Replace(self.Input, [ART.UNICODE_TO_LATEX_direct_replacements])
+                    try:
+                        parse_latex(tempLaTeX) # Only to check if input is valid LaTeX
+                    except:
+                        #Note:  Usually the input is not LaTeX and so the extra exception is only confusing
+                        #MAYBE: But sometimes it is supposed to be LaTeX but something went wrong and then the extra exception would be useful so it should be displayed
+                        raise inst
+                    else:
+                        self.LaTeX = tempLaTeX
                 if "#" in self.cstr:
                     self.LaTeX += r" \qquad \text{ " + self.cstr.split("#",1)[1] + " } "
             except common_exceptions:
@@ -671,7 +693,11 @@ class AMaS: # Astus' Mathematical Structure
             self.init_Flags() # Reset All Flags
             return ODE
         
-        if self.cstr.count("=") == 1 and self.cstr.split("=")[0].count("(")==self.cstr.split("=")[0].count(")"):
+        tempFirstSplit = self.cstr.split("=")[0]
+        if self.cstr.count("=") == 1 and (
+                tempFirstSplit.count("(")==tempFirstSplit.count(")")
+            and tempFirstSplit.count("{")==tempFirstSplit.count("}")
+            and tempFirstSplit.count("[")==tempFirstSplit.count("]") ):
             try:
                 temp = self.cstr
                 #if Eval:
@@ -837,8 +863,8 @@ class AMaS: # Astus' Mathematical Structure
                     ans = parse_expr(temp,local_dict=self.Variables,global_dict=self.global_dict())
                 except common_exceptions as ex:
                     try:
-                        ans = parse_latex(self.Input.replace("·","\\cdot"))
-                        self.LaTeX = self.Input.replace("·","\\cdot")
+                        tempLaTeX = AF.Replace(self.Input, [ART.UNICODE_TO_LATEX_direct_replacements])
+                        ans = parse_latex(tempLaTeX)
                     except:
                         NC(3, "Could not parse as LaTeX", exc=True)
                         raise ex
