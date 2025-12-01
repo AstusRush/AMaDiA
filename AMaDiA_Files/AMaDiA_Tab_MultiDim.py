@@ -27,6 +27,7 @@ from AMaDiA_Files import AMaDiA_Functions as AF
 from AMaDiA_Files import AMaDiA_Classes as AC
 from AMaDiA_Files import AMaDiA_Widgets as AW
 from AMaDiA_Files import AMaDiA_ReplacementTables as ART
+from AMaDiA_Files import AMaDiA_Math_Classes as AMC
 
 if typing.TYPE_CHECKING:
     from AMaDiA import App, AMaDiA_Main_Window
@@ -331,7 +332,10 @@ class Tab_MultiDim(QtWidgets.QWidget):
             if len(Matrix) == 1 and len(Matrix[0]) == 1:
                 Matrix = parse_expr(Matrix[0][0])
             else:
-                Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
+                if QtWidgets.QApplication.instance().optionWindow.cb_D_Engineering_Matrix.isChecked():
+                    Matrix = AMC.Matrix_Engineering(Matrix)
+                else:
+                    Matrix = sympy.Matrix(Matrix) # https://docs.sympy.org/latest/modules/matrices/matrices.html
             self.Active_Equation.AddVariable(Name,Matrix)
             
             # Prepare ListWidgetItem

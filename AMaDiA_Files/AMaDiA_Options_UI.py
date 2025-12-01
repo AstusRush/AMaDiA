@@ -286,18 +286,26 @@ class Ui_AMaDiA_Options(object):
         self.line_16.setObjectName("line_16")
         self.gridLayout_11.addWidget(self.line_16, 1, 0, 1, 1)
         spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_11.addItem(spacerItem3, 4, 0, 1, 1)
+        self.gridLayout_11.addItem(spacerItem3, 6, 0, 1, 1)
         self.cb_D_NewSolver = QtWidgets.QCheckBox(self.L_D)
         self.cb_D_NewSolver.setObjectName("cb_D_NewSolver")
         self.gridLayout_11.addWidget(self.cb_D_NewSolver, 0, 0, 1, 1)
         self.cb_D_NoEvalFile = QtWidgets.QCheckBox(self.L_D)
         self.cb_D_NoEvalFile.setObjectName("cb_D_NoEvalFile")
         self.gridLayout_11.addWidget(self.cb_D_NoEvalFile, 2, 0, 1, 1)
+        self.cb_D_Engineering_Matrix = QtWidgets.QCheckBox(self.L_D)
+        self.cb_D_Engineering_Matrix.setObjectName("cb_D_NoEvalFile")
+        self.gridLayout_11.addWidget(self.cb_D_Engineering_Matrix, 4, 0, 1, 1)
         self.line_18 = QtWidgets.QFrame(self.L_D)
         self.line_18.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_18.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_18.setObjectName("line_18")
         self.gridLayout_11.addWidget(self.line_18, 3, 0, 1, 1)
+        self.line_19 = QtWidgets.QFrame(self.L_D)
+        self.line_19.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_19.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_19.setObjectName("line_19")
+        self.gridLayout_11.addWidget(self.line_19, 5, 0, 1, 1)
         self.gridLayout_6.addWidget(self.L_D, 2, 0, 1, 1)
         self.Label_DevOption_Explanation = QtWidgets.QLabel(self.tab_DevOptions)
         self.Label_DevOption_Explanation.setWordWrap(True)
@@ -378,6 +386,11 @@ class Ui_AMaDiA_Options(object):
 "This checkbox is only for development purposes and should never be checked by users.<br>\n"
 "The new solver can not solve anything at the moment."))
         self.cb_D_NewSolver.setText(_translate("AMaDiA_Options", "Use New Solver"))
+        self.cb_D_Engineering_Matrix.setText(_translate("AMaDiA_Options", "Use New Matrix"))
+        self.cb_D_Engineering_Matrix.setToolTip(_translate("AMaDiA_Options", "This class is an adaptation of sympy.Matrix that behaves more"
+"like an engineer would expect,\n"
+"I.E. elementwise operations are the default and matrixmultipliaction is signalled using \"@\" instead of \"*\"\n"
+"and operations with scalars are allowed by simply casting the scalar on all elements, etc."))
         self.cb_D_NoEvalFile.setToolTip(_translate("AMaDiA_Options", "Use th NoEvalFile that uses \"with sympy.evaluate(False)\"<br>\n"
 "It still influences the main process and thus can mess up all calculations.<br>\n"
 "To keep the calculator reliable this checkbox should be kept unchecked.<br>\n"
