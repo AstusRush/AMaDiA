@@ -10,6 +10,7 @@
 
 from AGeLib import *
 
+#TODO: This PyQt-generated code for the options window is terrible and must be completely overhauled
 
 class Ui_AMaDiA_Options(object):
     def setupUi(self, AMaDiA_Options):
