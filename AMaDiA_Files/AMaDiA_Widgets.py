@@ -256,6 +256,10 @@ class HistoryWidget(AGeWidgets.ListWidget):
                             and item.data(100).LaTeX_E != r"\text{Not converted yet}"
                             and item.data(100).LaTeX_E != r"\text{Could not convert}"):
                         QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX_E)
+                    elif (QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()=="LaTeX Solution"
+                            and item.data(100).LaTeX_S != r"\text{Not converted yet}"
+                            and item.data(100).LaTeX_S != r"\text{Could not convert}"):
+                        QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX_S)
                     else:
                         NC(4,QtWidgets.QApplication.instance().optionWindow.comb_O_HCopyStandard.currentText()+" can not be copied. Using normal copy mode",win=self.window().windowTitle(),func=str(self.objectName())+".(HistoryWidget).keyPressEvent",input=item.text())
                         QtWidgets.QApplication.clipboard().setText(item.text())
@@ -288,13 +292,16 @@ class HistoryWidget(AGeWidgets.ListWidget):
                         action.triggered.connect(lambda: self.action_H_Copy_Solution(source,event))
                         action = menu.addAction('Copy Equation')
                         action.triggered.connect(lambda: self.action_H_Copy_Equation(source,event))
-                    action = menu.addAction('Copy Text')
+                    action = menu.addAction('Copy Input Text')
                     action.triggered.connect(lambda: self.action_H_Copy_Text(source,event))
-                    action = menu.addAction('Copy LaTeX')
-                    action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
+                    if source.itemAt(event.pos()).data(100).LaTeX_S != r"\text{Not converted yet}" and source.itemAt(event.pos()).data(100).LaTeX_S != r"\text{Could not convert}":
+                        action = menu.addAction('Copy LaTeX of Solution')
+                        action.triggered.connect(lambda: self.action_H_Copy_LaTeX_S(source,event))
                     if source.itemAt(event.pos()).data(100).LaTeX_E != r"\text{Not converted yet}" and source.itemAt(event.pos()).data(100).LaTeX_E != r"\text{Could not convert}":
-                        action = menu.addAction('Copy LaTeX Equation')
+                        action = menu.addAction('Copy LaTeX of Equation')
                         action.triggered.connect(lambda: self.action_H_Copy_LaTeX_E(source,event))
+                    action = menu.addAction('Copy LaTeX of Input')
+                    action.triggered.connect(lambda: self.action_H_Copy_LaTeX(source,event))
                     if QtWidgets.QApplication.instance().advanced_mode:
                         action = menu.addAction('+ Copy Input')
                         action.triggered.connect(lambda: self.action_H_Copy_Input(source,event))
@@ -305,13 +312,13 @@ class HistoryWidget(AGeWidgets.ListWidget):
                     # It currently is handy to have it always because of the EvalF thing...
                     action = menu.addAction('Calculate')
                     action.triggered.connect(lambda: self.action_H_Calculate(source,event))
-                    action = menu.addAction('Display LaTeX')
-                    action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
                     if source.itemAt(event.pos()).data(100).Solution != "Not evaluated yet":
-                        action = menu.addAction('Display LaTeX Equation')
-                        action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
                         action = menu.addAction('Display LaTeX Solution')
                         action.triggered.connect(lambda: self.action_H_Display_LaTeX_Solution(source,event))
+                        action = menu.addAction('Display LaTeX Equation')
+                        action.triggered.connect(lambda: self.action_H_Display_LaTeX_Equation(source,event))
+                    action = menu.addAction('Display LaTeX of Input')
+                    action.triggered.connect(lambda: self.action_H_Display_LaTeX(source,event))
                     menu.addSeparator()
                     if source.itemAt(event.pos()).data(100).plot_data_exists :
                         action = menu.addAction('Reload Plot') #TODO: Add tooltip
@@ -365,6 +372,10 @@ class HistoryWidget(AGeWidgets.ListWidget):
     def action_H_Copy_LaTeX_E(self,source,event):
         item = source.itemAt(event.pos())
         QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX_E)
+    
+    def action_H_Copy_LaTeX_S(self,source,event):
+        item = source.itemAt(event.pos())
+        QtWidgets.QApplication.clipboard().setText(item.data(100).LaTeX_S)
     
     def action_H_Copy_Input(self,source,event):
         item = source.itemAt(event.pos())
