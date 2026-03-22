@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=AstusRush&project=AMaDiA&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # AMaDiA
 Astus' Mathematical Display Application<br/><br/>
 Current features:<br/>
