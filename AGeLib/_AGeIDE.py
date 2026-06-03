@@ -302,7 +302,8 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             self.Editor.moveCursor(QtGui.QTextCursor.MoveOperation.End)
         elif self.QScintilla:
             self.EditorSc.setFocus()
-            self.EditorSc.SendScintilla(Qsci.QsciCommand.DocumentEnd)
+            cmd = Qsci.QsciCommand.DocumentEnd
+            self.EditorSc.SendScintilla(cmd.value if hasattr(cmd, "value") else cmd)
         else:
             raise Exception("Current editor is not self.Editor but self.QScintilla is false... How can this be? Which editor are you using?!")
     
@@ -365,7 +366,10 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             self.EditorSc.setAutoIndent(True)
             self.EditorSc.setIndentationsUseTabs(False)
             self.EditorSc.setUtf8(True)
-            self.EditorSc.setBraceMatching(True)
+            try:
+                self.EditorSc.setBraceMatching(Qsci.QsciScintilla.BraceMatch.StrictBraceMatch)
+            except:
+                self.EditorSc.setBraceMatching(True)
             self.EditorSc.setBackspaceUnindents(True)
             self.EditorSc.setEolMode(Qsci.QsciScintilla.EolUnix)
             #
@@ -397,13 +401,16 @@ class CodeEditorWidget(QtWidgets.QWidget): # https://stackoverflow.com/questions
             
             # Set commands
             commands = self.EditorSc.standardCommands()
-            commands.find(Qsci.QsciCommand.Redo).setKey(QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Z)
-            commands.find(Qsci.QsciCommand.MoveSelectedLinesUp).setKey(QtCore.Qt.AltModifier | QtCore.Qt.Key_Up)
-            commands.find(Qsci.QsciCommand.MoveSelectedLinesDown).setKey(QtCore.Qt.AltModifier | QtCore.Qt.Key_Down)
-            commands.find(Qsci.QsciCommand.LineUpRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Up)
-            commands.find(Qsci.QsciCommand.LineDownRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Down)
-            commands.find(Qsci.QsciCommand.CharLeftRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Left)
-            commands.find(Qsci.QsciCommand.CharRightRectExtend).setKey(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Right)
+            def keyToInt(raw):
+                if hasattr(raw, "toCombined"): return raw.toCombined()
+                else: return int(raw)
+            commands.find(Qsci.QsciCommand.Redo).setKey(keyToInt(QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Z))
+            commands.find(Qsci.QsciCommand.MoveSelectedLinesUp).setKey(keyToInt(QtCore.Qt.AltModifier | QtCore.Qt.Key_Up))
+            commands.find(Qsci.QsciCommand.MoveSelectedLinesDown).setKey(keyToInt(QtCore.Qt.AltModifier | QtCore.Qt.Key_Down))
+            commands.find(Qsci.QsciCommand.LineUpRectExtend).setKey(keyToInt(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Up))
+            commands.find(Qsci.QsciCommand.LineDownRectExtend).setKey(keyToInt(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Down))
+            commands.find(Qsci.QsciCommand.CharLeftRectExtend).setKey(keyToInt(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Left))
+            commands.find(Qsci.QsciCommand.CharRightRectExtend).setKey(keyToInt(QtCore.Qt.AltModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Right))
     
     def setupEditorSc_Autocomplete(self, apiList:list[str]):
         if self.QScintilla:

@@ -574,11 +574,12 @@ class MplWidget_LaTeX(MplWidget): #CRITICAL: Verify (should already be in): Make
                             self._display(ErrorText)
                         except:
                             Notification = NC(1,"Critical Error: MatPlotLib Display seems broken. Could not display anything",exc=sys.exc_info(),input=ErrorText,win=self.window().windowTitle(),func=str(self.objectName())+".DisplayRaw",send=False)
+                return Notification
             except:
                 Notification = NC(1,"Critical Error",exc=sys.exc_info(),input=self.Text,win=self.window().windowTitle(),func=str(self.objectName())+".DisplayRaw",send=False)
+                return Notification
             finally:
                 self.useTeX(False)
-                return Notification
         elif self.StackedWidget.currentIndex() == 1 and self.QtWebEngineWidgetsImported:
             pageSource = r"""
                         <html><head>

@@ -7,6 +7,55 @@ from ._AGeNotify import ExceptionOutput, trap_exc_during_debug, NotificationEven
 from ._AGeFunctions import *
 #endregion Import
 
+#region Helper Functions
+def getWaylandCursorScreenIndex():
+    """
+    Queries KWin via DBus to find which screen index has the cursor. \\
+    Needed for Wayland since it does not grant easy access to screen information for security reasons.
+    """
+    import subprocess
+    response = "DBus Query Failed!"
+    try:
+        # Query KWin's display properties via DBus
+        response = subprocess.check_output(["qdbus", "org.kde.KWin", "/KWin", "org.kde.KWin.supportInformation"], text=True)
+        for line in response.splitlines():
+            if "Active Screen:" in line:
+                return int(line.split(":")[-1].strip())
+    except Exception:
+        NC(2,"Could not determine active screen in Wayland setup. Defaulting to leftmost primary screen.", exc=True, input=response)
+    else:
+        NC(2,"Could not determine active screen in Wayland setup. Defaulting to leftmost primary screen. Reason: No \"Active Screen:\" in response to DBus query.",input=response)
+    return 0
+
+def getScreenAtCursor():
+    # This checks if we are on wayland using KDE and are not forcing the X11 compatibility since we need and can do a workaround for getting the screen in this case
+    #NOTE: Since moving and resizing windows would require substantially larger workarounds (if those are even possible) "xcb" is always set for now (thus enforcing the use of XWayland)
+    #       Which means that this if statement will always evaluate to False for now.
+    #NOTE: I have tested the workaround and it works on Kubuntu 26.04 LTS (though in the future it should be checked if the interface has changed)
+    if os.environ.get("XDG_SESSION_TYPE") == "wayland" and os.environ.get("XDG_CURRENT_DESKTOP") == "KDE" and os.environ.get("QT_QPA_PLATFORM") != "xcb":
+        return QtWidgets.QApplication.screens()[getWaylandCursorScreenIndex()]
+    else:
+        return QtWidgets.QApplication.screenAt(QtGui.QCursor.pos())
+"""
+===============================================================================
+FUTURE WAYLAND ARCHITECTURAL REWRITE ROADMAP
+===============================================================================
+Transitioning AGeLib from XWayland (xcb) to native Wayland requires bypassing
+client-side sandboxing, which blocks QCursor.pos() and absolute geometry management.
+To achieve this, implement two core pillars: 1) A positioning engine using system
+DBus/XDG Portals (e.g., 'org.kde.KWin.Scripting') to handle layouts natively, and
+2) For APE: A rendering engine that offloads Panda3D rendering to off-screen FBOs/textures,
+piping them into a QOpenGLWidget to bypass the loss of raw WId handling.
+
+KEYWORDS FOR FUTURE SEARCHES:
+- "KWin DBus scripting window positioning Python"
+- "XDG Desktop Portal WindowManagement interface specifications"
+- "Wayland subsurface cross-process widget embedding textures"
+- "PyQt6 QOpenGLWidget offscreen rendering texture allocation"
+===============================================================================
+"""
+
+#endregion Helper Functions
 
 #region AWWF
 
@@ -314,7 +363,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             #   The second move uses the new frameGeometry to correct the position.
             try:
                 frameGm = self.frameGeometry()
-                screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos())
+                screen = getScreenAtCursor()
                 centerPoint = screen.availableGeometry().center()
                 frameGm.moveCenter(centerPoint)
                 self.move(frameGm.topLeft())
@@ -360,7 +409,7 @@ class AWWF(QtWidgets.QMainWindow): # Astus Window With Frame
             if screen is None:
                 scale = self.screen().logicalDotsPerInchX()/96.0
             elif screen is True:
-                scale = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos()).logicalDotsPerInchX()/96.0
+                scale = getScreenAtCursor().logicalDotsPerInchX()/96.0
             else:
                 scale = screen.logicalDotsPerInchX()/96.0
             if h is None:
@@ -729,7 +778,7 @@ class TopBar_Widget(QtWidgets.QWidget): # CRITICAL: there should be a flag to me
                 Tolerance = 5
                 eventPos = event.globalPos()
                 try:
-                    screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos()).availableGeometry()
+                    screen = getScreenAtCursor().availableGeometry()
                 except: #For backwards compatibility
                     screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
                     screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)
@@ -1116,7 +1165,7 @@ class MMenuBar(QtWidgets.QMenuBar): # Moveable Menu Bar
                 Tolerance = 5
                 eventPos = event.globalPos()
                 try:
-                    screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos()).availableGeometry()
+                    screen = getScreenAtCursor().availableGeometry()
                 except: #For backwards compatibility
                     screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
                     screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)
@@ -1253,7 +1302,7 @@ class MTabWidget(QtWidgets.QTabWidget): # Moveable Tab Widget
                 Tolerance = 5
                 eventPos = event.globalPos()
                 try:
-                    screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos()).availableGeometry()
+                    screen = getScreenAtCursor().availableGeometry()
                 except: #For backwards compatibility
                     screenNumber = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
                     screen = QtWidgets.QApplication.desktop().availableGeometry(screenNumber)
